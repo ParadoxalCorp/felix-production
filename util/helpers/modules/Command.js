@@ -1,9 +1,12 @@
 'use strict';
 
+const { inspect } = require('util');
+
 /**
  * Provide some utility methods to parse the args of a message, check the required permissions...
  * @class Command
  */
+
 class Command {
     constructor() {}
 
@@ -35,6 +38,11 @@ class Command {
                 prefixes = prefixes.filter(p => (guildEntry.spacedPrefix && p !== client.config.prefix) || !guildEntry.spacedPrefix);
             }
             if (!prefixes.find(p => p === prefix)) {
+                return resolve(undefined);
+            }
+            //Investigate issue #4
+            if (!command.toLowerCase) {
+                console.log(`Issue #4 occurrence spotted: ${inspect(command)}`);
                 return resolve(undefined);
             }
             return resolve(client.commands.get(command.toLowerCase()) || client.commands.get(client.aliases.get(command.toLowerCase())));
