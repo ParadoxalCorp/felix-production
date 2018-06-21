@@ -181,7 +181,7 @@ class Help extends Command {
             normalHelp += '**Owner only:** This command can only be used by the owner of the server';
         }
         if (command.conf.guildOnly) {
-            normalHelp += '**Server only:** This command cannot be used in DMs'
+            normalHelp += '**Server only:** This command cannot be used in DMs';
         }
         if (command.help.params) {
             for (const key in command.help.params) {
