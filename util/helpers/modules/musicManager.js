@@ -164,7 +164,6 @@ class MusicManager {
                 break;
         }
         player.inactivityTimeout = setTimeout(() => {
-            console.log(`Voice channel disconnection due to inactivity`);
             this.client.bot.leaveVoiceChannel(player.channelId);
         }, this.client.config.options.music.inactivityTimeout);
     }
