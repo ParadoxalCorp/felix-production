@@ -58,7 +58,7 @@ class Command {
         return {
             prefix,
             command: supposedCommand
-        }
+        };
     }
 
     /**
@@ -258,7 +258,7 @@ class Command {
         if (typeof options.textual === 'undefined') {
             options.textual = true;
         }
-        const exactMatch = await this._resolveChannelByExactMatch(options.client, options.message, options.text, options.textual);
+        const exactMatch = await this._resolveChannelByExactMatch(options.client, options.message, text, options.textual);
         if (exactMatch) {
             return exactMatch;
         }
