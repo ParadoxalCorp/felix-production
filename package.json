@@ -1,10 +1,10 @@
 {
     "name": "felix",
-    "version": "4.0.0",
-    "description": "Felix v4",
+    "version": "4.0.1",
+    "description": "felix-production",
     "main": "index.js",
     "author": "ParadoxOrigins",
-    "repository": "github:ParadoxalCorp/FelixBot",
+    "repository": "github:ParadoxalCorp/felix-production",
     "license": "GPL-3.0",
     "scripts": {
         "start": "node index.js"
