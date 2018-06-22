@@ -52,7 +52,7 @@ class Uinfo extends Command {
 
         embedFields.push({
             name: ":notepad_spiral: Roles",
-            value: member.roles.map(r => `<@&${message.channel.guild.roles.get(r).id}>`).join(', ') + ` (${member.roles.length})`,
+            value: this.sliceRoles(member.roles.sort((a, b) => member.guild.roles.get(b).position - member.guild.roles.get(a).position).map(r => `<@&${message.channel.guild.roles.get(r).id}>`)) + ` (${member.roles.length})`,
         });
 
         embedFields.push({
@@ -111,6 +111,20 @@ class Uinfo extends Command {
                 color: client.config.options.embedColor
             }
         });
+    }
+
+    sliceRoles(roles) {
+        let text = '';
+        let i = 0;
+        for (const role of roles) {
+            if (text.length < 980) {
+                text += i === (roles.length - 1) ? role : `${role}, `;
+            } else {
+                return text += `and ${roles.length - (i + 1)} more...`;
+            }
+            i++;
+        }
+        return text;
     }
 }
 
