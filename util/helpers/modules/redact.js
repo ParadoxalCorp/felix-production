@@ -11,11 +11,15 @@ const redact = (client, string) => {
     const secondaryCredentials = [
         client.config.apiKeys.sentryDSN, 
         client.config.database.password, 
-        client.config.botLists.terminal.token, 
         client.config.apiKeys.weebSH,
         client.config.options.music.password,
         client.config.options.music.host
     ];
+    for (const botList in client.config.botLists) {
+        if (client.config.botLists[botList].token) {
+            secondaryCredentials.push(client.config.botLists[botList].token);
+        }
+    }
     for (const value of secondaryCredentials) {
         if (value) {
             credentials.push(value);
