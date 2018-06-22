@@ -1,3 +1,7 @@
+# Update 4.0.2 Changelog 
+
+* Fixed a bug where providing an invalid language ISO wouldn't abort the command and cause an error
+
 # Update 4.0.1 Changelog 
 
 ### Bugs fixes

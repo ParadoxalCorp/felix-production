@@ -1,6 +1,6 @@
 {
     "name": "felix",
-    "version": "4.0.1",
+    "version": "4.0.2",
     "description": "felix-production",
     "main": "index.js",
     "author": "ParadoxOrigins",
@@ -22,7 +22,7 @@
     "optionalDependencies": {
         "google-translate-api": "^2.3.0",
         "raven": "^2.6.0",
-        "taihou": "^1.0.1",
+        "taihou": "^1.0.2",
         "mal-scraper": "^2.4.2",
         "eris-lavalink": "^1.0.2"
     }
