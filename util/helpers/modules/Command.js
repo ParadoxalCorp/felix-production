@@ -1,7 +1,5 @@
 'use strict';
 
-const { inspect } = require('util');
-
 /**
  * Provide some utility methods to parse the args of a message, check the required permissions...
  * @class Command
@@ -39,10 +37,7 @@ class Command {
             }
             if (!prefixes.find(p => p === prefix)) {
                 return resolve(undefined);
-            }
-            //Investigate issue #4
-            if (!command.toLowerCase) {
-                console.log(`Issue #4 occurrence spotted: ${inspect(command)}`);
+            } else if (!command) {
                 return resolve(undefined);
             }
             return resolve(client.commands.get(command.toLowerCase()) || client.commands.get(client.aliases.get(command.toLowerCase())));
