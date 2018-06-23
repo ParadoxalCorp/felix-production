@@ -62,7 +62,7 @@ if (require('cluster').isMaster) {
                 }
             }
         };
-        setTimeout(postGuilds, 80000);
+        setTimeout(postGuilds, 180000);
         setInterval(postGuilds, 3600000);
     }
 }
