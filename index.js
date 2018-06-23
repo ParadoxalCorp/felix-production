@@ -47,12 +47,12 @@ if (require('cluster').isMaster) {
                 .get(1);
 
             for (const botList in config.botLists) {
-                if (botList.token) {
+                if (config.botLists[botList].token) {
                     axios({
                         method: 'post',
-                        url: botList.url,
+                        url: config.botLists[botList].url,
                         data: { server_count: guilds },
-                        headers: { 'Authorization': botList.token, 'Content-Type': 'application/json' },
+                        headers: { 'Authorization': config.botLists[botList].token, 'Content-Type': 'application/json' },
                         timeout: 15000
                     }).then(() => {
                         log.info(`Successfully posted guild stats to ${botList}`);
