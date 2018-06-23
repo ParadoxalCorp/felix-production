@@ -32,7 +32,7 @@ const master = new Sharder(config.token, '/main.js', {
 
 master.on('stats', res => {
     if (r) {
-        r.db('data').table('stats')
+        r.db(config.database.database).table('stats')
             .insert({ id: 1, stats: res }, { conflict: 'update' })
             .run();
     }
@@ -42,10 +42,9 @@ master.on('stats', res => {
 
 if (require('cluster').isMaster) {
     if (r) {
-        setInterval(async() => {
-            const { stats: { guilds } } = await r.db('data').table('stats')
-                .get(1)
-                .run();
+        const postGuilds = async() => {
+            const { stats: { guilds } } = await r.db(config.database.database).table('stats')
+                .get(1);
 
             for (const botList in config.botLists) {
                 if (botList.token) {
@@ -62,6 +61,8 @@ if (require('cluster').isMaster) {
                     });
                 }
             }
-        }, 3600000);
+        };
+        setTimeout(postGuilds, 80000);
+        setInterval(postGuilds, 3600000);
     }
 }
