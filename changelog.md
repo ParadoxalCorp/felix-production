@@ -1,3 +1,7 @@
+# Update 4.0.3 Changelog
+
+* Restricted the `udefine` command to NSFW channels, as it actually make sense
+
 # Update 4.0.2 Changelog 
 
 * Fixed a bug where providing an invalid language ISO wouldn't abort the command and cause an error
