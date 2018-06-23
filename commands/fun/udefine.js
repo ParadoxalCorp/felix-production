@@ -28,7 +28,10 @@ class Udefine extends Command {
         if (!args[0]) {
             return message.channel.createMessage(":x: No search term specified");
         }
-        const result = await axios.get(`http://api.urbandictionary.com/v0/define?term=${encodeURIComponent(args.join(' '))}`);
+        if (!message.channel.nsfw) {
+            return message.channel.createMessage(":x: This command can only be used in a channel set as NSFW");
+        }
+        const result = await axios.get(`https://api.urbandictionary.com/v0/define?term=${encodeURIComponent(args.join(' '))}`);
         if (!result.data) {
             return message.channel.createMessage(":x: an error occurred");
         }
