@@ -3,7 +3,7 @@ module.exports = {
     prefix: "felix",
     //User Settings > Appearance > Enable Developer Mode > Right click on your username and the click "Copy ID". There, you got your Discord ID
     ownerID: "YOUR_ID",
-    //Toke is needed
+    //Token is needed
     token: "baguette",
     database: {
         //Unless the database is on another server, the host should stay like this
