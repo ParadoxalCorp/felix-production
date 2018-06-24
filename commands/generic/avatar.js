@@ -22,7 +22,7 @@ class Avatar extends Command {
             expectedArgs: []
         };
     }
-
+    //eslint-disable-next-line no-unused-vars
     async run(client, message, args, guildEntry, userEntry) {
         let user = !args[0] ? message.author : await this.getUserFromText({client: client, message: message, text: args.join(' ')});
         if (!user) {
