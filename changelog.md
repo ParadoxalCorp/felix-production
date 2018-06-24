@@ -1,3 +1,8 @@
+# Update 4.1.3 Changelog
+
+* Added the `avatar` command in the `generic` category
+* Added the `triggered` command under the `image-generation` sub-category of the `image` category
+
 # Update 4.0.3 Changelog
 
 * Restricted the `udefine` command to NSFW channels, as it actually make sense
