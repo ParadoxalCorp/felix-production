@@ -60,7 +60,7 @@ class Announce extends Command {
                 embedObject.color = parseInt(`0x${args[1].split("#")[1]}`);
                 embedObject.color = embedObject.color === NaN ? 0x000 : embedObject.color;
             }
-            else embedObject.color = parseInt(`0x${args[1].trim().substr(0,7)}`)
+            else embedObject.color = parseInt(`0x${args[1].trim().substr(0,7)}`);
 
             embedObject.description = args[2];
             if (!embedObject.description && !embedObject.title) {
