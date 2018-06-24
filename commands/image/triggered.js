@@ -2,7 +2,7 @@
 const axios = require("axios");
 const Command = require('../../util/helpers/modules/Command');
 
-class triggered extends Command {
+class Triggered extends Command {
     constructor() {
         super();
         this.help = {
@@ -37,4 +37,4 @@ class triggered extends Command {
     }
 }
 
-module.exports = new triggered();
+module.exports = new Triggered();
