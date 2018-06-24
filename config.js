@@ -85,7 +85,7 @@ module.exports = {
             enabled: false,
             //The password and port set in the "application.yml" file that should be in the same folder if you downloaded Lavalink
             password: 'youshallnotpass',
-            port: 2033,
+            port: 2333,
             WSPort: 80,
             //Define how long in milliseconds to wait for a song to be added when the last one ended before leaving to not waste bandwidth. Defaults to 30e4 ms (5 minutes)
             inactivityTimeout: 30e4,
