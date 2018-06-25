@@ -9,8 +9,8 @@ class Avatar extends Command {
         this.help = {
             name: 'avatar',
             category: 'generic',
-            description: 'Show your avatar or that of a users',
-            usage: '{prefix}avatar'
+            description: 'Display and give a link to the avatar of the specified user, or you if nobody is specified',
+            usage: '{prefix}avatar <user_resolvable>'
         };
         this.conf = {
             requireDB: false,

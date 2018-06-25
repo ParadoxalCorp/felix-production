@@ -7,7 +7,7 @@ class Triggered extends Command {
         super();
         this.help = {
             name: 'triggered',
-            description: '',
+            description: 'Generate a triggered image with the avatar of the specified user',
             usage: '{prefix}triggered <user_resolvable>',
             category: 'image',
             subCategory: 'image-generation'
