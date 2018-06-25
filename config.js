@@ -17,6 +17,20 @@ module.exports = {
         //If a password is set, the password to connect with (in case the server has a public address and the RethinkDB instance is set to not only be available locally)
         password: ""
     },
+    redis: {
+        //Whether Redis should be used, unless ioredis and redis are installed and redis is running, this should stay false
+        enabled: false,
+        //The port of the Redis server
+        port: 6379,
+        //The host of the redis server
+        host: '127.0.0.1',
+        //The family, 4 for IPv4 or 6 for IPv6
+        family: 4,
+        //The database to use
+        db: 0,
+        //The password if one is set in the redis server config
+        password: ''
+    },
     //Additional API keys that the bot use for commands for example
     apiKeys: {
         sentryDSN: "",

@@ -38,7 +38,7 @@ class SetGreetings extends Command {
             category: 'settings',
             description: 'This command allows you to change the settings of the greetings system',
             usage: '{prefix}setgreetings',
-            externalDoc: 'https://github.com/ParadoxalCorp/Felix-documentation/blob/master/README.md#greetings-and-farewell-system'
+            externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#greetings-and-farewell-system'
         };
         this.conf = {
             requireDB: true,

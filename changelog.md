@@ -1,7 +1,13 @@
 # Update 4.1.3 Changelog
 
+### New commands/features
+
 * Added the `avatar` command in the `generic` category
 * Added the `triggered` command under the `image-generation` sub-category of the `image` category
+
+### Back-end changes
+
+* Implemented `Redis` 
 
 # Update 4.0.3 Changelog
 

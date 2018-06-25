@@ -27,6 +27,10 @@
 - * [Permissions priority and inheritance](#permissions-priority-and-inheritance)
 - * [Special case for roles permissions groups](#special-case-for-roles-permissions-groups)
 - * [Additional notes](#additional-notes)
+* [More info](#more-info)
+- * [Services](#services)
+- - * [Database](#rethinkdb)
+- - * [Redis](#redis)
 
 ## Commands arguments syntax
 
@@ -231,3 +235,19 @@ Well, in that case, the inheritance and priority rules still applies between the
 
 The same permission cannot be both allowed and restricted on the same permission group. If you for example try to allow a permission that is already restricted
 on a permission group, the restriction will be removed and only the allowed will stay
+
+## More info
+
+### Services
+
+Felix is not a monolith but rather a group of services, similar to a micro-services structure. This is important because that makes Felix able to run even if some services are failing (Of course though, if some of the services are failing, some features of Felix may not work).
+
+#### RethinkDB
+
+`RethinkDB` is our database, it is tasked with storing all the data felix use, including the servers and users data. If `RethinkDB` becomes unavailable for some reasons, 
+Felix will disable all its features requiring to have access to the database, everything else will still work.
+
+#### Redis
+
+`Redis` is our cache server, it is tasked with synchronizing and sharing data across the shards and clusters of Felix. If `Redis` comes down, Each shard and cluster will only 
+have access to a limited set of data

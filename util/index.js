@@ -26,6 +26,7 @@ module.exports = (client) => {
         moduleIsInstalled: require('./modules/moduleIsInstalled'),
         imageHandler: new(require('./helpers/modules/imageHandler'))(client),
         fetchUser: require('./helpers/modules/fetchUser').bind(null, client),
-        musicManager: client.musicManager ? client.musicManager : new(require('./helpers/modules/musicManager'))(client)
+        musicManager: client.musicManager ? client.musicManager : new(require('./helpers/modules/musicManager'))(client),
+        redis: require('./modules/moduleIsInstalled')('ioredis') ? new(require('./helpers/modules/redisManager'))(client) : false
     };
 };

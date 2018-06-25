@@ -24,6 +24,10 @@
         "raven": "^2.6.0",
         "taihou": "^1.0.2",
         "mal-scraper": "^2.4.2",
-        "eris-lavalink": "^1.0.2"
+        "eris-lavalink": "^1.0.2",
+        "ioredis": "^3.2.2"
+    },
+    "devDependencies": {
+        "eslint": "^5.0.0"
     }
 }

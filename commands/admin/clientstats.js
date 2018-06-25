@@ -23,7 +23,10 @@ class ClientStats extends Command {
     }
 
     async run(client, message) {
-        message.channel.createMessage({
+        if (client.bot.uptime < 60000) {
+            return message.channel.createMessage(`:x: Please wait another ${60000 - client.bot.uptime}ms`);
+        }
+        return message.channel.createMessage({
             embed: {
                 title: ':gear: Client stats',
                 fields: [{

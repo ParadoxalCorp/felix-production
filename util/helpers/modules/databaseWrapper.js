@@ -4,7 +4,7 @@
  * Wraps the most important methods of RethinkDB and does smart things in the background
  * @prop {*} rethink The object returned by the rethinkdbdash module after requiring it
  * @prop {function} updateFunc The update function given in the constructor, if any
- * @prop {*} guildData The rethinkDB  table of guilds
+ * @prop {*} guildData The rethinkDB table of guilds
  * @prop {*} userData The rethinkDB table of users
  * @prop {*} client The client instance given in the constructor
  * @prop {Collection} users A collection of cached user entries
@@ -32,9 +32,6 @@ class DatabaseWrapper {
                 { host: client.config.database.host, port: client.config.database.port }
             ],
             silent: true,
-            log: (message) => {
-                process.send({ name: "info", msg: message });
-            },
             user: client.config.database.user,
             password: client.config.database.password
         });

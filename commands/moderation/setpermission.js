@@ -10,7 +10,7 @@ class SetPermission extends Command {
             category: 'moderation',
             description: 'Set a new command/category permission for the server, or a channel/role/user. As always, you can run the command like `{prefix}setpermission` to be guided through the process',
             usage: '{prefix}setpermission <command_name|category_name*> | <true|false> | <global|channel|role|user> | <channel_name|role_name|username>',
-            externalDoc: 'https://github.com/ParadoxalCorp/Felix-documentation/blob/master/README.md#permissions-system'
+            externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#permissions-system'
         };
         this.conf = {
             requireDB: true,
