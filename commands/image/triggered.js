@@ -25,11 +25,10 @@ class Triggered extends Command {
     }
     //eslint-disable-next-line no-unused-vars
     async run(client, message, args, guildEntry, userEntry) {
-        let user = !args[0] ? message.author : await this.getUserFromText({client: client, message: message, text: args.join(' ')});
-        if (!user) {
-            return message.channel.createMessage(`:x: No members found`);
-        }
-        const image = await axios.get(`https://cute-api.tk/v1/generate/triggered?url=${user.avatarURL}`, {responseType: 'arraybuffer'});
+        const user = await this.getUserFromText({ message, client, text: args.join(' ') });
+        const target = user ? client.extendedUser(user) : client.extendedUser(message.author);
+        const member = message.channel.guild.members.get(target.id);
+        const image = await axios.get(`https://cute-api.tk/v1/generate/triggered?url=${member.avatarURL}`, {responseType: 'arraybuffer'});
         return message.channel.createMessage(``, {
             file: image.data,
             name: `${Date.now()}-${message.author.id}.gif`
