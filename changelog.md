@@ -5,9 +5,15 @@
 * Added the `avatar` command in the `generic` category
 * Added the `triggered` command under the `image-generation` sub-category of the `image` category
 
+### Bugs fixes
+
+* Fixed a bug where using the `iam` and `iamnot` on a self-assignable role higher than Felix's highest role would cause an error instead of returning a missing permissions message
+
 ### Back-end changes
 
-* Implemented `Redis` 
+* Implemented `Redis`
+
+
 
 # Update 4.0.3 Changelog
 
