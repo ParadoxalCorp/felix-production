@@ -14,6 +14,17 @@ const r = process.argv.includes('--no-db') ? false : require('rethinkdbdash')({
     }
 });
 
+process.on('beforeExit', () => {
+    setTimeout(() => {
+        process.exit();
+    }, 10000);
+});
+process.on('SIGINT', () => {
+    setTimeout(() => {
+        process.exit();
+    }, 10000);
+});
+
 const master = new Sharder(config.token, '/main.js', {
     stats: true,
     name: 'Felix',

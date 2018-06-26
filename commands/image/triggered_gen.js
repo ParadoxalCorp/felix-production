@@ -2,12 +2,14 @@
 const axios = require("axios");
 const Command = require('../../util/helpers/modules/Command');
 
-class Triggered_gen extends Command {
+//Written by Ota#1354 the 26/06/2018
+
+class TriggeredGen extends Command {
     constructor() {
         super();
         this.help = {
             name: 'triggered_gen',
-            description: 'Génére un gif Triggered avec votre avatar',
+            description: 'Generate a triggered image with the avatar of the specified user, or yours if nobody is specified',
             usage: '{prefix}triggered_gen <user_resolvable>',
             category: 'image',
             subCategory: 'image-generation'
@@ -15,7 +17,7 @@ class Triggered_gen extends Command {
         this.conf = {
             requireDB: false,
             disabled: false,
-            aliases: ['trig_gen'],
+            aliases: ['trig_gen', 'triggeredgen', 'triggen'],
             requirePerms: ['attachFiles'],
             guildOnly: true,
             ownerOnly: false,
@@ -27,8 +29,7 @@ class Triggered_gen extends Command {
     async run(client, message, args, guildEntry, userEntry) {
         const user = await this.getUserFromText({ message, client, text: args.join(' ') });
         const target = user ? client.extendedUser(user) : client.extendedUser(message.author);
-        const member = message.channel.guild.members.get(target.id);
-        const image = await axios.get(`https://cute-api.tk/v1/generate/triggered?url=${member.avatarURL}`, {responseType: 'arraybuffer'});
+        const image = await axios.get(`https://cute-api.tk/v1/generate/triggered?url=${target.avatarURL}`, {responseType: 'arraybuffer'});
         return message.channel.createMessage(``, {
             file: image.data,
             name: `${Date.now()}-${message.author.id}.gif`
@@ -36,4 +37,4 @@ class Triggered_gen extends Command {
     }
 }
 
-module.exports = new Triggered_gen();
+module.exports = new TriggeredGen();

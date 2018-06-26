@@ -1,6 +1,8 @@
 'use strict';
 //@ts-check
 
+//Written by Ota#1354 the 26/06/2018
+
 const Command = require('../../util/helpers/modules/Command');
 
 class Avatar extends Command {
@@ -9,7 +11,7 @@ class Avatar extends Command {
         this.help = {
             name: 'avatar',
             category: 'generic',
-            description: 'Display and give a link to the avatar of the specified user, or you if nobody is specified',
+            description: 'Display and give a link to the avatar of the specified user, or to yours if nobody is specified',
             usage: '{prefix}avatar <user_resolvable>'
         };
         this.conf = {
@@ -26,21 +28,20 @@ class Avatar extends Command {
     async run(client, message, args, guildEntry, userEntry) {
         const user = await this.getUserFromText({ message, client, text: args.join(' ') });
         const target = user ? client.extendedUser(user) : client.extendedUser(message.author);
-        const member = message.channel.guild.members.get(target.id);
         return message.channel.createMessage({
             embed: {
-                title: `Link of the avatar of ${member.username}`,
-                url: member.avatarURL,
+                title: `Link to the avatar of ${target.username}`,
+                url: target.avatarURL,
                 author: {
-                    name: message.author.tag,
-                    icon_url: message.author.avatarURL
+                    name: target.tag,
+                    icon_url:target.avatarURL
                 },
                 image: {
-                    url: member.avatarURL
+                    url: target.avatarURL
                 },
                 timestamp: new Date(),
                 image: {
-                    url: member.avatarURL
+                    url: target.avatarURL
                 },
                 color: client.config.options.embedColor
             }

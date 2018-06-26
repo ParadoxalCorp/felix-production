@@ -1,9 +1,9 @@
 'use strict';
 //@ts-check
 
-const { Canvas } = require('canvas-constructor');
+//Written by Ota#1354 the 26/06/2018
+
 const axios = require("axios");
-const fsn = require('fs-nextra');
 const Command = require('../../util/helpers/modules/Command');
 
 class Rank extends Command {
@@ -12,7 +12,7 @@ class Rank extends Command {
         this.help = {
             name: 'rank',
             category: 'fun',
-            description: '',
+            description: 'Display your local and global experience details',
             usage: '{prefix}rank'
         };
         this.conf = {
@@ -22,11 +22,15 @@ class Rank extends Command {
             requirePerms: ['attachFiles'],
             guildOnly: true,
             ownerOnly: false,
-            expectedArgs: []
+            expectedArgs: [],
+            require: ['fs-nextra', 'canvas-constructor', 'canvas']
         };
     }
     // eslint-disable-next-line no-unused-vars
     async run(client, message, args, guildEntry, userEntry) {
+      const { Canvas } = require('canvas-constructor');
+      const fsn = require('fs-nextra');
+      
       const user = await this.getUserFromText({ message, client, text: args.join(' ') });
       const target = user ? client.extendedUser(user) : client.extendedUser(message.author);
       const targetEntry = target.id !== message.author.id ? await client.database.getUser(target.id) : userEntry;
@@ -45,19 +49,19 @@ class Rank extends Command {
           return m;
       });
       //Shortcut to the resource folder imgs
-      let ressources = './ressources/imgs/';
+      let resources = './resources/imgs/';
       //Length progress bars
       let progressBar = 131;
       //Police custom
-      Canvas.registerFont(`.../../ressources/polices/Digitalt.ttf`, {
+      Canvas.registerFont(`.../../resources/polices/Digitalt.ttf`, {
         family: 'rank' // Police family
       });
       //Declaration of Canvas and creating a template (Length 300 and Width 300)
       const GetRank = new Canvas(300, 300)
       //Background (Changeable in the future logically)
-      .addImage(await fsn.readFile(`${ressources}back0.jpg`), 0, 0, 300, 300) //We will look for the image "Background" in the folder "imgs" (x=0, y=0, Length=300, Width=300)
+      .addImage(await fsn.readFile(`${resources}back0.jpg`), 0, 0, 300, 300) //We will look for the image "Background" in the folder "imgs" (x=0, y=0, Length=300, Width=300)
       //Layer one
-      .addImage(await fsn.readFile(`${ressources}card-back0.png`), 0, 0, 300, 300) //We will look for the image "Layer" in the folder "imgs" (x=0, y=0, Length=300, Width=300)
+      .addImage(await fsn.readFile(`${resources}card-back0.png`), 0, 0, 300, 300) //We will look for the image "Layer" in the folder "imgs" (x=0, y=0, Length=300, Width=300)
       //Select color White for the circle
       .setColor('#ffffff') //Hex Color (#ffffff = White)
       //Circle White (The one behind the avatar)
@@ -126,7 +130,7 @@ class Rank extends Command {
       .addResponsiveText(userExp, 238, 252, 84, 300)
       .addResponsiveText(`${(((userExp - localLevelDetails.thisLevelExp)/(localLevelDetails.nextLevelExp - localLevelDetails.thisLevelExp))*100).toFixed(2)}%`, 221, 289, 135, 135)
       .toBuffer();
-      await message.channel.createMessage(``, {
+      return message.channel.createMessage(``, {
           file: GetRank,
           name: `${Date.now()}-${message.author.id}.png`
       });

@@ -272,6 +272,9 @@ class MusicManager {
     }
 
     disconnect() {
+        if (!this.client.bot.voiceConnections.nodes) {
+            return false;
+        }
         this.client.bot.voiceConnections.nodes.get(this.client.config.options.music.host).destroy();
     }
 }

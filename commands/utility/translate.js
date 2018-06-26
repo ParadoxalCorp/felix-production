@@ -1,7 +1,6 @@
 'use strict';
 
 const Command = require('../../util/helpers/modules/Command');
-const googleTranslate = require("google-translate-api");
 
 class Translate extends Command {
     constructor() {
@@ -24,6 +23,7 @@ class Translate extends Command {
     }
 
     async run(client, message, args) {
+        const googleTranslate = require("google-translate-api");
         args = args.join(" ").split('"').filter(a => a !== "").map(a => a.trim());
         if (args[0] && args[0].includes(':') && !new RegExp(/\s+/g).test(args[0])) {
             args.push(args.shift().trim());
