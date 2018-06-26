@@ -11,10 +11,13 @@
     },
     "dependencies": {
         "axios": "^0.18.0",
+        "canvas": "^2.0.0-alpha.12",
+        "canvas-constructor": "^1.0.1",
         "chalk": "^2.3.1",
         "draftlog": "^1.0.12",
         "eris": "^0.8.5",
         "eris-sharder": "^1.7.8",
+        "fs-nextra": "^0.3.5",
         "moment": "^2.22.1",
         "npm": "^6.0.0",
         "rethinkdbdash": "^2.3.31"
@@ -24,10 +27,6 @@
         "raven": "^2.6.0",
         "taihou": "^1.0.2",
         "mal-scraper": "^2.4.2",
-        "eris-lavalink": "^1.0.2",
-        "ioredis": "^3.2.2"
-    },
-    "devDependencies": {
-        "eslint": "^5.0.0"
+        "eris-lavalink": "^1.0.2"
     }
 }

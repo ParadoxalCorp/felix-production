@@ -2,20 +2,20 @@
 const axios = require("axios");
 const Command = require('../../util/helpers/modules/Command');
 
-class Triggered extends Command {
+class Triggered_gen extends Command {
     constructor() {
         super();
         this.help = {
-            name: 'triggered',
-            description: 'Generate a triggered image with the avatar of the specified user',
-            usage: '{prefix}triggered <user_resolvable>',
+            name: 'triggered_gen',
+            description: 'Génére un gif Triggered avec votre avatar',
+            usage: '{prefix}triggered_gen <user_resolvable>',
             category: 'image',
             subCategory: 'image-generation'
         };
         this.conf = {
             requireDB: false,
             disabled: false,
-            aliases: ['trig'],
+            aliases: ['trig_gen'],
             requirePerms: ['attachFiles'],
             guildOnly: true,
             ownerOnly: false,
@@ -36,4 +36,4 @@ class Triggered extends Command {
     }
 }
 
-module.exports = new Triggered();
+module.exports = new Triggered_gen();
