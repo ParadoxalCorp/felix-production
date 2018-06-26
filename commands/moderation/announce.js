@@ -44,6 +44,8 @@ class Announce extends Command {
                 color: 0x000,
                 timestamp: new Date()
             };
+            console.log(args[1].length);
+            
             embedObject.title = args[0].substr(0, 256);
             if (args[1].trim() === "red") {
                 embedObject.color = 0xff0000;
@@ -58,7 +60,9 @@ class Announce extends Command {
                 embedObject.color = parseInt(`0x${args[1].split("#")[1]}`);
                 embedObject.color = embedObject.color === NaN ? 0x000 : embedObject.color;
             }
-
+            else { 
+                embedObject.color = parseInt(`0x${args[1].trim().substr(0,7)}`);
+            }
             embedObject.description = args[2];
             if (!embedObject.description && !embedObject.title) {
                 return message.channel.createMessage(':x: At least either the title or the description is mandatory');

@@ -88,6 +88,9 @@ class Iam extends Command {
         if (!member.roles.includes(guildRole.id)) {
             return message.channel.createMessage(':x: You do not have this role, therefore i can\'t remove it');
         }
+        if (this.getHighestRole(client.bot.user.id, message.channel.guild) && (guildRole.position > this.getHighestRole(client.bot.user.id, message.channel.guild).position)) {
+            return message.channel.createMessage(`:x: The role \`${guildRole.name}\` is higher than my highest role, therefore, i can't give remove it from you :c`);
+        }
         await member.removeRole(guildRole.id);
         return message.channel.createMessage(":white_check_mark: Alright, i removed from you the role `" + guildRole.name + "`");
     }

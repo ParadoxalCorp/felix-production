@@ -54,11 +54,12 @@ class Eval extends Command {
     }
 
     getMaxDepth(toInspect, toEval) {
-        let maxDepth = 10;
+        let maxDepth = 0;
         for (let i = 0; i < 10; i++) {
             if (inspect(toInspect, { depth: i }).length > (1980 - toEval.length)) {
-                maxDepth = i - 1;
-                return ;
+                return i - 1;
+            } else {
+                maxDepth++;
             }
         }
         return maxDepth;

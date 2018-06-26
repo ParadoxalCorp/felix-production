@@ -75,10 +75,10 @@ class MusicManager {
                     count: 0,
                     callback: null,
                     timeout: null,
-                    voted: []
+                    voted: [],
+                    voteID: false
                 },
-                repeat: 'off',
-                queuePosition: 0
+                repeat: 'off'
             });
         }
         if (!player.listenerCount('disconnect')) {
@@ -115,7 +115,8 @@ class MusicManager {
     }
 
     _handleStuck(player, msg) {
-        console.log(require('util').inspect(msg, {depth: 2}));
+        this.skipTrack(player, this.connections.get(player.guildId));
+        this.client.bot.emit('error', msg);
     }
 
     async _handleEnd(player, data) {
@@ -131,23 +132,28 @@ class MusicManager {
             case 'queue':
                 if (connection.voteSkip.count) {
                     clearTimeout(connection.voteSkip.timeout);
-                    connection.voteSkip.callback('songEnded');
+                    if (!connection.voteSkip.voteID) {
+                        connection.voteSkip.callback('songEnded');
+                    }
                 }
                 if (!connection.queue[0]) {
                     connection.nowPlaying = null;
                 } else {
-                    await this._play(player, connection, connection.queuePosition);
-                    return connection.queuePosition = connection.queuePosition +1 === connection.queue.length ? 0 : connection.queuePosition +1;
+                    await this.play(player, connection, 0);
+                    connection.queue.push(connection.queue[0]);
+                    return connection.queue.shift();
                 }
                 break;
             case 'off':
                 connection.nowPlaying = null;
                 if (connection.voteSkip.count) {
                     clearTimeout(connection.voteSkip.timeout);
-                    connection.voteSkip.callback('songEnded');
+                    if (!connection.voteSkip.voteID) {
+                        connection.voteSkip.callback('songEnded');
+                    }
                 }
                 if (connection.queue.length >= 1)  {
-                    await this._play(player, connection, 0);
+                    await this.play(player, connection, 0);
                     return connection.queue.shift();
                 }
                 break;
@@ -219,25 +225,42 @@ class MusicManager {
      * @param {*} connection - The connection 
      * @returns {object} The skipped track
      */
-    async skipTrack(player, connection) {
+    skipTrack(player, connection) {
         const skippedSong = { ...connection.nowPlaying };
         if (connection.queue[0]) {
-            if (connection.repeat === 'queue') {
-                await this._play(player, connection, connection.queuePosition);
-                connection.queuePosition = connection.queuePosition +1 === connection.queue.length ? 0 : connection.queuePosition +1;
-            } else {
-                await this._play(player, connection, 0);
-                connection.queue.shift();
+            this.play(player, connection, 0);
+            if (connection.voteSkip.count) {
+                clearTimeout(connection.voteSkip.timeout);
+                if (!connection.voteSkip.voteID) {
+                    connection.voteSkip.callback('songEnded');
+                }
             }
+            if (connection.repeat === 'queue') {
+                connection.queue.push(connection.queue[0]);
+            }
+            connection.queue.shift();
         } else {
-            await player.stop();
+            player.stop();
             connection.nowPlaying = null;
         }
         return skippedSong;
     }
 
-    async _play(player, connection, queuePosition) {
-        await player.play(connection.queue[queuePosition].track);
+    /**
+     * 
+     * @param {object} player - The player 
+     * @param {object} connection - The musicManager collection
+     * @param {number} queuePosition - The position in the queue of the song to play
+     * @returns {object} The track now playing 
+     */
+    play(player, connection, queuePosition) {
+        player.play(connection.queue[queuePosition].track);
+        if (connection.voteSkip.count) {
+            clearTimeout(connection.voteSkip.timeout);
+            if (!connection.voteSkip.voteID) {
+                connection.voteSkip.callback('songEnded');
+            }
+        }
         connection.nowPlaying = {
             info: { 
                 ...connection.queue[queuePosition].info,
@@ -245,10 +268,13 @@ class MusicManager {
             },
             track: connection.queue[queuePosition].track
         };
-        return;
+        return connection.nowPlaying;
     }
 
     disconnect() {
+        if (!this.client.bot.voiceConnections.nodes) {
+            return false;
+        }
         this.client.bot.voiceConnections.nodes.get(this.client.config.options.music.host).destroy();
     }
 }

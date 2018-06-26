@@ -8,4 +8,8 @@ This repository contains the main source code of Felix, the Discord bot.
 
 As Felix rely on third-party services and other micro-services, not everything is in this repository
 
-If you seek to self-host Felix, you might want to look at [this repository] instead, which provides self-host support
+If you seek to self-host Felix, you might want to look at [this repository](https://github.com/ParadoxalCorp/FelixBot) instead, which provides self-host support
+
+## Dependencies
+
+As of version 4.1.3, Felix use Redis, available [here](https://redis.io/download)

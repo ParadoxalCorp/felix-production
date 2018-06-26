@@ -85,7 +85,7 @@ class Reloader {
     reloadModule(path, name, options) {
         if (path === 'all') {
             for (const path in require.cache) {
-                const toIgnore = ['node_modules', 'databaseWrapper.js', 'IPCHandler.js', 'musicManager.js'];
+                const toIgnore = ['node_modules', 'databaseWrapper.js', 'IPCHandler.js', 'musicManager.js', 'messageCollector.js', 'redisManager.js'];
                 if (!toIgnore.find(f => path.includes(f))) {
                     delete require.cache[path];
                 }

@@ -10,7 +10,7 @@ class GetPermissions extends Command {
             category: 'moderation',
             description: 'Get the permissions set for the server, or for a channel/role/user',
             usage: '{prefix}getpermissions <global|channel|role|user> | <channel_name|role_name|username>',
-            externalDoc: 'https://github.com/ParadoxalCorp/Felix-documentation/blob/master/README.md#permissions-system'
+            externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#permissions-system'
         };
         this.conf = {
             requireDB: true,

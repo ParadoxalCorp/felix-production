@@ -3,7 +3,7 @@ module.exports = {
     prefix: "felix",
     //User Settings > Appearance > Enable Developer Mode > Right click on your username and the click "Copy ID". There, you got your Discord ID
     ownerID: "YOUR_ID",
-    //Toke is needed
+    //Token is needed
     token: "baguette",
     database: {
         //Unless the database is on another server, the host should stay like this
@@ -16,6 +16,20 @@ module.exports = {
         user: "admin",
         //If a password is set, the password to connect with (in case the server has a public address and the RethinkDB instance is set to not only be available locally)
         password: ""
+    },
+    redis: {
+        //Whether Redis should be used, unless ioredis and redis are installed and redis is running, this should stay false
+        enabled: false,
+        //The port of the Redis server
+        port: 6379,
+        //The host of the redis server
+        host: '127.0.0.1',
+        //The family, 4 for IPv4 or 6 for IPv6
+        family: 4,
+        //The database to use
+        db: 0,
+        //The password if one is set in the redis server config
+        password: ''
     },
     //Additional API keys that the bot use for commands for example
     apiKeys: {
@@ -85,7 +99,7 @@ module.exports = {
             enabled: false,
             //The password and port set in the "application.yml" file that should be in the same folder if you downloaded Lavalink
             password: 'youshallnotpass',
-            port: 2033,
+            port: 2333,
             WSPort: 80,
             //Define how long in milliseconds to wait for a song to be added when the last one ended before leaving to not waste bandwidth. Defaults to 30e4 ms (5 minutes)
             inactivityTimeout: 30e4,
@@ -100,6 +114,6 @@ module.exports = {
         shards: 1,
         clusters: 1,
         debug: true,
-        environment: "production"
+        environment: "development"
     }
 };

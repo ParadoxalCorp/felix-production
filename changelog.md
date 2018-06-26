@@ -1,3 +1,20 @@
+# Update 4.1.3 Changelog
+
+### New commands/features
+
+* Added the `avatar` command in the `generic` category
+* Added the `triggered_gen` command under the `image-generation` sub-category of the `image` category
+* Added the `rank` command in the `fun` category
+
+### Bugs fixes
+
+* Fixed a bug where using the `iam` and `iamnot` on a self-assignable role higher than Felix's highest role would cause an error instead of returning a missing permissions message
+* Fixed a bug where using the `help` command with the `--dm` parameter would cause an error if the user DMs are disabled
+
+### Back-end changes
+
+* Implemented `Redis`
+
 # Update 4.0.3 Changelog
 
 * Restricted the `udefine` command to NSFW channels, as it actually make sense
