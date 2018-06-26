@@ -114,6 +114,6 @@ module.exports = {
         shards: 1,
         clusters: 1,
         debug: true,
-        environment: "production"
+        environment: "development"
     }
 };
