@@ -114,7 +114,7 @@ class Bot extends Command {
         });
         embedFields.push({
             name: 'Source',
-            value: `[GitHub repository](https://github.com/ParadoxalCorp/FelixBot)`,
+            value: `[GitHub repository](https://github.com/ParadoxalCorp/felix-production)`,
             inline: false
         });
         embedFields.push({

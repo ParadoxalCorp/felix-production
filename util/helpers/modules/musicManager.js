@@ -1,5 +1,7 @@
 'use strict';
 
+const MusicConnection = require('./musicConnection');
+
 /**
  * @prop {object} client - The client given in the constructor
  * @prop {array} nodes - An array of nodes
@@ -15,10 +17,6 @@ class MusicManager {
         this.nodes = [
             { host: client.config.options.music.host, port: client.config.options.music.WSPort, region: 'eu', password: client.config.options.music.password }
         ];
-        this.regions = {
-            eu: ['eu', 'amsterdam', 'frankfurt', 'russia', 'hongkong', 'singapore', 'sydney'],
-            us: ['us', 'brazil'],
-        };
         this.baseURL = (node) => `http://${node.host}:${client.config.options.music.port}`;
         this.axios = require('axios').create({});
         this.axios.defaults.headers.common['Accept'] = 'application/json';
@@ -55,112 +53,24 @@ class MusicManager {
 
     /**
      * Get or create a music player for the specified channel
-     * @param {object} channel - The Eris channel object (must be a guild voice channel
-     * @returns {object} The music player
+     * @param {object|string} channel - The Eris channel object (must be a guild voice channel) or its ID
+     * @returns {MusicConnection} A MusicConnection instance
      */
     async getPlayer(channel) {
-        let player = this.client.bot.voiceConnections.get(channel.guild.id);
+        if (typeof channel === "string") {
+            channel = this.client.bot.guilds.get(this.client.bot.channelGuildMap[channel]).channels.get(channel);
+        }
+        let player = this.connections.get(channel.guild.id);
         let options = {};
         if (channel.guild.region) {
             options.region = channel.guild.region;
         }
         if (!player) {
-            player = await this.client.bot.joinVoiceChannel(channel.id, options);
-        }
-        if (!this.connections.has(channel.guild.id)) {
-            this.connections.set(channel.guild.id, {
-                queue: [],
-                nowPlaying: null,
-                voteSkip: {
-                    count: 0,
-                    callback: null,
-                    timeout: null,
-                    voted: [],
-                    voteID: false
-                },
-                repeat: 'off'
-            });
-        }
-        if (!player.listenerCount('disconnect')) {
-            player.on('disconnect', this._handleDisconnection.bind(this, player));
-        }
-        if (!player.listenerCount('error')) {
-            player.on('error', this._handleError.bind(this, player));
-        }
-        if (!player.listenerCount('stuck')) {
-            player.on('stuck', this._handleStuck.bind(this, player));
-        }
-        if (!player.listenerCount('end')) {
-            player.on('end', this._handleEnd.bind(this, player));
-        }
-        if (player.inactivityTimeout) {
-            clearTimeout(player.inactivityTimeout);
+            player = await this.client.bot.joinVoiceChannel(channel.id, options).then(p => new MusicConnection(this.client, p));
+            this.connections.set(channel.guild.id, player);
+            player.on("inactive", this.connections.delete.bind(this.connections, channel.guild.id));
         }
         return player;
-    }
-
-    _handleDisconnection(player, err) {
-        if (err) {
-            this.client.bot.emit('error', err);
-        }
-        this.client.bot.leaveVoiceChannel(player.channelId);
-    }
-
-    _handleError(player, err) {
-        if (err.type === 'TrackExceptionEvent') {
-            return this.skipTrack(player, this.connections.get(player.guildId));
-        }
-        this.client.bot.emit('error', err);
-        this.client.bot.leaveVoiceChannel(player.channelId);
-    }
-
-    _handleStuck(player, msg) {
-        this.skipTrack(player, this.connections.get(player.guildId));
-        this.client.bot.emit('error', msg);
-    }
-
-    async _handleEnd(player, data) {
-        if (data.reason && data.reason === 'REPLACED') {
-            return;
-            }
-        const connection = this.connections.get(player.guildId);
-        switch(connection.repeat) {
-            case 'song':
-                connection.nowPlaying.startedAt = Date.now();
-                return await player.play(connection.nowPlaying.track);
-                break;
-            case 'queue':
-                if (connection.voteSkip.count) {
-                    clearTimeout(connection.voteSkip.timeout);
-                    if (!connection.voteSkip.voteID) {
-                        connection.voteSkip.callback('songEnded');
-                    }
-                }
-                if (!connection.queue[0]) {
-                    connection.nowPlaying = null;
-                } else {
-                    await this.play(player, connection, 0);
-                    connection.queue.push(connection.queue[0]);
-                    return connection.queue.shift();
-                }
-                break;
-            case 'off':
-                connection.nowPlaying = null;
-                if (connection.voteSkip.count) {
-                    clearTimeout(connection.voteSkip.timeout);
-                    if (!connection.voteSkip.voteID) {
-                        connection.voteSkip.callback('songEnded');
-                    }
-                }
-                if (connection.queue.length >= 1)  {
-                    await this.play(player, connection, 0);
-                    return connection.queue.shift();
-                }
-                break;
-        }
-        player.inactivityTimeout = setTimeout(() => {
-            this.client.bot.leaveVoiceChannel(player.channelId);
-        }, this.client.config.options.music.inactivityTimeout);
     }
     
     /**
@@ -197,6 +107,11 @@ class MusicManager {
         return `${hours ? (hours + ':') : hours}${minutes}:${seconds}`;
     }
 
+    /**
+     * @private
+     * @param {string} query - The query to parse
+     * @returns {string} The encoded query formatted according to the pattern identified 
+     */
     _parseQuery(query) {
         const args = query.split(/\s+/g);
         const url = new RegExp(/https:\/\//);
@@ -220,57 +135,51 @@ class MusicManager {
     }
 
     /**
-     * Skip the currently playing track and start the next one
-     * @param {*} player - The player 
-     * @param {*} connection - The connection 
-     * @returns {object} The skipped track
+     * Get the queue of a guild, note that this should only be used if you don't have access to the MusicConnection instance of the guild, as this method only fetch from redis
+     * @param {object|string} guild - The guild ID or object to get the queue from
+     * @returns {array} The queue, or an empty array if none has been retrieved from redis
      */
-    skipTrack(player, connection) {
-        const skippedSong = { ...connection.nowPlaying };
-        if (connection.queue[0]) {
-            this.play(player, connection, 0);
-            if (connection.voteSkip.count) {
-                clearTimeout(connection.voteSkip.timeout);
-                if (!connection.voteSkip.voteID) {
-                    connection.voteSkip.callback('songEnded');
-                }
-            }
-            if (connection.repeat === 'queue') {
-                connection.queue.push(connection.queue[0]);
-            }
-            connection.queue.shift();
-        } else {
-            player.stop();
-            connection.nowPlaying = null;
+    async getQueueOf(guild) {
+        if (!this.client.redis || !this.client.redis.healthy) {
+            return [];
         }
-        return skippedSong;
+        return this.client.redis.get(`${guild.id ? guild.id : guild}-queue`)
+            .then(q => q ? JSON.parse(q) : [])
+            .catch(err => {
+                this.client.bot.emit("error", err);
+                return [];
+            });
+    }
+
+    async genericEmbed(track, connection, title) {
+        let fields = [{
+            name: 'Author',
+            value: track.info.author,
+            inline: true
+        }, {
+            name: 'Duration',
+            value: `${this.parseDuration(connection.player.state.position)}/${this.parseDuration(track)}`,
+            inline: true
+        }];
+        if (track.info.requestedBy) {
+            let user = await this.client.fetchUser(track.info.requestedBy);
+            fields.push({
+                name: 'Requested by',
+                value: user.tag,     
+            });
+        }
+        return {
+            title: `:musical_note: ${title}`,
+            description: `[${track.info.title}](${track.info.uri})`,
+            fields: fields,
+            color: this.client.config.options.embedColor
+        };
     }
 
     /**
-     * 
-     * @param {object} player - The player 
-     * @param {object} connection - The musicManager collection
-     * @param {number} queuePosition - The position in the queue of the song to play
-     * @returns {object} The track now playing 
+     * Destroy the WS connection with Lavalink
+     * @returns {void}
      */
-    play(player, connection, queuePosition) {
-        player.play(connection.queue[queuePosition].track);
-        if (connection.voteSkip.count) {
-            clearTimeout(connection.voteSkip.timeout);
-            if (!connection.voteSkip.voteID) {
-                connection.voteSkip.callback('songEnded');
-            }
-        }
-        connection.nowPlaying = {
-            info: { 
-                ...connection.queue[queuePosition].info,
-                startedAt: Date.now()
-            },
-            track: connection.queue[queuePosition].track
-        };
-        return connection.nowPlaying;
-    }
-
     disconnect() {
         if (!this.client.bot.voiceConnections.nodes) {
             return false;

@@ -244,10 +244,9 @@ Felix is not a monolith but rather a group of services, similar to a micro-servi
 
 #### RethinkDB
 
-`RethinkDB` is our database, it is tasked with storing all the data felix use, including the servers and users data. If `RethinkDB` becomes unavailable for some reasons, 
-Felix will disable all its features requiring to have access to the database, everything else will still work.
+`RethinkDB` is our database, it is tasked with storing long-term data, including the servers and users data. If `RethinkDB` becomes unavailable for some reasons, 
+Felix will disable all the features that needs to have access to the database, everything else will still work.
 
 #### Redis
 
-`Redis` is our cache server, it is tasked with synchronizing and sharing data across the shards and clusters of Felix. If `Redis` comes down, Each shard and cluster will only 
-have access to a limited set of data
+`Redis` is our cache server, it is tasked with synchronizing and sharing data across the shards and clusters of Felix (like the music queue for example). If `Redis` comes down, each shard and cluster will only have access to a limited set of data. While the main database is RethinkDB, Redis also write medium-term data to the disk, so even if the server needs to be restarted at some point, the data won't be lost

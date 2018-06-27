@@ -5,15 +5,18 @@
 * Added the `avatar` command in the `generic` category
 * Added the `triggered_gen` command under the `image-generation` sub-category of the `image` category
 * Added the `rank` command in the `fun` category
+* Added the `skipto` command in the `music` category
 
 ### Bugs fixes
 
 * Fixed a bug where using the `iam` and `iamnot` on a self-assignable role higher than Felix's highest role would cause an error instead of returning a missing permissions message
 * Fixed a bug where using the `help` command with the `--dm` parameter would cause an error if the user DMs are disabled
+* Fixed a bug where if the success message after using the `clear` command was deleted before the automatic deletion an error would occur
 
 ### Back-end changes
 
 * Implemented `Redis`
+* Rewrote entirely the music feature to have it working better and use redis
 
 # Update 4.0.3 Changelog
 

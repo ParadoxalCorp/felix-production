@@ -6,7 +6,7 @@ class MessageHandler {
     constructor() {}
 
     async handle(client, message) {
-        if (message.author.bot) {
+        if (!message.author || message.author.bot) {
             return;
         }
         const databaseEntries = await this.getDatabaseEntries(client, message);

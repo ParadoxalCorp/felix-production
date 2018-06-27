@@ -31,11 +31,11 @@ class Queue extends Command {
         const clientMember = message.channel.guild.members.get(client.bot.user.id);
         let connection = client.musicManager.connections.get(message.channel.guild.id);
         if (!args[0]) {
-            if (!connection || !clientMember.voiceState.channelID) {
-                return message.channel.createMessage(`:x: I am not playing anything`);
+            let queue = connection ? connection.queue : await client.musicManager.getQueueOf(message.channel.guild.id);
+            if (!queue[0]) {
+                return message.channel.createMessage(`:x: There is nothing in the queue`);
             }
-            let queue = await this.formatQueue(client, connection, message, clientMember);
-            return message.channel.createMessage(queue);
+            return message.channel.createMessage(this.formatQueue(client, queue, connection));
         }
         if (!member.voiceState.channelID) {
             return message.channel.createMessage(':x: You are not connected to any voice channel');
@@ -45,36 +45,28 @@ class Queue extends Command {
                 return message.channel.createMessage(':x: It seems like i lack the permission to connect or to speak in the voice channel you are in :c');
             }
         }
-        const player = await client.musicManager.getPlayer(message.channel.guild.channels.get(member.voiceState.channelID));
         if (!connection) {
-            connection = client.musicManager.connections.get(message.channel.guild.id);
+            connection = await client.musicManager.getPlayer(message.channel.guild.channels.get(member.voiceState.channelID));
         }
-        let tracks = await client.musicManager.resolveTracks(player.node, args.join(' '));
+        let tracks = await client.musicManager.resolveTracks(connection.player.node, args.join(' '));
         let queued;
         let track = tracks[0];
         if (!track) {
             return message.channel.createMessage(`:x: I could not find any song :c, please make sure to:\n- Follow the syntax (check \`${client.commands.get('help').getPrefix(client, guildEntry)}help ${this.help.name}\`)\n- Use HTTPS links, unsecured HTTP links aren't supported\n- If a YouTube video, i can't play it if it is age-restricted\n - If a YouTube video, it might be blocked in the country my servers are`);
         }
         if (tracks.length > 1) {
-            track = await this.selectTrack(client, message, tracks);
+            track = await client.commands.get('play').selectTrack(client, message, tracks);
             if (!track) {
                 return;
             }
         }
-        if (!player.playing && !player.paused) {
-            await player.play(track.track);
-            connection.nowPlaying = {
-                info: { 
-                    ...track.info,
-                    startedAt: Date.now(),
-                    requestedBy: message.author.id
-                },
-                track: track.track
-            };
+        if (track.info.isStream) {
+            return message.channel.createMessage(':x: I am sorry but you cannot add live streams to the queue, you can only play them immediately');
+        }
+        if (!connection.player.playing && !connection.player.paused) {
+            connection.play(track, message.author.id);
         } else {
-            track.info.requestedBy = message.author.id;
-            connection.queue.push(track);
-            queued = true;
+            queued = connection.addTrack(track, message.author.id);
         }
         return message.channel.createMessage({embed: {
             title: `:musical_note: ${queued ? 'Successfully enqueued' : 'Now playing'}`,
@@ -87,52 +79,31 @@ class Queue extends Command {
                 name: 'Duration',
                 value: client.musicManager.parseDuration(track),
                 inline: true
+            }, {
+                name: 'Estimated time until playing',
+                value: client.musicManager.parseDuration(queued.timeUntilPlaying)
             }],
             color: client.config.options.embedColor
         }});
     }
 
-    async selectTrack(client, message, tracks) {
-        tracks = tracks.splice(0, 15);
-        let searchResults = `Your search has returned multiple results, please select one by replying their corresponding number\n\n`;
+    formatQueue(client, connectionQueue, connection) {
+        let formattedQueue = '';
+        if (connection) {
+            formattedQueue += `:musical_note: Now playing: **${connection.nowPlaying.info.title}** `;
+            formattedQueue += `(${client.musicManager.parseDuration(connection.player.state.position)}/${client.musicManager.parseDuration(connection.nowPlaying)})\n`;
+            formattedQueue += `Repeat: ${client.commands.get('repeat').extra[connection.repeat].emote}\n\n`;
+        }
         let i = 1;
-        for (const song of tracks) {
-            searchResults += `\`${i++}\` - **${song.info.title}** by **${song.info.author}** (${client.musicManager.parseDuration(song)})\n`;
-        }
-        await message.channel.createMessage(searchResults);
-        const reply = await client.messageCollector.awaitMessage(message.channel.id, message.author.id);
-        if (!reply) {
-            message.channel.createMessage(':x: Timeout, command aborted').catch(() => {});
-            return false;
-        } else if (!client.isWholeNumber(reply.content)) {
-            message.channel.createMessage(':x: You must reply with a whole number').catch(() => {});
-            return false;
-        }
-        if (reply.content >= tracks.length) {
-            return tracks[tracks.length - 1];
-        } else if (reply.content <= 1) {
-            return tracks[0];
-        } else {
-            return tracks[reply.content - 1];
-        }
-    }
-
-    async formatQueue(client, connection, message, clientMember) {
-        const player = await client.musicManager.getPlayer(message.channel.guild.channels.get(clientMember.voiceState.channelID));
-        let formattedQueue = `:musical_note: Now playing: **${connection.nowPlaying.info.title}** (${client.musicManager.parseDuration(player.state.position)}/${client.musicManager.parseDuration(connection.nowPlaying)})\nRepeat: ${client.commands.get('repeat').extra[connection.repeat].emote}\n\n`;
-        let i = 1;
-        let queue = [...connection.queue];
-        if (connection.repeat === 'queue') {
-            if (queue.length > 1) {
-                const toPlay = queue.splice(connection.queuePosition);
-                queue = toPlay.concat(queue);
-            }
-        }
+        let queue = [...connectionQueue];
         for (const track of queue) {
             if (formattedQueue.length >= 1900) {
                 return formattedQueue += `\n\nAnd **${queue.length - i}** more...`;
             }
             formattedQueue += `\`${i++}\` - **${track.info.title}** (\`${client.musicManager.parseDuration(track)}\`)\n`;
+        }
+        if (connection) {
+            formattedQueue += `\n**Total queue estimated duration**: \`${client.musicManager.parseDuration(connection.queueDuration)}\``;
         }
         return formattedQueue;
     }
