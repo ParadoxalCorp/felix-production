@@ -13,3 +13,7 @@ If you seek to self-host Felix, you might want to look at [this repository](http
 ## Dependencies
 
 As of version 4.1.3, Felix use Redis, available [here](https://redis.io/download)
+
+## Development cycle
+
+![develoment cycle](https://cdn.discordapp.com/attachments/358212785181556739/461835951199485952/unknown.png)
