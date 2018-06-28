@@ -31,7 +31,7 @@ class ForceSkip extends Command {
         if (!connection || !connection.nowPlaying) {
             return message.channel.createMessage(':x: I am not playing anything');
         }
-        const skippedSong = client.musicManager.skipTrack();
+        const skippedSong = connection.skipTrack();
         return message.channel.createMessage(`:white_check_mark: Skipped **${skippedSong.info.title}**`);       
     }
 }
