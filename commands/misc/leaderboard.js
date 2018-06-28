@@ -46,7 +46,7 @@ class Leaderboard extends Command {
     // eslint-disable-next-line no-unused-vars 
     async run(client, message, args, guildEntry, userEntry) {
         if (!['love', 'coins', 'experience'].includes(args[0].toLowerCase())) {
-            return message.channel.createMessage(':x: You didn\'t specified what leaderboard i had to show, please specify either `love`, `coins` or `experience`');
+            return message.channel.createMessage(':x: You didn\'t specified what leaderboard I had to show, please specify either `love`, `coins` or `experience`');
         }
         const leaderboard = args[0].toLowerCase();
         if (leaderboard === 'love') {

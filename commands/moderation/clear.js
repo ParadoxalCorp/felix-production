@@ -27,7 +27,7 @@ class Clear extends Command {
     async run(client, message, args, guildEntry, userEntry) {
         const limit = args[0]; 
         if (!limit || !client.isWholeNumber(limit)) {
-            return message.channel.createMessage(`:x: You didn't specified how many messages to delete`);
+            return message.channel.createMessage(`:x: You didn't specify how many messages to delete`);
         }
         let filtered = [];
         const slice = (collection, count) => {

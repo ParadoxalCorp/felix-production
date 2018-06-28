@@ -8,7 +8,7 @@ class Iam extends Command {
         this.help = {
             name: 'iamnot',
             category: 'misc',
-            description: 'Remove from yourself a self-assignable role, you can see the list of self-assignable roles set on this server with `{prefix}iamnot`',
+            description: 'Remove a self-assignable role from yourself, you can see the list of self-assignable roles set on this server with `{prefix}iamnot`',
             usage: '{prefix}iamnot <role_name>'
         };
         this.conf = {
@@ -46,7 +46,7 @@ class Iam extends Command {
                     messages.push({
                         embed: {
                             title: "Self-assignable roles list",
-                            description: "Here's the list of the self-assignable role, you can assign one to yourself with `" + guildEntry.getPrefix + "iam <role_name>`\n",
+                            description: "Here's the list of the self-assignable roles, you can assign one to yourself with `" + guildEntry.getPrefix + "iam <role_name>`\n",
                             footer: {
                                 text: `Showing page {index}/${guildEntry.selfAssignableRoles.length} | Time limit: 60 seconds`
                             },
@@ -86,13 +86,13 @@ class Iam extends Command {
             return message.channel.createMessage(":x: The specified role does not exist or it is not a self-assignable role");
         }
         if (!member.roles.includes(guildRole.id)) {
-            return message.channel.createMessage(':x: You do not have this role, therefore i can\'t remove it');
+            return message.channel.createMessage(':x: You do not have this role, therefore I can\'t remove it');
         }
         if (this.getHighestRole(client.bot.user.id, message.channel.guild) && (guildRole.position > this.getHighestRole(client.bot.user.id, message.channel.guild).position)) {
-            return message.channel.createMessage(`:x: The role \`${guildRole.name}\` is higher than my highest role, therefore, i can't give remove it from you :c`);
+            return message.channel.createMessage(`:x: The role \`${guildRole.name}\` is higher than my highest role, therefore, I can't give/remove it from you :c`);
         }
         await member.removeRole(guildRole.id);
-        return message.channel.createMessage(":white_check_mark: Alright, i removed from you the role `" + guildRole.name + "`");
+        return message.channel.createMessage(":white_check_mark: Alright, I removed from you the role `" + guildRole.name + "`");
     }
 }
 

@@ -2,6 +2,8 @@
 
 const Command = require('../../util/helpers/modules/Command');
 
+//Written by ParadoxOrigins#5451 and Niputi#2490
+
 class Announce extends Command {
     constructor() {
         super();
@@ -29,7 +31,7 @@ class Announce extends Command {
                     description: "What's the content of this announcement? You can use the usual markdown, and even masked links using `[masked link](https://google.com)`"
                 },
                 {
-                    description: "Finally, in which channel should i send the announcement?"
+                    description: "Finally, in which channel should I send the announcement?"
                 }
             ]
         };

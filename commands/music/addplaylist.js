@@ -37,7 +37,7 @@ class AddPlaylist extends Command {
         }
         if (!clientMember.voiceState.channelID) {
             if (Array.isArray(this.clientHasPermissions(message, client, ['voiceConnect', 'voiceSpeak'], message.channel.guild.channels.get(member.voiceState.channelID)))) {
-                return message.channel.createMessage(':x: It seems like i lack the permission to connect or to speak in the voice channel you are in :c');
+                return message.channel.createMessage(':x: It seems like I lack the permission to connect or to speak in the voice channel you are in :c');
             }
         }
         const connection = await client.musicManager.getPlayer(message.channel.guild.channels.get(member.voiceState.channelID));

@@ -33,7 +33,7 @@ class Skip extends Command {
         }
         let position = args[0];
         if (!position || !client.isWholeNumber(position) || connection.queue[parseInt(position) - 1] > connection.queue.length || connection.queue[parseInt(position) - 1] < 0) {
-            return message.channel.createMessage(':x: You did not specified a valid number ! You must specify a number corresponding to the position in the queue of the song you want to skip to');
+            return message.channel.createMessage(':x: You did not specify a valid number ! You must specify a number corresponding to the position in the queue of the song you want to skip to');
         }
         position = parseInt(position) - 1;
         if (!connection.skipVote.count) {

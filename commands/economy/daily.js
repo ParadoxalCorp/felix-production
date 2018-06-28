@@ -24,7 +24,7 @@ class Daily extends Command {
 
     async run(client, message, args, guildEntry, userEntry) {
         if (userEntry.isInCooldown('dailyCooldown')) {
-            return message.channel.createMessage(`Ahhh, i am very sorry but you still have to wait \`${client.timeConverter.toElapsedTime(userEntry.cooldowns.dailyCooldown - Date.now(), true)}\` before using daily again`);
+            return message.channel.createMessage(`Ahhh, I am very sorry but you still have to wait \`${client.timeConverter.toElapsedTime(userEntry.cooldowns.dailyCooldown - Date.now(), true)}\` before using daily again`);
         }
         let randomEvent = client.config.options.economyEvents.dailyEvents ? client.getRandomNumber(1, 100) <= client.config.options.economyEvents.dailyEventsRate : false;
         if (randomEvent) {

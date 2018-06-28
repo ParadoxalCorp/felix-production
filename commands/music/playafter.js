@@ -32,13 +32,13 @@ class PlayAfter extends Command {
             return message.channel.createMessage(':x: I am not playing anything');
         }
         if (!args[0]) {
-            return message.channel.createMessage(':x: You didn\'t specified any song to play after this one');
+            return message.channel.createMessage(':x: You didn\'t specify any song to play after this one');
         }
         let tracks = await client.musicManager.resolveTracks(connection.player.node, args.join(' '));
         let queued;
         let track = tracks[0];
         if (!track) {
-            return message.channel.createMessage(`:x: I could not find any song :c, please make sure to:\n- Follow the syntax (check \`${client.commands.get('help').getPrefix(client, guildEntry)}help ${this.help.name}\`)\n- Use HTTPS links, unsecured HTTP links aren't supported\n- If a YouTube video, i can't play it if it is age-restricted\n - If a YouTube video, it might be blocked in the country my servers are`);
+            return message.channel.createMessage(`:x: I could not find any song :c, please make sure to:\n- Follow the syntax (check \`${client.commands.get('help').getPrefix(client, guildEntry)}help ${this.help.name}\`)\n- Use HTTPS links, unsecured HTTP links aren't supported\n- If a YouTube video, I can't play it if it is age-restricted\n - If a YouTube video, it might be blocked in the country my servers are`);
         }
         if (tracks.length > 1) {
             track = await client.commands.get('play').selectTrack(client, message, tracks);

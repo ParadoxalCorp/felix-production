@@ -24,7 +24,7 @@ class Transactions extends Command {
 
     async run(client, message, args, guildEntry, userEntry) {
         if (!userEntry.economy.transactions[0]) {
-            return message.channel.createMessage(':x: It seems you did not transferred nor received coins yet, so there\'s no transactions to display :v');
+            return message.channel.createMessage(':x: It seems you did not transfer or receive holy coins yet, so there\'s no transactions to display :v');
         }
         const splicedTransactions = this.mapSplicedTransactions(client, client.paginate(userEntry.economy.transactions, 4));
         if (splicedTransactions.length < 2) {

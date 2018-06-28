@@ -34,7 +34,7 @@ class Play extends Command {
         }
         if (!clientMember.voiceState.channelID) {
             if (Array.isArray(this.clientHasPermissions(message, client, ['voiceConnect', 'voiceSpeak'], message.channel.guild.channels.get(member.voiceState.channelID)))) {
-                return message.channel.createMessage(':x: It seems like i lack the permission to connect or to speak in the voice channel you are in :c');
+                return message.channel.createMessage(':x: It seems like I lack the permission to connect or to speak in the voice channel you are in :c');
             }
         }
         const connection = await client.musicManager.getPlayer(message.channel.guild.channels.get(member.voiceState.channelID));
@@ -55,7 +55,7 @@ class Play extends Command {
         let tracks = track ? [] : await client.musicManager.resolveTracks(connection.player.node, args.join(' '));
         track = track ? track : tracks[0];
         if (!track) {
-            return message.channel.createMessage(`:x: I could not find any song :c, please make sure to:\n- Follow the syntax (check \`${client.commands.get('help').getPrefix(client, guildEntry)}help ${this.help.name}\`)\n- Use HTTPS links, unsecured HTTP links aren't supported\n- If a YouTube video, i can't play it if it is age-restricted\n - If a YouTube video, it might be blocked in the country my servers are`);
+            return message.channel.createMessage(`:x: I could not find any song :c, please make sure to:\n- Follow the syntax (check \`${client.commands.get('help').getPrefix(client, guildEntry)}help ${this.help.name}\`)\n- Use HTTPS links, unsecured HTTP links aren't supported\n- If a YouTube video, I can't play it if it is age-restricted\n - If a YouTube video, it might be blocked in the country my servers are`);
         }
         if (tracks.length > 1) {
             track = await this.selectTrack(client, message, tracks);

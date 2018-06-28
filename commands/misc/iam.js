@@ -8,7 +8,7 @@ class Iam extends Command {
         this.help = {
             name: 'iam',
             category: 'misc',
-            description: 'Assign to yourself a self-assignable role, you can see the list of self-assignable roles set on this server with `{prefix}iam`',
+            description: 'Assign a self-assignable role to yourself, you can see the list of self-assignable roles set on this server with `{prefix}iam`',
             usage: '{prefix}iam <role_name>'
         };
         this.conf = {
@@ -46,7 +46,7 @@ class Iam extends Command {
                     messages.push({
                         embed: {
                             title: "Self-assignable roles list",
-                            description: "Here's the list of the self-assignable role, you can assign one to yourself with `" + guildEntry.getPrefix + " iam <role_name>`\n",
+                            description: "Here's the list of the self-assignable roles, you can assign one to yourself with `" + guildEntry.getPrefix + " iam <role_name>`\n",
                             footer: {
                                 text: `Showing page {index}/${guildEntry.selfAssignableRoles.length} | Time limit: 60 seconds`
                             },

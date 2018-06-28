@@ -25,11 +25,11 @@ class Connect extends Command {
     //eslint-disable-next-line no-unused-vars
     async run(client, message, args, guildEntry, userEntry) {
         if (client.database) {
-            return message.channel.createMessage('Hoi, am already connected to the database, scrub');
+            return message.channel.createMessage('Hoi, I am already connected to the database, scrub');
         }
         client.database = new(require('../../util/helpers/modules/databaseWrapper'))(client);
         client.database.init();
-        return message.channel.createMessage('Welp i launched the connection process, can\'t do much more tho so check the console to see if it worked lul');
+        return message.channel.createMessage('Welp I launched the connection process, can\'t do much more tho so check the console to see if it worked lul');
     }
 }
 
