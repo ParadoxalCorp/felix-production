@@ -37,19 +37,13 @@ class Eval extends Command {
             let evaluated = parsedArgs['await'] ? await eval(toEval) : eval(toEval);
             throw evaluated;
         } catch (err) {
-            //+!(inspect(err, { depth: parsedArgs['depth'] ? parseInt(parsedArgs['depth']) : 1 }).length > 1990)
             if (typeof err !== 'string') {
                 err = inspect(err, {
                     depth: parsedArgs['depth'] ? parseInt(parsedArgs['depth']) : this.getMaxDepth(err, toEval),
                     showHidden: true
                 });
             }
-            return message.channel.createMessage({
-                embed: {
-                    title: ":gear: Eval results",
-                    description: "**Input:**\n```js\n" + toEval + "```\n**Output:**\n```js\n" + client.redact(err) + "```"
-                }
-            });
+            return message.channel.createMessage("**Input:**\n```js\n" + toEval + "```\n**Output:**\n```js\n" + client.redact(err) + "```");
         }
     }
 

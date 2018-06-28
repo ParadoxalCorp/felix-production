@@ -3,6 +3,7 @@
 const Command = require('../../util/helpers/modules/Command');
 const TimeConverter = require(`../../util/modules/timeConverter.js`);
 const moment = require("moment");
+const os = require('os');
 
 class Bot extends Command {
     constructor() {
@@ -57,13 +58,18 @@ class Bot extends Command {
             inline: true
         });
         embedFields.push({
-            name: "RAM usage",
-            value: `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB`,
+            name: "OS",
+            value: `${process.platform}-${process.arch}`,
             inline: true
         });
         embedFields.push({
-            name: "OS",
-            value: `${process.platform}-${process.arch}`,
+            name: "RAM usage",
+            value: client.stats ? `${client.stats.totalRam.toFixed(2)}MB` : `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB`,
+            inline: true
+        });
+        embedFields.push({
+            name: 'Average CPU load',
+            value: `${Math.round(os.loadavg()[0])}%`,
             inline: true
         });
         embedFields.push({

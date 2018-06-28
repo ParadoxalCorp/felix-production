@@ -55,7 +55,8 @@ class PlayAfter extends Command {
             connection.addTrack(track, message.author.id, true);
             queued = true;
         }
-        return message.channel.createMessage({embed: client.musicManager.genericEmbed(track, connection, queued ? 'Successfully enqueued to first position' : 'Now playing')});
+        const output = await client.musicManager.genericEmbed(track, connection, queued ? 'Successfully enqueued to first position' : 'Now playing');
+        return message.channel.createMessage({embed: output});
     }
 }
 

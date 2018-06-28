@@ -158,7 +158,7 @@ class MusicManager {
             inline: true
         }, {
             name: 'Duration',
-            value: `${this.parseDuration(connection.player.state.position)}/${this.parseDuration(track)}`,
+            value: (connection.nowPlaying.track === track.track ? `${this.parseDuration(connection.player.state.position || 0)}/` : '') + this.parseDuration(track),
             inline: true
         }];
         if (track.info.requestedBy) {

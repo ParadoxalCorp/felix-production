@@ -26,7 +26,7 @@ class ClientStats extends Command {
         if (client.bot.uptime < 60000) {
             return message.channel.createMessage(`:x: Please wait another ${60000 - client.bot.uptime}ms`);
         }
-        return message.channel.createMessage({
+        await message.channel.createMessage({
             embed: {
                 title: ':gear: Client stats',
                 fields: [{
@@ -47,10 +47,18 @@ class ClientStats extends Command {
                         name: 'Clusters stats',
                         value: '```' + client.stats.clusters.map(c => `Cluster ${c.cluster}: ${c.shards} shard(s) | ${c.guilds} guild(s) | ${c.ram.toFixed(2)}MB RAM used | Up for ${client.timeConverter.toElapsedTime(c.uptime, true)}`).join('\n--\n') + '```'
                     }
-                ]
-            },
-            color: client.config.options.embedColor
+                ],
+                color: client.config.options.embedColor
+            }
         });
+        const clustersShardsStats = await client.IPCHandler.fetchShardsStats();
+        return message.channel.createMessage('```ini\n' + client.stats.clusters.map(c => {
+            let clusterStats = `Cluster [${c.cluster}]: [${c.shards}] shard(s) | [${c.guilds}] guild(s) | [${c.ram.toFixed(2)}]MB RAM used | Up for [${client.timeConverter.toElapsedTime(c.uptime, true)}]\n`;
+            for (const shard of clustersShardsStats.find(cluster => cluster.clusterID === c.cluster).data) {
+                clusterStats += `=> Shard [${shard.id}]: [${shard.guilds}] guild(s) | [${shard.status}] | ~[${shard.latency}]ms\n`;
+            }
+            return clusterStats;
+        }).join('\n--\n') + '```');
     }
 }
 

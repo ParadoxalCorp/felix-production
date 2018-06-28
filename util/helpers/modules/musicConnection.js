@@ -23,11 +23,11 @@ class MusicConnection extends EventEmitter {
         super();
         this.client = client;
         this.player = player;
-        this.voteID = null;
         this.repeat = "off";
-        this.nowPlaying = null;
+        this.nowPlaying;
         this.queue = [];
-        this.inactivityTimeout = null;
+        this.inactivityTimeout;
+        this.inactiveSince;
         this.skipVote = this.resetVote();
         this.defer = new Promise(resolve => this._init(resolve));
         player.on('disconnect', this._handleDisconnection.bind(this));
@@ -167,8 +167,8 @@ class MusicConnection extends EventEmitter {
      * @returns {object} The given song
      */
     play(song, requestedBy) {
-        if (this.inactivityTimeout && (this.client.bot.guilds.get(this.player.guildId).channels.get(this.player.channelId).voiceMembers.size > 1)) {
-            clearTimeout(this.inactivityTimeout);
+        if (this.inactiveSince) {
+            this.inactiveSince = null;
         }
         this.player.play(song.track);
         this.nowPlaying = {
@@ -195,7 +195,9 @@ class MusicConnection extends EventEmitter {
      */
     startInactivityTimeout() {
         this.inactivityTimeout = setTimeout(() => {
-            this.leave();
+            if ((this.inactiveSince && Date.now() - this.inactiveSince > this.client.config.options.music.inactivityTimeout) || this.client.bot.guilds.get(this.player.guildId).channels.get(this.player.channelId).voiceMembers.size <= 1) {
+                this.leave();
+            }
         }, this.client.config.options.music.inactivityTimeout);
     }
 
@@ -283,6 +285,7 @@ class MusicConnection extends EventEmitter {
     }
 
     async _handleEnd(data) {
+        this.player.state.position = 0;
         if (data.reason && data.reason === 'REPLACED') {
             return;
         }
