@@ -2,8 +2,6 @@
 
 const Command = require('../../util/helpers/modules/Command');
 
-//Wrote by Niputi#2490 
-
 class Announce extends Command {
     constructor() {
         super();
@@ -51,7 +49,7 @@ class Announce extends Command {
             
             embedObject.title = args[0].substr(0, 256);
             if (!args[1]) {
-                return message.channel.createMessage(':x: You did not specified the color this announcement should take');
+                return message.channel.createMessage(':x: You did not specify the color this announcement should take');
             }
             if (args[1].trim() === "red") {
                 embedObject.color = 0xff0000;
@@ -71,10 +69,10 @@ class Announce extends Command {
             }
             embedObject.description = args[2];
             if (!embedObject.description) {
-                return message.channel.createMessage(':x: You did not specified the description this announcement should have');
+                return message.channel.createMessage(':x: You did not specify the description this announcement should have');
             }
             if (!args[3]) {
-                return message.channel.createMessage(':x: You did not specified where should i send this announcement');
+                return message.channel.createMessage(':x: You did not specify where I should send this announcement');
             }
             const channel = await this.getChannelFromText({client: client, message: message, text: args[3]});
             if (!channel) {
