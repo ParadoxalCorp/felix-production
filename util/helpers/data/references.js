@@ -2,7 +2,7 @@
 
 //Not sure why i would make that a class but ok
 
-/** 
+/**
  * This class provides all the default data model the process may use, for example, the default data models for guild and user entries in the database
  * @prop {object} defaultPermissions The default permissions object
  * @prop {object} globalPermissionsSet The default permissions object, but with empty arrays
@@ -22,7 +22,7 @@ class References {
     /**
      * Returns the default guild entry structure used in the database
      * @param {string} id The ID of the guild
-     * @returns {object} A guild entry 
+     * @returns {object} A guild entry
      */
     guildEntry(id) {
         return {
@@ -62,6 +62,18 @@ class References {
     }
 
     /**
+     * Returns the configuration of an auto assignable role
+     * @param {string} id - The ID of the role
+     * @param {array} incompatibleRoles - An array of roles ID with which this role is incompatible
+     */
+     selfAssignableRole(id, incompatibleRoles) {
+       return {
+         id,
+         incompatibleRoles
+       };
+     }
+
+    /**
      * Entry for guildEntry.experience.members
      * Store experience-system related data
      * @param {string} id - The ID of the member
@@ -88,7 +100,7 @@ class References {
     }
 
     /**
-     * 
+     *
      * @param {string} id - The ID of the role
      * @param {number} at - The level at which this role should be given
      * @param {boolean} isStatic - Whether this role should be removed when a higher one is won, if false, the role will be removed
@@ -105,7 +117,7 @@ class References {
     /**
      * Returns the default user entry structure used in the database
      * @param {string} id The ID of the user
-     * @returns {object} A user entry 
+     * @returns {object} A user entry
      */
     userEntry(id) {
         return {
@@ -133,7 +145,7 @@ class References {
     }
 
     /**
-     * 
+     *
      * @param {object} data An object of data
      * @param {number} data.amount The amount of coins that has been debited/credited(negative if debited, positive if credited)
      * @param {string} data.from  Username#Discriminator of the user from who the coins once belonged
@@ -152,7 +164,7 @@ class References {
     }
 
     /**
-     * 
+     *
      * @param {object} item - The item
      * @returns {{id: number, count: number}} The item database entry
      */
