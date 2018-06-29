@@ -67,9 +67,10 @@ class Bot extends Command {
             value: client.stats ? `${client.stats.totalRam.toFixed(2)}MB` : `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB`,
             inline: true
         });
+        let averageCpuLoad = `${require('os').loadavg()[0].toFixed(2).split('.')[1]}%`;
         embedFields.push({
             name: 'Average CPU load',
-            value: `${Math.round(os.loadavg()[0])}%`,
+            value: averageCpuLoad.charAt(0) === "0" ? averageCpuLoad.substr(1) : averageCpuLoad,
             inline: true
         });
         embedFields.push({
