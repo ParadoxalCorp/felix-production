@@ -4,7 +4,7 @@
  * Wraps the most important methods of RethinkDB and does smart things in the background
  * @prop {*} rethink The object returned by the rethinkdbdash module after requiring it
  * @prop {function} updateFunc The update function given in the constructor, if any
- * @prop {*} guildData The rethinkDB table of guilds
+ * @prop {*} guildData The rethinkDB  table of guilds
  * @prop {*} userData The rethinkDB table of users
  * @prop {*} client The client instance given in the constructor
  * @prop {Collection} users A collection of cached user entries
@@ -15,14 +15,14 @@ class DatabaseWrapper {
     /**
      * @param {object} client - The client (or bot) instance
      * @param {function} updateFunc - Optional, the function that should be called to update the retrieved entries from the database before returning them. This update function will be called instead of the default update strategy, with the "data" and "type" arguments, which are respectively the database entry and the type of the database entry (either "guild" or "user"). The update function must return an object, this is the object that the DatabaseWrapper.getGuild() and DatabaseWrapper.getUser() methods will return.
-     * @example 
+     * @example
      * //Context: In this example, the old user data model used to have its "boolean" property containing either 1 or 0, and we want to update it to either true or false
      * new DatabaseWrapper(client, (data, type) => {
      *   if (type === "guild") {
-     *     return data; 
+     *     return data;
      *   } else {
      *     data.boolean = data.boolean === 1 ? true : false;
-     *     return data;   
+     *     return data;
      *   }
      * });
      */
@@ -32,6 +32,9 @@ class DatabaseWrapper {
                 { host: client.config.database.host, port: client.config.database.port }
             ],
             silent: true,
+            log: (message) => {
+                process.send({ name: "info", msg: message });
+            },
             user: client.config.database.user,
             password: client.config.database.password
         });
@@ -44,7 +47,7 @@ class DatabaseWrapper {
         this.healthy = true;
     }
 
-    /** 
+    /**
      * Initialize the database wrapper, this will start the automatic progressive caching of the database and dynamically handle disconnections
      * @returns {Promise<void>} - An error will be rejected if something fail when establishing the changes stream
      */
@@ -159,7 +162,14 @@ class DatabaseWrapper {
             return this.updateFunc(data, type);
         }
         const defaultDataModel = type === "guild" ? this.client.refs.guildEntry(data.id) : this.client.refs.userEntry(data.id);
-
+        if (type === "guild") {
+          data.selfAssignableRoles = data.selfAssignableRoles.map(id => {
+            return {
+              id,
+              incompatibleRoles: []
+            }
+          }
+        }
         return this._traverseAndUpdate(defaultDataModel, data);
     }
 
@@ -184,7 +194,7 @@ class DatabaseWrapper {
 
     /**
      * Insert or update a user/guild in the database
-     * @param {object} data - The data object to update/insert in the database 
+     * @param {object} data - The data object to update/insert in the database
      * @param {string} type - Can be "guild" or "user", whether the data object to be set is a guild or a user
      * @returns {Promise<object>} - The inserted/updated object, or reject the error if any
      */
