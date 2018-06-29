@@ -62,6 +62,7 @@ class Skip extends Command {
     async handleVoteEnd(client, message, connection, reason) {
         switch (reason) {
             case 'timeout': 
+                connection.resetVote();
                 return message.channel.createMessage(':x: The vote to skip the current song ended, not enough users voted');
                 break;
             case 'ended':

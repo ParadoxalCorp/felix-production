@@ -71,6 +71,7 @@ class Skip extends Command {
     async handleVoteEnd(client, message, connection, song, reason) {
         switch (reason) {
             case 'timeout': 
+                connection.resetVote();
                 return message.channel.createMessage(`:x: The vote to the song **${song.info.title}** ended because not enough users voted`);
                 break;
             case 'deleted':
