@@ -13,7 +13,7 @@ const extendUser = (user) => {
         },
         createMessage: {
             value: async(message) => {
-                user.getDMChannel().then(c => {
+                return user.getDMChannel().then(c => {
                     return c.createMessage(message);
                 });
             },

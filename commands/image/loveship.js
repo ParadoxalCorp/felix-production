@@ -32,7 +32,7 @@ class LoveShip extends Command {
         const firstUser = await this.getUserFromText({client: client, message: message, text: args[0]});
         const secondUser = args[1] ? await this.getUserFromText({client: client, message: message, text: args.splice(1).join(' ')}).then(u => u ? u : client.extendedUser(message.author)) : client.extendedUser(message.author);
         if (!firstUser && secondUser.id === message.author.id) {
-            return message.channel.createMessage(':x: I\'m sorry but i couldn\'t find the users you specified :c');
+            return message.channel.createMessage(':x: I\'m sorry but I couldn\'t find the users you specified :c');
         } else if (firstUser.id === secondUser.id) {
             return message.channel.createMessage(`:x: You can't match a user with themselves, like, why?`);
         }

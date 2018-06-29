@@ -29,9 +29,14 @@ class ForceSkip extends Command {
         }
         const connection = client.musicManager.connections.get(message.channel.guild.id);
         if (!connection || !connection.queue[0]) {
+            const queue = await client.musicManager.getQueueOf(message.channel.guild.id);
+            if (queue[0]) {
+                await client.redis.del(`${message.channel.guild.id}-queue`);
+                return message.channel.createMessage(':white_check_mark: Successfully cleared the queue');
+            }
             return message.channel.createMessage(':x: There is nothing in the queue');
         }
-        connection.queue = [];
+        await connection.clearQueue();
         return message.channel.createMessage(`:white_check_mark: Successfully cleared the queue `);       
     }
 }

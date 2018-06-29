@@ -12,7 +12,7 @@ const User = require('../../../node_modules/eris/lib/structures/User');
  */
 const fetchUser = async(client, id) => {
     if (client.bot.users.has(id)) {
-      return client.bot.users.get(id);
+      return client.extendedUser(client.bot.users.get(id));
     } else {
       return client.bot.requestHandler.request('GET', Endpoints.USER(id), true)
         .catch(e => {
@@ -25,7 +25,7 @@ const fetchUser = async(client, id) => {
             }
             const newUser = new User(u);
             client.bot.users.set(id, new User(u));
-            return newUser;
+            return client.extendedUser(newUser);
         });
     }
 };

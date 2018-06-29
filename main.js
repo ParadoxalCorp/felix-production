@@ -26,6 +26,8 @@ class Felix extends Base {
         this.commands = new this.collection();
         this.aliases = new this.collection();
         this.bot.on('ready', this.ready.bind(this));
+        process.on('beforeExit', this.beforeExit.bind(this));
+        process.on('SIGINT', this.beforeExit.bind(this));
         this.loadCommands();
         this.loadEventsListeners();
         this.verifyPackages();
@@ -172,6 +174,23 @@ class Felix extends Base {
             return process.send({name: 'warn', msg: `${this.config.removeDisabledCommands ? 'Removed' : 'Disabled'} the music commands because the \`eris-lavalink\` package is missing`});
         }
         this.musicManager.init();
+    }
+
+    async beforeExit() {
+        process.send({name: 'warn', msg: `Exit process engaged, finishing the ongoing tasks..`});
+        if (this.redis && this.redis.healthy) {
+            await this.redis.quit();
+            process.send({name: 'info', msg: `Finished the ongoing tasks and closed the Redis connection`});
+        }
+        if (this.musicManager) {
+            this.musicManager.disconnect();
+            process.send({name: 'info', msg: `Sent exit code to the Lavalink server`});
+        }
+        if (this.database && this.database.healthy) {
+            this.database.rethink.getPoolMaster().drain();
+            process.send({name: 'info', msg: `Finished the ongoing tasks and closed the RethinkDB connection`});
+        }
+        process.send({name: 'warn', msg: `All ongoing tasks finished, exiting..`});
     }
 }
 

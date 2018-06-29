@@ -53,40 +53,18 @@ class Repeat extends Command {
         if (!guildEntry.hasPremiumStatus()) {
             return message.channel.createMessage(':x: Sorry but as they are resources-whores, music commands are only available to our patreon donators. Check the `bot` command for more info');
         }
-        const clientMember = message.channel.guild.members.get(client.bot.user.id);
         const connection = client.musicManager.connections.get(message.channel.guild.id);
-        if (!clientMember.voiceState.channelID || !connection) {
+        if (!connection || !connection.nowPlaying) {
             return message.channel.createMessage(':x: I am not playing anything');
         }
         if (!['off', 'queue', 'song'].includes(args[0].toLowerCase())) {
             return message.channel.createMessage(':x: Please specify the repeat mode to toggle, can be either `queue` to repeat the queue, `song` to repeat the current song or `off` to disable the repeat');
         }
         connection.repeat = args[0].toLowerCase();
-        let queue = [...connection.queue];
-        switch(connection.repeat) {
-            case 'queue':
-                if (connection.nowPlaying) {
-                    connection.queue.push(connection.nowPlaying);
-                }
-                break;
-            case 'off':
-                if (connection.queuePosition) {
-                    if (queue.length > 1) {
-                        const toPlay = queue.splice(connection.queuePosition);
-                        connection.queue = toPlay.concat(queue);
-                    }
-                    connection.queuePosition = 0;
-                }
-                break;
-            case 'song':
-                if (connection.queuePosition) {
-                    if (queue.length > 1) {
-                        const toPlay = queue.splice(connection.queuePosition);
-                        connection.queue = toPlay.concat(queue);
-                    }
-                    connection.queuePosition = 0;
-                }
-                break;
+        if (connection.repeat === "queue") {
+            if (connection.nowPlaying) {
+                connection.addTrack(connection.nowPlaying);
+            }
         }
         return message.channel.createMessage(`${this.extra[connection.repeat].emote} Successfully ${this.extra[connection.repeat].sentence}`);       
     }

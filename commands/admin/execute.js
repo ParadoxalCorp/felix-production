@@ -38,12 +38,7 @@ class Execute extends Command {
                 });
             }
             output = client.redact(output.length > 1980 ? output.substr(0, 1977) + '...' : output);
-            return message.channel.createMessage({
-                embed: {
-                    title: 'Shell output',
-                    description: '**Input**:' + '```js\n' + args.join(' ') + '```\n**Output:**```js\n' + output + '```'
-                }
-            });
+            return message.channel.createMessage('```js\n' + output + '```');
             exec.kill();
         });
     }

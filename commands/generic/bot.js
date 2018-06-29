@@ -3,6 +3,7 @@
 const Command = require('../../util/helpers/modules/Command');
 const TimeConverter = require(`../../util/modules/timeConverter.js`);
 const moment = require("moment");
+const os = require('os');
 
 class Bot extends Command {
     constructor() {
@@ -25,9 +26,6 @@ class Bot extends Command {
     }
 
     async run(client, message) {
-        if (client.bot.uptime < 60000) {
-            return message.channel.createMessage(':x: I am still booting up ! Please try again in a minute');
-        }
         return this.sendStats(client, message);
     }
 
@@ -60,13 +58,19 @@ class Bot extends Command {
             inline: true
         });
         embedFields.push({
-            name: "RAM usage",
-            value: `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB`,
+            name: "OS",
+            value: `${process.platform}-${process.arch}`,
             inline: true
         });
         embedFields.push({
-            name: "OS",
-            value: `${process.platform}-${process.arch}`,
+            name: "RAM usage",
+            value: client.stats ? `${client.stats.totalRam.toFixed(2)}MB` : `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB`,
+            inline: true
+        });
+        let averageCpuLoad = `${os.loadavg()[0].toFixed(2).split('.')[1]}%`;
+        embedFields.push({
+            name: 'Average CPU load',
+            value: averageCpuLoad.charAt(0) === "0" ? averageCpuLoad.substr(1) : averageCpuLoad,
             inline: true
         });
         embedFields.push({
@@ -91,9 +95,9 @@ class Bot extends Command {
             inline: true
         });
         embedFields.push({
-            name: "Developer",
-            value: "ParadoxOrigins#5451",
-            inline: true
+            name: "Developers",
+            value: "**Lead Developer**: ParadoxOrigins#5451\n**Co-Developers**: Ota#1354, Niputi#2490\n**Contributors**: InternalCosmos#2000, LevitatingBusinessMan#0504",
+            inline: false
         });
         embedFields.push({
             name: "Created the",
@@ -117,7 +121,7 @@ class Bot extends Command {
         });
         embedFields.push({
             name: 'Source',
-            value: `[GitHub repository](https://github.com/ParadoxalCorp/FelixBot)`,
+            value: `[GitHub repository](https://github.com/ParadoxalCorp/felix-production)`,
             inline: false
         });
         embedFields.push({
@@ -125,22 +129,31 @@ class Bot extends Command {
             value: '[Patreon](https://www.patreon.com/paradoxorigins)',
             inline: false
         });
-        embedFields.push({
-            name: `Shard`,
-            value: (() => {
-                let shardCount = 0;
-                for (const cluster of client.stats.clusters) {
-                    shardCount = shardCount + cluster.shards;
-                }
-                return `${message.channel.guild.shard.id}/${shardCount}`;
-            })(),
-            inline: true
-        });
+        if (client.stats) {
+            embedFields.push({
+                name: `Shard`,
+                value: (() => {
+                    let shardCount = 0;
+                    for (const cluster of client.stats.clusters) {
+                        shardCount = shardCount + cluster.shards;
+                    }
+                    return `${message.channel.guild.shard.id}/${shardCount}`;
+                })(),
+                inline: client.redis ? false : true
+            });
+        }
         embedFields.push({
             name: 'Database status',
-            value: client.database && client.database.healthy ? ':white_check_mark: Online' : ':x: Offline',
+            value: `${client.database && client.database.healthy ? ':white_check_mark: Online' : ':x: Offline'}\n[More info](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#rethinkdb)`,
             inline: true
         });
+        if (client.redis) {
+            embedFields.push({
+                name: 'Redis status',
+                value: `${client.redis.healthy ? ':white_check_mark: Online' : ':x: Offline'}\n[More info](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#redis)`,
+                inline: true
+            });
+        }
         return embedFields;
     }
 }

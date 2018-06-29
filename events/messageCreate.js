@@ -6,7 +6,7 @@ class MessageHandler {
     constructor() {}
 
     async handle(client, message) {
-        if (message.author.bot) {
+        if (!message.author || message.author.bot) {
             return;
         }
         const databaseEntries = await this.getDatabaseEntries(client, message);
@@ -29,7 +29,7 @@ class MessageHandler {
         if ((!databaseEntries.user || (!databaseEntries.guild && command.conf.guildOnly)) && command.conf.requireDB) {
             return message.channel.createMessage(`:x: Sorry but this command require the database and the database seems unavailable at the moment`);
         }
-        const clientHasPermissions = message.channel.guild ? Command.clientHasPermissions(message, client, command.conf.requirePerms) : true;
+        const clientHasPermissions = message.channel.guild ? Command.clientHasPermissions(message, client, ['embedLinks', ...command.conf.requirePerms]) : true;
         if (Array.isArray(clientHasPermissions)) {
             if (clientHasPermissions.includes("sendMessages")) {
                 return;

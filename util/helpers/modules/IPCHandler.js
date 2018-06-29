@@ -12,19 +12,19 @@ class IPCHandler {
     }
 
     /**
-     * Dummy method to test the concept
-     * @returns {Promise<array>} An array of clusters with their stats
+     * Fetch the stats of the shards of each cluster
+     * @returns {Promise<array>} An array of clusters with their shards stats
      */
-    getSomeStats() {
+    fetchShardsStats() {
         const ID = Date.now();
         return new Promise((resolve) => {
             this.requests.set(ID, {
                 responses: [],
                 resolve: resolve
             });
-            this.client.ipc.broadcast("gibbeSomeStats", {
+            this.client.ipc.broadcast("fetchShardsStats", {
                 id: ID,
-                type: 'gibbeSomeStats',
+                type: 'fetchShardsStats',
                 clusterID: this.client.clusterID
             });
         });
@@ -88,7 +88,7 @@ class IPCHandler {
      */
     _handleIncomingMessage(message) {
         switch (message.type) {
-            case 'hereAreYourStatsScrub':
+            case 'shardsStats':
                 let request = this.requests.get(message.id);
                 request.responses.push({
                     clusterID: message.clusterID,
@@ -109,14 +109,19 @@ class IPCHandler {
                 }
                 break;
 
-            case 'gibbeSomeStats':
-                this.client.ipc.sendTo(message.clusterID, 'hereAreYourStatsScrub', {
-                    type: 'hereAreYourStatsScrub',
+            case 'fetchShardsStats':
+                this.client.ipc.sendTo(message.clusterID, 'shardsStats', {
+                    type: 'shardsStats',
                     id: message.id,
                     clusterID: this.client.clusterID,
-                    data: {
-                        baguette: "baguette"
-                    }
+                    data: this.client.bot.shards.map(shard => {
+                        return {
+                            id: shard.id,
+                            status: shard.status,
+                            latency: shard.latency,
+                            guilds: this.client.bot.guilds.filter(g => g.shard.id === shard.id).length
+                        };
+                    })
                 });
                 break;
 

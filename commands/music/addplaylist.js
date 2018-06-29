@@ -37,32 +37,19 @@ class AddPlaylist extends Command {
         }
         if (!clientMember.voiceState.channelID) {
             if (Array.isArray(this.clientHasPermissions(message, client, ['voiceConnect', 'voiceSpeak'], message.channel.guild.channels.get(member.voiceState.channelID)))) {
-                return message.channel.createMessage(':x: It seems like i lack the permission to connect or to speak in the voice channel you are in :c');
+                return message.channel.createMessage(':x: It seems like I lack the permission to connect or to speak in the voice channel you are in :c');
             }
         }
-        const player = await client.musicManager.getPlayer(message.channel.guild.channels.get(member.voiceState.channelID));
-        let connection = client.musicManager.connections.get(message.channel.guild.id);
-        let tracks = await client.musicManager.resolveTracks(player.node, args.join(' '));
+        const connection = await client.musicManager.getPlayer(message.channel.guild.channels.get(member.voiceState.channelID));
+        let tracks = await client.musicManager.resolveTracks(connection.player.node, args.join(' '));
         if (!tracks[0]) {
             return message.channel.createMessage(`:x: I could not load this playlist :c`);
         }
-        if (!player.playing) {
-            await player.play(tracks[0].track);
-            connection.nowPlaying = {
-                info: { 
-                    ...tracks[0].info,
-                    startedAt: Date.now(),
-                    requestedBy: message.author.id
-                },
-                track: tracks[0].track
-            };
+        if (!connection.player.playing) {
+            connection.play(tracks[0], message.author.id);
             tracks.shift();
         } 
-        tracks = tracks.map(track => {
-            track.info.requestedBy = message.author.id;
-            return track;
-        });
-        connection.queue = connection.queue.concat(tracks);
+        connection.addTracks(tracks, message.author.id);
         return message.channel.createMessage(`:musical_note: Successfully enqueued the playlist`);
     }
 }

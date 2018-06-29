@@ -8,7 +8,7 @@ class Iam extends Command {
         this.help = {
             name: 'iam',
             category: 'misc',
-            description: 'Assign to yourself a self-assignable role, you can see the list of self-assignable roles set on this server with `{prefix}iam`',
+            description: 'Assign a self-assignable role to yourself, you can see the list of self-assignable roles set on this server with `{prefix}iam`',
             usage: '{prefix}iam <role_name>'
         };
         this.conf = {
@@ -46,7 +46,7 @@ class Iam extends Command {
                     messages.push({
                         embed: {
                             title: "Self-assignable roles list",
-                            description: "Here's the list of the self-assignable role, you can assign one to yourself with `" + guildEntry.getPrefix + " iam <role_name>`\n",
+                            description: "Here's the list of the self-assignable roles, you can assign one to yourself with `" + guildEntry.getPrefix + " iam <role_name>`\n",
                             footer: {
                                 text: `Showing page {index}/${guildEntry.selfAssignableRoles.length} | Time limit: 60 seconds`
                             },
@@ -87,6 +87,9 @@ class Iam extends Command {
         }
         if (member.roles.find(r => r === guildRole.id)) {
             return message.channel.createMessage(':x: You already have this role');
+        }
+        if (this.getHighestRole(client.bot.user.id, message.channel.guild) && (guildRole.position > this.getHighestRole(client.bot.user.id, message.channel.guild).position)) {
+            return message.channel.createMessage(`:x: The role \`${guildRole.name}\` is higher than my highest role, therefore, i can't give it to you :c`);
         }
         await member.addRole(guildRole.id);
         return message.channel.createMessage(":white_check_mark: Alright, i gave you the role `" + guildRole.name + "`");

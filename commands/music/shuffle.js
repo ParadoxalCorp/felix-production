@@ -31,7 +31,7 @@ class Shuffle extends Command {
         if (!connection || !connection.queue[0]) {
             return message.channel.createMessage(`:x: There is nothing in the queue to shuffle`);
         }
-        connection.queue = connection.queue.sort(() => Math.random() - Math.random());
+        connection.editQueue([...connection.queue].sort(() => Math.random() - Math.random()));
         return message.channel.createMessage(`:musical_note: Successfully shuffled the queue`);
     }
 }
