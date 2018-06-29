@@ -55,7 +55,8 @@ class Anime extends Command {
             reply.delete().catch(() => {});
             query.delete().catch(() => {});
         }
-        let anime = await malScraper.getInfoFromURL(selectedAnime.url);
+        //Build the URL with the ID to prevent unescaped characters errors with the path as some animes have weird names
+        let anime = await malScraper.getInfoFromURL(`https://myanimelist.net/anime/${selectedAnime.id}`);
         return this.buildEmbed(client, message, args, anime, selectedAnime);
     }
 
