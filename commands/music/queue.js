@@ -98,7 +98,7 @@ class Queue extends Command {
         let queue = [...connectionQueue];
         for (const track of queue) {
             if (formattedQueue.length >= 1870) {
-                return formattedQueue += `\n\nAnd **${queue.length - i}** more... ${connection ? ("**Total queue estimated duration**: `" + client.musicManager.parseDuration(connection.queueDuration) + "`") : ''`;
+                return formattedQueue += `\n\nAnd **${queue.length - i}** more... ${connection ? ("**Total queue estimated duration**: `" + client.musicManager.parseDuration(connection.queueDuration) + "`") : ''}`;
             }
             formattedQueue += `\`${i++}\` - **${track.info.title}** (\`${client.musicManager.parseDuration(track)}\`)\n`;
         }
