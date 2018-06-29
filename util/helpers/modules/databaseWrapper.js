@@ -157,21 +157,22 @@ class DatabaseWrapper {
      * @returns {object} - The updated data object
      * @private
      */
-    _updateDataModel(data, type) {
-        if (this.updateFunc) {
-            return this.updateFunc(data, type);
-        }
-        const defaultDataModel = type === "guild" ? this.client.refs.guildEntry(data.id) : this.client.refs.userEntry(data.id);
-        if (type === "guild") {
-          data.selfAssignableRoles = data.selfAssignableRoles.map(id => {
-            return {
-              id,
-              incompatibleRoles: []
-            }
-          }
-        }
-        return this._traverseAndUpdate(defaultDataModel, data);
-    }
+     _updateDataModel(data, type) {
+       if (this.updateFunc) {
+         return this.updateFunc(date, type);
+       }
+       const defaultDataModel = type === "guild" ? this.client.refs.guildEntry(data.id) : this.client.refs.userEntry(data.id);
+       let updatedModel = this._traverseAndUpdate(defaultDataModel, data);
+       if (type === "guild") {
+         updatedModel.selfAssignableRoles = updatedModel.selfAssignableRoles.map(id => {
+           if (typeof id === "string") {
+             return this.client.refs.selfAssignableRoles(id);
+           }
+           return id;
+         })
+       }
+       return this._traverseAndUpdate(defaultDataModel, data);
+     }
 
     /**
      * Depth-less update function, the values of the properties that the source object has in common with the target object will be assigned to the target object

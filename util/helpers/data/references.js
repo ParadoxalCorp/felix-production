@@ -69,7 +69,7 @@ class References {
      selfAssignableRole(id, incompatibleRoles) {
        return {
          id,
-         incompatibleRoles
+         incompatibleRoles: []
        };
      }
 
