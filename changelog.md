@@ -1,3 +1,7 @@
+# Update 4.1.4 Changelog
+
+* Fixed a bug where searching animes with the `anime` command that have special characters in their titles would result in an error
+
 # Update 4.1.3 Changelog
 
 ### New commands/features
