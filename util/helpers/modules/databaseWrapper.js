@@ -53,6 +53,9 @@ class DatabaseWrapper {
             let guildCursor = this.guildData.changes({ squash: true, includeInitial: true, includeTypes: true }).run();
             let userCursor = this.userData.changes({ squash: true, includeInitial: true, includeTypes: true }).run();
             const promises = await Promise.all([guildCursor, userCursor]).catch(reject);
+            if (!guildCursor || !userCursor) {
+                return reject('Changes streams couldn\'t be established');
+            }
             guildCursor = promises[0],
                 userCursor = promises[1];
 
@@ -142,7 +145,7 @@ class DatabaseWrapper {
                 })
                 .catch(err => {
                     reject(err);
-                    this.client.emit('error', err);
+                    this.client.bot.emit('error', err);
                 });
         });
     }

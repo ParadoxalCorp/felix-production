@@ -25,7 +25,7 @@ class ErrorHandler {
         this.sentry;
     }
 
-    async handle(client, err, message) {
+    async handle(client, err, message, sendMessage = true) {
         if (typeof this.sentry === 'undefined' && client.config.apiKeys.sentryDSN) {
             this.initSentry(client);
         }
@@ -34,7 +34,7 @@ class ErrorHandler {
             err = inspect(err, {depth: 5});
         }
         process.send({ name: 'error', msg: `Error: ${err}\nStacktrace: ${err.stack}\nMessage: ${message ? message.content : 'None'}` });
-        if (message) {
+        if (message && sendMessage) {
             if (client.config.admins.includes(message.author.id)) {
                 message.channel.createMessage({
                     embed: {
