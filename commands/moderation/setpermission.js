@@ -44,6 +44,9 @@ class SetPermission extends Command {
     // eslint-disable-next-line no-unused-vars 
     async run(client, message, args, guildEntry, userEntry) {
         const getPrefix = client.commands.get('help').getPrefix;
+        if (args.length < 3) {
+            return message.channel.createMessage(`:x: You didn't specified enough arguments, if you are lost, just run \`${getPrefix(client, guildEntry)}${this.help.name}\``);
+        }
         if (!this.validatePermission(client, args[0])) {
             return message.channel.createMessage(':x: The permission must be a command name, like `ping`, or the name of a command category followed by a `*` like `generic*` to target a whole category. If you are lost, simply run this command like `' + getPrefix(client, guildEntry) + this.help.name + '`');
         } else if (!['true', 'false'].includes(args[1].toLowerCase())) {
