@@ -52,7 +52,7 @@ class MessageHandler {
             guild: null
         };
         const handleRejection = (err) => {
-            client.bot.emit('error', err, message);
+            client.bot.emit('error', err, message, false);
         };
         if (!client.database || !client.database.healthy) {
             return databaseEntries;

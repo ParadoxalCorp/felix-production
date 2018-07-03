@@ -248,7 +248,7 @@ class Command {
      * @returns {Promise<object|boolean>} The channel object, or false if none found
      */
     async getChannelFromText(options) {
-        const text = options.text || options.message.content;
+        let text = options.text || options.message.content;
 
         if (typeof options.textual === 'undefined') {
             options.textual = true;
@@ -259,9 +259,9 @@ class Command {
         }
 
         //While it is very unlikely, resolve the role by ID (and mention) if possible
-        options.text = options.text.replace(/<|>|#/g, '');
-        if (options.message.channel.guild.channels.get(options.text)) {
-            return options.message.channel.guild.channels.get(options.text);
+        text = text.replace(/<|>|#/g, '');
+        if (options.message.channel.guild.channels.get(text)) {
+            return options.message.channel.guild.channels.get(text);
         }
 
         return false;
