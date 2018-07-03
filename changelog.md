@@ -1,3 +1,7 @@
+# Update 4.1.6
+
+* Fixed the behavior of multiple commands that were causing errors if a wrong number of arguments was provided
+
 # Update 4.1.5 Changelog
 
 * Changed multiple small things to fix Felix's behavior when the database goes down in direct response to the incidents report below
@@ -5,8 +9,10 @@
 ## 30/06/18 Incidents report 
 
 - The 30/06/18 at 8:42:37 AM (UTC): The database went down
+
 While Felix was supposed to handle it, due to a misconfiguration, an unwanted instance of the database started which confused Felix as it wasn't setup properly. As a result, Felix thought the database was up and still tried to interact with it, causing errors whenever someone posted a message. 
 This continued until 8:51:54 AM (UTC), where Felix ran into a critical error that took it down.
+
 - At 10:23 AM (UTC) the issue was discovered by me, who just woke up
 - At 10:44 AM (UTC) after investigating what happened, Felix was confirmed to be back up as well as the database
 

@@ -58,7 +58,7 @@ class OnJoinRoles extends Command {
             return message.channel.createMessage(`:x: The specified action is invalid, if you are lost, simply run the command like \`${getPrefix(client, guildEntry)}${this.help.name}\``);
         }
         //If the command isn't ran without args and the args aren't what's expected, to not conflict with the skipping in conditions 
-        if (message.content.split(/\s+/g).length !== 2 && (action.expectedArgs > args.length - 1)) {
+        if (action.expectedArgs > args.length - 1) {
             return message.channel.createMessage(`:x: This action expect \`${action.expectedArgs - (args.length - 1)}\` more argument(s), if you are lost, simply run the command like \`${getPrefix(client, guildEntry)}${this.help.name}\``);
         }
         return action.func(client, message, args, guildEntry, userEntry);
