@@ -156,7 +156,7 @@ class DatabaseWrapper {
      */
      _updateDataModel(data, type) {
        if (this.updateFunc) {
-         return this.updateFunc(date, type);
+         return this.updateFunc(data, type);
        }
        const defaultDataModel = type === "guild" ? this.client.refs.guildEntry(data.id) : this.client.refs.userEntry(data.id);
        let updatedModel = this._traverseAndUpdate(defaultDataModel, data);
@@ -166,7 +166,7 @@ class DatabaseWrapper {
              return this.client.refs.selfAssignableRoles(id);
            }
            return id;
-         })
+         });
        }
        return this._traverseAndUpdate(defaultDataModel, data);
      }
