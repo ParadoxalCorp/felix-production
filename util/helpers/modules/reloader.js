@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const { join } = require('path');
+/** @typedef {import("eris").Command} Command */
 
 /**
  * Provides methods to reload events listeners, modules and commands
@@ -34,6 +35,7 @@ class Reloader {
                     command.conf.aliases.forEach(alias => this.client.aliases.set(alias, command.help.name));
                 }
             }
+            // @ts-ignore
             return true;
         }
         delete require.cache[path];
@@ -51,7 +53,7 @@ class Reloader {
     /**
      * Reload the event listener at the given path, or add it if it wasn't already here
      * @param {string} path - The absolute path to the event listener
-     * @returns {string} The name of the event, parsed from the path
+     * @returns {string | Boolean} The name of the event, parsed from the path
      */
     reloadEventListener(path) {
         if (path === 'all') {

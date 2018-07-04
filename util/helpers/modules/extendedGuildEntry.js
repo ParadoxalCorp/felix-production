@@ -1,9 +1,21 @@
 'use strict';
 
+/**
+ * @typedef {import("eris").Guild} guildEntry
+ * 
+ * */
+
+
+
+/**
+ *
+ *
+ * @class ExtendedGuildEntry
+ */
 class ExtendedGuildEntry {
     /**
      * 
-     * @param {*} guildEntry - The guild entry
+     * @param {guildEntry} guildEntry - The guild entry
      * @param {*} client - The client instance
      */
     constructor(guildEntry, client) {

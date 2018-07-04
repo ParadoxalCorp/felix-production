@@ -18,7 +18,7 @@ class reactionCollector {
      * @param {*} msg - The message
      * @param {object} emoji - The emoji
      * @param {string} userID - the ID of the user
-     * @returns {void} 
+     * @returns {Promise<void>} returns object
      * @private
      */
     async verify(msg, emoji, userID) {

@@ -220,7 +220,7 @@ class DatabaseWrapper {
     /**
      * Create a new database
      * @param {string} name - The name of the database to create, if there is already a database with this name, the promise will be resolved and nothing will change
-     * @returns {Promise<boolean>} - true if success, otherwise, the error is rejected
+     * @returns {Promise<boolean | string>} - true if success, otherwise, the error is rejected
      */
     createDatabase(name) {
         return new Promise(async(resolve, reject) => {
@@ -242,7 +242,7 @@ class DatabaseWrapper {
      * Create a new table in the specified database
      * @param {string} name - The name of the table to create, if there is already a table with this name, the promise will be resolved and nothing will change
      * @param {string} databaseName - The name of the database to create the table in
-     * @returns {Promise<boolean>} - true if success, otherwise, the error is rejected
+     * @returns {Promise<boolean | string>} - true if success, otherwise, the error is rejected
      */
     createTable(name, databaseName) {
         return new Promise(async(resolve, reject) => {

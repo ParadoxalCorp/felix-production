@@ -1,6 +1,9 @@
 //Stolen from Tweetcord (https://github.com/Aetheryx/tweetcord) the 20/03/18
 //With some JSDoc added cuz its useful kek
 
+/** @typedef {import("eris").Message} Message **/
+
+
 /**
  * A message collector which does not create a new event listener each collectors, but rather only use one added when its instantiated
  * @prop {object} collectors An object representing all the ongoing collectors
@@ -19,7 +22,7 @@ class MessageCollector {
     /**
      * Verify if the message pass the condition of the filter function
      * @param {*} msg The message to verify
-     * @returns {void} 
+     * @returns {Promise<void>} hi
      * @private
      */
     async verify(msg) {

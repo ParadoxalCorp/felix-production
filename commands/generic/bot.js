@@ -75,6 +75,7 @@ class Bot extends Command {
         });
         embedFields.push({
             name: "Node.js",
+            // @ts-ignore
             value: `${process.release.lts ? process.release.lts : ''} ${process.version}`,
             inline: true
         });
@@ -91,6 +92,7 @@ class Bot extends Command {
         let uptime = TimeConverter.toElapsedTime(client.bot.uptime);
         embedFields.push({
             name: "Uptime",
+            // @ts-ignore
             value: `${uptime.days}d ${uptime.hours}h ${uptime.minutes}m ${uptime.seconds}s`,
             inline: true
         });

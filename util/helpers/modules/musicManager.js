@@ -39,7 +39,7 @@ class MusicManager {
      * Resolve a list of tracks from the given query
      * @param {object} node - The node 
      * @param {string} query - The query
-     * @returns {array} An array of resolved tracks
+     * @returns {Promise<array>} An array of resolved tracks
      */
     async resolveTracks(node, query) {
         query = this._parseQuery(query);
@@ -54,7 +54,7 @@ class MusicManager {
     /**
      * Get or create a music player for the specified channel
      * @param {object|string} channel - The Eris channel object (must be a guild voice channel) or its ID
-     * @returns {MusicConnection} A MusicConnection instance
+     * @returns {Promise<MusicConnection>} A MusicConnection instance
      */
     async getPlayer(channel) {
         if (typeof channel === "string") {
@@ -84,7 +84,7 @@ class MusicManager {
             return 'Unknown (Live stream)';
         }
         let hours = `${Math.floor(((ms === 0 ? 0 : ms || track.info.length)) / 1000 / 60 / 60)}`;
-        let minutes = `${Math.floor(((ms === 0 ? 0 : ms || track.info.length) / 1000) / 60 - (60 * hours))}`;
+        let minutes = `${Math.floor(((ms === 0 ? 0 : ms || track.info.length) / 1000) / 60 - (60 * parseInt(hours) ))}`;
         let seconds = `${Math.floor(((ms === 0 ? 0 : ms || track.info.length)) / 1000) - (60 * (Math.floor(((ms === 0 ? 0 : ms || track.info.length) / 1000) / 60)))}`;
         if (hours === '0') {
             hours = '';
@@ -137,7 +137,7 @@ class MusicManager {
     /**
      * Get the queue of a guild, note that this should only be used if you don't have access to the MusicConnection instance of the guild, as this method only fetch from redis
      * @param {object|string} guild - The guild ID or object to get the queue from
-     * @returns {array} The queue, or an empty array if none has been retrieved from redis
+     * @returns {Promise<array>} The queue, or an empty array if none has been retrieved from redis
      */
     async getQueueOf(guild) {
         if (!this.client.redis || !this.client.redis.healthy) {
@@ -165,7 +165,8 @@ class MusicManager {
             let user = await this.client.fetchUser(track.info.requestedBy);
             fields.push({
                 name: 'Requested by',
-                value: user.tag,     
+                value: user.tag,
+                inline: false
             });
         }
         return {
@@ -178,7 +179,7 @@ class MusicManager {
 
     /**
      * Destroy the WS connection with Lavalink
-     * @returns {void}
+     * @returns {void | Boolean} return false or destroy connection
      */
     disconnect() {
         if (!this.client.bot.voiceConnections.nodes) {

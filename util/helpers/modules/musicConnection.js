@@ -234,7 +234,7 @@ class MusicConnection extends EventEmitter {
 
     /**
      * Leave the voice channel and tell the MusicManager that this connection can be dropped
-     * @returns {void}
+     * @returns {Promise<void>} hi
      */
     async leave() {
         await this.client.bot.leaveVoiceChannel(this.player.channelId);

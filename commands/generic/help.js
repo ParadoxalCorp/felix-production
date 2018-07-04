@@ -26,6 +26,7 @@ class Help extends Command {
         const noEmbed = new RegExp(/--noEmbed/gim).test(args.join(" "));
         const dm = new RegExp(/--dm/gim).test(args.join(" "));
         //If a command name is specified (ignore arguments), get this command help, otherwise get the general help
+        /** @type {any} */
         let helpMessage = !args.filter(a => !a.startsWith('--'))[0] ? this.getOverallHelp(client, message, guildEntry) : this.getCommandHelp(client, message, args, guildEntry);
 
         if (!helpMessage) {
@@ -117,13 +118,15 @@ class Help extends Command {
             }
             embedFields.push({
                 name: 'Parameters',
-                value: paramsList
+                value: paramsList,
+                inline: false
             });
         }
         if (command.conf.aliases[0]) {
             embedFields.push({
                 name: 'Aliases',
-                value: command.conf.aliases.map(a => `\`${a}\``).join(" ")
+                value: command.conf.aliases.map(a => `\`${a}\``).join(" "),
+                inline: false
             });
         }
         if (command.conf.requirePerms[0]) {
@@ -150,7 +153,8 @@ class Help extends Command {
         if (command.help.externalDoc) {
             embedFields.push({
                 name: 'External documentation',
-                value: `This command has an external documentation available [here](${command.help.externalDoc})`
+                value: `This command has an external documentation available [here](${command.help.externalDoc})`,
+                inline: false
             });
         }
         return {

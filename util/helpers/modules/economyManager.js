@@ -46,9 +46,9 @@ class EconomyManager {
     /**
      * 
      * @param {*} transactionSummary The summary of the transaction
-     * @param {*} donor The donor
-     * @param {*} receiver The receiver
-     * @returns {{donor: donor, receiver: receiver}} Returns the donor and the receiver entries with the transaction registered
+     * @param {object} donor The donor
+     * @param {object} receiver The receiver
+     * @returns {{donor, receiver}} Returns the donor and the receiver entries with the transaction registered
      * @private 
      */
     _registerTransaction(transactionSummary, donor, receiver) {

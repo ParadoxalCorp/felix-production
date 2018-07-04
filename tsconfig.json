@@ -1,0 +1,20 @@
+{
+	"compilerOptions": {
+			"target": "es2018",
+			"noEmit": true,
+			"checkJs": true,
+			"allowJs": true,
+			"module": "commonjs",
+			"watch": true,
+			"skipLibCheck": true,
+			"lib": [
+				"esnext"
+			],
+			"types": [
+					"node"
+			]
+	},
+	"exclude": [
+			"node_modules/*"
+	]
+}

@@ -29,7 +29,7 @@ class TriggeredGen extends Command {
     async run(client, message, args, guildEntry, userEntry) {
         const user = await this.getUserFromText({ message, client, text: args.join(' ') });
         const target = user ? client.extendedUser(user) : client.extendedUser(message.author);
-        const image = await axios.get(`https://cute-api.tk/v1/generate/triggered?url=${target.avatarURL}`, {responseType: 'arraybuffer'});
+        const image = await axios.default.get(`https://cute-api.tk/v1/generate/triggered?url=${target.avatarURL}`, {responseType: 'arraybuffer'});
         return message.channel.createMessage(``, {
             file: image.data,
             name: `${Date.now()}-${message.author.id}.gif`

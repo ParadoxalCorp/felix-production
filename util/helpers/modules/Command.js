@@ -1,6 +1,16 @@
 'use strict';
 
 /**
+ * @typedef {import("eris").Role} Role 
+ * @typedef {import("eris").User} User
+ * @typedef {import("eris").PermissionOverwrite} PermissionOverwrite
+ * @typedef {import("./extendedUser.js").user} ExtendedUser
+ * @typedef {import("eris").Message} Message
+ * 
+ */
+
+
+/**
  * Provide some utility methods to parse the args of a message, check the required permissions...
  * @class Command
  */
@@ -11,7 +21,7 @@ class Command {
     /**
      * Check if a message calls for a command
      * As it calls the database to check for a custom prefix, the method is asynchronous and may be awaited
-     * @param {object} message - The message object to parse the command from
+     * @param {Message} message - The message object to parse the command from
      * @param {object} client - The client instance
      * @returns {Promise<object>} - The command object, or undefined if the message is not prefixed or the command does not exist
      */
@@ -123,9 +133,9 @@ class Command {
      * Try to resolve a user with IDs, names, partial usernames or mentions
      * @param {object} options - An object of options
      * @param {object} options.client - The client instance
-     * @param {object} options.message - The message from which to get the user from
+     * @param {Message} options.message - The message from which to get the user from
      * @param {string} [options.text=message.content] - The text from which users should be resolved, if none provided, it will use the message content
-     * @returns {Promise<User>} The resolved user, or false if none could be resolved
+     * @returns {Promise<User | Boolean>} The resolved user, or false if none could be resolved
      */
     async getUserFromText(options = {}) {
         if (!options.client || !options.message) {
@@ -190,7 +200,7 @@ class Command {
      * @param {object} options.client - The client instance
      * @param {object} options.message - The message from which to get the roles from
      * @param {string} [options.text=message.content] - The text from which roles should be resolved, if none provided, it will use the message content
-     * @returns {Promise<Role>} The resolved role, or false if none could be resolved
+     * @returns {Promise<Role | Boolean>} The resolved role, or false if none could be resolved
      */
     async getRoleFromText(options = {}) {
         if (!options.client || !options.message) {
@@ -303,7 +313,7 @@ class Command {
      * @param {*} client - The client instance
      * @param {*} message - The message that triggered the command
      * @param {*} command - The command that the user is trying to run
-     * @returns {Promise<Array>} An array of arguments
+     * @returns {Promise<Array | Boolean>} An array of arguments
      */
     async queryMissingArgs(client, message, command) {
         let args = [];
@@ -357,7 +367,7 @@ class Command {
      * Note that if the user is not found, only username, discriminator and tag are guaranteed (set to unknown) 
      * @param {*} client - The client instance
      * @param {*} userResolvable - A user resolvable, can be an ID, a username#discriminator pattern or a user object
-     * @returns {extendedUser} returns an extended user object
+     * @returns {ExtendedUser} returns an extended user object
      */
     resolveUser(client, userResolvable) {
         const defaultUser = { username: 'Unknown', discriminator: 'Unknown' };

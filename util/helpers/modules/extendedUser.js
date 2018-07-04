@@ -1,6 +1,10 @@
 'use strict';
 
 /**
+ * @typedef {import("eris").User} user 
+ */
+
+/**
  * Add some properties and methods to the user object
  * @param {object} user - The user to extend
  * @returns {user} The given user with additional properties
