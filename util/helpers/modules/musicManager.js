@@ -29,6 +29,7 @@ class MusicManager {
         this.axios = require('axios').default.create({});
         this.axios.defaults.headers.common['Accept'] = 'application/json';
         this.connections = new(require('../../modules/collection'))();
+        this.regions = undefined;
     }
 
     init() {
@@ -55,7 +56,8 @@ class MusicManager {
             .catch(err => {
                 this.client.bot.emit('error', err);
                 return false;
-            });    
+            });
+        // @ts-ignore
         return result ? result.data : undefined; // array of tracks resolved from lavalink
     }
 

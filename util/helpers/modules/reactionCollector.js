@@ -1,3 +1,10 @@
+/** 
+ * @typedef {import("eris").Message} Message
+ * @typedef {import("eris").Emoji} Emoji
+ * @typedef {import("eris").Client} ErisBot
+ */
+
+
 /**
  * A reaction collector which does not create a new event listener each collectors, but rather only use one added when its instantiated
  * @prop {object} collectors An object representing all the ongoing collectors
@@ -5,7 +12,7 @@
 class reactionCollector {
     /**
      * Instantiating this class create a new messageReactionAdd listener, which will be used for all calls to awaitReaction
-     * @param {*} bot - The eris bot instance
+     * @param {ErisBot} bot - The eris bot instance
      */
     constructor(bot) {
         this.collectors = {};
@@ -15,8 +22,8 @@ class reactionCollector {
 
     /**
      * Verify if the reaction pass the condition of the filter function
-     * @param {*} msg - The message
-     * @param {object} emoji - The emoji
+     * @param {Message} msg - The message
+     * @param {Emoji} emoji - The emoji
      * @param {string} userID - the ID of the user
      * @returns {Promise<void>} returns object
      * @private

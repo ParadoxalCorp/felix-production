@@ -2,7 +2,7 @@
 //With some JSDoc added cuz its useful kek
 
 /** @typedef {import("eris").Message} Message **/
-
+/** @typedef {import("eris").Client} ErisBot */
 
 /**
  * A message collector which does not create a new event listener each collectors, but rather only use one added when its instantiated
@@ -11,7 +11,7 @@
 class MessageCollector {
     /**
      * Instantiating this class create a new messageCreate listener, which will be used for all calls to awaitMessage
-     * @param {*} bot - The eris bot instance
+     * @param {ErisBot} bot - The eris bot instance
      */
     constructor(bot) {
         this.collectors = {};
@@ -22,7 +22,7 @@ class MessageCollector {
     /**
      * Verify if the message pass the condition of the filter function
      * @param {*} msg The message to verify
-     * @returns {Promise<void>} hi
+     * @returns {Promise<void>} verify
      * @private
      */
     async verify(msg) {

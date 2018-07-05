@@ -55,7 +55,7 @@ class TableInterface {
     /**
      * Set or update an entry in the database
      * @param {object} data - The extended entry class or the raw data object to set
-     * @returns {Promise<data>} The updated data 
+     * @returns {Promise<any>} The updated data 
      */
     async set(data) {
         return this.table.get(data.id).replace(data.toDatabaseEntry ? data.toDatabaseEntry() : data, {returnChanges: 'always'});

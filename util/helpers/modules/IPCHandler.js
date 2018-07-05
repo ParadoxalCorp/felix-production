@@ -1,10 +1,12 @@
 //Actually that may reveal itself useful at some point, so let's keep it
 
-/**
- * @prop {Collection} requests A collection of the current ongoing requests
- * @prop {*} client The client instance given in the constructor
- */
+/** @typedef {import("../../../main.js")} Client */
+
 class IPCHandler {
+    /**
+     * @prop {Collection} requests A collection of the current ongoing requests
+     * @param {Client} client The client instance given in the constructor
+     */
     constructor(client) {
         this.requests = new client.collection();
         this.client = client;
@@ -191,10 +193,12 @@ class IPCHandler {
                 }
                 if (this._allClustersAnswered(message.id)) {
                     this.requests.get(message.id).resolve(message.data);
+                    // @ts-ignore
                     return this.requests.delete(message.id);
                 }
                 if (message.data) {
                     this.requests.get(message.id).resolve(message.data);
+                    // @ts-ignore
                     return this.requests.delete(message.id);
                 }
                 break;
