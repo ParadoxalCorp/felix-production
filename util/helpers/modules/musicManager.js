@@ -5,6 +5,7 @@ const MusicConnection = require('./musicConnection');
 /**
  * @typedef {import("eris").Guild} Guild
  * @typedef {import("eris").EmbedBase} Embed
+ * @typedef {import("../../../main.js")} Client
  */
 
 
@@ -17,7 +18,7 @@ const MusicConnection = require('./musicConnection');
 class MusicManager {
     /**
      * Create a new MusicManager instance; This does not trigger the connection to the Lavalink server, MusicManager.init() serve that purpose
-     * @param {*} client - The client instance
+     * @param {Client} client - The client instance
      */
     constructor(client) {
         this.client = client;
@@ -37,7 +38,7 @@ class MusicManager {
                 numShards: this.client.bot.shards.size, // number of shards
                 userId: this.client.bot.user.id, // the user id of the bot
                 regions: this.regions,
-                defaultRegion: 'eu',
+                defaultRegion: 'eu'
             });
         }
     }

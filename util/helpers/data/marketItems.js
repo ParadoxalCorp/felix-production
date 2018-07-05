@@ -1,3 +1,9 @@
+/** @typedef {import("../../../main.js")} Client */
+/** @typedef {import("../modules/economyManager.js")} EconomyManager */
+/** @typedef {import("../modules/extendedUserEntry.js")} UserEntry */
+/** @typedef {import("../modules/extendedGuildEntry.js").guildEntry} GuildEntry */
+
+
 const marketItems = [{
     id: 1000,
     name: 'dog',
@@ -54,7 +60,13 @@ const marketItems = [{
     //Note that guildEntry may be undefined if the message was sent in DM, and anyway won't be saved if modified, it's for read-only purposes
     price: (client, guildEntry, userEntry) => 1e7 * userEntry.cooldowns.loveCooldown.max,
     emote: ':heart:',
-    //Note that guildEntry may be undefined if the message was sent in DM, and anyway won't be saved if modified, it's for read-only purposes
+    
+    /**
+     * @param {Client} client client
+     * @param {GuildEntry} guildEntry Note that guildEntry may be undefined if the message was sent in DM, and anyway won't be saved if modified, it's for read-only purposes
+     * @param {UserEntry} userEntry userEntry
+     * @returns {any} something
+    */    
     run: (client, guildEntry, userEntry) => userEntry.cooldowns.loveCooldown.max++
 }];
 
