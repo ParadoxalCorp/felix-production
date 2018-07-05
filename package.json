@@ -28,7 +28,6 @@
         "rethinkdbdash": "^2.3.31"
     },
     "optionalDependencies": {
-        "node": "10.0.0",
         "google-translate-api": "^2.3.0",
         "raven": "^2.6.0",
         "taihou": "^1.0.2",
