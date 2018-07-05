@@ -1,7 +1,6 @@
 'use strict';
 
 //Not sure why i would make that a class but ok
-// test
 
 /**
  * This class provides all the default data model the process may use, for example, the default data models for guild and user entries in the database
