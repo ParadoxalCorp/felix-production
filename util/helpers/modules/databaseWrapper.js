@@ -1,20 +1,19 @@
 'use strict';
 
-/**
- * Wraps the most important methods of RethinkDB and does smart things in the background
- * @prop {*} rethink The object returned by the rethinkdbdash module after requiring it
- * @prop {function} updateFunc The update function given in the constructor, if any
- * @prop {*} guildData The rethinkDB table of guilds
- * @prop {*} userData The rethinkDB table of users
- * @prop {*} client The client instance given in the constructor
- * @prop {Collection} users A collection of cached user entries
- * @prop {Collection} guilds A collection of cached guild entries
- * @prop {boolean} healthy A boolean representing whether the connection with the database is established
- */
+/** @typedef {import("../../../main.js")} Client */
+
+
 class DatabaseWrapper {
     /**
-     * @param {object} client - The client (or bot) instance
-     * @param {function} updateFunc - Optional, the function that should be called to update the retrieved entries from the database before returning them. This update function will be called instead of the default update strategy, with the "data" and "type" arguments, which are respectively the database entry and the type of the database entry (either "guild" or "user"). The update function must return an object, this is the object that the DatabaseWrapper.getGuild() and DatabaseWrapper.getUser() methods will return.
+     * Wraps the most important methods of RethinkDB and does smart things in the background
+     * @param {Client} client - The client (or bot) instance
+     * @param {function} [updateFunc] - Optional, the function that should be called to update the retrieved entries from the database before returning them. This update function will be called instead of the default update strategy, with the "data" and "type" arguments, which are respectively the database entry and the type of the database entry (either "guild" or "user"). The update function must return an object, this is the object that the DatabaseWrapper.getGuild() and DatabaseWrapper.getUser() methods will return.
+     * @prop {*} guildData The rethinkDB table of guilds
+     * @prop {*} rethink The object returned by the rethinkdbdash module after requiring it
+     * @prop {*} userData The rethinkDB table of users
+     * @prop {Collection} guilds A collection of cached guild entries
+     * @prop {Collection} users A collection of cached user entries
+     * @prop {boolean} healthy A boolean representing whether the connection with the database is established
      * @example
      * //Context: In this example, the old user data model used to have its "boolean" property containing either 1 or 0, and we want to update it to either true or false
      * new DatabaseWrapper(client, (data, type) => {
@@ -135,6 +134,7 @@ class DatabaseWrapper {
     getUser(id) {
         return new Promise(async(resolve, reject) => {
             if (this.users.has(id)) {
+                // @ts-ignore
                 return resolve(new this.client.extendedUserEntry(this._updateDataModel(this.users.get(id)), 'user'));
             }
             this.userData.get(id).run()

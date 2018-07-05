@@ -3,6 +3,8 @@
 /**
  * @typedef {import("eris").Role} Role 
  * @typedef {import("eris").User} User
+ * @typedef {import("eris").Member} Member
+ * @typedef {import("eris").Guild} Guild
  * @typedef {import("eris").PermissionOverwrite} PermissionOverwrite
  * @typedef {import("./extendedUser.js").user} ExtendedUser
  * @typedef {import("eris").Message} Message
@@ -24,12 +26,14 @@ class Command {
      * As it calls the database to check for a custom prefix, the method is asynchronous and may be awaited
      * @param {Message} message - The message object to parse the command from
      * @param {Client} client - The client instance
-     * @returns {Promise<object>} - The command object, or undefined if the message is not prefixed or the command does not exist
+     * @returns {Promise<object | undefined>} - The command object, or undefined if the message is not prefixed or the command does not exist
      */
     parseCommand(message, client) {
         return new Promise(async(resolve, reject) => {
             const args = message.content.split(/\s+/);
+            // @ts-ignore
             const guildEntry = message.channel.guild && client.database && client.database.healthy ?
+                // @ts-ignore
                 await client.database.getGuild(message.channel.guild.id).catch(err => {
                     return reject(err);
                 }) :
@@ -62,7 +66,7 @@ class Command {
      * @param {Client} client client
      * @param {GuildEntry} guildEntry guildEntry
      * @param {Array} args args
-     * @returns {any} unspaced command
+     * @returns {Object} unspaced command
      * @memberof Command
      */
     _parseUnspacedCommand(message, client, guildEntry, args) {
@@ -88,6 +92,7 @@ class Command {
      */
     clientHasPermissions(message, client, permissions, channel = message.channel) {
         const missingPerms = [];
+        // @ts-ignore
         const clientMember = message.channel.guild.members.get(client.bot.user.id);
 
         function hasPerm(perm, Command) {
@@ -125,7 +130,7 @@ class Command {
      * This method return the effective permission overwrite for a specific permission of a user
      * It takes into account the roles of the member, their position and the member itself to return the overwrite which actually is effective
      * @param {object} channel - The channel to check permissions overwrites in
-     * @param {object} member - The member object to check permissions overwrites for
+     * @param {Member} member - The member object to check permissions overwrites for
      * @param {string} permission - The permission to search channel overwrites for
      * @return {boolean | PermissionOverwrite} - The permission overwrite overwriting the specified permission, or false if none exist
      */
@@ -148,7 +153,7 @@ class Command {
      * @param {string} [options.text=message.content] - The text from which users should be resolved, if none provided, it will use the message content
      * @returns {Promise<User | Boolean>} The resolved user, or false if none could be resolved
      */
-    async getUserFromText(options = {}) {
+    async getUserFromText(options ) {
         if (!options.client || !options.message) {
             Promise.reject(new Error(`The options.client and options.message parameters are mandatory`));
         }
@@ -158,7 +163,9 @@ class Command {
             return exactMatch;
         }
         //While it is unlikely, resolve the user by ID if possible
+        // @ts-ignore
         if (options.message.channel.guild.members.get(options.text)) {
+            // @ts-ignore
             return options.message.channel.guild.members.get(options.text);
         }
 
@@ -181,6 +188,7 @@ class Command {
      */
     async _resolveUserByExactMatch(client, message, text) {
         //Filter the members with a username or nickname that match exactly the text
+        // @ts-ignore
         const exactMatches = message.channel.guild.members.filter(m =>
             m.username.toLowerCase().split(/\s+/).join(" ") === text.toLowerCase().split(/\s+/).join(" ") ||
             (m.nick && m.nick.toLowerCase().split(/\s+/).join(" ") === text.toLowerCase().split(/\s+/).join(" ")));
@@ -213,7 +221,7 @@ class Command {
      * @param {string} [options.text=message.content] - The text from which roles should be resolved, if none provided, it will use the message content
      * @returns {Promise<Role | Boolean>} The resolved role, or false if none could be resolved
      */
-    async getRoleFromText(options = {}) {
+    async getRoleFromText(options ) {
         if (!options.client || !options.message) {
             Promise.reject(new Error(`The options.client and options.message parameters are mandatory`));
         }
@@ -223,7 +231,9 @@ class Command {
             return exactMatch;
         }
         //While it is very unlikely, resolve the role by ID if possible
+        // @ts-ignore
         if (options.message.channel.guild.roles.get(options.text)) {
+            // @ts-ignore
             return options.message.channel.guild.roles.get(options.text);
         }
         return false;
@@ -237,6 +247,7 @@ class Command {
      * @returns {Promise<Role>} The role, or false if none found
      */
     async _resolveRoleByExactMatch(client, message, text) {
+        // @ts-ignore
         const exactMatches = message.channel.guild.roles.filter(r => r.name.toLowerCase().split(/\s+/).join(" ") === text.toLowerCase().split(/\s+/).join(" "));
         if (exactMatches.length === 1) {
             return exactMatches[0];
@@ -281,7 +292,9 @@ class Command {
 
         //While it is very unlikely, resolve the role by ID (and mention) if possible
         text = text.replace(/<|>|#/g, '');
+        // @ts-ignore
         if (options.message.channel.guild.channels.get(text)) {
+            // @ts-ignore
             return options.message.channel.guild.channels.get(text);
         }
 
@@ -297,6 +310,7 @@ class Command {
      * @returns {Promise<Role>} The role, or false if none found
      */
     async _resolveChannelByExactMatch(client, message, text, textual) {
+        // @ts-ignore
         const exactMatches = message.channel.guild.channels.filter(c => c.name === text && c.type === (textual ? 0 : 2));
         if (exactMatches.length === 1) {
             return exactMatches[0];
@@ -327,6 +341,7 @@ class Command {
      * @returns {Promise<Array | Boolean>} An array of arguments
      */
     async queryMissingArgs(client, message, command) {
+        /** @type {Array} */
         let args = [];
 
         const queryArg = async(arg, ongoingQuery) => {
@@ -377,11 +392,12 @@ class Command {
      * Resolve a user from a user resolvable and returns an extended user
      * Note that if the user is not found, only username, discriminator and tag are guaranteed (set to unknown) 
      * @param {Client} client - The client instance
-     * @param {*} userResolvable - A user resolvable, can be an ID, a username#discriminator pattern or a user object
+     * @param {User | String | Number} userResolvable - A user resolvable, can be an ID, a username#discriminator pattern or a user object
      * @returns {ExtendedUser} returns an extended user object
      */
     resolveUser(client, userResolvable) {
         const defaultUser = { username: 'Unknown', discriminator: 'Unknown' };
+        // @ts-ignore
         if (!isNaN(userResolvable)) {
             const user = client.bot.users.get(userResolvable);
             return client.extendedUser(user ? user : defaultUser);
@@ -396,12 +412,14 @@ class Command {
 
     /**
      * Get the highest role of the specified member and returns it
-     * @param {object|string} member - The member object or their ID
-     * @param {*} guild - The guild object
-     * @returns {*} The highest role of the user
+     * @param {Member|string} member - The member object or their ID
+     * @param {Guild} guild - The guild object
+     * @returns {Object} The highest role of the user
      */
     getHighestRole(member, guild) {
+        // @ts-ignore
         member = member.id ? member : guild.members.get(member);
+        // @ts-ignore
         const filteredRoles = guild.roles.filter(r => member.roles.includes(r.id));
         return filteredRoles.sort((a, b) => b.position - a.position)[0];
     }

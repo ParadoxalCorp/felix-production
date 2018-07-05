@@ -1,10 +1,14 @@
 'use strict';
 
+/** @typedef {import("eris").Client} ErisClient */
+
 const fs = require('fs');
 const { join } = require('path');
+// @ts-ignore
 const { Base } = require('eris-sharder');
 
 class Felix extends Base {
+    /** @param {ErisClient} bot Eris Client */
     constructor(bot) {
         super(bot);
 
@@ -12,6 +16,7 @@ class Felix extends Base {
         this.maintenance = false;
         this.collection = require('./util/modules/collection');
         this.config = require('./config');
+        // @ts-ignore
         this.package = require('./package');
         this.prefixes = this.config.prefix ? [this.config.prefix] : [];
         this.stats;
@@ -21,9 +26,12 @@ class Felix extends Base {
     launch() {
         //Assign modules to the client
         Object.assign(this, require('./util')(this));
+        // @ts-ignore
         this.ratelimited = new this.collection();
         //This will be filled with mentions prefix once ready
+        // @ts-ignore
         this.commands = new this.collection();
+        // @ts-ignore
         this.aliases = new this.collection();
         this.bot.on('ready', this.ready.bind(this));
         process.on('beforeExit', this.beforeExit.bind(this));
@@ -32,6 +40,7 @@ class Felix extends Base {
         this.loadEventsListeners();
         this.verifyPackages();
         if (this.config.apiKeys['weebSH'] && this.packages.taihou) {
+            // @ts-ignore
             this.weebSH = new(require('taihou'))(this.config.apiKeys['weebSH'], false, {
                 userAgent: `Felix/${this.package.version}/${this.config.process.environment}`,
                 toph: {
@@ -90,7 +99,6 @@ class Felix extends Base {
         this.log.info(`Loaded ${loadedEvents}/${events.length} events`);
         process.on('unhandledRejection', (err) => this.bot.emit('error', err));
         process.on('uncaughtException', (err) => this.bot.emit('error', err));
-        process.on('error', (err) => this.bot.emit('error', err));
     }
 
     async ready() {
@@ -149,6 +157,7 @@ class Felix extends Base {
         };
 
         //eslint-disable-next-line no-unused-vars
+        // @ts-ignore
         for (const [key, value] of this.commands) {
             if (value.conf.require && value.conf.require[0]) {
                 verifyRequirements(value);
