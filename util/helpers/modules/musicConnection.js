@@ -3,8 +3,11 @@
 /** 
  * @typedef {import("../../../main.js")} Client
  * @typedef {import("eris-lavalink")} Eris_Lavalink
+ * @typedef {import("events")} NodeEvents
+ * @typedef {import("eventemitter3")} EventEmitter3
  */
 
+/** @type {any} */
 const EventEmitter = (() => {
     let eventEmitter;
     try {
@@ -18,7 +21,6 @@ const EventEmitter = (() => {
 /**
  * Provides methods to easily manage the queue and the ongoing vote if any, as well as synchronize the queue with redis and handle events in the background
  */
-// @ts-ignore parardoc really wants to confuse the typescript
 class MusicConnection extends EventEmitter {
     /**
      * Create a new MusicConnection instance, this can only be done with an active player
