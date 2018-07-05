@@ -1,5 +1,7 @@
 'use strict';
 
+/** @typedef {import("../data/references.js")} references */
+
 const references = require('../data/references');
 const config = require('../../../config');
 

@@ -6,7 +6,8 @@
  * @typedef {import("eris").PermissionOverwrite} PermissionOverwrite
  * @typedef {import("./extendedUser.js").user} ExtendedUser
  * @typedef {import("eris").Message} Message
- * 
+ * @typedef {import("../../../main.js")} Client
+ * @typedef {import("./extendedGuildEntry.js")} GuildEntry
  */
 
 
@@ -22,7 +23,7 @@ class Command {
      * Check if a message calls for a command
      * As it calls the database to check for a custom prefix, the method is asynchronous and may be awaited
      * @param {Message} message - The message object to parse the command from
-     * @param {object} client - The client instance
+     * @param {Client} client - The client instance
      * @returns {Promise<object>} - The command object, or undefined if the message is not prefixed or the command does not exist
      */
     parseCommand(message, client) {
@@ -54,6 +55,16 @@ class Command {
         });
     }
 
+    /**
+     *
+     *
+     * @param {Message} message message
+     * @param {Client} client client
+     * @param {GuildEntry} guildEntry guildEntry
+     * @param {Array} args args
+     * @returns {any} unspaced command
+     * @memberof Command
+     */
     _parseUnspacedCommand(message, client, guildEntry, args) {
         const mentionTest = message.content.startsWith(`<@${client.bot.user.id}>`) || message.content.startsWith(`<@!${client.bot.user.id}`);
         const supposedCommand = !mentionTest
@@ -69,8 +80,8 @@ class Command {
     /**
      * Check if the bot has the given permissions to work properly
      * This is a deep check and the channels wide permissions will be checked too
-     * @param {object} message - The message that triggered the command
-     * @param {object} client  - The client instance
+     * @param {Message} message - The message that triggered the command
+     * @param {Client} client  - The client instance
      * @param {array} permissions - An array of permissions to check for
      * @param {object} [channel=message.channel] - Optional, a specific channel to check perms for (to check if the bot can connect to a VC for example)
      * @returns {boolean | array} - An array of permissions the bot miss, or true if the bot has all the permissions needed, sendMessages permission is also returned if missing
@@ -132,7 +143,7 @@ class Command {
     /**
      * Try to resolve a user with IDs, names, partial usernames or mentions
      * @param {object} options - An object of options
-     * @param {object} options.client - The client instance
+     * @param {Client} options.client - The client instance
      * @param {Message} options.message - The message from which to get the user from
      * @param {string} [options.text=message.content] - The text from which users should be resolved, if none provided, it will use the message content
      * @returns {Promise<User | Boolean>} The resolved user, or false if none could be resolved
@@ -162,9 +173,9 @@ class Command {
     }
 
     /**
-     * @param {*} client - The client instance
-     * @param {*} message - The message
-     * @param {*} text - The text
+     * @param {Client} client - The client instance
+     * @param {Message} message - The message
+     * @param {String} text - The text
      * @private
      * @returns {Promise<User>} The user, or false if none found
      */
@@ -197,8 +208,8 @@ class Command {
     /**
      * Try to resolve a role with IDs or names
      * @param {object} options - An object of options
-     * @param {object} options.client - The client instance
-     * @param {object} options.message - The message from which to get the roles from
+     * @param {Client} options.client - The client instance
+     * @param {Message} options.message - The message from which to get the roles from
      * @param {string} [options.text=message.content] - The text from which roles should be resolved, if none provided, it will use the message content
      * @returns {Promise<Role | Boolean>} The resolved role, or false if none could be resolved
      */
@@ -219,9 +230,9 @@ class Command {
     }
 
     /**
-     * @param {*} client - The client instance
-     * @param {*} message - The message
-     * @param {*} text - The text
+     * @param {Client} client - The client instance
+     * @param {Message} message - The message
+     * @param {String} text - The text
      * @private
      * @returns {Promise<Role>} The role, or false if none found
      */
@@ -251,10 +262,10 @@ class Command {
     /**
      * 
      * @param {object} options - An object of options
-     * @param {object} options.client - The client instance
-     * @param {object} options.message - The message
+     * @param {Client} options.client - The client instance
+     * @param {Message} options.message - The message
      * @param {string} [options.text=message.content] - The text to resolve a channel from
-     * @param {boolean} [options.textual=true] - Whether the channel to resolve is a text channel or a voice channel
+     * @param {Boolean} [options.textual=true] - Whether the channel to resolve is a text channel or a voice channel
      * @returns {Promise<object|boolean>} The channel object, or false if none found
      */
     async getChannelFromText(options) {
@@ -278,8 +289,8 @@ class Command {
     }
 
     /**
-     * @param {*} client - The client instance
-     * @param {*} message - The message
+     * @param {Client} client - The client instance
+     * @param {Message} message - The message
      * @param {string} text - The text
      * @param {boolean} textual - Whether the channel is a text channel or a voice channel
      * @private
@@ -310,8 +321,8 @@ class Command {
 
     /**
      * Query to the user the arguments that they forgot to specify
-     * @param {*} client - The client instance
-     * @param {*} message - The message that triggered the command
+     * @param {Client} client - The client instance
+     * @param {Message} message - The message that triggered the command
      * @param {*} command - The command that the user is trying to run
      * @returns {Promise<Array | Boolean>} An array of arguments
      */
@@ -365,7 +376,7 @@ class Command {
     /**
      * Resolve a user from a user resolvable and returns an extended user
      * Note that if the user is not found, only username, discriminator and tag are guaranteed (set to unknown) 
-     * @param {*} client - The client instance
+     * @param {Client} client - The client instance
      * @param {*} userResolvable - A user resolvable, can be an ID, a username#discriminator pattern or a user object
      * @returns {ExtendedUser} returns an extended user object
      */

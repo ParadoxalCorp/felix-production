@@ -1,5 +1,7 @@
 'use strict';
 
+/** @typedef {import("../../../main.js")} Client */
+
 /**
  * @typedef LevelDetails 
  * @prop {number} level The level  
@@ -10,7 +12,7 @@
 
 
 /**
- * @param {object} client - The client instance
+ * @param {Client} client - The client instance
  * @param {number} level - The level to get the details from
  * @return {LevelDetails} An object containing data about the experience required for this level and the next level
  */
