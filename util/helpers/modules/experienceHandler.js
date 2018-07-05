@@ -6,7 +6,7 @@ class ExperienceHandler {
 
     /**
      *Creates an instance of ExperienceHandler.
-     * @param {Client} client
+     * @param {Client} client client
      * @memberof ExperienceHandler
      */
     constructor(client) {
