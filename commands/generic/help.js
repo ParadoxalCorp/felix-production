@@ -66,8 +66,7 @@ class Help extends Command {
                             : client.commands.filter(command => command.help.category === c).map(command => `\`${command.help.name}\``).join(" ");
                             return {
                                 name: c,
-                                value: value,
-                                inline: false
+                                value: value
                             };
                         }),
                         footer: {
@@ -94,6 +93,7 @@ class Help extends Command {
     }
 
     getEmbedCommandHelp(client, message, args, command, guildEntry) {
+        
         const embedFields = [{
             name: 'Category',
             value: command.help.category,
@@ -116,17 +116,17 @@ class Help extends Command {
                     paramsList += "\n"; //Bonus new-line
                 }
             }
+            // @ts-ignore
             embedFields.push({
                 name: 'Parameters',
-                value: paramsList,
-                inline: false
+                value: paramsList 
             });
         }
         if (command.conf.aliases[0]) {
+            // @ts-ignore
             embedFields.push({
                 name: 'Aliases',
-                value: command.conf.aliases.map(a => `\`${a}\``).join(" "),
-                inline: false
+                value: command.conf.aliases.map(a => `\`${a}\``).join(" ")
             });
         }
         if (command.conf.requirePerms[0]) {
@@ -151,10 +151,10 @@ class Help extends Command {
             });
         }
         if (command.help.externalDoc) {
+            // @ts-ignore
             embedFields.push({
                 name: 'External documentation',
-                value: `This command has an external documentation available [here](${command.help.externalDoc})`,
-                inline: false
+                value: `This command has an external documentation available [here](${command.help.externalDoc})`
             });
         }
         return {

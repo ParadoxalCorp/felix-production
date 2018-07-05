@@ -4,6 +4,10 @@
     "description": "felix-production",
     "main": "index.js",
     "author": "ParadoxOrigins",
+    "contributors": [
+        { "name": "Niputi" },
+        { "name": "Otaku17" }
+    ],
     "repository": "github:ParadoxalCorp/felix-production",
     "license": "GPL-3.0",
     "scripts": {
@@ -16,6 +20,7 @@
         "eris": "^0.8.5",
         "eris-sharder": "^1.7.8",
         "moment": "^2.22.1",
+        "node": "^10.5.0",
         "npm": "^6.0.0",
         "rethinkdbdash": "^2.3.31"
     },
@@ -34,8 +39,5 @@
     "devDependencies": {
         "@types/node": "^10.5.1",
         "eslint": "^5.0.0"
-    },
-    "engines": {
-        "node" : ">=10.0.0"
     }
 }

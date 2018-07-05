@@ -3,6 +3,13 @@
 const MusicConnection = require('./musicConnection');
 
 /**
+ * @typedef {import("eris").Guild} Guild
+ * @typedef {import("eris").EmbedBase} Embed
+ */
+
+
+
+/**
  * @prop {object} client - The client given in the constructor
  * @prop {array} nodes - An array of nodes
  * @prop {object} regions - A list of locations to use for specific regions 
@@ -18,7 +25,7 @@ class MusicManager {
             { host: client.config.options.music.host, port: client.config.options.music.WSPort, region: 'eu', password: client.config.options.music.password }
         ];
         this.baseURL = (node) => `http://${node.host}:${client.config.options.music.port}`;
-        this.axios = require('axios').create({});
+        this.axios = require('axios').default.create({});
         this.axios.defaults.headers.common['Accept'] = 'application/json';
         this.connections = new(require('../../modules/collection'))();
     }
@@ -136,13 +143,14 @@ class MusicManager {
 
     /**
      * Get the queue of a guild, note that this should only be used if you don't have access to the MusicConnection instance of the guild, as this method only fetch from redis
-     * @param {object|string} guild - The guild ID or object to get the queue from
+     * @param {string | Guild} guild - The guild ID or object to get the queue from
      * @returns {Promise<array>} The queue, or an empty array if none has been retrieved from redis
      */
     async getQueueOf(guild) {
         if (!this.client.redis || !this.client.redis.healthy) {
             return [];
         }
+        //@ts-ignore
         return this.client.redis.get(`${guild.id ? guild.id : guild}-queue`)
             .then(q => q ? JSON.parse(q) : [])
             .catch(err => {
@@ -152,7 +160,8 @@ class MusicManager {
     }
 
     async genericEmbed(track, connection, title) {
-        let fields = [{
+        let fields = [
+            {
             name: 'Author',
             value: track.info.author,
             inline: true
@@ -163,10 +172,10 @@ class MusicManager {
         }];
         if (track.info.requestedBy) {
             let user = await this.client.fetchUser(track.info.requestedBy);
+            // @ts-ignore
             fields.push({
                 name: 'Requested by',
-                value: user.tag,
-                inline: false
+                value: user.tag
             });
         }
         return {

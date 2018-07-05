@@ -98,8 +98,7 @@ class Bot extends Command {
         });
         embedFields.push({
             name: "Developers",
-            value: "**Lead Developer**: ParadoxOrigins#5451\n**Co-Developers**: Ota#1354, Niputi#2490\n**Contributors**: InternalCosmos#2000, LevitatingBusinessMan#0504",
-            inline: false
+            value: "**Lead Developer**: ParadoxOrigins#5451\n**Co-Developers**: Ota#1354, Niputi#2490\n**Contributors**: InternalCosmos#2000, LevitatingBusinessMan#0504"
         });
         embedFields.push({
             name: "Created the",
@@ -113,23 +112,19 @@ class Bot extends Command {
         });
         embedFields.push({
             name: "Join the support server !",
-            value: "[Felix support server invite link](https://discord.gg/Ud49hQJ)",
-            inline: false
+            value: "[Felix support server invite link](https://discord.gg/Ud49hQJ)"
         });
         embedFields.push({
             name: "Invite Felix to your server",
-            value: `[Felix's invite link](https://discordapp.com/oauth2/authorize?&client_id=${client.bot.user.id}&scope=bot&permissions=2146950271)`,
-            inline: false
+            value: `[Felix's invite link](https://discordapp.com/oauth2/authorize?&client_id=${client.bot.user.id}&scope=bot&permissions=2146950271)`
         });
         embedFields.push({
             name: 'Source',
-            value: `[GitHub repository](https://github.com/ParadoxalCorp/felix-production)`,
-            inline: false
+            value: `[GitHub repository](https://github.com/ParadoxalCorp/felix-production)`
         });
         embedFields.push({
             name: 'Support us and become a donator !',
-            value: '[Patreon](https://www.patreon.com/paradoxorigins)',
-            inline: false
+            value: '[Patreon](https://www.patreon.com/paradoxorigins)'
         });
         if (client.stats) {
             embedFields.push({
