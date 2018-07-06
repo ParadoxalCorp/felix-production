@@ -3,12 +3,13 @@
 /** @typedef {import("../modules/extendedUserEntry.js")} UserEntry */
 /** @typedef {import("../modules/extendedGuildEntry.js").guildEntry} GuildEntry */
 
+/// <referece path="../modules/economyManager.js" />
 
 /**
  * 
  * @param {Client} client client
  * @param {EconomyManager} economyManager economyManager
- * @returns {any} slot events
+ * @returns {Array<Object>} slot events
  */
 const slotsEvents = (client, economyManager) => {
     return [{
@@ -41,6 +42,7 @@ const slotsEvents = (client, economyManager) => {
              * @param {UserEntry} userEntry userEntry
              * @returns {Boolean} true / false
             */
+            // @ts-ignore
             condition: (userEntry) => userEntry.economy.items.find(i => economyManager.getItem(i.id).data && economyManager.getItem(i.id).data.type === 'Destroyer'),
             /** 
              * @param {UserEntry} userEntry userEntry
@@ -58,6 +60,7 @@ const slotsEvents = (client, economyManager) => {
              * @param {UserEntry} userEntry userEntry
              * @returns {Boolean} true / false
             */
+            // @ts-ignore
             condition: (userEntry) => userEntry.economy.items.find(i => economyManager.getItem(i.id).data && economyManager.getItem(i.id).data.type === 'Battleship'),
             /** 
              * @param {UserEntry} userEntry userEntry

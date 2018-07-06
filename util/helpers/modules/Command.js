@@ -6,7 +6,7 @@
  * @typedef {import("eris").Member} Member
  * @typedef {import("eris").Guild} Guild
  * @typedef {import("eris").PermissionOverwrite} PermissionOverwrite
- * @typedef {import("./extendedUser.js").user} ExtendedUser
+ * @typedef {import("./extendedUser.js").User} ExtendedUser
  * @typedef {import("eris").Message} Message
  * @typedef {import("../../../main.js")} Client
  * @typedef {import("./extendedGuildEntry.js")} GuildEntry

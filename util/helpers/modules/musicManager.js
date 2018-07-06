@@ -28,6 +28,7 @@ class MusicManager {
         this.baseURL = (node) => `http://${node.host}:${client.config.options.music.port}`;
         this.axios = require('axios').default.create({});
         this.axios.defaults.headers.common['Accept'] = 'application/json';
+        // @ts-ignore
         this.connections = new(require('../../modules/collection'))();
         this.regions = undefined;
     }

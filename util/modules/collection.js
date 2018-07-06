@@ -218,6 +218,7 @@ class Collection extends Map {
         if (typeof value === 'undefined') {
             throw new Error('Value must be specified.');
         }
+        /** @type {Array} */
         const results = [];
         for (const item of this.values()) {
             if (item[prop] === value) {

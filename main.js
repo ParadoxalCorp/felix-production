@@ -1,18 +1,30 @@
 'use strict';
 
-/** @typedef {import("eris").Client} ErisClient */
+/** 
+ * @typedef {import("eris").Client} ErisClient 
+ * 
+*/
 
 const fs = require('fs');
 const { join } = require('path');
 // @ts-ignore
 const { Base } = require('eris-sharder');
 
+/**
+ *
+ * 
+ * @class Felix
+ * @extends {Base}
+ */
 class Felix extends Base {
-    /** @param {ErisClient} bot Eris Client */
+    /** 
+     * @param {ErisClient} bot Eris Client 
+     * @constructor Felix
+    */
     constructor(bot) {
         super(bot);
 
-        //If true, this would ignore all messages from everyone besides the owner
+        /** If true, this would ignore all messages from everyone besides the owner */
         this.maintenance = false;
         this.collection = require('./util/modules/collection');
         this.config = require('./config');
@@ -20,6 +32,7 @@ class Felix extends Base {
         this.package = require('./package');
         this.prefixes = this.config.prefix ? [this.config.prefix] : [];
         this.stats;
+        /** @type {Object} */
         this.packages = {};
     }
 
@@ -157,7 +170,6 @@ class Felix extends Base {
         };
 
         //eslint-disable-next-line no-unused-vars
-        // @ts-ignore
         for (const [key, value] of this.commands) {
             if (value.conf.require && value.conf.require[0]) {
                 verifyRequirements(value);

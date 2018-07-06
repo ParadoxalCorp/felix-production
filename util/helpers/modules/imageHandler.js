@@ -1,13 +1,15 @@
 'use strict';
 
+/** @typedef {import("../../../main.js")} Client */
+
 /**
  * Generate the image sub-commands and such
- * @prop {object} client - The client given in the constructor
+ * @class ImageHandler
  */
 class ImageHandler {
     /**
      * 
-     * @param {object} client - The client instance
+     * @param {Client} client - The client instance
      */
     constructor(client) {
         this.client = client;
@@ -95,14 +97,17 @@ class ImageHandler {
                         let resolvedUsers = [];
                         for (const arg of args) {
                             const resolved = await this.getUserFromText({client: client, message: message, text: arg});
-                            if (resolved && !resolvedUsers.find(u => u.id === resolved.id) && (resolved.id !== message.author.id)) {
+                            // @ts-ignore
+                            if (resolved && !resolvedUsers.find(u =>  u.id === resolved.id) && (resolved.id !== message.author.id)) {
                                 resolvedUsers.push(resolved);
                             }
                         }
+                        // @ts-ignore
                         return resolvedUsers.filter(u => u.id !== message.author.id);
                     })();
                     return message.channel.createMessage({
                         embed: {
+                            // @ts-ignore
                             description: users[0] ? `Hey ${users.map(u => u.mention).join(', ')}, ${imageHandler.interactions[type].interaction} ${message.author.mention} !` : `Trying to ${type} yourself eh? That's cute`,
                             image: {
                                 url: image.url

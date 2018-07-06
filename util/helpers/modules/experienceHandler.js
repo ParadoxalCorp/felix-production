@@ -11,8 +11,10 @@ class ExperienceHandler {
      */
     constructor(client) {
         this.client = client;
+        // @ts-ignore
         this.cooldowns = new(require('../../modules/collection'))();
         this._sweepInterval = setInterval(this._sweep.bind(this), client.config.options.experience.sweepInterval);
+        // @ts-ignore
         this.levelledUp = new(require('../../modules/collection'))();
     }
 

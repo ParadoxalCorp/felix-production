@@ -8,6 +8,7 @@ class IPCHandler {
      * @param {Client} client The client instance given in the constructor
      */
     constructor(client) {
+        // @ts-ignore
         this.requests = new client.collection();
         this.client = client;
         process.on('message', this._handleIncomingMessage.bind(this));
@@ -15,7 +16,7 @@ class IPCHandler {
 
     /**
      * Fetch the stats of the shards of each cluster
-     * @returns {Promise<array>} An array of clusters with their shards stats
+     * @returns {Promise<Array>} An array of clusters with their shards stats
      */
     fetchShardsStats() {
         const ID = Date.now();

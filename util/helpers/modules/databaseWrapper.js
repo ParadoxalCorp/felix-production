@@ -26,6 +26,7 @@ class DatabaseWrapper {
      * });
      */
     constructor(client, updateFunc) {
+        // @ts-ignore
         this.rethink = require("rethinkdbdash")({
             servers: [
                 { host: client.config.database.host, port: client.config.database.port }
@@ -38,7 +39,9 @@ class DatabaseWrapper {
         this.guildData = this.rethink.db(client.config.database.database).table('guilds');
         this.userData = this.rethink.db(client.config.database.database).table('users');
         this.client = client;
+        // @ts-ignore
         this.users = new(require('../../modules/collection'))();
+        // @ts-ignore
         this.guilds = new(require('../../modules/collection'))();
         this.healthy = true;
     }
@@ -48,6 +51,7 @@ class DatabaseWrapper {
      * @returns {Promise<void>} - An error will be rejected if something fail when establishing the changes stream
      */
     init() {
+        // @ts-ignore
         return new Promise(async(resolve, reject) => {
             let guildCursor = this.guildData.changes({ squash: true, includeInitial: true, includeTypes: true }).run();
             let userCursor = this.userData.changes({ squash: true, includeInitial: true, includeTypes: true }).run();

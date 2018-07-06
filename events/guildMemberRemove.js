@@ -3,6 +3,7 @@
 /** 
  * @typedef {import("eris").Guild} Guild 
  * @typedef {import("eris").Member} Member
+ * @typedef {import("../main.js")} Client
 */
 
 /**
@@ -14,8 +15,7 @@ class GuildMemberRemoveHandler {
     constructor() {}
     /**
      *
-     *
-     * @param {*} client Felix's client
+     * @param {Client} client Felix's client
      * @param {Guild} guild eris member
      * @param {Member} member Eris member
      * @returns {Promise<any>} hi

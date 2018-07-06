@@ -67,6 +67,7 @@ const marketItems = [{
      * @param {UserEntry} userEntry userEntry
      * @returns {any} something
     */    
+    // @ts-ignore
     run: (client, guildEntry, userEntry) => userEntry.cooldowns.loveCooldown.max++
 }];
 

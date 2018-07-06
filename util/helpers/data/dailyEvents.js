@@ -43,6 +43,7 @@ const dailyEvents = (client, economyManager) => {
              * @param {UserEntry} userEntry userEntry
              * @returns {Boolean} true / false
             */
+            // @ts-ignore
             condition: (userEntry) => userEntry.economy.items.find(i => economyManager.getItem(i.id).data && economyManager.getItem(i.id).data.type === 'Destroyer'),
             /** 
              * @param {UserEntry} userEntry userEntry
@@ -60,6 +61,7 @@ const dailyEvents = (client, economyManager) => {
              * @param {UserEntry} userEntry userEntry
              * @returns {Boolean} true / false
              */
+            // @ts-ignore
             condition: (userEntry) => userEntry.economy.items.find(i => economyManager.getItem(i.id).data && economyManager.getItem(i.id).data.type === 'Battleship'),
             /** 
              * @param {UserEntry} userEntry userEntry

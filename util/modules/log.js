@@ -1,6 +1,14 @@
 //Draft-logs proof of concept by Aetheryx#2222 (284122164582416385)
 //Afaik this frame animation proof of concept
 
+/**
+ * @typedef Draft
+ * @type {Object}
+ * @property {Boolean} spinning
+ * @property {string} text
+ * @property {any} draft
+ */
+
 const chalk = require('chalk');
 const sleep = require('./sleep');
 require('draftlog').into(console);
@@ -12,6 +20,7 @@ const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '
  */
 class Log {
     constructor() {
+        /** @type {Map<String | Number, Object>} */
         this.drafts = new Map();
     }
 
@@ -19,7 +28,7 @@ class Log {
      * Log to the console a fancy red error message
      * @param {string} err - The error to log
      * @param {Boolean} [returnString] - Optional, default is false: Whether the string should be returned instead of being logged
-     * @returns {void|string} hi 
+     * @returns {void|string} errror log in red color
      */
     error(err, returnString) {
         const log = `[${chalk.default.red(Date().toString().split(' ').slice(1, 5).join(' ') + ' ERROR')}] ${err}`;
@@ -34,7 +43,7 @@ class Log {
      * Log to the console a fancy yellow warning message
      * @param {string} warning - The warning to log
      * @param {Boolean} [returnString] - Optional, default is false: Whether the string should be returned instead of being logged
-     * @returns {void|string} hi
+     * @returns {void|string} warning log in yellow
      */
     warn(warning, returnString) {
         const log = `[${chalk.default.yellow(Date().toString().split(' ').slice(1, 5).join(' ') + ' WARNING')}] ${warning}`;
@@ -49,7 +58,7 @@ class Log {
      * Log to the console a fancy yellow warning message
      * @param {string} info - The warning to log
      * @param {Boolean} [returnString] - Optional, default is false: Whether the string should be returned instead of being logged
-     * @returns {string|void} hi
+     * @returns {string|void} info log in green
      */
     info(info, returnString = false) {
         const log = `[${chalk.default.green(Date().toString().split(' ').slice(1, 5).join(' ') + ' INFO')}] ${info}`;
@@ -64,7 +73,7 @@ class Log {
      * Log an animated "loading" message
      * @param {String|Number} name - The name of the draft-log, this is needed to retrieve it later
      * @param {string} text - The text to be logged
-     * @returns {Promise<void | string>} hi
+     * @returns {Promise<void | string>} TODO
      */
     async draft(name, text) {
         //If the terminal cannot handle draft logs, make a simple log
@@ -88,7 +97,7 @@ class Log {
      * @param {String|Number} name - The name of the draft-log to end
      * @param {string} text - Text to update the log with
      * @param {Boolean} [succeed=true] - Whether the operation succeed or not, will respectively result in a info or an error message
-     * @returns {Promise<void>} hi
+     * @returns {Promise<void>} TODO
      */
     async endDraft(name, text, succeed = true) {
         this.drafts.get(name).spinning = false;
