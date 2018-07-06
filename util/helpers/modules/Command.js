@@ -293,9 +293,9 @@ class Command {
         //While it is very unlikely, resolve the role by ID (and mention) if possible
         text = text.replace(/<|>|#/g, '');
         // @ts-ignore
-        if (options.message.channel.guild.channels.get(text)) {
-            // @ts-ignore
-            return options.message.channel.guild.channels.get(text);
+        const channelByID = options.message.channel.guild.channels.get(text);
+        if (channelByID && (options.textual ? channelByID.type === 0 : channelByID.type === 2)) {
+            return channelByID;
         }
 
         return false;
