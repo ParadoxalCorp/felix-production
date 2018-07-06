@@ -1,4 +1,14 @@
-# Update 4.1.6
+# Update 4.1.7 Changelog
+
+### Bugs fixes
+
+* Fixed a bug that would allow setting voice channels as greetings and farewells target ([#33](https://github.com/ParadoxalCorp/felix-production/issues/33))
+
+### Commits
+
+* [[6df2a2](https://github.com/ParadoxalCorp/felix-production/commit/6df2a29dcce3afc51c5fff01b019f3fe3ef058fd)] - Address issue [#33](https://github.com/ParadoxalCorp/felix-production/issues/33)
+
+# Update 4.1.6 Changelog
 
 * Fixed the behavior of multiple commands that were causing errors if a wrong number of arguments was provided
 
