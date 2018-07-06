@@ -100,7 +100,7 @@ class SetFarewells extends Command {
     }
 
     async setMessageTarget(client, message, args, guildEntry) {
-        const channel = await this.getChannelFromText({ client: client, message: message, text: args[1] });
+        const channel = await this.getChannelFromText({ client, message, text: args[1] });
         if (!channel) {
             return message.channel.createMessage(`:x: I couldn't find a channel named \`${args[1]}\` on this server`);
         } else if (guildEntry.farewells.channel === channel.id) {

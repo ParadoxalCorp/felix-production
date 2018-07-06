@@ -15,7 +15,7 @@ class GuildMemberRemoveHandler {
         }
         let message = guildEntry.farewells.message = this.replaceFarewellTags(guild, user, guildEntry.farewells.message);
         let channel = guild.channels.get(guildEntry.farewells.channel);
-        if (!channel) {
+        if (!channel || channel.type !== 0) {
             return;
         } 
         channel.createMessage(message).catch(() => {});
