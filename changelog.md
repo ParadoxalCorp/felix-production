@@ -1,3 +1,13 @@
+# Update 4.1.8 Changelog
+
+### Bugs fixes
+
+* Fixed a bug in the clear command that was meant to be patched with the `4.1.3` patch but was incorrectly done
+
+### Commits
+
+* [[b57cc3](https://github.com/ParadoxalCorp/felix-production/commit/b57cc3795cf46d453702c722274c018ecc14e596)] - Patch 4.1.8
+
 # Update 4.1.7 Changelog
 
 ### Bugs fixes
