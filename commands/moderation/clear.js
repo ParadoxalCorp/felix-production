@@ -72,7 +72,7 @@ class Clear extends Command {
         await message.channel.deleteMessages(uniqueMessages);
         message.channel.createMessage(`:white_check_mark: Deleted **${uniqueMessages.length}** messages`).then(m => {
             setTimeout(() => {
-                m.delete().catch();
+                m.delete().catch(() => {});
             }, 4000);
         });
 
