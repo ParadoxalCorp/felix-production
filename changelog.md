@@ -1,3 +1,13 @@
+# Update 4.1.9 Changelog
+
+### Bugs fixes
+
+* Fixed a bug where the daily cooldown wouldn't be added if a random event occurred
+
+### Commits
+
+*  [[eb3558](https://github.com/ParadoxalCorp/felix-production/commit/eb355833fadb1e9729d454515641fb10547acb8c)] - Fix daily cooldown not always being added
+
 # Update 4.1.8 Changelog
 
 ### Bugs fixes
