@@ -1,4 +1,7 @@
+// @ts-nocheck
 'use strict';
+
+/** @typedef {import("../../../main.js")} Client */
 
 const Collection = require('../../modules/collection');
 const databaseUpdater = require('./databaseUpdater');
@@ -7,13 +10,12 @@ const references = require('../data/references');
 class TableInterface {
     /**
      * @param {object} params - An object of parameters
-     * @param {object} params.client - The client instance
+     * @param {Client} params.client - The client instance
      * @param {object} params.rethink - The RethinkDB instance
      * @param {string} params.tableName - The name of the table to create an interface for
      * @param {object} params.extension - The extension class for the entries this table is supposed to contain
      * @param {function} params.initialCheck - A function that will be called with the `data` parameter before the databaseUpdater, specify one to manipulate the non-updated data
      * @param {function} params.finalCheck - A function that will be called with the `data`parameter after the databaseUpdater, specify one to manipulate the updated data 
-     * @returns {TableInterface} A TableInterface instance
      */
     constructor(params) {
         this.client = params.client;
@@ -54,7 +56,7 @@ class TableInterface {
     /**
      * Set or update an entry in the database
      * @param {object} data - The extended entry class or the raw data object to set
-     * @returns {Promise<data>} The updated data 
+     * @returns {Promise<any>} The updated data 
      */
     async set(data) {
         return this.table.get(data.id).replace(data.toDatabaseEntry ? data.toDatabaseEntry() : data, {returnChanges: 'always'});

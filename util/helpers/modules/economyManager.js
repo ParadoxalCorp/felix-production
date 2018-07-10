@@ -1,14 +1,16 @@
 'use strict';
 
 /**
- * Provides methods related to the economy, such as crediting, debiting or transferring coins
- * @prop {object} client The client instance given when instantiating this class
- * @prop {array<object>} marketItems The market items
- * @prop {array<object>} slotsEvents An array of slots events
- */
+ * @typedef {import("../../../main.js")} Client
+*/
+
+
 class EconomyManager {
     /**
-     * @param {*} client - The client instance
+     * Provides methods related to the economy, such as crediting, debiting or transferring coins
+     * @param {Client} client - The client instance
+     * @prop {array<object>} marketItems The market items
+     * @prop {array<object>} slotsEvents An array of slots events
      */
     constructor(client) {
         this.client = client;
@@ -23,7 +25,7 @@ class EconomyManager {
      * @param {object} params.from Who is transferring their coins, aka who will be debited (this has to be the database entry)
      * @param {object} params.to Who is receiving the coins, aka who will be credited (this has to be the database entry)
      * @param {number} params.amount The amount of coins to transfer
-     * @returns {Promise<transactionSummary>} A summary of the transaction 
+     * @returns {Promise<Object>} A summary of the transaction 
      */
     async transfer(params) {
         const transactionSummary = {
@@ -45,10 +47,10 @@ class EconomyManager {
 
     /**
      * 
-     * @param {*} transactionSummary The summary of the transaction
-     * @param {*} donor The donor
-     * @param {*} receiver The receiver
-     * @returns {{donor: donor, receiver: receiver}} Returns the donor and the receiver entries with the transaction registered
+     * @param {object} transactionSummary The summary of the transaction
+     * @param {object} donor The donor
+     * @param {object} receiver The receiver
+     * @returns {{donor, receiver}} Returns the donor and the receiver entries with the transaction registered
      * @private 
      */
     _registerTransaction(transactionSummary, donor, receiver) {

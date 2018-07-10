@@ -3,16 +3,33 @@
 //Not sure why i would make that a class but ok
 
 /**
+ * @typedef {object} Permissions
+ * @property {Array<String>} allowedCommands commands which can be used on guilds
+ * @property {Array<String>} restrictedCommands commands which can't be used on guild
+ * 
+*/
+
+/**
+ * @typedef {Object} TransactionObject
+ * @property {number} amount
+ * @property {string} from
+ * @property {string} to
+ * @property {string} reason
+ * @property {number} date
+ */
+
+/**
  * This class provides all the default data model the process may use, for example, the default data models for guild and user entries in the database
- * @prop {object} defaultPermissions The default permissions object
- * @prop {object} globalPermissionsSet The default permissions object, but with empty arrays
+ * @class References
  */
 class References {
     constructor() {
+        /** @type {Permissions} The default permissions object */
         this.defaultPermissions = {
             allowedCommands: ['generic*', 'fun*', 'economy*', 'misc*', 'utility*', 'image*', 'music*'],
             restrictedCommands: ['settings*', 'forceskip']
         };
+        /** @type {Permissions} The default permissions object, but with empty arrays */
         this.globalPermissionsSet = {
             allowedCommands: [],
             restrictedCommands: []
@@ -64,8 +81,8 @@ class References {
     /**
      * Returns the configuration of an auto assignable role
      * @param {string} id - The ID of the role
-     * @param {array} incompatibleRoles - An array of roles ID with which this role is incompatible
-     */
+     * @param {Array<String>} incompatibleRoles - An array of roles ID with which this role is incompatible
+     * @returns {{id : string, incompatibleRoles : Array<String>}} Role ID and incompatibleRoles array     */
      selfAssignableRole(id, incompatibleRoles) {
        return {
          id,
@@ -77,7 +94,7 @@ class References {
      * Entry for guildEntry.experience.members
      * Store experience-system related data
      * @param {string} id - The ID of the member
-     * @returns {object} The object
+     * @returns {{id : String, experience: Number}} The object
      */
     guildMember(id) {
         return {
@@ -89,7 +106,7 @@ class References {
     /**
      * Permission set for a channel/role/user
      * @param {string} id - The ID of the target
-     * @returns {object} The permission set for this target
+     * @returns {{allowedCommands : Array<String>, restrictedCommands: Array<String>, id: String}} The permission set for this target
      */
     permissionsSet(id) {
         return {
@@ -103,8 +120,8 @@ class References {
      *
      * @param {string} id - The ID of the role
      * @param {number} at - The level at which this role should be given
-     * @param {boolean} isStatic - Whether this role should be removed when a higher one is won, if false, the role will be removed
-     * @return {object} The role object
+     * @param {Boolean} isStatic - Whether this role should be removed when a higher one is won, if false, the role will be removed
+     * @return {{id: String, static: Boolean, at : Number}} The role object
      */
     activityGuildRole(id, at, isStatic = true) {
         return {
@@ -151,7 +168,7 @@ class References {
      * @param {string} data.from  Username#Discriminator of the user from who the coins once belonged
      * @param {string} data.to Username#Discriminator of who received the coins
      * @param {string} data.reason The reason of the transfer (automatic, intended..)
-     * @return {object} The transaction data object
+     * @return {TransactionObject} The transaction data object
      */
     transactionData(data) {
         return {

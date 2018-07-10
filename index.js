@@ -59,7 +59,7 @@ if (require('cluster').isMaster) {
 
             for (const botList in config.botLists) {
                 if (config.botLists[botList].token) {
-                    axios({
+                    axios.default({
                         method: 'post',
                         url: config.botLists[botList].url,
                         data: { server_count: guilds },

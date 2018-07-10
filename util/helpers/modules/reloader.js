@@ -1,15 +1,18 @@
 'use strict';
 
+/** @typedef {import("../../../main.js")} Client */
+
 const fs = require('fs');
 const { join } = require('path');
+/** @typedef {import("eris").Command} Command */
 
 /**
  * Provides methods to reload events listeners, modules and commands
- * @prop {*} client - The client given in the constructor
+ * @prop {Client} client - The client given in the constructor
  */
 class Reloader {
     /**
-     * @param {*} client - The client instance 
+     * @param {Client} client - The client instance 
      */
     constructor(client) {
         this.client = client;
@@ -34,6 +37,7 @@ class Reloader {
                     command.conf.aliases.forEach(alias => this.client.aliases.set(alias, command.help.name));
                 }
             }
+            // @ts-ignore
             return true;
         }
         delete require.cache[path];
@@ -51,10 +55,11 @@ class Reloader {
     /**
      * Reload the event listener at the given path, or add it if it wasn't already here
      * @param {string} path - The absolute path to the event listener
-     * @returns {string} The name of the event, parsed from the path
+     * @returns {string | Boolean} The name of the event, parsed from the path
      */
     reloadEventListener(path) {
         if (path === 'all') {
+            // @ts-ignore
             fs.readdir(join(process.cwd(), 'events'), (err, events) => {
                 for (const event of events) {
                     const eventName = event.split(/\/|\\/gm)[path.split(/\/|\\/gm).length - 1].split('.')[0];
@@ -95,7 +100,9 @@ class Reloader {
         }
         delete require.cache[path];
 
+        // @ts-ignore
         if (this.client[typeof options['bindtoclient'] === 'string' ? options['bindtoclient'] : name]) {
+            // @ts-ignore
             delete this.client[typeof options['bindtoclient'] === 'string' ? options['bindtoclient'] : name];
             options['bindtoclient'] = typeof options['bindtoclient'] === 'string' ? options['bindtoclient'] : name;
         }
@@ -104,6 +111,7 @@ class Reloader {
             this.client : (options['instantiate'] === 'bot' ? this.client.bot : false)) : require(path);
 
         if (options['bindtoclient']) {
+            // @ts-ignore
             this.client[typeof options['bindtoclient'] === 'string' ? options['bindtoclient'] : name] = actualModule;
         }
 

@@ -3,8 +3,14 @@
 
 //Written by Ota#1354 the 26/06/2018
 
+/**
+ * @typedef {import("../../util/index.js")} client
+ */
+
 const axios = require("axios");
 const Command = require('../../util/helpers/modules/Command');
+
+
 
 class Rank extends Command {
     constructor() {
@@ -26,8 +32,19 @@ class Rank extends Command {
             require: ['fs-nextra', 'canvas-constructor', 'canvas']
         };
     }
-    // eslint-disable-next-line no-unused-vars
-    async run(client, message, args, guildEntry, userEntry) {
+    
+    /**
+     *
+     *
+     * @param {client} client hi
+     * @param {*} message hi
+     * @param {*} args hi
+     * @param {*} guildEntry hi
+     * @param {*} userEntry hi
+     * @returns {*} hi
+     * @memberof Rank
+     */
+  async run(client, message, args, guildEntry, userEntry) {
       const { Canvas } = require('canvas-constructor');
       const fsn = require('fs-nextra');
       
@@ -83,7 +100,7 @@ class Rank extends Command {
         17
       ) //Creating picture progress bar Local (x=156, y=197, Length=XP current, Width=17)
       //Push avatar user
-      .addImage(await axios.get(member.avatarURL, {
+      .addImage(await axios.default.get(member.avatarURL, {
         responseType: 'arraybuffer'
       }).then((res) =>
         res.data
