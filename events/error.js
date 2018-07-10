@@ -23,10 +23,11 @@ class ErrorHandler {
             },
         };
         this.sentry;
+        this.lastRelease;
     }
 
     async handle(client, err, message, sendMessage = true) {
-        if (typeof this.sentry === 'undefined' && client.config.apiKeys.sentryDSN) {
+        if ((typeof this.sentry === 'undefined' && client.config.apiKeys.sentryDSN) || (client.config.apiKeys.sentryDSN && this.lastRelease && this.lastRelease !== client.package.version)) {
             this.initSentry(client);
         }
         const error = typeof err === 'string' ? this.identifyError(err) : false;
@@ -73,10 +74,7 @@ class ErrorHandler {
     }
 
     initSentry(client) {
-        let raven;
-        try {
-            raven = require('raven');
-        } catch (err) {} //eslint-disable-line no-empty
+        let raven = client.moduleIsInstalled('raven') ? require('raven') : false;
         if (!raven) {
             return this.sentry = false;
         }
@@ -84,6 +82,7 @@ class ErrorHandler {
             environment: client.config.process.environment,
             release: client.package.version
         }).install();
+        this.lastRelease = client.package.version;
     }
 }
 
