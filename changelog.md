@@ -10,6 +10,16 @@
 * [[e6b35d](https://github.com/ParadoxalCorp/felix-production/commit/e6b35d6afb507f884c2397186af333cadd4e382e)] - Track releases on Sentry
 * [[786af6](https://github.com/ParadoxalCorp/felix-production/commit/786af68f10c13707bdbefbaa1e3d752a92ce8c59)] - Merge pull request [#32](https://github.com/ParadoxalCorp/felix-production/pull/32) from ParadoxalCorp/JSDoc-update (25 commits)
 
+# Update 4.1.9 Changelog
+
+### Bugs fixes
+
+* Fixed a bug where the daily cooldown wouldn't be added if a random event occurred
+
+### Commits
+
+*  [[eb3558](https://github.com/ParadoxalCorp/felix-production/commit/eb355833fadb1e9729d454515641fb10547acb8c)] - Fix daily cooldown not always being added
+
 # Update 4.1.8 Changelog
 
 ### Bugs fixes
