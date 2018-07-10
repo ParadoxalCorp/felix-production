@@ -1,3 +1,13 @@
+# Update 4.2.8 Changelog
+
+### Back-end changes
+
+* Releases are now partially tracked on Sentry to make tracking down issues source faster
+
+### Commits
+
+* [[e6b35d](https://github.com/ParadoxalCorp/felix-production/commit/e6b35d6afb507f884c2397186af333cadd4e382e)] - Track releases on Sentry
+
 # Update 4.1.8 Changelog
 
 ### Bugs fixes
