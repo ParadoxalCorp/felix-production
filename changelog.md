@@ -6,7 +6,7 @@
 
 ### Commits
 
-* [[](https://github.com/ParadoxalCorp/felix-production/commit/e8cbdd379bf3ec0bf372c77efa0dd253da6a15e1)] - Address issue [#40](https://github.com/ParadoxalCorp/felix-production/issues/40)
+* [[e8cbdd](https://github.com/ParadoxalCorp/felix-production/commit/e8cbdd379bf3ec0bf372c77efa0dd253da6a15e1)] - Address issue [#40](https://github.com/ParadoxalCorp/felix-production/issues/40)
 
 # Update 4.1.9 Changelog
 
