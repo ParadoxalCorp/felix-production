@@ -1,16 +1,15 @@
 'use strict';
 
-/** @typedef {import("../../../main.js")} Client */
-
-
+/**
+ * Provides methods to create an "interactive list" message, basically a message with "pages" 
+ * @prop {object} client - The client given in the constructor
+ */
 class InteractiveList {
     /**
-     * Provides methods to create an "interactive list" message, basically a message with "pages"
-     * @param {Client} client - The client instance
+     * @param {object} client - The client instance
      */
     constructor(client) {
         this.client = client;
-        // @ts-ignore
         this.ongoingList = new client.collection();
     }
 
@@ -67,7 +66,6 @@ class InteractiveList {
                         });
                     } else {
                         if (typeof value === 'string') {
-                            // @ts-ignore
                             value = value.replace(index, page);
                         }
                     }

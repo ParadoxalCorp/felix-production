@@ -1,9 +1,5 @@
 'use strict';
 
-/**
- * @typedef {import("eris").Message} Message
- */
-
 const Command = require('../../util/helpers/modules/Command');
 
 class Give extends Command {
@@ -29,17 +25,7 @@ class Give extends Command {
             }]
         };
     }
-    /**
-     *
-     *
-     * @param {*} client hi
-     * @param {Message} message hi
-     * @param {Array} args hi 
-     * @param {*} guildEntry hi
-     * @param {*} userEntry hi
-     * @returns {Promise<Message>} hi
-     * @memberof Give
-     */
+
     async run(client, message, args, guildEntry, userEntry) {
         const userInput = args.length >= 2 ? args.slice(0, args.length - 1) : false;
         if (!userInput) {
@@ -52,10 +38,8 @@ class Give extends Command {
         } else if (coins > userEntry.economy.coins) {
             return message.channel.createMessage(':x: Yeah well, how to say this.. you can\'t give more coins than you have..');
         }
-        //@ts-ignore
         const receiverEntry = await client.database.getUser(receiver.id) || client.refs.userEntry(receiver.id);
         const transaction = await client.economyManager.transfer({ from: userEntry, to: receiverEntry, amount: coins });
-        //@ts-ignore
         return message.channel.createMessage(`:white_check_mark: You just transferred \`${transaction.donor.debited}\` of your holy coins to \`${receiver.username + '#' + receiver.discriminator}\``);
     }
 }

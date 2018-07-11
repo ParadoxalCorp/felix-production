@@ -1,14 +1,3 @@
-/** @typedef {import("../../../main.js")} Client */
-/** @typedef {import("../modules/economyManager.js")} EconomyManager */
-/** @typedef {import("../modules/extendedUserEntry.js")} UserEntry */
-
-
-/**
- * 
- * @param {Client} client client
- * @param {EconomyManager} economyManager economyManager
- * @returns {Array<Object>} daily events
- */
 const dailyEvents = (client, economyManager) => {
     return [{
         id: 20000,
@@ -25,10 +14,6 @@ const dailyEvents = (client, economyManager) => {
         message: 'A cat run into you and steals `{value}` from your daily holy coins !',
         changeRate: [-40, -60],
         conditionalVariants: [{
-            /** 
-             * @param {UserEntry} userEntry userEntry
-             * @returns {Boolean} true / false
-            */
             condition: (userEntry) => userEntry.hasItem(1000),
             success: `A cat runs into you and steals \`{value}\` from your daily holy coins ! But your **${economyManager.getItem(1000).name}** catches it and gets your holy coins back !`,
             fail: `A cat runs into you and steals \`{value}\` from your daily holy coins ! But your **${economyManager.getItem(1000).name}** catches it and... wait, your ${economyManager.getItem(1000).name} got beaten by the cat !`,
@@ -39,16 +24,7 @@ const dailyEvents = (client, economyManager) => {
         message: 'A pirate ship attack and steals `{value}` from your daily holy coins !',
         changeRate: [-60, -80],
         conditionalVariants: [{
-            /** 
-             * @param {UserEntry} userEntry userEntry
-             * @returns {Boolean} true / false
-            */
-            // @ts-ignore
             condition: (userEntry) => userEntry.economy.items.find(i => economyManager.getItem(i.id).data && economyManager.getItem(i.id).data.type === 'Destroyer'),
-            /** 
-             * @param {UserEntry} userEntry userEntry
-             * @returns {Object} object
-            */
             context: (userEntry) => {
                 return {
                     success: `A pirate ship is suspiciously approaching the coast, but as soon as their intent to steal you becomes clear, torpedoes hit their broadside and sink the ship. Those torpedoes were from your **${economyManager.marketItems.filter(i => i.data && i.data.type === 'Destroyer' && userEntry.hasItem(i.id))[client.getRandomNumber(0, economyManager.marketItems.filter(i => i.data && i.data.type === 'Destroyer' && userEntry.hasItem(i.id)).length - 1)].name}** !`,
@@ -57,16 +33,7 @@ const dailyEvents = (client, economyManager) => {
                 };
             }
         }, {
-            /** 
-             * @param {UserEntry} userEntry userEntry
-             * @returns {Boolean} true / false
-             */
-            // @ts-ignore
             condition: (userEntry) => userEntry.economy.items.find(i => economyManager.getItem(i.id).data && economyManager.getItem(i.id).data.type === 'Battleship'),
-            /** 
-             * @param {UserEntry} userEntry userEntry
-             * @returns {Object} object
-             */
             context: (userEntry) => {
                 return {
                     success: `A pirate ship is suspiciously approaching the coast, but as soon as their intent to steal you becomes clear, you hear loud gun fires and notice that they come from your **${economyManager.marketItems.filter(i => i.data && i.data.type === 'Battleship' && userEntry.hasItem(i.id))[client.getRandomNumber(0, economyManager.marketItems.filter(i => i.data && i.data.type === 'Battleship' && userEntry.hasItem(i.id)).length - 1)].name}** ! Her main battery guns instantly sank the pirate ship`,

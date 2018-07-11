@@ -1,19 +1,6 @@
 'use strict';
 
 /**
- * @typedef {import("eris").Role} Role 
- * @typedef {import("eris").User} User
- * @typedef {import("eris").Member} Member
- * @typedef {import("eris").Guild} Guild
- * @typedef {import("eris").PermissionOverwrite} PermissionOverwrite
- * @typedef {import("./extendedUser.js").User} ExtendedUser
- * @typedef {import("eris").Message} Message
- * @typedef {import("../../../main.js")} Client
- * @typedef {import("./extendedGuildEntry.js")} GuildEntry
- */
-
-
-/**
  * Provide some utility methods to parse the args of a message, check the required permissions...
  * @class Command
  */
@@ -24,16 +11,14 @@ class Command {
     /**
      * Check if a message calls for a command
      * As it calls the database to check for a custom prefix, the method is asynchronous and may be awaited
-     * @param {Message} message - The message object to parse the command from
-     * @param {Client} client - The client instance
-     * @returns {Promise<object | undefined>} - The command object, or undefined if the message is not prefixed or the command does not exist
+     * @param {object} message - The message object to parse the command from
+     * @param {object} client - The client instance
+     * @returns {Promise<object>} - The command object, or undefined if the message is not prefixed or the command does not exist
      */
     parseCommand(message, client) {
         return new Promise(async(resolve, reject) => {
             const args = message.content.split(/\s+/);
-            // @ts-ignore
             const guildEntry = message.channel.guild && client.database && client.database.healthy ?
-                // @ts-ignore
                 await client.database.getGuild(message.channel.guild.id).catch(err => {
                     return reject(err);
                 }) :
@@ -59,16 +44,6 @@ class Command {
         });
     }
 
-    /**
-     *
-     *
-     * @param {Message} message message
-     * @param {Client} client client
-     * @param {GuildEntry} guildEntry guildEntry
-     * @param {Array} args args
-     * @returns {Object} unspaced command
-     * @memberof Command
-     */
     _parseUnspacedCommand(message, client, guildEntry, args) {
         const mentionTest = message.content.startsWith(`<@${client.bot.user.id}>`) || message.content.startsWith(`<@!${client.bot.user.id}`);
         const supposedCommand = !mentionTest
@@ -84,15 +59,14 @@ class Command {
     /**
      * Check if the bot has the given permissions to work properly
      * This is a deep check and the channels wide permissions will be checked too
-     * @param {Message} message - The message that triggered the command
-     * @param {Client} client  - The client instance
+     * @param {object} message - The message that triggered the command
+     * @param {object} client  - The client instance
      * @param {array} permissions - An array of permissions to check for
      * @param {object} [channel=message.channel] - Optional, a specific channel to check perms for (to check if the bot can connect to a VC for example)
      * @returns {boolean | array} - An array of permissions the bot miss, or true if the bot has all the permissions needed, sendMessages permission is also returned if missing
      */
     clientHasPermissions(message, client, permissions, channel = message.channel) {
         const missingPerms = [];
-        // @ts-ignore
         const clientMember = message.channel.guild.members.get(client.bot.user.id);
 
         function hasPerm(perm, Command) {
@@ -130,7 +104,7 @@ class Command {
      * This method return the effective permission overwrite for a specific permission of a user
      * It takes into account the roles of the member, their position and the member itself to return the overwrite which actually is effective
      * @param {object} channel - The channel to check permissions overwrites in
-     * @param {Member} member - The member object to check permissions overwrites for
+     * @param {object} member - The member object to check permissions overwrites for
      * @param {string} permission - The permission to search channel overwrites for
      * @return {boolean | PermissionOverwrite} - The permission overwrite overwriting the specified permission, or false if none exist
      */
@@ -148,12 +122,12 @@ class Command {
     /**
      * Try to resolve a user with IDs, names, partial usernames or mentions
      * @param {object} options - An object of options
-     * @param {Client} options.client - The client instance
-     * @param {Message} options.message - The message from which to get the user from
+     * @param {object} options.client - The client instance
+     * @param {object} options.message - The message from which to get the user from
      * @param {string} [options.text=message.content] - The text from which users should be resolved, if none provided, it will use the message content
-     * @returns {Promise<User | Boolean>} The resolved user, or false if none could be resolved
+     * @returns {Promise<User>} The resolved user, or false if none could be resolved
      */
-    async getUserFromText(options ) {
+    async getUserFromText(options = {}) {
         if (!options.client || !options.message) {
             Promise.reject(new Error(`The options.client and options.message parameters are mandatory`));
         }
@@ -163,9 +137,7 @@ class Command {
             return options.client.extendedUser(exactMatch);
         }
         //While it is unlikely, resolve the user by ID if possible
-        // @ts-ignore
         if (options.message.channel.guild.members.get(options.text)) {
-            // @ts-ignore
             return options.client.extendedUser(options.message.channel.guild.members.get(options.text));
         }
 
@@ -180,15 +152,14 @@ class Command {
     }
 
     /**
-     * @param {Client} client - The client instance
-     * @param {Message} message - The message
-     * @param {String} text - The text
+     * @param {*} client - The client instance
+     * @param {*} message - The message
+     * @param {*} text - The text
      * @private
      * @returns {Promise<User>} The user, or false if none found
      */
     async _resolveUserByExactMatch(client, message, text) {
         //Filter the members with a username or nickname that match exactly the text
-        // @ts-ignore
         const exactMatches = message.channel.guild.members.filter(m =>
             m.username.toLowerCase().split(/\s+/).join(" ") === text.toLowerCase().split(/\s+/).join(" ") ||
             (m.nick && m.nick.toLowerCase().split(/\s+/).join(" ") === text.toLowerCase().split(/\s+/).join(" ")));
@@ -216,12 +187,12 @@ class Command {
     /**
      * Try to resolve a role with IDs or names
      * @param {object} options - An object of options
-     * @param {Client} options.client - The client instance
-     * @param {Message} options.message - The message from which to get the roles from
+     * @param {object} options.client - The client instance
+     * @param {object} options.message - The message from which to get the roles from
      * @param {string} [options.text=message.content] - The text from which roles should be resolved, if none provided, it will use the message content
-     * @returns {Promise<Role | Boolean>} The resolved role, or false if none could be resolved
+     * @returns {Promise<Role>} The resolved role, or false if none could be resolved
      */
-    async getRoleFromText(options ) {
+    async getRoleFromText(options = {}) {
         if (!options.client || !options.message) {
             Promise.reject(new Error(`The options.client and options.message parameters are mandatory`));
         }
@@ -231,23 +202,20 @@ class Command {
             return exactMatch;
         }
         //While it is very unlikely, resolve the role by ID if possible
-        // @ts-ignore
         if (options.message.channel.guild.roles.get(options.text)) {
-            // @ts-ignore
             return options.message.channel.guild.roles.get(options.text);
         }
         return false;
     }
 
     /**
-     * @param {Client} client - The client instance
-     * @param {Message} message - The message
-     * @param {String} text - The text
+     * @param {*} client - The client instance
+     * @param {*} message - The message
+     * @param {*} text - The text
      * @private
      * @returns {Promise<Role>} The role, or false if none found
      */
     async _resolveRoleByExactMatch(client, message, text) {
-        // @ts-ignore
         const exactMatches = message.channel.guild.roles.filter(r => r.name.toLowerCase().split(/\s+/).join(" ") === text.toLowerCase().split(/\s+/).join(" "));
         if (exactMatches.length === 1) {
             return exactMatches[0];
@@ -273,10 +241,10 @@ class Command {
     /**
      * 
      * @param {object} options - An object of options
-     * @param {Client} options.client - The client instance
-     * @param {Message} options.message - The message
+     * @param {object} options.client - The client instance
+     * @param {object} options.message - The message
      * @param {string} [options.text=message.content] - The text to resolve a channel from
-     * @param {Boolean} [options.textual=true] - Whether the channel to resolve is a text channel or a voice channel
+     * @param {boolean} [options.textual=true] - Whether the channel to resolve is a text channel or a voice channel
      * @returns {Promise<object|boolean>} The channel object, or false if none found
      */
     async getChannelFromText(options) {
@@ -292,7 +260,6 @@ class Command {
 
         //While it is very unlikely, resolve the role by ID (and mention) if possible
         text = text.replace(/<|>|#/g, '');
-        // @ts-ignore
         const channelByID = options.message.channel.guild.channels.get(text);
         if (channelByID && (options.textual ? channelByID.type === 0 : channelByID.type === 2)) {
             return channelByID;
@@ -302,15 +269,14 @@ class Command {
     }
 
     /**
-     * @param {Client} client - The client instance
-     * @param {Message} message - The message
+     * @param {*} client - The client instance
+     * @param {*} message - The message
      * @param {string} text - The text
      * @param {boolean} textual - Whether the channel is a text channel or a voice channel
      * @private
      * @returns {Promise<Role>} The role, or false if none found
      */
     async _resolveChannelByExactMatch(client, message, text, textual) {
-        // @ts-ignore
         const exactMatches = message.channel.guild.channels.filter(c => c.name === text && c.type === (textual ? 0 : 2));
         if (exactMatches.length === 1) {
             return exactMatches[0];
@@ -335,13 +301,12 @@ class Command {
 
     /**
      * Query to the user the arguments that they forgot to specify
-     * @param {Client} client - The client instance
-     * @param {Message} message - The message that triggered the command
+     * @param {*} client - The client instance
+     * @param {*} message - The message that triggered the command
      * @param {*} command - The command that the user is trying to run
-     * @returns {Promise<Array | Boolean>} An array of arguments
+     * @returns {Promise<Array>} An array of arguments
      */
     async queryMissingArgs(client, message, command) {
-        /** @type {Array} */
         let args = [];
 
         const queryArg = async(arg, ongoingQuery) => {
@@ -391,13 +356,12 @@ class Command {
     /**
      * Resolve a user from a user resolvable and returns an extended user
      * Note that if the user is not found, only username, discriminator and tag are guaranteed (set to unknown) 
-     * @param {Client} client - The client instance
-     * @param {User | String | Number} userResolvable - A user resolvable, can be an ID, a username#discriminator pattern or a user object
-     * @returns {ExtendedUser} returns an extended user object
+     * @param {*} client - The client instance
+     * @param {*} userResolvable - A user resolvable, can be an ID, a username#discriminator pattern or a user object
+     * @returns {extendedUser} returns an extended user object
      */
     resolveUser(client, userResolvable) {
         const defaultUser = { username: 'Unknown', discriminator: 'Unknown' };
-        // @ts-ignore
         if (!isNaN(userResolvable)) {
             const user = client.bot.users.get(userResolvable);
             return client.extendedUser(user ? user : defaultUser);
@@ -412,14 +376,12 @@ class Command {
 
     /**
      * Get the highest role of the specified member and returns it
-     * @param {Member|string} member - The member object or their ID
-     * @param {Guild} guild - The guild object
-     * @returns {Object} The highest role of the user
+     * @param {object|string} member - The member object or their ID
+     * @param {*} guild - The guild object
+     * @returns {*} The highest role of the user
      */
     getHighestRole(member, guild) {
-        // @ts-ignore
         member = member.id ? member : guild.members.get(member);
-        // @ts-ignore
         const filteredRoles = guild.roles.filter(r => member.roles.includes(r.id));
         return filteredRoles.sort((a, b) => b.position - a.position)[0];
     }

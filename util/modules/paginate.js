@@ -2,7 +2,7 @@
  * Split the provided array into multiple arrays of the specified size
  * @param {Array} array The array to split 
  * @param {Number} size The required size for a new array to be created
- * @returns {Array<Array>} An array of arrays, where each arrays represent a "page"
+ * @returns {Array<array>} An array of arrays, where each arrays represent a "page"
  */
 function paginate(array, size) {
     let result = [];

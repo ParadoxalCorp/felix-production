@@ -1,11 +1,8 @@
 # Felix production
 
 [![CircleCI](https://circleci.com/gh/ParadoxalCorp/felix-production.svg?style=svg)](https://circleci.com/gh/ParadoxalCorp/felix-production)
+
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/70cc8d49e16c4b928bb75be87f5e2f59)](https://www.codacy.com/app/paradoxalcorp/felix-production?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ParadoxalCorp/felix-production&amp;utm_campaign=Badge_Grade)
-[![donate](https://img.shields.io/badge/donate-patreon-F96854.svg)](https://www.patreon.com/paradoxorigins)
-[![discord](https://discordapp.com/api/guilds/328842643746324481/embed.png)](https://discord.gg/Ud49hQJ)
-
-
 
 This repository contains the main source code of Felix, the Discord bot.
 

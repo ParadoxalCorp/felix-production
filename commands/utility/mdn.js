@@ -29,7 +29,7 @@ class MDN extends Command {
         if (!args[0]) {
             return message.channel.createMessage(":x: You must specify something to search");
         }
-        let result = await axios.default.get(
+        let result = await axios.get(
                 `https://developer.mozilla.org/en-US/search.json?locale=en-US&q=${encodeURIComponent(args.join())}`, { headers: { 'Content-Type': 'application/json' } })
             .then(r => r.data);
         if (!result.documents || !result.documents.length) {

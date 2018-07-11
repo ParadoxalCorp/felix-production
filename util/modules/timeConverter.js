@@ -16,19 +16,19 @@ class timeConverter {
 
     /**
      * @typedef {object} HumanDate 
-     * @property {number} seconds - The second
-     * @property {number} minutes - The minute
-     * @property {number} hours - The hour
-     * @property {number} day - The day
-     * @property {string} month - The month
-     * @property {number} year - The year
+     * @property {number} humanDate.seconds - The second
+     * @property {number} humanDate.minutes - The minute
+     * @property {number} humanDate.hours - The hour
+     * @property {number} humanDate.day - The day
+     * @property {number} humanDate.month - The month
+     * @property {number} humanDate.year - The year
      */
 
     /**
      * Calculate and return how many elapsed seconds, minutes, hours and days the given milliseconds represent
      * @param {number} ms The milliseconds to calculate
      * @param {boolean} [formatted=false] Whether or not the elapsed time should be returned already in a readable string format
-     * @returns {ElapsedTime | string} An object or a string depending on if formatted is true or false
+     * @returns {ElapsedTime} An object or a string depending on if formatted is true or false
      */
     toElapsedTime(ms, formatted = false) {
         return formatted ? `${Math.floor((ms / (60 * 60 * 24 * 1000)))}d ${Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))}h ${Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60))}m ${Math.floor((ms % (1000 * 60)) / 1000)}s` : {
@@ -43,10 +43,10 @@ class timeConverter {
      * Convert a UNIX timestamp(in ms) to human date
      * @param {number} timestamp The UNIX timestamp in ms to convert
      * @param {boolean} [formatted=true] Whether or not the date should be returned already in a readable string format
-     * @returns {HumanDate | string} An object or a string depending on if formatted is true or false
+     * @returns {HumanDate} An object or a string depending on if formatted is true or false
      */
     toHumanDate(timestamp, formatted = true) {
-        const getMonth = function (monthNumber) {
+        const getMonth = function(monthNumber) {
             let month = '';
             switch (monthNumber) {
                 case 0:

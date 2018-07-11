@@ -75,7 +75,6 @@ class Bot extends Command {
         });
         embedFields.push({
             name: "Node.js",
-            // @ts-ignore
             value: `${process.release.lts ? process.release.lts : ''} ${process.version}`,
             inline: true
         });
@@ -92,13 +91,13 @@ class Bot extends Command {
         let uptime = TimeConverter.toElapsedTime(client.bot.uptime);
         embedFields.push({
             name: "Uptime",
-            // @ts-ignore
             value: `${uptime.days}d ${uptime.hours}h ${uptime.minutes}m ${uptime.seconds}s`,
             inline: true
         });
         embedFields.push({
             name: "Developers",
-            value: "**Lead Developer**: ParadoxOrigins#5451\n**Co-Developers**: Ota#1354, Niputi#2490\n**Contributors**: InternalCosmos#2000, LevitatingBusinessMan#0504"
+            value: "**Lead Developer**: ParadoxOrigins#5451\n**Co-Developers**: Ota#1354, Niputi#2490\n**Contributors**: InternalCosmos#2000, LevitatingBusinessMan#0504",
+            inline: false
         });
         embedFields.push({
             name: "Created the",
@@ -112,19 +111,23 @@ class Bot extends Command {
         });
         embedFields.push({
             name: "Join the support server !",
-            value: "[Felix support server invite link](https://discord.gg/Ud49hQJ)"
+            value: "[Felix support server invite link](https://discord.gg/Ud49hQJ)",
+            inline: false
         });
         embedFields.push({
             name: "Invite Felix to your server",
-            value: `[Felix's invite link](https://discordapp.com/oauth2/authorize?&client_id=${client.bot.user.id}&scope=bot&permissions=2146950271)`
+            value: `[Felix's invite link](https://discordapp.com/oauth2/authorize?&client_id=${client.bot.user.id}&scope=bot&permissions=2146950271)`,
+            inline: false
         });
         embedFields.push({
             name: 'Source',
-            value: `[GitHub repository](https://github.com/ParadoxalCorp/felix-production)`
+            value: `[GitHub repository](https://github.com/ParadoxalCorp/felix-production)`,
+            inline: false
         });
         embedFields.push({
             name: 'Support us and become a donator !',
-            value: '[Patreon](https://www.patreon.com/paradoxorigins)'
+            value: '[Patreon](https://www.patreon.com/paradoxorigins)',
+            inline: false
         });
         if (client.stats) {
             embedFields.push({

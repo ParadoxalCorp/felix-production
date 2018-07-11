@@ -34,7 +34,6 @@ module.exports = {
     //Additional API keys that the bot use for commands for example
     apiKeys: {
         sentryDSN: "",
-        sentryAPI: "",
         weebSH: ""
     },
     //This define whether to only disable or to also remove the commands which requires an API key/package that is missing, you may want to set that to true if you don't plan to use these commands

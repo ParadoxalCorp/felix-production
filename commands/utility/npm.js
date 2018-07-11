@@ -28,7 +28,7 @@ class Npm extends Command {
         if (!args[0]) {
             return message.channel.createMessage(':x: You must specify at least one keyword');
         }
-        const results = await axios.default({
+        const results = await axios({
             method: 'get',
             url: `https://www.npmjs.com/search/suggestions?q=${encodeURIComponent(args.join(' '))}&size=${20}`,
             headers: { 'Content-Type': 'application/json' }

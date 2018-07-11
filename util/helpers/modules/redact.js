@@ -1,10 +1,8 @@
 'use strict';
 
-/** @typedef {import("../../../main.js")} Client */
-
 /**
  * A function that replace all critical credentials from a string (e.g: token, api keys, database host...). Useful to filter out eval and repl outputs
- * @param {Client} client - The client instance
+ * @param {*} client - The client instance
  * @param {string} string - The string to replace credentials for
  * @returns {string} The given strings with credentials replaced
  */

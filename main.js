@@ -1,50 +1,29 @@
 'use strict';
 
-/** 
- * @typedef {import("eris").Client} ErisClient 
- * 
-*/
-
 const fs = require('fs');
 const { join } = require('path');
-// @ts-ignore
 const { Base } = require('eris-sharder');
 
-/**
- *
- * 
- * @class Felix
- * @extends {Base}
- */
 class Felix extends Base {
-    /** 
-     * @param {ErisClient} bot Eris Client 
-     * @constructor Felix
-    */
     constructor(bot) {
         super(bot);
 
-        /** If true, this would ignore all messages from everyone besides the owner */
+        //If true, this would ignore all messages from everyone besides the owner
         this.maintenance = false;
         this.collection = require('./util/modules/collection');
         this.config = require('./config');
-        // @ts-ignore
         this.package = require('./package');
         this.prefixes = this.config.prefix ? [this.config.prefix] : [];
         this.stats;
-        /** @type {Object} */
         this.packages = {};
     }
 
     launch() {
         //Assign modules to the client
         Object.assign(this, require('./util')(this));
-        // @ts-ignore
         this.ratelimited = new this.collection();
         //This will be filled with mentions prefix once ready
-        // @ts-ignore
         this.commands = new this.collection();
-        // @ts-ignore
         this.aliases = new this.collection();
         this.bot.on('ready', this.ready.bind(this));
         process.on('beforeExit', this.beforeExit.bind(this));
@@ -53,7 +32,6 @@ class Felix extends Base {
         this.loadEventsListeners();
         this.verifyPackages();
         if (this.config.apiKeys['weebSH'] && this.packages.taihou) {
-            // @ts-ignore
             this.weebSH = new(require('taihou'))(this.config.apiKeys['weebSH'], false, {
                 userAgent: `Felix/${this.package.version}/${this.config.process.environment}`,
                 toph: {
@@ -112,6 +90,7 @@ class Felix extends Base {
         this.log.info(`Loaded ${loadedEvents}/${events.length} events`);
         process.on('unhandledRejection', (err) => this.bot.emit('error', err));
         process.on('uncaughtException', (err) => this.bot.emit('error', err));
+        process.on('error', (err) => this.bot.emit('error', err));
     }
 
     async ready() {

@@ -14,7 +14,6 @@ class ExtendedUserEntry {
      * @returns {boolean} Whether or not the user has the specified item
      */
     hasItem(itemID) {
-        // @ts-ignore
         return this.economy.items.find(i => i.id === itemID) ? true : false;
     }
 
@@ -25,10 +24,8 @@ class ExtendedUserEntry {
      */
     addItem(itemID) {
         if (this.hasItem(itemID)) {
-            // @ts-ignore
             this.economy.items[this.economy.items.findIndex(i => i.id === itemID)].count++;
         } else {
-            // @ts-ignore
             this.economy.items.push(references.item(itemID));
         }
     }
@@ -39,9 +36,7 @@ class ExtendedUserEntry {
      * @returns {number} The coins of the user after subtraction 
      */
     subtractCoins(amount) {
-        // @ts-ignore
         this.economy.coins = this.economy.coins - amount;
-        // @ts-ignore
         return this.economy.coins;
     }
 
@@ -51,9 +46,7 @@ class ExtendedUserEntry {
      * @returns {number} The coins of the user after the coins were added 
      */
     addCoins(amount) {
-        // @ts-ignore
         this.economy.coins = this.economy.coins + amount;
-        // @ts-ignore
         return this.economy.coins;
     }
 
@@ -63,7 +56,6 @@ class ExtendedUserEntry {
      * @return {boolean} Whether or not the user is in cooldown
      */
     isInCooldown(cooldown) {
-        // @ts-ignore
         const cooldownObj = this.cooldowns[cooldown];
         if (typeof cooldownObj === 'object') {
             for (const cool of cooldownObj.cooldowns) {
@@ -83,7 +75,6 @@ class ExtendedUserEntry {
      * @returns {number} The timestamp at which the cooldown will expire
      */
     addCooldown(cooldown, duration) {
-        // @ts-ignore
         const cooldownObj = this.cooldowns[cooldown];
         if (typeof cooldownObj === 'object') {
             if (cooldownObj.cooldowns.length < cooldownObj.max) {
@@ -94,9 +85,7 @@ class ExtendedUserEntry {
             cooldownObj.cooldowns[cooldownObj.cooldowns.findIndex(c => c === oldestCooldown)] = Date.now() + duration;
             return oldestCooldown;
         }
-        // @ts-ignore
         this.cooldowns[cooldown] = Date.now() + duration;
-        // @ts-ignore
         return this.cooldowns[cooldown];
     }
 
@@ -106,7 +95,6 @@ class ExtendedUserEntry {
      * @returns {number} The timestamp of the nearest cooldown, or undefined if all of them are expired
      */
     getNearestCooldown(cooldown) {
-        // @ts-ignore
         const cooldownObj = this.cooldowns[cooldown];
         return cooldownObj.cooldowns.filter(c => c > Date.now()).sort((a, b) => a - b)[0];
     }
@@ -118,14 +106,11 @@ class ExtendedUserEntry {
      * @memberof ExtendedUserEntry
      */
     addExperience(amount) {
-        // @ts-ignore
         this.experience.amount = this.experience.amount + amount;
-        // @ts-ignore
         return this.experience.amount;
     }
 
     getLevel() {
-        // @ts-ignore
         return Math.floor(Math.pow(this.experience.amount / config.options.experience.baseXP, 1 / config.options.experience.exponent));
     }
 

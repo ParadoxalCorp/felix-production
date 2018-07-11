@@ -1,20 +1,10 @@
 'use strict';
 
-/** @typedef {import("../../../main.js")} Client */
-
 class ExperienceHandler {
-
-    /**
-     *Creates an instance of ExperienceHandler.
-     * @param {Client} client client
-     * @memberof ExperienceHandler
-     */
     constructor(client) {
         this.client = client;
-        // @ts-ignore
         this.cooldowns = new(require('../../modules/collection'))();
         this._sweepInterval = setInterval(this._sweep.bind(this), client.config.options.experience.sweepInterval);
-        // @ts-ignore
         this.levelledUp = new(require('../../modules/collection'))();
     }
 
@@ -39,12 +29,10 @@ class ExperienceHandler {
             this.levelledUp.set(message.author.id, levelDetails.nextLevel);
             const wonRoles = guildEntry.experience.roles.find(r => r.at <= levelDetails.nextLevel) ? await this._addWonRoles(message, guildEntry, levelDetails) : false;
             if (guildEntry.experience.notifications.enabled) {
-                // @ts-ignore
                 this._notifyUser(message, guildEntry, levelDetails, wonRoles.text);
             }
             await this._removeHigherRoles(message, guildEntry, levelDetails);
             if (wonRoles) {
-                // @ts-ignore
                 this._removeOlderRoles(message, guildEntry, levelDetails, wonRoles.roles);
             }
         }

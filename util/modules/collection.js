@@ -1,17 +1,11 @@
 //Discord.js implementation of collections (because eris collections sucks). All credits goes to their respective owner.
 
 /**
+ * A Map with additional utility methods. This is used throughout discord.js rather than Arrays for anything that has
+ * an ID, for significantly improved performance and ease-of-use.
  * @extends {Map}
  */
 class Collection extends Map {
-    
-    
-    /**
-     * 
-     * A Map with additional utility methods. This is used throughout discord.js rather than Arrays for anything that has
-     * an ID, for significantly improved performance and ease-of-use.
-     * @param {Map<any, any>} iterable Map
-     */
     constructor(iterable) {
         super(iterable);
 
@@ -218,7 +212,6 @@ class Collection extends Map {
         if (typeof value === 'undefined') {
             throw new Error('Value must be specified.');
         }
-        /** @type {Array} */
         const results = [];
         for (const item of this.values()) {
             if (item[prop] === value) {
@@ -336,7 +329,6 @@ class Collection extends Map {
         if (thisArg) {
             fn = fn.bind(thisArg);
         }
-        // @ts-ignore
         const results = new Collection();
         for (const [key, val] of this) {
             if (fn(val, key, this)) {
@@ -458,7 +450,6 @@ class Collection extends Map {
      * @example const newColl = someColl.clone();
      */
     clone() {
-        // @ts-ignore
         return new this.constructor(this);
     }
 
@@ -483,7 +474,6 @@ class Collection extends Map {
      * @returns {Promise[]} An array filled with the return values of the delete methods of each items
      */
     deleteAll() {
-        /** @type {Array} */
         const returns = [];
         for (const item of this.values()) {
             if (item.delete) {
@@ -525,7 +515,6 @@ class Collection extends Map {
      * @returns {Collection} The sorted collection
      */
     sort(compareFunction = (x, y) => +(x > y) || +(x === y) - 1) {
-        // @ts-ignore
         return new Collection([...this.entries()].sort((a, b) => compareFunction(a[1], b[1], a[0], b[0])));
     }
 }

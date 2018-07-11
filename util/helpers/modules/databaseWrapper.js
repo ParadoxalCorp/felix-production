@@ -1,32 +1,32 @@
 'use strict';
 
-/** @typedef {import("../../../main.js")} Client */
-
-
+/**
+ * Wraps the most important methods of RethinkDB and does smart things in the background
+ * @prop {*} rethink The object returned by the rethinkdbdash module after requiring it
+ * @prop {function} updateFunc The update function given in the constructor, if any
+ * @prop {*} guildData The rethinkDB table of guilds
+ * @prop {*} userData The rethinkDB table of users
+ * @prop {*} client The client instance given in the constructor
+ * @prop {Collection} users A collection of cached user entries
+ * @prop {Collection} guilds A collection of cached guild entries
+ * @prop {boolean} healthy A boolean representing whether the connection with the database is established
+ */
 class DatabaseWrapper {
     /**
-     * Wraps the most important methods of RethinkDB and does smart things in the background
-     * @param {Client} client - The client (or bot) instance
-     * @param {function} [updateFunc] - Optional, the function that should be called to update the retrieved entries from the database before returning them. This update function will be called instead of the default update strategy, with the "data" and "type" arguments, which are respectively the database entry and the type of the database entry (either "guild" or "user"). The update function must return an object, this is the object that the DatabaseWrapper.getGuild() and DatabaseWrapper.getUser() methods will return.
-     * @prop {*} guildData The rethinkDB table of guilds
-     * @prop {*} rethink The object returned by the rethinkdbdash module after requiring it
-     * @prop {*} userData The rethinkDB table of users
-     * @prop {Collection} guilds A collection of cached guild entries
-     * @prop {Collection} users A collection of cached user entries
-     * @prop {boolean} healthy A boolean representing whether the connection with the database is established
-     * @example
+     * @param {object} client - The client (or bot) instance
+     * @param {function} updateFunc - Optional, the function that should be called to update the retrieved entries from the database before returning them. This update function will be called instead of the default update strategy, with the "data" and "type" arguments, which are respectively the database entry and the type of the database entry (either "guild" or "user"). The update function must return an object, this is the object that the DatabaseWrapper.getGuild() and DatabaseWrapper.getUser() methods will return.
+     * @example 
      * //Context: In this example, the old user data model used to have its "boolean" property containing either 1 or 0, and we want to update it to either true or false
      * new DatabaseWrapper(client, (data, type) => {
      *   if (type === "guild") {
-     *     return data;
+     *     return data; 
      *   } else {
      *     data.boolean = data.boolean === 1 ? true : false;
-     *     return data;
+     *     return data;   
      *   }
      * });
      */
     constructor(client, updateFunc) {
-        // @ts-ignore
         this.rethink = require("rethinkdbdash")({
             servers: [
                 { host: client.config.database.host, port: client.config.database.port }
@@ -39,19 +39,16 @@ class DatabaseWrapper {
         this.guildData = this.rethink.db(client.config.database.database).table('guilds');
         this.userData = this.rethink.db(client.config.database.database).table('users');
         this.client = client;
-        // @ts-ignore
         this.users = new(require('../../modules/collection'))();
-        // @ts-ignore
         this.guilds = new(require('../../modules/collection'))();
         this.healthy = true;
     }
 
-    /**
+    /** 
      * Initialize the database wrapper, this will start the automatic progressive caching of the database and dynamically handle disconnections
      * @returns {Promise<void>} - An error will be rejected if something fail when establishing the changes stream
      */
     init() {
-        // @ts-ignore
         return new Promise(async(resolve, reject) => {
             let guildCursor = this.guildData.changes({ squash: true, includeInitial: true, includeTypes: true }).run();
             let userCursor = this.userData.changes({ squash: true, includeInitial: true, includeTypes: true }).run();
@@ -138,7 +135,6 @@ class DatabaseWrapper {
     getUser(id) {
         return new Promise(async(resolve, reject) => {
             if (this.users.has(id)) {
-                // @ts-ignore
                 return resolve(new this.client.extendedUserEntry(this._updateDataModel(this.users.get(id)), 'user'));
             }
             this.userData.get(id).run()
@@ -161,22 +157,14 @@ class DatabaseWrapper {
      * @returns {object} - The updated data object
      * @private
      */
-     _updateDataModel(data, type) {
-       if (this.updateFunc) {
-         return this.updateFunc(data, type);
-       }
-       const defaultDataModel = type === "guild" ? this.client.refs.guildEntry(data.id) : this.client.refs.userEntry(data.id);
-       let updatedModel = this._traverseAndUpdate(defaultDataModel, data);
-       if (type === "guild") {
-         updatedModel.selfAssignableRoles = updatedModel.selfAssignableRoles.map(id => {
-           if (typeof id === "string") {
-             return this.client.refs.selfAssignableRoles(id);
-           }
-           return id;
-         });
-       }
-       return this._traverseAndUpdate(defaultDataModel, data);
-     }
+    _updateDataModel(data, type) {
+        if (this.updateFunc) {
+            return this.updateFunc(data, type);
+        }
+        const defaultDataModel = type === "guild" ? this.client.refs.guildEntry(data.id) : this.client.refs.userEntry(data.id);
+
+        return this._traverseAndUpdate(defaultDataModel, data);
+    }
 
     /**
      * Depth-less update function, the values of the properties that the source object has in common with the target object will be assigned to the target object
@@ -199,7 +187,7 @@ class DatabaseWrapper {
 
     /**
      * Insert or update a user/guild in the database
-     * @param {object} data - The data object to update/insert in the database
+     * @param {object} data - The data object to update/insert in the database 
      * @param {string} type - Can be "guild" or "user", whether the data object to be set is a guild or a user
      * @returns {Promise<object>} - The inserted/updated object, or reject the error if any
      */
@@ -224,7 +212,7 @@ class DatabaseWrapper {
     /**
      * Create a new database
      * @param {string} name - The name of the database to create, if there is already a database with this name, the promise will be resolved and nothing will change
-     * @returns {Promise<boolean | string>} - true if success, otherwise, the error is rejected
+     * @returns {Promise<boolean>} - true if success, otherwise, the error is rejected
      */
     createDatabase(name) {
         return new Promise(async(resolve, reject) => {
@@ -246,7 +234,7 @@ class DatabaseWrapper {
      * Create a new table in the specified database
      * @param {string} name - The name of the table to create, if there is already a table with this name, the promise will be resolved and nothing will change
      * @param {string} databaseName - The name of the database to create the table in
-     * @returns {Promise<boolean | string>} - true if success, otherwise, the error is rejected
+     * @returns {Promise<boolean>} - true if success, otherwise, the error is rejected
      */
     createTable(name, databaseName) {
         return new Promise(async(resolve, reject) => {

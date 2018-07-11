@@ -8,7 +8,7 @@ const User = require('../../../node_modules/eris/lib/structures/User');
 /**
  * 
  * @param {string} id - The ID of the user to fetch
- * @returns {Promise<object>} The user object
+ * @returns {object} The user object
  */
 const fetchUser = async(client, id) => {
     if (client.bot.users.has(id)) {

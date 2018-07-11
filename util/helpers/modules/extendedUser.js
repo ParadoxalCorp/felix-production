@@ -1,13 +1,9 @@
 'use strict';
 
 /**
- * @typedef {import("eris").User} User
- */
-
-/**
  * Add some properties and methods to the user object
- * @param {User} user - The user to extend
- * @returns {Object} The given user with additional properties
+ * @param {object} user - The user to extend
+ * @returns {user} The given user with additional properties
  */
 const extendUser = (user) => {
     return Object.defineProperties(user, {
