@@ -42,7 +42,7 @@ class LoveShip extends Command {
             client.bot.sendChannelTyping(message.channel.id);
             typing = true;
         }
-        const generatedShip = await client.weebSH.korra.generateLoveShip(this.useWebpFormat(firstUser.avatarURL), this.useWebpFormat(secondUser.avatarURL)).catch(this.handleError.bind(this, client, message, typing));
+        const generatedShip = await client.weebSH.korra.generateLoveShip(this.useWebpFormat(firstUser), this.useWebpFormat(secondUser)).catch(this.handleError.bind(this, client, message, typing));
         const match = (() => {
             let msg = typing ? `<@!${message.author.id}> ` : '';
             msg += `I, Felix von Trap, by the powers bestowed upon me, declare this a **${this.calculateMatch(firstUser.id, secondUser.id)}** match`;
@@ -58,8 +58,8 @@ class LoveShip extends Command {
         throw error;
     }
 
-    useWebpFormat(url) {
-        return url.replace(/.jpeg|.jpg|.png|.gif/g, '.webp');
+    useWebpFormat(user) {
+        return user.avatarURL ? user.avatarURL.replace(/.jpeg|.jpg|.png|.gif/g, '.webp') : user.defaultCDNAvatar;
     }
 
     calculateMatch(firstID, secondID) {

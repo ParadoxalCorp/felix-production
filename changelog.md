@@ -1,3 +1,13 @@
+# Update 4.1.10 Changelog
+
+### Bugs fixes
+
+* Fixed a bug where some image-generation commands would fail if the user had no avatar
+
+### Commits
+
+* [[e8cbdd](https://github.com/ParadoxalCorp/felix-production/commit/e8cbdd379bf3ec0bf372c77efa0dd253da6a15e1)] - Address issue [#40](https://github.com/ParadoxalCorp/felix-production/issues/40)
+
 # Update 4.1.9 Changelog
 
 ### Bugs fixes

@@ -134,11 +134,11 @@ class Command {
         options.text = options.text || options.message.content;
         const exactMatch = await this._resolveUserByExactMatch(options.client, options.message, options.text);
         if (exactMatch) {
-            return exactMatch;
+            return options.client.extendedUser(exactMatch);
         }
         //While it is unlikely, resolve the user by ID if possible
         if (options.message.channel.guild.members.get(options.text)) {
-            return options.message.channel.guild.members.get(options.text);
+            return options.client.extendedUser(options.message.channel.guild.members.get(options.text));
         }
 
         const mention = new RegExp(/<@|<!@/g);
