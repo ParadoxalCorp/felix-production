@@ -18,6 +18,10 @@ const extendUser = (user) => {
                 });
             },
             writable: true
+        },
+        defaultCDNAvatar: {
+            value: `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`,
+            writable: true
         }
     });
 };

@@ -27,22 +27,19 @@ class Avatar extends Command {
     //eslint-disable-next-line no-unused-vars
     async run(client, message, args, guildEntry, userEntry) {
         const user = await this.getUserFromText({ message, client, text: args.join(' ') });
-        const target = user ? client.extendedUser(user) : client.extendedUser(message.author);
+        const target = user || client.extendedUser(message.author);
         return message.channel.createMessage({
             embed: {
                 title: `Link to the avatar of ${target.username}`,
-                url: target.avatarURL,
+                url: target.avatarURL || target.defaultCDNAvatar,
                 author: {
                     name: target.tag,
-                    icon_url:target.avatarURL
+                    icon_url: target.avatarURL || target.defaultCDNAvatar
                 },
                 image: {
-                    url: target.avatarURL
+                    url: target.avatarURL || target.defaultCDNAvatar
                 },
                 timestamp: new Date(),
-                image: {
-                    url: target.avatarURL
-                },
                 color: client.config.options.embedColor
             }
         });

@@ -28,8 +28,8 @@ class TriggeredGen extends Command {
     //eslint-disable-next-line no-unused-vars
     async run(client, message, args, guildEntry, userEntry) {
         const user = await this.getUserFromText({ message, client, text: args.join(' ') });
-        const target = user ? client.extendedUser(user) : client.extendedUser(message.author);
-        const image = await axios.get(`https://cute-api.tk/v1/generate/triggered?url=${target.avatarURL}`, {responseType: 'arraybuffer'});
+        const target = user || client.extendedUser(message.author);
+        const image = await axios.get(`https://cute-api.tk/v1/generate/triggered?url=${target.avatarURL || target.defaultCDNAvatar}`, {responseType: 'arraybuffer'});
         return message.channel.createMessage(``, {
             file: image.data,
             name: `${Date.now()}-${message.author.id}.gif`
