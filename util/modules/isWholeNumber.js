@@ -7,8 +7,10 @@
  */
 const isWholeNumber = (number) => {
     if (typeof number !== 'string') {
+        // @ts-ignore
         number = new String(number);
     }
+    // @ts-ignore
     return new RegExp(/[^0-9]/gi).test(number) ? false : true;
 };
 

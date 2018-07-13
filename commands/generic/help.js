@@ -26,6 +26,7 @@ class Help extends Command {
         const noEmbed = new RegExp(/--noEmbed/gim).test(args.join(" "));
         const dm = new RegExp(/--dm/gim).test(args.join(" "));
         //If a command name is specified (ignore arguments), get this command help, otherwise get the general help
+        /** @type {any} */
         let helpMessage = !args.filter(a => !a.startsWith('--'))[0] ? this.getOverallHelp(client, message, guildEntry) : this.getCommandHelp(client, message, args, guildEntry);
 
         if (!helpMessage) {
@@ -65,8 +66,7 @@ class Help extends Command {
                             : client.commands.filter(command => command.help.category === c).map(command => `\`${command.help.name}\``).join(" ");
                             return {
                                 name: c,
-                                value: value,
-                                inline: false
+                                value: value
                             };
                         }),
                         footer: {
@@ -93,6 +93,7 @@ class Help extends Command {
     }
 
     getEmbedCommandHelp(client, message, args, command, guildEntry) {
+        
         const embedFields = [{
             name: 'Category',
             value: command.help.category,
@@ -115,12 +116,14 @@ class Help extends Command {
                     paramsList += "\n"; //Bonus new-line
                 }
             }
+            // @ts-ignore
             embedFields.push({
                 name: 'Parameters',
-                value: paramsList
+                value: paramsList 
             });
         }
         if (command.conf.aliases[0]) {
+            // @ts-ignore
             embedFields.push({
                 name: 'Aliases',
                 value: command.conf.aliases.map(a => `\`${a}\``).join(" ")
@@ -148,6 +151,7 @@ class Help extends Command {
             });
         }
         if (command.help.externalDoc) {
+            // @ts-ignore
             embedFields.push({
                 name: 'External documentation',
                 value: `This command has an external documentation available [here](${command.help.externalDoc})`

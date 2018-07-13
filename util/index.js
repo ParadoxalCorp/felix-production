@@ -1,3 +1,11 @@
+/**
+ * @typedef {import("../main.js")} Client
+ */
+
+/**
+ * @param {Client} client client
+ * @returns {Object} object of modules
+ */
 module.exports = (client) => {
     return {
         //In case of a complete reload of the modules, ignore the critical modules

@@ -1,3 +1,15 @@
+# Update 4.2.10 Changelog
+
+### Back-end changes
+
+* Releases are now tracked on Sentry to make tracking down issues source faster
+* Added partial typings and tests cover; The cover will be completed in multiple updates
+
+### Commits
+
+* [[e6b35d](https://github.com/ParadoxalCorp/felix-production/commit/e6b35d6afb507f884c2397186af333cadd4e382e)] - Track releases on Sentry
+* [[786af6](https://github.com/ParadoxalCorp/felix-production/commit/786af68f10c13707bdbefbaa1e3d752a92ce8c59)] - Merge pull request [#32](https://github.com/ParadoxalCorp/felix-production/pull/32) from ParadoxalCorp/JSDoc-update (25 commits)
+
 # Update 4.1.10 Changelog
 
 ### Bugs fixes

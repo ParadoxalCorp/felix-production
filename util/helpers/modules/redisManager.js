@@ -1,8 +1,17 @@
 'use strict';
 
+/** @typedef {import("../../../main.js")} Client */
+
 const Redis = require('ioredis');
 
 class RedisManager extends Redis {
+
+
+    /**
+     *Creates an instance of RedisManager.
+     * @param {Client} client Client
+     * @memberof RedisManager
+     */
     constructor(client) {
         super({
             port: client.config.redis.port,
