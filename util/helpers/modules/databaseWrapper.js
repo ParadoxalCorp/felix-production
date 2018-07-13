@@ -170,7 +170,7 @@ class DatabaseWrapper {
        if (type === "guild") {
          updatedModel.selfAssignableRoles = updatedModel.selfAssignableRoles.map(id => {
            if (typeof id === "string") {
-             return this.client.refs.selfAssignableRoles(id);
+             return this.client.refs.selfAssignableRole(id);
            }
            return id;
          });
