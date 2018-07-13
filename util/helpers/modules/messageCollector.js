@@ -26,6 +26,9 @@ class MessageCollector {
      * @private
      */
     async verify(msg) {
+        if (!msg.author) {
+            return;
+        }
         const collector = this.collectors[msg.channel.id + msg.author.id];
         if (collector && collector.filter(msg)) {
             collector.resolve(msg);

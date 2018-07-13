@@ -81,12 +81,12 @@ class References {
     /**
      * Returns the configuration of an auto assignable role
      * @param {string} id - The ID of the role
-     * @param {Array<String>} incompatibleRoles - An array of roles ID with which this role is incompatible
+     * @param {Array<String>} [incompatibleRoles=[]] - An array of roles ID with which this role is incompatible
      * @returns {{id : string, incompatibleRoles : Array<String>}} Role ID and incompatibleRoles array     */
      selfAssignableRole(id, incompatibleRoles) {
        return {
          id,
-         incompatibleRoles: []
+         incompatibleRoles: incompatibleRoles || []
        };
      }
 
