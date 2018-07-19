@@ -1,14 +1,26 @@
 # Update 4.2.10 Changelog
 
+The highlight of this update is the new database wrapper, this change was initiated by the [patch 4.1.5](#update-415-changelog) which was a direct response to the incident 
+that happened the 30/06/2018. This change makes Felix able to silently handle critical database failures, like disconnections or corrupted database, without spamming 
+error messages or being unresponsive
+
 ### Back-end changes
 
-* Releases are now tracked on Sentry to make tracking down issues source faster
-* Added partial typings and tests cover; The cover will be completed in multiple updates
+* Releases are now tracked on Sentry to track down the source of potential issues faster
+* Added partial typings and tests cover; The cover will be completed in further updates
+* Rewrote the database wrapper from scratch 
+
+### Bugs fixes
+
+* Removed the possibility to specify negative values in the `give` command, as it was effectively stealing coins from other users (Note: Due to the severity of this issue, this change has bypassed the development cycle and has been introduced right after the bug was reported)
 
 ### Commits
 
 * [[e6b35d](https://github.com/ParadoxalCorp/felix-production/commit/e6b35d6afb507f884c2397186af333cadd4e382e)] - Track releases on Sentry
 * [[786af6](https://github.com/ParadoxalCorp/felix-production/commit/786af68f10c13707bdbefbaa1e3d752a92ce8c59)] - Merge pull request [#32](https://github.com/ParadoxalCorp/felix-production/pull/32) from ParadoxalCorp/JSDoc-update (25 commits)
+* [[c285a8](https://github.com/ParadoxalCorp/felix-production/commit/c285a82986b1c545136af8ba53df54600e55a04a)] - Prevent negative values in give
+* [[a9f4d6](https://github.com/ParadoxalCorp/felix-production/commit/a9f4d6e756627184d18ea45458faf7aca2c00990)] - Identify the error after its conversion
+* [[35892c](https://github.com/ParadoxalCorp/felix-production/commit/35892cd869673a8798d8f7760baddb14f466f5db)] - Implement the new database wrapper
 
 # Update 4.1.10 Changelog
 
