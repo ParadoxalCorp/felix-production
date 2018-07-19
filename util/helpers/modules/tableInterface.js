@@ -3,6 +3,7 @@
 
 /** @typedef {import("../../../main.js")} Client */
 
+const { inspect } = require('util');
 const Collection = require('../../modules/collection');
 const databaseUpdater = require('./databaseUpdater');
 const references = require('../data/references');
@@ -20,7 +21,7 @@ class TableInterface {
     constructor(params) {
         this.client = params.client;
         this._rethink = params.rethink;
-        this.table = new Promise((resolve, reject) => this._init(resolve, reject, params.tableName));
+        this.table = this._init(params.tableName);
         this.changesStream;
         this.cache = new Collection();
         this.tableName = params.tableName;
@@ -31,26 +32,21 @@ class TableInterface {
 
     /**
      * 
-     * @param {function} resolve - The function to resolve the promise
-     * @param {function} reject - The function to reject the promise
      * @param {string} tableName - The name of the table
      * @private
      * @returns {Promise<object>} The RethinkDB table
      */
-    async _init(resolve, reject, tableName) {
-        await this._rethink.table(tableName)
-            .catch(reject)
-            .then(resolve);
-        if (this.table.get) {
-            await this.table.changes({ squash: true, includeInitial: true, includeTypes: true }).run()
-                .then(stream => {
-                    this.changesStream = stream;
-                    this.changesStream.on('data', this._cacheData.bind(this));
-                })
-                .catch(err => {
-                    process.send({name: 'warn', msg: `Failed to establish the changes stream for the table ${tableName}: ${err}\nWill fallback to standard uncached requests`});
-                });
-        }
+    async _init(tableName) {
+        await this._rethink.table(tableName).changes({ squash: true, includeInitial: true, includeTypes: true }).run()
+            .then(stream => {
+                this.changesStream = stream;
+                this.changesStream.on('data', this._cacheData.bind(this));
+                this.changesStream.on('error', this._handleBrokenStream.bind(this));
+            })
+            .catch(err => {
+                process.send({name: 'warn', msg: `Failed to establish the changes stream for the table ${tableName}: ${err}\nWill fallback to standard uncached requests`});
+            });
+        return 'ready';
     }
 
     /**
@@ -59,9 +55,17 @@ class TableInterface {
      * @returns {Promise<any>} The updated data 
      */
     async set(data) {
-        return this.table.get(data.id).replace(data.toDatabaseEntry ? data.toDatabaseEntry() : data, {returnChanges: 'always'});
+        return this._rethink.table(this.tableName).get(data.id).replace(data.toDatabaseEntry ? data.toDatabaseEntry() : data, {returnChanges: 'always'}).run()
+            .then(() => {
+                this.cache.set(data.id, data);
+            });
     }
 
+    /**
+     * Get a stored value in the table from its key
+     * @param {string|number} key - The key of the stored value to get
+     * @returns {Promise<any>} The stored value, or null if none are found
+     */
     async get(key) {
         const update = (data) => {
             data = this.initialCheck ? this.initialCheck(data) : data;
@@ -69,10 +73,10 @@ class TableInterface {
             return this.finalCheck ? this.finalCheck(data) : data;
         };
         if (this.cache.has(key)) {
-            return new this.extension(update(this.cache.get(key)));
+            return new this.extension(update(this.cache.get(key)), this.client);
         }
-        return this.table.get(key).run()
-            .then(data => data ? new this.extension(update(data)) : new this.extension(references[this.tableName === 'guilds' ? 'guildEntry' : 'userEntry'](key)));
+        return this._rethink.table(this.tableName).get(key).run()
+            .then(data => data ? new this.extension(update(data), this.client) : new this.extension(references[this.tableName === 'guilds' ? 'guildEntry' : 'userEntry'](key), this.client));
     }
 
     /**
@@ -87,7 +91,16 @@ class TableInterface {
         this.cache.set(data.new_val.id, data.new_val);
     }
 
-    
+    async _handleBrokenStream(err) {
+        this.client.database.healthy = false;
+        process.send({name: 'error', msg: inspect(err)});
+        const testQuery = await this._rethink.table(this.tableName).get('test').run().catch(() => false);
+        if (!testQuery) {
+            return;
+        }
+        this.client.database.healthy = true;
+        process.send({name: 'warn', msg: `Changes stream for the table ${this.tableName} is broken but the table can still be used`});
+    }
 }
 
 module.exports = TableInterface;

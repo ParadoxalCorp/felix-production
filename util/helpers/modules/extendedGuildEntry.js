@@ -5,8 +5,6 @@
  * @typedef {import("../../../main.js")} Client
  * */
 
-
-
 /** @class ExtendedGuildEntry */
 class ExtendedGuildEntry {
     /**

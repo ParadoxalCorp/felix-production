@@ -61,9 +61,6 @@ class Felix extends Base {
                 }
             });
         }
-        if (this.database) {
-            this.database.init();
-        }
 
         this.ready();
     }

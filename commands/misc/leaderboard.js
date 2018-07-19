@@ -1,6 +1,7 @@
 'use strict';
 
 const Command = require('../../util/helpers/modules/Command');
+const databaseUpdater = require('../../util/helpers/modules/databaseUpdater');
 
 class Leaderboard extends Command {
     constructor() {
@@ -60,8 +61,8 @@ class Leaderboard extends Command {
 
     async getLoveLeaderboard(client, message, args) {
         const global = args[1] && args[1].toLowerCase() === 'local' ? false : true;
-        let leaderboard = Array.from((!global ? client.database.users.filter(u => message.channel.guild.members.has(u.id)) 
-        : client.database.users).values()).map(e => client.database._updateDataModel(e, 'user')).sort((a, b) => b.love.amount - a.love.amount);
+        let leaderboard = Array.from((!global ? client.database.userData.cache.filter(u => message.channel.guild.members.has(u.id)) 
+        : client.database.userData.cache).values()).map(e => databaseUpdater(e, 'user')).sort((a, b) => b.love.amount - a.love.amount);
         if (!leaderboard.length) {
             return message.channel.createMessage(':x: Seems like there is nobody to show on the leaderboard yet');
         }
@@ -83,8 +84,8 @@ class Leaderboard extends Command {
 
     async getCoinsLeaderboard(client, message, args) {
         const global = args[1] && args[1].toLowerCase() === 'local' ? false : true;
-        let leaderboard = Array.from((!global ? client.database.users.filter(u => message.channel.guild.members.has(u.id)) 
-        : client.database.users).values()).map(e => client.database._updateDataModel(e, 'user')).sort((a, b) => b.economy.coins - a.economy.coins);
+        let leaderboard = Array.from((!global ? client.database.userData.cache.filter(u => message.channel.guild.members.has(u.id)) 
+        : client.database.userData.cache).values()).map(e => databaseUpdater(e, 'user')).sort((a, b) => b.economy.coins - a.economy.coins);
         if (!leaderboard.length) {
             return message.channel.createMessage(':x: Seems like there is nobody to show on the leaderboard yet');
         }
@@ -106,14 +107,14 @@ class Leaderboard extends Command {
 
     async getExperienceLeaderboard(client, message, args, guildEntry) {
         const global = args[1] && args[1].toLowerCase() === 'local' ? false : true;
-        let leaderboard = global ? client.database.users.map(u => u) : guildEntry.experience.members;
+        let leaderboard = global ? client.database.userData.cache.map(u => u) : guildEntry.experience.members;
         if (global) {
-            leaderboard = leaderboard.map(e => client.database._updateDataModel(e, 'user')).sort((a, b) => b.experience.amount - a.experience.amount).map(u => {
+            leaderboard = leaderboard.map(e => databaseUpdater(e, 'user')).sort((a, b) => b.experience.amount - a.experience.amount).map(u => {
                 u.levelDetails = client.getLevelDetails(new client.extendedUserEntry(u).getLevel());
                 return u;
             });
         } else {
-            leaderboard = leaderboard.map(e => client.database._updateDataModel(e, 'guild')).sort((a, b) => b.experience - a.experience).map(m => {
+            leaderboard = leaderboard.map(e => databaseUpdater(e, 'guild')).sort((a, b) => b.experience - a.experience).map(m => {
                 m.levelDetails = client.getLevelDetails(guildEntry.getLevelOf(m.id));
                 return m;
             });
