@@ -30,10 +30,10 @@ class ErrorHandler {
         if ((typeof this.sentry === 'undefined' && client.config.apiKeys.sentryDSN) || (client.config.apiKeys.sentryDSN && this.lastRelease && this.lastRelease !== client.package.version)) {
             this.initSentry(client);
         }
-        const error = typeof err === 'string' ? this.identifyError(err) : false;
         if (typeof err === 'object') {
             err = inspect(err, {depth: 5});
         }
+        const error = this.identifyError(err);
         process.send({ name: 'error', msg: `Error: ${err}\nStacktrace: ${err.stack}\nMessage: ${message ? message.content : 'None'}` });
         if (message && sendMessage) {
             if (client.config.admins.includes(message.author.id)) {
