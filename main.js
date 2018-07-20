@@ -113,6 +113,7 @@ class Felix extends Base {
     }
 
     async ready() {
+        process.send({name: 'info', msg: 'Ready got emitted'});
         //This code is only meant to be executed on launch, and not every time ready is emitted
         if (this.launchedOnce) {
             return;
