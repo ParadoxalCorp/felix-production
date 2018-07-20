@@ -19,7 +19,7 @@ describe('TimeConverter', function() {
             assert.deepEqual(timeConverter.toHumanDate(0, false), {
                 seconds: 0,
                 minutes: 0,
-                hours: timeConverter.toHumanDate(0).hours === 0 ? 0 : 1,
+                hours: timeConverter.toHumanDate(0, false).hours === 0 ? 0 : 1,
                 day: 1,
                 month: "January",
                 year: 1970,
