@@ -9,6 +9,7 @@ error messages or being unresponsive
 * Releases are now tracked on Sentry to track down the source of potential issues faster
 * Added partial typings and tests cover; The cover will be completed in further updates
 * Rewrote the database wrapper from scratch 
+* The list
 
 ### Bugs fixes
 
@@ -24,6 +25,8 @@ error messages or being unresponsive
 * [[7bd50a](https://github.com/ParadoxalCorp/felix-production/commit/7bd50a859d17264365e65ba51d3f4b25292e3433)] - Switch from jest to mocha for tests
 * [[e1c40c](https://github.com/ParadoxalCorp/felix-production/commit/e1c40c1c625dfe2d3f0c5f154e4a185be96a0166)] - Attempt to make tests successful regardless of the OS
 * [[c69020](https://github.com/ParadoxalCorp/felix-production/commit/c69020fcd22a51f51d8dd8e31f077fd441b4e92d)] - Followup of e1c40c
+* [[164d7b](https://github.com/ParadoxalCorp/felix-production/commit/164d7b272577d20a26dd0ac8e1c783387060bbba)] - Only execute ready() once
+* [[daeaae](https://github.com/ParadoxalCorp/felix-production/commit/daeaae1853834ef36e9600462699aad877111591)] - Followup of 164d7b
 
 # Update 4.1.10 Changelog
 
