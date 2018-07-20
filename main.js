@@ -34,6 +34,7 @@ class Felix extends Base {
         this.stats;
         /** @type {Object} */
         this.packages = {};
+        this.launchedOnce;
     }
 
     launch() {
@@ -112,6 +113,12 @@ class Felix extends Base {
     }
 
     async ready() {
+        //This code is only meant to be executed on launch, and not every time ready is emitted
+        if (this.launchedOnce) {
+            return;
+        } else {
+            this.launchedOnce = true;
+        }
         if (!this.bot.user.bot) {
             this.log.error(`Invalid login details were provided, the process will exit`);
             process.exit(0);
