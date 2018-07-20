@@ -21,6 +21,7 @@ error messages or being unresponsive
 * [[c285a8](https://github.com/ParadoxalCorp/felix-production/commit/c285a82986b1c545136af8ba53df54600e55a04a)] - Prevent negative values in give
 * [[a9f4d6](https://github.com/ParadoxalCorp/felix-production/commit/a9f4d6e756627184d18ea45458faf7aca2c00990)] - Identify the error after its conversion
 * [[35892c](https://github.com/ParadoxalCorp/felix-production/commit/35892cd869673a8798d8f7760baddb14f466f5db)] - Implement the new database wrapper
+* [[7bd50a](https://github.com/ParadoxalCorp/felix-production/commit/7bd50a859d17264365e65ba51d3f4b25292e3433)] - Switch from jest to mocha for tests
 
 # Update 4.1.10 Changelog
 
