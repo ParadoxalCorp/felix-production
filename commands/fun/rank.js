@@ -54,13 +54,13 @@ class Rank extends Command {
       const globalLevelDetails = client.getLevelDetails(targetEntry.getLevel());
       const userExp = guildEntry.experience.members.find(u => u.id === target.id) ? guildEntry.experience.members.find(u => u.id === target.id).experience : 0;
       const member = message.channel.guild.members.get(target.id);
-      let leaderboardG = client.database.guildData.cache.map(u => u);
+      let leaderboardG = client.database.userData.cache.map(u => u);
       leaderboardG = leaderboardG.map(e => databaseUpdater(e, 'user')).sort((a, b) => b.experience.amount - a.experience.amount).map(u => {
           u.levelDetails = client.getLevelDetails(new client.extendedUserEntry(u).getLevel());
           return u;
       });
       let leaderboardL = guildEntry.experience.members;
-      leaderboardL = leaderboardL.map(e => databaseUpdater(e, 'guild')).sort((a, b) => b.experience - a.experience).map(m => {
+      leaderboardL = leaderboardL.sort((a, b) => b.experience - a.experience).map(m => {
           m.levelDetails = client.getLevelDetails(guildEntry.getLevelOf(m.id));
           return m;
       });
