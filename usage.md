@@ -27,6 +27,9 @@
 - * [Permissions priority and inheritance](#permissions-priority-and-inheritance)
 - * [Special case for roles permissions groups](#special-case-for-roles-permissions-groups)
 - * [Additional notes](#additional-notes)
+* [Self-assignable roles](#self-assignable-roles)
+- * [Incompatible roles](#incompatible-roles)
+- - * [Example](#example)
 * [More info](#more-info)
 - * [Services](#services)
 - - * [Database](#rethinkdb)
@@ -235,6 +238,30 @@ Well, in that case, the inheritance and priority rules still applies between the
 
 The same permission cannot be both allowed and restricted on the same permission group. If you for example try to allow a permission that is already restricted
 on a permission group, the restriction will be removed and only the allowed will stay
+
+## Self-assignable roles
+
+### Incompatible roles
+
+> Introduced in: `4.2.10`
+
+You can set a self-assignable role to be "incompatible" with specific roles, if done so, whenever a member tries to assign themselves a role that is set to be incompatible 
+with a role they have, Felix will not give them the role.
+
+#### Example
+
+Let's say we have two self-assignable roles on our server, `Blue` and `Red`. The `Blue` role gives the color blue and the `Red` one the color red. It might be weird if a 
+user has both at the same time, so we want to force users to only have one of them at the same time. This can be done with the following commands:
+
+> felix sar add Blue Red
+
+And
+
+> felix sar add Red Blue
+
+That will make the `Blue` role "incompatible" with the `Red` role, and the `Red` role incompatible with the `Blue` role
+
+![Preview](https://cdn.discordapp.com/attachments/356224772184735756/470247980872630303/unknown.png)
 
 ## More info
 

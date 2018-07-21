@@ -128,7 +128,7 @@ class Reload extends Command {
                 .catch(err => {
                     return message.channel.createMessage({
                         embed: {
-                            description: 'So, at least one clusters reported that the reload failed, here\'s the list scrub ```js\n' + inspect(err, { depth: 2 }) + '```'
+                            description: 'So, at least one clusters reported that the reload failed, here\'s the list scrub ```js\n' + inspect(err, { depth: client.commands.get('eval').getMaxDepth(err, 'So, at least one clusters reported that the reload failed, here\'s the list scrub') }) + '```'
                         }
                     });
                 });
