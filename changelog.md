@@ -30,6 +30,7 @@ The highlights of this update are the introduction of unstackable/incompatible s
 * [[daeaae](https://github.com/ParadoxalCorp/felix-production/commit/daeaae1853834ef36e9600462699aad877111591)] - Followup of 164d7b
 * [[6bf4cd](https://github.com/ParadoxalCorp/felix-production/commit/6bf4cd0052ac4b490f34ea5e32786f821cd5e3cc)] - Update commands that were using the database cache
 * [[dc1492](https://github.com/ParadoxalCorp/felix-production/commit/dc14927b5e0ccd9961f9547df8e5e62113898396)] - Implement unstackable self-assignable roles
+* [[64fab8](https://github.com/ParadoxalCorp/felix-production/commit/64fab81d286124fcd7d535c7da0df3b0f0023eb4)] - Fix several mistakes in the rank command
 
 # Update 4.1.10 Changelog
 
