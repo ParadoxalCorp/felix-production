@@ -2,12 +2,15 @@
 
 The highlights of this update are the introduction of unstackable/incompatible self-assignable roles about which you can learn more [here](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#incompatible-roles) and the new database wrapper. The new database wrapper was initiated by the [patch 4.1.5](#update-415-changelog) which was a direct response to the incident that happened the 30/06/2018. This change makes Felix able to silently handle critical database failures, like disconnections or corrupted database, without spamming error messages or being unresponsive
 
+### Commands and features changes
+
+* Updated the `sar`, `iam` and `iamnot` commands to implement incompatible self-assignable roles 
+
 ### Back-end changes
 
 * Releases are now tracked on Sentry to track down the source of potential issues faster
 * Added partial typings and tests cover; The cover will be completed in further updates
 * Rewrote the database wrapper from scratch 
-* The list
 
 ### Bugs fixes
 
