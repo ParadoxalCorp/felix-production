@@ -1,8 +1,6 @@
 # Update 4.2.10 Changelog
 
-The highlight of this update is the new database wrapper, this change was initiated by the [patch 4.1.5](#update-415-changelog) which was a direct response to the incident 
-that happened the 30/06/2018. This change makes Felix able to silently handle critical database failures, like disconnections or corrupted database, without spamming 
-error messages or being unresponsive
+The highlights of this update are the introduction of unstackable/incompatible self-assignable roles about which you can learn more [here](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#incompatible-roles) and the new database wrapper. The new database wrapper was initiated by the [patch 4.1.5](#update-415-changelog) which was a direct response to the incident that happened the 30/06/2018. This change makes Felix able to silently handle critical database failures, like disconnections or corrupted database, without spamming error messages or being unresponsive
 
 ### Back-end changes
 
@@ -27,6 +25,8 @@ error messages or being unresponsive
 * [[c69020](https://github.com/ParadoxalCorp/felix-production/commit/c69020fcd22a51f51d8dd8e31f077fd441b4e92d)] - Followup of e1c40c
 * [[164d7b](https://github.com/ParadoxalCorp/felix-production/commit/164d7b272577d20a26dd0ac8e1c783387060bbba)] - Only execute ready() once
 * [[daeaae](https://github.com/ParadoxalCorp/felix-production/commit/daeaae1853834ef36e9600462699aad877111591)] - Followup of 164d7b
+* [[6bf4cd](https://github.com/ParadoxalCorp/felix-production/commit/6bf4cd0052ac4b490f34ea5e32786f821cd5e3cc)] - Update commands that were using the database cache
+* [[dc1492](https://github.com/ParadoxalCorp/felix-production/commit/dc14927b5e0ccd9961f9547df8e5e62113898396)] - Implement unstackable self-assignable roles
 
 # Update 4.1.10 Changelog
 
