@@ -1,3 +1,37 @@
+# Update 4.2.10 Changelog
+
+The highlights of this update are the introduction of unstackable/incompatible self-assignable roles about which you can learn more [here](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#incompatible-roles) and the new database wrapper. The new database wrapper was initiated by the [patch 4.1.5](#update-415-changelog) which was a direct response to the incident that happened the 30/06/2018. This change makes Felix able to silently handle critical database failures, like disconnections or corrupted database, without spamming error messages or being unresponsive
+
+### Commands and features changes
+
+* Updated the `sar`, `iam` and `iamnot` commands to implement incompatible self-assignable roles 
+
+### Back-end changes
+
+* Releases are now tracked on Sentry to track down the source of potential issues faster
+* Added partial typings and tests cover; The cover will be completed in further updates
+* Rewrote the database wrapper from scratch 
+
+### Bugs fixes
+
+* Removed the possibility to specify negative values in the `give` command, as it was effectively stealing coins from other users (Note: Due to the severity of this issue, this change has bypassed the development cycle and has been introduced right after the bug was reported)
+
+### Commits
+
+* [[e6b35d](https://github.com/ParadoxalCorp/felix-production/commit/e6b35d6afb507f884c2397186af333cadd4e382e)] - Track releases on Sentry
+* [[786af6](https://github.com/ParadoxalCorp/felix-production/commit/786af68f10c13707bdbefbaa1e3d752a92ce8c59)] - Merge pull request [#32](https://github.com/ParadoxalCorp/felix-production/pull/32) from ParadoxalCorp/JSDoc-update (25 commits)
+* [[c285a8](https://github.com/ParadoxalCorp/felix-production/commit/c285a82986b1c545136af8ba53df54600e55a04a)] - Prevent negative values in give
+* [[a9f4d6](https://github.com/ParadoxalCorp/felix-production/commit/a9f4d6e756627184d18ea45458faf7aca2c00990)] - Identify the error after its conversion
+* [[35892c](https://github.com/ParadoxalCorp/felix-production/commit/35892cd869673a8798d8f7760baddb14f466f5db)] - Implement the new database wrapper
+* [[7bd50a](https://github.com/ParadoxalCorp/felix-production/commit/7bd50a859d17264365e65ba51d3f4b25292e3433)] - Switch from jest to mocha for tests
+* [[e1c40c](https://github.com/ParadoxalCorp/felix-production/commit/e1c40c1c625dfe2d3f0c5f154e4a185be96a0166)] - Attempt to make tests successful regardless of the OS
+* [[c69020](https://github.com/ParadoxalCorp/felix-production/commit/c69020fcd22a51f51d8dd8e31f077fd441b4e92d)] - Followup of e1c40c
+* [[164d7b](https://github.com/ParadoxalCorp/felix-production/commit/164d7b272577d20a26dd0ac8e1c783387060bbba)] - Only execute ready() once
+* [[daeaae](https://github.com/ParadoxalCorp/felix-production/commit/daeaae1853834ef36e9600462699aad877111591)] - Followup of 164d7b
+* [[6bf4cd](https://github.com/ParadoxalCorp/felix-production/commit/6bf4cd0052ac4b490f34ea5e32786f821cd5e3cc)] - Update commands that were using the database cache
+* [[dc1492](https://github.com/ParadoxalCorp/felix-production/commit/dc14927b5e0ccd9961f9547df8e5e62113898396)] - Implement unstackable self-assignable roles
+* [[64fab8](https://github.com/ParadoxalCorp/felix-production/commit/64fab81d286124fcd7d535c7da0df3b0f0023eb4)] - Fix several mistakes in the rank command
+
 # Update 4.1.10 Changelog
 
 ### Bugs fixes

@@ -24,7 +24,7 @@ class Iam extends Command {
 
     // eslint-disable-next-line no-unused-vars 
     async run(client, message, args, guildEntry, userEntry) {
-        guildEntry.selfAssignableRoles = guildEntry.selfAssignableRoles.filter(r => message.channel.guild.roles.has(r)); //Filter deleted roles
+        guildEntry.selfAssignableRoles = guildEntry.selfAssignableRoles.filter(r => message.channel.guild.roles.has(r.id)); //Filter deleted roles
         if (!args[0]) {
             return this.createList(client, message, guildEntry);
         } else {
@@ -42,7 +42,7 @@ class Iam extends Command {
             messages: (() => {
                 let messages = [];
                 for (const role of guildEntry.selfAssignableRoles) {
-                    const guildRole = message.channel.guild.roles.get(role);
+                    const guildRole = message.channel.guild.roles.get(role.id);
                     messages.push({
                         embed: {
                             title: "Self-assignable roles list",
@@ -65,6 +65,9 @@ class Iam extends Command {
                                 name: 'Mentionable',
                                 value: guildRole.mentionable ? `:white_check_mark:` : `:x:`,
                                 inline: true
+                            }, {
+                                name: 'Incompatible roles',
+                                value: role.incompatibleRoles[0] ? 'This role cannot be stacked with: ' + client.commands.get('uinfo').sliceRoles(role.incompatibleRoles.filter(r => message.channel.guild.roles.has(r)).map(r => `<@&${r}>`)) : 'This role can be stacked with all other roles'
                             }],
                             color: guildRole.color
                         }
@@ -76,17 +79,21 @@ class Iam extends Command {
     }
 
     async assignRole(client, message, args, guildEntry) {
-        let guildRole = await this.getRoleFromText({
+        const guildRole = await this.getRoleFromText({
             message: message,
             client: client,
             text: args.join(' ')
         });
         const member = message.channel.guild.members.get(message.author.id);
-        if (!guildRole || !guildEntry.selfAssignableRoles.includes(guildRole.id)) {
+        if (!guildRole || !guildEntry.selfAssignableRoles.find(r => r.id === guildRole.id)) {
             return message.channel.createMessage(":x: The specified role does not exist or it is not a self-assignable role");
         }
+        const role = guildEntry.selfAssignableRoles.find(r => r.id === guildRole.id);
         if (member.roles.find(r => r === guildRole.id)) {
             return message.channel.createMessage(':x: You already have this role');
+        }
+        if (role.incompatibleRoles.filter(r => member.roles.includes(r))[0]) {
+            return message.channel.createMessage(':x: You cannot assign yourself this role because you have the role(s) ' + client.commands.get('uinfo').sliceRoles(role.incompatibleRoles.filter(r => member.roles.includes(r)).map(r => `\`${member.guild.roles.get(r).name}\``)));
         }
         if (this.getHighestRole(client.bot.user.id, message.channel.guild) && (guildRole.position > this.getHighestRole(client.bot.user.id, message.channel.guild).position)) {
             return message.channel.createMessage(`:x: The role \`${guildRole.name}\` is higher than my highest role, therefore, i can't give it to you :c`);

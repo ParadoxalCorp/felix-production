@@ -1,10 +1,16 @@
 'use strict';
 
+/**
+ * @typedef {import("eris").Guild} guildEntry
+ * @typedef {import("../../../main.js")} Client
+ * */
+
+/** @class ExtendedGuildEntry */
 class ExtendedGuildEntry {
     /**
      * 
-     * @param {*} guildEntry - The guild entry
-     * @param {*} client - The client instance
+     * @param {guildEntry} guildEntry - The guild entry
+     * @param {Client} client - The client instance
      */
     constructor(guildEntry, client) {
         Object.assign(this, guildEntry);
@@ -12,6 +18,7 @@ class ExtendedGuildEntry {
     }
 
     get getPrefix() {
+        // @ts-ignore
         return this.prefix || this.client.config.prefix;
     }
 
@@ -24,8 +31,10 @@ class ExtendedGuildEntry {
      */
     memberHasPermission(memberID, command, channel) {
         let allowed;
+        // @ts-ignore
         const member = this.client.bot.guilds.get(this.id).members.get(memberID);
         //Filter the user roles that aren't in the database, sort them by position and finally map them to iterate through them later
+        // @ts-ignore
         const rolesInDB = member.roles.filter(role => this.permissions.roles.find(r => r.id === role)).sort((a, b) => member.guild.roles.get(a).position -
             member.guild.roles.get(b).position).map(r => { return { name: "roles", id: r }; });
         [{ name: this.client.refs.defaultPermissions }, { name: "global" }, { name: "channels", id: channel.id }, ...rolesInDB, { name: "users", id: member.id }].forEach(val => {
@@ -58,14 +67,18 @@ class ExtendedGuildEntry {
         let targetPos;
         if (typeof target !== 'string') {
             if (Array.isArray(target)) {
+                // @ts-ignore
                 targetPos = target.find(t => t.id === targetID);
             } else {
                 targetPos = target;
             }
         } else {
+            // @ts-ignore
             if (Array.isArray(this.permissions[target])) {
+                // @ts-ignore
                 targetPos = this.permissions[target].find(t => t.id === targetID);
             } else {
+                // @ts-ignore
                 targetPos = this.permissions[target];
             }
         }
@@ -96,6 +109,7 @@ class ExtendedGuildEntry {
      * @example Guild.getLevelOf("123456789");
      */
     getLevelOf(id) {
+        // @ts-ignore
         const member = this.experience.members.find(m => m.id === id) || this.client.refs.guildMember(id);
         return Math.floor(Math.pow(member.experience / this.client.config.options.experience.baseXP, 1 / this.client.config.options.experience.exponent));
     }
@@ -107,6 +121,7 @@ class ExtendedGuildEntry {
      * @example Guild.getMember("123456789");
      */
     getMember(id) {
+        // @ts-ignore
         return this.experience.members.find(m => m.id === id) || this.client.refs.guildMember(id);
     }
 
@@ -120,9 +135,12 @@ class ExtendedGuildEntry {
     addExperience(amount) {
         return {
             to: (id) => {
+                // @ts-ignore
                 let member = this.experience.members[this.experience.members.findIndex(m => m.id === id)];
                 if (!member) {
+                    // @ts-ignore
                     this.experience.members.push(this.client.refs.guildMember(id));
+                    // @ts-ignore
                     member = this.experience.members[this.experience.members.findIndex(m => m.id === id)];
                 }
                 member.experience = member.experience + amount;
@@ -138,7 +156,9 @@ class ExtendedGuildEntry {
      * @example Guild.removeActivityRole("123456789");
      */
     removeActivityRole(id) {
+        // @ts-ignore
         this.experience.roles.splice(this.experience.roles.findIndex(r => r.id === id), 1);
+        // @ts-ignore
         return this.experience.roles.length;
     }
 
@@ -147,9 +167,12 @@ class ExtendedGuildEntry {
      * @returns {boolean} Whether the guild has the premium status or not 
      */
     hasPremiumStatus() {
+        // @ts-ignore
         if (typeof this.premium === 'number') {
+            // @ts-ignore
             return this.premium > Date.now();
         } else {
+            // @ts-ignore
             return this.premium ? true : false;
         }
         

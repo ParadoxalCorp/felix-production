@@ -1,255 +1,137 @@
 'use strict';
 
-/**
- * Wraps the most important methods of RethinkDB and does smart things in the background
- * @prop {*} rethink The object returned by the rethinkdbdash module after requiring it
- * @prop {function} updateFunc The update function given in the constructor, if any
- * @prop {*} guildData The rethinkDB table of guilds
- * @prop {*} userData The rethinkDB table of users
- * @prop {*} client The client instance given in the constructor
- * @prop {Collection} users A collection of cached user entries
- * @prop {Collection} guilds A collection of cached guild entries
- * @prop {boolean} healthy A boolean representing whether the connection with the database is established
- */
+/** @typedef {import("../../../main.js")} Client */
+
+const { inspect } = require('util');
+const TableInterface = require('./tableInterface');
+const ExtendedGuildEntry = require('./extendedGuildEntry');
+const ExtendedUserEntry = require('./extendedUserEntry');
+
 class DatabaseWrapper {
     /**
-     * @param {object} client - The client (or bot) instance
-     * @param {function} updateFunc - Optional, the function that should be called to update the retrieved entries from the database before returning them. This update function will be called instead of the default update strategy, with the "data" and "type" arguments, which are respectively the database entry and the type of the database entry (either "guild" or "user"). The update function must return an object, this is the object that the DatabaseWrapper.getGuild() and DatabaseWrapper.getUser() methods will return.
-     * @example 
-     * //Context: In this example, the old user data model used to have its "boolean" property containing either 1 or 0, and we want to update it to either true or false
-     * new DatabaseWrapper(client, (data, type) => {
-     *   if (type === "guild") {
-     *     return data; 
-     *   } else {
-     *     data.boolean = data.boolean === 1 ? true : false;
-     *     return data;   
-     *   }
-     * });
+     * 
+     * @param {Client} client - The client instance
      */
-    constructor(client, updateFunc) {
+    constructor(client) {
+        this.client = client;
         this.rethink = require("rethinkdbdash")({
             servers: [
                 { host: client.config.database.host, port: client.config.database.port }
             ],
             silent: true,
             user: client.config.database.user,
-            password: client.config.database.password
+            password: client.config.database.password,
+            db: client.config.database.database
         });
-        this.updateFunc = updateFunc;
-        this.guildData = this.rethink.db(client.config.database.database).table('guilds');
-        this.userData = this.rethink.db(client.config.database.database).table('users');
-        this.client = client;
-        this.users = new(require('../../modules/collection'))();
-        this.guilds = new(require('../../modules/collection'))();
+        this.healthy = false;
+        this.rethink.getPoolMaster().on('healthy', this._onHealthy.bind(this));
+        this._initAttempts = 0;
+        this.userData;
+        this.guildData;
+        this._init.bind(this)().catch(this._handleFailedInit.bind(this));
+    }
+
+    async _init() {
+        if (this._initAttempts === 0) {
+            this._initAttempts = 1;
+        }
+        const tableList = await this.rethink.tableList();
+        const missingTables = ['guilds', 'users', 'keys', 'stats'].filter(t => !tableList.includes(t));
+        if (missingTables[0]) {
+            return Promise.reject(new Error(`Couldn't initialize the database connection as the following tables are missing: ${missingTables.join(', ')}`));
+        }
+        this.userData = new TableInterface({
+            client: this.client,
+            rethink: this.rethink,
+            tableName: 'users',
+            extension: ExtendedUserEntry
+        });
+        this.guildData = new TableInterface({
+            client: this.client,
+            rethink: this.rethink,
+            tableName: 'guilds',
+            extension: ExtendedGuildEntry,
+            finalCheck: (data) => {
+                //4.2.10 Change: Add the possibility to set "incompatible" self-assignable roles
+                //Requires to change the structure from an array containing strings (role ids) to objects (role ids + incompatible roles)
+                data.selfAssignableRoles = data.selfAssignableRoles.map(selfAssignableRoles => {
+                    if (typeof selfAssignableRoles === "string") {
+                      return this.client.refs.selfAssignableRole(selfAssignableRoles);
+                    }
+                    return selfAssignableRoles;
+                });
+                return data;
+            }
+        });
+        await Promise.all([this.guildData.table, this.userData.table]);
+        this._initAttempts = 0;
         this.healthy = true;
-    }
-
-    /** 
-     * Initialize the database wrapper, this will start the automatic progressive caching of the database and dynamically handle disconnections
-     * @returns {Promise<void>} - An error will be rejected if something fail when establishing the changes stream
-     */
-    init() {
-        return new Promise(async(resolve, reject) => {
-            let guildCursor = this.guildData.changes({ squash: true, includeInitial: true, includeTypes: true }).run();
-            let userCursor = this.userData.changes({ squash: true, includeInitial: true, includeTypes: true }).run();
-            const promises = await Promise.all([guildCursor, userCursor]).catch(reject);
-            if (!guildCursor || !userCursor) {
-                return reject('Changes streams couldn\'t be established');
-            }
-            guildCursor = promises[0],
-                userCursor = promises[1];
-
-            //In case of a reconnection, enable the commands that requires the database previously disabled
-            if (this.client.commands.filter(c => c.conf.requireDB && c.conf.disabled).size > 0) {
-                this.client.commands
-                    .filter(c => c.conf.requireDB)
-                    .forEach(c => c.conf.disabled = false);
-            }
-
-            if (guildCursor) {
-                guildCursor.on('data', (data) => {
-                    if (data.type === "remove") {
-                        this.guilds.delete(data.old_val.id);
-                    } else {
-                        this.guilds.set(data.new_val.id, data.new_val);
-                    }
-                });
-            }
-
-            if (userCursor) {
-                userCursor.on('data', (data) => {
-                    if (data.type === "remove") {
-                        this.users.delete(data.old_val.id);
-                    } else {
-                        this.users.set(data.new_val.id, data.new_val);
-                    }
-                });
-            }
-
-            this.rethink.getPoolMaster().on('healthy', healthy => {
-                if (!healthy) {
-                    process.send({ name: 'warn', msg: 'The connection with the database has been closed, commands using the database will be disabled until a successful re-connection has been made' });
-                    this.client.commands
-                        .filter(c => c.conf.requireDB)
-                        .forEach(c => c.conf.disabled = ":x: This command uses the database, however the database seems unavailable at the moment");
-                    this.healthy = false;
-                } else {
-                    process.send({ name: 'info', msg: `The connection with the database at ${this.client.config.database.host}:${this.client.config.database.port} has been established` });
-                    this.client.commands
-                        .filter(c => c.conf.requireDB)
-                        .forEach(c => c.conf.disabled = false);
-                    this.healthy = true;
-                }
-            });
-        });
+        process.send({ name: 'info', msg: `The connection with the database at ${this.client.config.database.host}:${this.client.config.database.port} has been established` });
     }
 
     /**
-     * Get a guild database entry
-     * @param {string} id - The unique identifier of the guild to get
-     * @returns {Promise<object>} - The guild entry object, or null if not in the database
-     */
-    getGuild(id) {
-        return new Promise(async(resolve, reject) => {
-            if (this.guilds.has(id)) {
-                return resolve(new this.client.extendedGuildEntry(this._updateDataModel(this.guilds.get(id), 'guild'), this.client));
-            }
-            this.guildData.get(id).run()
-                .then(data => {
-                    resolve(data ?
-                        new this.client.extendedGuildEntry(this._updateDataModel(data, 'guild'), this.client) :
-                        new this.client.extendedGuildEntry(this.client.refs.guildEntry(id), this.client));
-                })
-                .catch(err => {
-                    reject(err);
-                    this.client.bot.emit('error', err);
-                });
-        });
-    }
-
-    /**
-     * Get a user database entry
-     * @param {string} id - The unique identifier of the user to get
-     * @returns {Promise<object>} - The user entry object, or null if not in the database
+     * Get a stored user from their ID
+     * @param {string} id - The ID of the user to get
+     * @returns {Promise<ExtendedUserEntry>} The stored user entry, or null if none are found
      */
     getUser(id) {
-        return new Promise(async(resolve, reject) => {
-            if (this.users.has(id)) {
-                return resolve(new this.client.extendedUserEntry(this._updateDataModel(this.users.get(id)), 'user'));
-            }
-            this.userData.get(id).run()
-                .then(data => {
-                    resolve(data ?
-                        new this.client.extendedUserEntry(this._updateDataModel(data, 'user')) :
-                        new this.client.extendedUserEntry(this.client.refs.userEntry(id)));
-                })
-                .catch(err => {
-                    reject(err);
-                    this.client.bot.emit('error', err);
-                });
-        });
+        return this.userData.get(id);
     }
 
     /**
-     * The default update strategy, the custom update function, if any, is called from here as well
-     * @param {object} data - The data object to update
-     * @param {string} type - The type of this object (either "guild" or "user")
-     * @returns {object} - The updated data object
-     * @private
+     * Get a stored guild from its ID
+     * @param {string} id - The ID of the guild to get
+     * @returns {Promise<ExtendedGuildEntry>} The stored guild entry, or null if none are found
      */
-    _updateDataModel(data, type) {
-        if (this.updateFunc) {
-            return this.updateFunc(data, type);
+    getGuild(id) {
+        return this.guildData.get(id);
+    }
+
+    /**
+     * 
+     * @param {*} value - The value to insert, must contain a `id` property
+     * @param {string} type - The type, or name of the table, can be omitted if the value is a Extended<...>Entry instance
+     * @returns {Promise<any>} The value
+     */
+    set(value, type) {
+        type = type ? type : (value instanceof ExtendedUserEntry ? 'users' : 'guilds');
+        //users + user and guilds + guild to ensure backward compatibility 
+        if (type === 'users' || type === 'user') {
+            return this.userData.set(value);
+        } else if (type === 'guilds' || type === 'guild') {
+            return this.guildData.set(value);
         }
-        const defaultDataModel = type === "guild" ? this.client.refs.guildEntry(data.id) : this.client.refs.userEntry(data.id);
-
-        return this._traverseAndUpdate(defaultDataModel, data);
+        return this.rethink.table(type).get(value.id).replace(value).run();
     }
 
-    /**
-     * Depth-less update function, the values of the properties that the source object has in common with the target object will be assigned to the target object
-     * and this regardless of the depth, if the property is an object, all the properties of this object will be checked as well.
-     * @param {object} targetObj - The object that will receive the source object values
-     * @param {object} sourceObj - The object that will transmit it's values to the target object
-     * @returns {object} - The target object, filled with the values of the properties that the source object had in common with it
-     * @private
-     */
-    _traverseAndUpdate(targetObj, sourceObj) {
-        for (const key in sourceObj) {
-            if (typeof targetObj[key] === typeof sourceObj[key] && typeof targetObj[key] === "object" && !Array.isArray(targetObj[key])) {
-                this._traverseAndUpdate(targetObj[key], sourceObj[key]);
-            } else if (typeof targetObj[key] !== "undefined") {
-                targetObj[key] = sourceObj[key];
-            }
+    _onHealthy(healthy) {
+        switch (healthy) {
+            case true:
+                process.send({ name: 'info', msg: `The connection with the database at ${this.client.config.database.host}:${this.client.config.database.port} has been established` });
+                break;
+            case false: 
+                process.send({ name: 'warn', msg: 'The connection with the database has been closed, commands using the database will be disabled until a successful re-connection has been made' });
         }
-        return targetObj;
+        this.healthy = healthy;
     }
 
-    /**
-     * Insert or update a user/guild in the database
-     * @param {object} data - The data object to update/insert in the database 
-     * @param {string} type - Can be "guild" or "user", whether the data object to be set is a guild or a user
-     * @returns {Promise<object>} - The inserted/updated object, or reject the error if any
-     */
-    set(data, type) {
-        return new Promise(async(resolve, reject) => {
-            if (!data || !type) {
-                return reject(`Missing arguments, both the data and type parameters are needed`);
-            }
-            type = type === "guild" ? "guildData" : "userData";
-            data = data.toDatabaseEntry();
-            this[type].get(data.id).replace(data, { returnChanges: "always" }).run()
-                .then(result => {
-                    this[type === "guild" ? "guilds" : "users"].set(data.id, data);
-                    resolve(result.changes[0].new_val);
-                })
-                .catch(err => {
-                    reject(err);
-                });
-        });
+    _handleFailedInit(err) {
+        const retryTimeout = (15000 * this._initAttempts) > 120000 ? 120000 : 15000 * this._initAttempts;
+        process.send({ name: 'error', msg: `Database initialization failed: ${inspect(err)}\nRetrying in ${retryTimeout}ms`});
+        setTimeout(() => {
+            this._init().catch(this._handleFailedInit.bind(this));
+        }, retryTimeout || 15000);
+        this._initAttempts = this._initAttempts + 1;
     }
 
-    /**
-     * Create a new database
-     * @param {string} name - The name of the database to create, if there is already a database with this name, the promise will be resolved and nothing will change
-     * @returns {Promise<boolean>} - true if success, otherwise, the error is rejected
-     */
-    createDatabase(name) {
-        return new Promise(async(resolve, reject) => {
-            const databaseList = await this.rethink.dbList().run().catch(err => Promise.reject(new Error(err)));
-            if (databaseList.includes(name)) {
-                resolve(`There is already an existing database with the name ${name}`);
-            }
-            this.rethink.dbCreate(name).run()
-                .then(() => {
-                    resolve(true);
-                })
-                .catch(err => {
-                    reject(new Error(err));
-                });
-        });
-    }
-
-    /**
-     * Create a new table in the specified database
-     * @param {string} name - The name of the table to create, if there is already a table with this name, the promise will be resolved and nothing will change
-     * @param {string} databaseName - The name of the database to create the table in
-     * @returns {Promise<boolean>} - true if success, otherwise, the error is rejected
-     */
-    createTable(name, databaseName) {
-        return new Promise(async(resolve, reject) => {
-            const tableList = await this.rethink.db(databaseName).tableList().run().catch(err => Promise.reject(new Error(err)));
-            if (tableList.includes(name)) {
-                resolve(`There is already a table with the name ${name} in the database ${databaseName}`);
-            }
-            this.rethink.db(databaseName).tableCreate(name).run()
-                .then(() => {
-                    resolve(true);
-                })
-                .catch(err => {
-                    reject(new Error(err));
-                });
-        });
+    _reload() {
+        this.healthy = false;
+        this.rethink.getPoolMaster().drain();
+        delete require.cache[module.filename];
+        delete require.cache[require.resolve('./tableInterface')];
+        delete require.cache[require.resolve('./databaseUpdater')];
+        const updatedDatabaseWrapper = require(module.filename);
+        return new updatedDatabaseWrapper(this.client);
     }
 }
 

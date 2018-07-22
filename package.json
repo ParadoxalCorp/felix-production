@@ -1,37 +1,49 @@
 {
     "name": "felix",
-    "version": "4.1.10",
+    "version": "4.2.10",
     "description": "felix-production",
     "main": "index.js",
     "author": "ParadoxOrigins",
+    "contributors": [
+        {
+            "name": "Niputi"
+        },
+        {
+            "name": "Otaku17"
+        }
+    ],
     "repository": "github:ParadoxalCorp/felix-production",
     "license": "GPL-3.0",
     "scripts": {
-        "start": "node index.js"
+        "start": "node index.js",
+        "test": "mocha"
     },
     "dependencies": {
         "axios": "^0.18.0",
         "chalk": "^2.3.1",
         "draftlog": "^1.0.12",
         "eris": "^0.8.5",
-        "eris-sharder": "^1.7.8",
+        "eris-sharder": "^1.7.9",
         "moment": "^2.22.1",
         "npm": "^6.0.0",
         "rethinkdbdash": "^2.3.31"
     },
     "optionalDependencies": {
-        "google-translate-api": "^2.3.0",
-        "raven": "^2.6.0",
-        "taihou": "^1.0.2",
-        "mal-scraper": "^2.4.2",
-        "eris-lavalink": "^1.0.2",
-        "ioredis": "^3.2.2",
-        "fs-nextra": "^0.3.5",
-        "canvas-constructor": "^1.0.1",
         "canvas": "^2.0.0-alpha.12",
-        "eventemitter3": "^3.1.0"
+        "canvas-constructor": "^1.0.1",
+        "eris-lavalink": "^1.0.2",
+        "eventemitter3": "^3.1.0",
+        "fs-nextra": "^0.3.5",
+        "google-translate-api": "^2.3.0",
+        "ioredis": "^3.2.2",
+        "mocha": "^5.2.0",
+        "mal-scraper": "^2.4.2",
+        "raven": "^2.6.0",
+        "taihou": "^1.0.2"
     },
     "devDependencies": {
+        "@types/ioredis": "^3.2.11",
+        "@types/node": "^10.0.0",
         "eslint": "^5.0.0"
     }
 }

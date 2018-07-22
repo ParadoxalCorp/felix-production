@@ -3,6 +3,14 @@
 const MusicConnection = require('./musicConnection');
 
 /**
+ * @typedef {import("eris").Guild} Guild
+ * @typedef {import("eris").EmbedBase} Embed
+ * @typedef {import("../../../main.js")} Client
+ */
+
+
+
+/**
  * @prop {object} client - The client given in the constructor
  * @prop {array} nodes - An array of nodes
  * @prop {object} regions - A list of locations to use for specific regions 
@@ -10,7 +18,7 @@ const MusicConnection = require('./musicConnection');
 class MusicManager {
     /**
      * Create a new MusicManager instance; This does not trigger the connection to the Lavalink server, MusicManager.init() serve that purpose
-     * @param {*} client - The client instance
+     * @param {Client} client - The client instance
      */
     constructor(client) {
         this.client = client;
@@ -18,9 +26,11 @@ class MusicManager {
             { host: client.config.options.music.host, port: client.config.options.music.WSPort, region: 'eu', password: client.config.options.music.password }
         ];
         this.baseURL = (node) => `http://${node.host}:${client.config.options.music.port}`;
-        this.axios = require('axios').create({});
+        this.axios = require('axios').default.create({});
         this.axios.defaults.headers.common['Accept'] = 'application/json';
+        // @ts-ignore
         this.connections = new(require('../../modules/collection'))();
+        this.regions = undefined;
     }
 
     init() {
@@ -30,7 +40,7 @@ class MusicManager {
                 numShards: this.client.bot.shards.size, // number of shards
                 userId: this.client.bot.user.id, // the user id of the bot
                 regions: this.regions,
-                defaultRegion: 'eu',
+                defaultRegion: 'eu'
             });
         }
     }
@@ -39,7 +49,7 @@ class MusicManager {
      * Resolve a list of tracks from the given query
      * @param {object} node - The node 
      * @param {string} query - The query
-     * @returns {array} An array of resolved tracks
+     * @returns {Promise<array>} An array of resolved tracks
      */
     async resolveTracks(node, query) {
         query = this._parseQuery(query);
@@ -47,14 +57,15 @@ class MusicManager {
             .catch(err => {
                 this.client.bot.emit('error', err);
                 return false;
-            });    
+            });
+        // @ts-ignore
         return result ? result.data : undefined; // array of tracks resolved from lavalink
     }
 
     /**
      * Get or create a music player for the specified channel
      * @param {object|string} channel - The Eris channel object (must be a guild voice channel) or its ID
-     * @returns {MusicConnection} A MusicConnection instance
+     * @returns {Promise<MusicConnection>} A MusicConnection instance
      */
     async getPlayer(channel) {
         if (typeof channel === "string") {
@@ -84,7 +95,7 @@ class MusicManager {
             return 'Unknown (Live stream)';
         }
         let hours = `${Math.floor(((ms === 0 ? 0 : ms || track.info.length)) / 1000 / 60 / 60)}`;
-        let minutes = `${Math.floor(((ms === 0 ? 0 : ms || track.info.length) / 1000) / 60 - (60 * hours))}`;
+        let minutes = `${Math.floor(((ms === 0 ? 0 : ms || track.info.length) / 1000) / 60 - (60 * parseInt(hours) ))}`;
         let seconds = `${Math.floor(((ms === 0 ? 0 : ms || track.info.length)) / 1000) - (60 * (Math.floor(((ms === 0 ? 0 : ms || track.info.length) / 1000) / 60)))}`;
         if (hours === '0') {
             hours = '';
@@ -136,13 +147,14 @@ class MusicManager {
 
     /**
      * Get the queue of a guild, note that this should only be used if you don't have access to the MusicConnection instance of the guild, as this method only fetch from redis
-     * @param {object|string} guild - The guild ID or object to get the queue from
-     * @returns {array} The queue, or an empty array if none has been retrieved from redis
+     * @param {string | Guild} guild - The guild ID or object to get the queue from
+     * @returns {Promise<array>} The queue, or an empty array if none has been retrieved from redis
      */
     async getQueueOf(guild) {
         if (!this.client.redis || !this.client.redis.healthy) {
             return [];
         }
+        //@ts-ignore
         return this.client.redis.get(`${guild.id ? guild.id : guild}-queue`)
             .then(q => q ? JSON.parse(q) : [])
             .catch(err => {
@@ -152,7 +164,8 @@ class MusicManager {
     }
 
     async genericEmbed(track, connection, title) {
-        let fields = [{
+        let fields = [
+            {
             name: 'Author',
             value: track.info.author,
             inline: true
@@ -163,9 +176,10 @@ class MusicManager {
         }];
         if (track.info.requestedBy) {
             let user = await this.client.fetchUser(track.info.requestedBy);
+            // @ts-ignore
             fields.push({
                 name: 'Requested by',
-                value: user.tag,     
+                value: user.tag
             });
         }
         return {
@@ -178,7 +192,7 @@ class MusicManager {
 
     /**
      * Destroy the WS connection with Lavalink
-     * @returns {void}
+     * @returns {void | Boolean} return false or destroy connection
      */
     disconnect() {
         if (!this.client.bot.voiceConnections.nodes) {

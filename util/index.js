@@ -1,7 +1,15 @@
+/**
+ * @typedef {import("../main.js")} Client
+ */
+
+/**
+ * @param {Client} client client
+ * @returns {Object} object of modules
+ */
 module.exports = (client) => {
     return {
         //In case of a complete reload of the modules, ignore the critical modules
-        database: client.database ? client.database : (process.argv.includes('--no-db') ? false : new(require('./helpers/modules/databaseWrapper'))(client)),
+        database: client.database ? client.database._reload() : (process.argv.includes('--no-db') ? false : new(require('./helpers/modules/databaseWrapper'))(client)),
         refs: require('./helpers/data/references'),
         log: require('./modules/log'),
         timeConverter: require('./modules/timeConverter.js'),

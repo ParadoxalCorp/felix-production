@@ -1,11 +1,14 @@
 //Actually that may reveal itself useful at some point, so let's keep it
 
-/**
- * @prop {Collection} requests A collection of the current ongoing requests
- * @prop {*} client The client instance given in the constructor
- */
+/** @typedef {import("../../../main.js")} Client */
+
 class IPCHandler {
+    /**
+     * @prop {Collection} requests A collection of the current ongoing requests
+     * @param {Client} client The client instance given in the constructor
+     */
     constructor(client) {
+        // @ts-ignore
         this.requests = new client.collection();
         this.client = client;
         process.on('message', this._handleIncomingMessage.bind(this));
@@ -13,7 +16,7 @@ class IPCHandler {
 
     /**
      * Fetch the stats of the shards of each cluster
-     * @returns {Promise<array>} An array of clusters with their shards stats
+     * @returns {Promise<Array>} An array of clusters with their shards stats
      */
     fetchShardsStats() {
         const ID = Date.now();
@@ -191,10 +194,12 @@ class IPCHandler {
                 }
                 if (this._allClustersAnswered(message.id)) {
                     this.requests.get(message.id).resolve(message.data);
+                    // @ts-ignore
                     return this.requests.delete(message.id);
                 }
                 if (message.data) {
                     this.requests.get(message.id).resolve(message.data);
+                    // @ts-ignore
                     return this.requests.delete(message.id);
                 }
                 break;

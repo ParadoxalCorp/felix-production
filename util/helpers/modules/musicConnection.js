@@ -1,5 +1,13 @@
 'use strict';
 
+/** 
+ * @typedef {import("../../../main.js")} Client
+ * @typedef {import("eris-lavalink")} Eris_Lavalink
+ * @typedef {import("events")} NodeEvents
+ * @typedef {import("eventemitter3")} EventEmitter3
+ */
+
+/** @type {any} */
 const EventEmitter = (() => {
     let eventEmitter;
     try {
@@ -16,8 +24,8 @@ const EventEmitter = (() => {
 class MusicConnection extends EventEmitter {
     /**
      * Create a new MusicConnection instance, this can only be done with an active player
-     * @param {*} client - The client instance
-     * @param {*} player - The eris-lavalink player 
+     * @param {Client} client - The client instance
+     * @param {Eris_Lavalink} player - The eris-lavalink player 
      */
     constructor(client, player) {
         super();
@@ -163,7 +171,7 @@ class MusicConnection extends EventEmitter {
     /**
      * Play a given song
      * @param {object} song - The Lavalink track to play 
-     * @param {string} requestedBy - The ID of the user who requested this track
+     * @param {string} [requestedBy] - The ID of the user who requested this track
      * @returns {object} The given song
      */
     play(song, requestedBy) {
@@ -234,10 +242,11 @@ class MusicConnection extends EventEmitter {
 
     /**
      * Leave the voice channel and tell the MusicManager that this connection can be dropped
-     * @returns {void}
+     * @returns {Promise<void>} hi
      */
     async leave() {
         await this.client.bot.leaveVoiceChannel(this.player.channelId);
+        // @ts-ignore
         this.emit("inactive");
     }
 
