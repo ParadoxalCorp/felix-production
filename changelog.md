@@ -1,3 +1,11 @@
+# Update 4.3.11 Changelog
+
+### Commits
+
+* [[fb1d69](https://github.com/ParadoxalCorp/felix-production/commit/fb1d694db53c9cdcedfd21c0bd9e59ad5d367d06)] - Extend hot reload to all modules
+* [[2859d7](https://github.com/ParadoxalCorp/felix-production/commit/2859d773d42ab684a6320ec75e5951944639d718)] - Check if the bot is in a voice channel in the leave command
+* [[42f29c](https://github.com/ParadoxalCorp/felix-production/commit/42f29c5a6f445c5d0b489ac5e7d6e0a1c6012c2a)] - Directly discard guildMemberAdd/guildMemberRemove if no database
+
 # Update 4.2.11 Changelog
 
 ### Bugs fixes
