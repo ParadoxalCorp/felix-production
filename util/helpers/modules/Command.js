@@ -139,10 +139,13 @@ class Command {
             (co.id === member.id || member.roles.includes(co.id)));
         if (!channelOverwrites[0]) {
             return false;
-        } else if (channelOverwrites.filter(co => co.type === "user")[0]) {
-            return channelOverwrites.filter(co => co.type === "user")[0];
+        } else if (channelOverwrites.find(co => co.type === "user")) {
+            return channelOverwrites.find(co => co.type === "user");
         }
-        return channelOverwrites.sort((a, b) => channel.guild.roles.get(b.id).position - channel.guild.roles.get(a.id).position)[0];
+        return channelOverwrites
+            //Address issue #45(https://github.com/ParadoxalCorp/felix-production/issues/45)
+            .filter(co => channel.guild.roles.has(co.id))
+            .sort((a, b) => channel.guild.roles.get(b.id).position - channel.guild.roles.get(a.id).position)[0];
     }
 
     /**

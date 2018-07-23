@@ -1,3 +1,13 @@
+# Update 4.2.11 Changelog
+
+### Bugs fixes
+
+* Address a weird bug in which a channel permission overwrite wouldn't be a user nor a role, thus causing an error during the message's initial processing 
+
+### Commits
+
+* [[f9386c](https://github.com/ParadoxalCorp/felix-production/commit/f9386cf2416a8d4f55d0c2bb084d3b2e2381d4ee)] - Address issue #45
+
 # Update 4.2.10 Changelog
 
 The highlights of this update are the introduction of unstackable/incompatible self-assignable roles about which you can learn more [here](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#incompatible-roles) and the new database wrapper. The new database wrapper was initiated by the [patch 4.1.5](#update-415-changelog) which was a direct response to the incident that happened the 30/06/2018. This change makes Felix able to silently handle critical database failures, like disconnections or corrupted database, without spamming error messages or being unresponsive
