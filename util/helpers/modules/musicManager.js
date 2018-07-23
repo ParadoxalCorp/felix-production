@@ -19,8 +19,10 @@ class MusicManager {
     /**
      * Create a new MusicManager instance; This does not trigger the connection to the Lavalink server, MusicManager.init() serve that purpose
      * @param {Client} client - The client instance
+     * @param {object} [options] - An additional object of options
+     * @param {boolean} [options.reload] - Whether this is a reload or not, effectively deciding if voice connections should be reset
      */
-    constructor(client) {
+    constructor(client, options = {}) {
         this.client = client;
         this.nodes = [
             { host: client.config.options.music.host, port: client.config.options.music.WSPort, region: 'eu', password: client.config.options.music.password }
@@ -31,11 +33,14 @@ class MusicManager {
         // @ts-ignore
         this.connections = new(require('../../modules/collection'))();
         this.regions = undefined;
+        if (options.reload) {
+            this.init(options);
+        }
     }
 
-    init() {
+    init(options = {}) {
         const { PlayerManager } = require('eris-lavalink');
-        if (!(this.client.bot.voiceConnections instanceof PlayerManager)) {
+        if (!(this.client.bot.voiceConnections instanceof PlayerManager) || options.reload) {
             this.client.bot.voiceConnections = new PlayerManager(this.client.bot, this.nodes, {
                 numShards: this.client.bot.shards.size, // number of shards
                 userId: this.client.bot.user.id, // the user id of the bot
@@ -199,6 +204,13 @@ class MusicManager {
             return false;
         }
         this.client.bot.voiceConnections.nodes.get(this.client.config.options.music.host).destroy();
+    }
+
+    _reload() {
+        this.disconnect();
+        delete require.cache[module.filename];
+        delete require.cache[require.resolve('./musicConnection')];
+        return new(require(module.filename))(this.client, {reload: true});
     }
 }
 

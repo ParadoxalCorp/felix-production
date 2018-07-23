@@ -14,7 +14,7 @@ module.exports = (client) => {
         log: require('./modules/log'),
         timeConverter: require('./modules/timeConverter.js'),
         messageCollector: new(require('./helpers/modules/messageCollector'))(client.bot),
-        IPCHandler: client.IPCHandler ? client.IPCHandler : new(require('./helpers/modules/IPCHandler'))(client),
+        IPCHandler: client.IPCHandler ? client.IPCHandler._reload() : new(require('./helpers/modules/IPCHandler'))(client),
         sleep: require('./modules/sleep.js'),
         reloader: new(require('./helpers/modules/reloader'))(client),
         getRandomNumber: require('./modules/getRandomNumber'),
@@ -34,7 +34,7 @@ module.exports = (client) => {
         moduleIsInstalled: require('./modules/moduleIsInstalled'),
         imageHandler: new(require('./helpers/modules/imageHandler'))(client),
         fetchUser: require('./helpers/modules/fetchUser').bind(null, client),
-        musicManager: client.musicManager ? client.musicManager : new(require('./helpers/modules/musicManager'))(client),
-        redis: require('./modules/moduleIsInstalled')('ioredis') ? new(require('./helpers/modules/redisManager'))(client) : false
+        musicManager: client.musicManager ? client.musicManager._reload() : new(require('./helpers/modules/musicManager'))(client),
+        redis: require('./modules/moduleIsInstalled')('ioredis') ? (client.redis ? client.redis._reload() : new(require('./helpers/modules/redisManager'))(client)) : false
     };
 };
