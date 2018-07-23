@@ -35,7 +35,8 @@ module.exports = {
     apiKeys: {
         sentryDSN: "",
         sentryAPI: "",
-        weebSH: ""
+        weebSH: "",
+        datadogAPI: ""
     },
     //This define whether to only disable or to also remove the commands which requires an API key/package that is missing, you may want to set that to true if you don't plan to use these commands
     removeDisabledCommands: false,
