@@ -34,12 +34,12 @@ class WhatAnime extends Command {
             image = Array.from(message.channel.messages.values())
                 .sort((a, b) => b.timestamp - a.timestamp)
                 .slice(0, 10)
-                .find(m => this.validateFile(m.attachments[0]));      
+                .find(m => m.attachments[0] ? this.validateFile(m.attachments[0]) : false);      
         }
-        if (!image) {
+        if (!image || !image.attachments[0]) {
             return `You didn't uploaded any image that can be used, if you uploaded an image, note that the image must: \n-Have one of the following extensions: ${this.extra.imageExtensions.map(e => '`.' + e + '`').join(', ')}\n-Be under 1MB`;
         }
-        image = await this.downloadImage(image);
+        image = await this.downloadImage(image.attachments[0] || image);
         const formData = querystring.stringify({image});
         const request = await axios.post(`http://${client.config.requestHandler.host}:${client.config.requestHandler.port}/request`, {
             data: formData,
