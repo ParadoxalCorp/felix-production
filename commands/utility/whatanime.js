@@ -52,7 +52,8 @@ class WhatAnime extends Command {
             channelID: message.channel.id,
             userID: message.author.id,
             dm: message.channel.guild ? false : true,
-            nsfw: message.channel.nsfw
+            nsfw: message.channel.nsfw,
+            botToken: client.config.token
         }, {
             responseType: 'application/json'
         }).catch(err => client.bot.emit('error', err, message));
