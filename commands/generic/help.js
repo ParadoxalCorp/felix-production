@@ -20,6 +20,14 @@ class Help extends Command {
             ownerOnly: false,
             expectedArgs: []
         };
+        this.extra = {
+            additionalInfo: (client) => {
+                let info = `Hey ! Update ${client.package.version} is out ! Check out the [changelog](https://github.com/ParadoxalCorp/felix-production/blob/master/changelog.md)\n`;
+                info += `Have a few minutes to fill a survey ? If so, how about [filling this survey](https://goo.gl/forms/bl9pk7qLAl5WDJ2y2)?\n`;
+                info += `You can find a detailed documentation [here](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md)`;
+                return info;
+            }
+        };
     }
 
     async run(client, message, args, guildEntry) {
@@ -58,7 +66,7 @@ class Help extends Command {
                 embedMessage: {
                     embed: {
                         title: ":book: Available commands",
-                        description: `Here is the list of all available commands and their categories, you can use commands like \`${this.getPrefix(client, guildEntry)}<command>\`\n\nHey ! Update ${client.package.version} is out ! Check out the [changelog](https://github.com/ParadoxalCorp/felix-production/blob/master/changelog.md)`,
+                        description: `Here is the list of all available commands and their categories, you can use commands like \`${this.getPrefix(client, guildEntry)}<command>\`\n\n${this.extra.additionalInfo(client)}`,
                         fields: categories.map(c => {
                             const subCategories = this.getSubCategories(client, c);
                             const value = subCategories[0] 
