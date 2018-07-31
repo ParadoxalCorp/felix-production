@@ -20,3 +20,9 @@ As of version 4.1.3, Felix use Redis, available [here](https://redis.io/download
 ## Development cycle
 
 ![develoment cycle](https://cdn.discordapp.com/attachments/358212785181556739/461835951199485952/unknown.png)
+
+## Versioning 
+
+Felix's versioning works like semantic versioning, in the `major.minor.patch` format 
+Bug fixes increments `patch` and new features/enhancements increments `minor`
+Major rewrites of the back-end/interface increments `major`, each `major` increment comes with a reset of `minor` and `patch`
