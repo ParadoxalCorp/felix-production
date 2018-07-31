@@ -8,8 +8,8 @@ class RemovePermission extends Command {
         this.help = {
             name: 'removepermission',
             category: 'moderation',
-            description: '**Remove** (not restrict) a set command/category permission from the server, or from a channel/role/user. As always, you can run the command like `{prefix}removepermission` to be guided through the process',
-            usage: '{prefix}removepermission <command_name|category_name*> | <global|channel|role|user> | <channel_name|role_name|username>',
+            description: '**Remove** (not restrict) a set command/category permission from the server, or from a channel category/channel/role/user. As always, you can run the command like `{prefix}removepermission` to be guided through the process',
+            usage: '{prefix}removepermission <command_name|category_name*|*> | <global|category|channel|role|user> | <category_name|channel_name|role_name|username>',
             externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#permissions-system'
         };
         this.conf = {
@@ -41,11 +41,11 @@ class RemovePermission extends Command {
         if (!this.validatePermission(client, args[0])) {
             return message.channel.createMessage(':x: The permission must be a command name, like `ping`, or the name of a command category followed by a `*` like `generic*` to target a whole category. If you are lost, simply run this command like `' + getPrefix(client, guildEntry) + this.help.name + '`');
         } else if (!this.validateTarget(args[1])) {
-            return message.channel.createMessage(':x: You must specify from what this permission should be removed with either `global`, `channel`, `role` or `user`. If you are lost, simply run this command like `' + getPrefix(client, guildEntry) + this.help.name + '`');
+            return message.channel.createMessage(':x: You must specify from what this permission should be removed with either `global`, `category`, `channel`, `role` or `user`. If you are lost, simply run this command like `' + getPrefix(client, guildEntry) + this.help.name + '`');
         }
         let target = args[1].toLowerCase() === 'global' ? 'global' : null;
-        if (args[1].toLowerCase() === 'channel') {
-            target = await this.getChannelFromText({client, message, text: args.slice(2).join(' ')});
+        if (['channel', 'category'].includes(args[1].toLowerCase())) {
+            target = await this.getChannelFromText({client, message, text: args.slice(2).join(' '), type: args[1].toLowerCase() === 'channel' ? 'text' : 'category'});
         } else if (args[1].toLowerCase() === 'role') {
             target = await this.getRoleFromText({client, message, text: args.slice(2).join(' ')});
         } else if (args[1].toLowerCase() === 'user') {
@@ -71,15 +71,19 @@ class RemovePermission extends Command {
         if (command && command.help.category === 'admin') {
             return false;
         }
-        return !command && !categories.includes(arg) ? false : true;
+        return (!command && !categories.includes(arg) && arg !== '*') ? false : true;
     }
 
     validateTarget(arg) {
-        return arg ? ['global', 'channel', 'role', 'user'].includes(arg.toLowerCase()) : false;
+        return arg ? ['global', 'category', 'channel', 'role', 'user'].includes(arg.toLowerCase()) : false;
     }
 
     async removePermission(client, message, guildEntry, args) {
-        let targetPerms = guildEntry.permissions[args.targetType === 'global' ? 'global' : `${args.targetType}s`];
+        let specialTargetCases = {
+            global: 'global',
+            category: 'categories'
+        };
+        let targetPerms = guildEntry.permissions[specialTargetCases[args.targetType] || `${args.targetType}s`];
         if (Array.isArray(targetPerms)) {
             targetPerms = targetPerms.find(perms => perms.id === args.target.id);
         }

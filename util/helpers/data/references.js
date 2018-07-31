@@ -53,6 +53,7 @@ class References {
                 users: [],
                 roles: [],
                 channels: [],
+                categories: [],
                 global: this.globalPermissionsSet
             },
             experience: {
