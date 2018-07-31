@@ -54,7 +54,6 @@ class ErrorHandler {
         }
         if (this.sentry && (!error || (error && !error.discard))) {
             this.sentry.captureException(err, {
-                release: client.package.version,
                 extra: {
                     message: message ? message.content : 'None',
                     guild: message && message.channel.guild ? `${message.channel.guild.name} | ${message.channel.guild.id}` : 'None',
