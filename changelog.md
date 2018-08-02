@@ -1,3 +1,13 @@
+# Update 4.2.12 Changelog 
+
+### Bugs fixes
+
+* Address a bug that would cause the `simulategreetings` command to fail if the greetings are set to dm
+
+### Commits
+
+* [[9ca552](https://github.com/ParadoxalCorp/felix-production/commit/9ca552cb253682aa26f9a2710a3019c169becfbd)] - Prevent simulategreetings from erroring if greetings are set to dm
+
 # Update 4.2.11 Changelog
 
 ### Bugs fixes
