@@ -1,6 +1,6 @@
 {
     "name": "felix",
-    "version": "4.3.11-beta",
+    "version": "4.3.12-beta",
     "description": "felix-production",
     "main": "index.js",
     "author": "ParadoxOrigins",

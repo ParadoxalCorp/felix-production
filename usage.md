@@ -190,8 +190,8 @@ However, single commands permissions have higher priority than their categories,
 for the entire server, which represents the whole `economy` category, but we allow the `balance` permission, users will be able to use the `balance`
 command but not any of the others commands of the `economy` category.
 
-**Update 4.3.11 changes**
-As of update `4.3.11`, you can use `*` alone to target all permissions at once, you can use this to give all permissions to a user in a single command for example
+**Update 4.3.12 changes**
+As of update `4.3.12`, you can use `*` alone to target all permissions at once, you can use this to give all permissions to a user in a single command for example
 This update also introduces the possibility to set categories-wide permissions, like:
 
 > felix setpermission * false category general
