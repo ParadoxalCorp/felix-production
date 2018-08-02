@@ -34,7 +34,7 @@ class SimulateGreetings extends Command {
             return message.channel.createMessage(':x: The greetings\'s message target is not set');
         }
         //Backward compatibility, see issue #33 (https://github.com/ParadoxalCorp/felix-production/issues/33)
-        if (message.channel.guild.channels.get(guildEntry.greetings.channel).type !== 0) {
+        if ((guildEntry.greetings.channel !== 'dm') && (message.channel.guild.channels.get(guildEntry.greetings.channel).type !== 0)) {
             return message.channel.createMessage(':x: The greetings\'s message target is not a text channel, you should change it to a text channel in order for greetings to work');
         }
         client.bot.emit('guildMemberAdd', message.channel.guild, message.channel.guild.members.get(message.author.id));
