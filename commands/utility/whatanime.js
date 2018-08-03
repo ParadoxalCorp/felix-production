@@ -36,8 +36,8 @@ class WhatAnime extends Command {
                 .slice(0, 10)
                 .find(m => m.attachments[0] ? this.validateFile(m.attachments[0]) : false);      
         }
-        if (!image || (image.attachments && !image.attachments[0])) {
-            return `You didn't uploaded any image that can be used, if you uploaded an image, note that the image must: \n-Have one of the following extensions: ${this.extra.imageExtensions.map(e => '`.' + e + '`').join(', ')}\n-Be under 1MB`;
+        if (!image) {
+            return message.channel.createMessage(`You didn't uploaded any image that can be used, if you uploaded an image, note that the image must: \n-Have one of the following extensions: ${this.extra.imageExtensions.map(e => '`.' + e + '`').join(', ')}\n-Be under 1MB`);
         }
         image = await this.downloadImage((image.attachments ? image.attachments[0] : false) || image);
         const formData = querystring.stringify({image});
@@ -56,8 +56,8 @@ class WhatAnime extends Command {
             botToken: client.config.token
         }, {
             responseType: 'application/json'
-        }).catch(err => client.bot.emit('error', err, message));
-        if (!request.data.queued) {
+        }).catch(err => client.bot.emit('error', err, message, false));
+        if (!request.data || !request.data.queued) {
             return message.channel.createMessage(`:x: Oh uh, your request couldn't be queued, maybe try again later?`);
         }
         return message.channel.createMessage(`Your request has been queued ! I'll get back to you once its done (estimated time: ${Math.round((4000 + request.data.estimatedTime) / 1000)} seconds)`);
