@@ -320,7 +320,7 @@ class Command {
      */
     async _resolveChannelByExactMatch(client, message, text, type) {
         // @ts-ignore
-        const exactMatches = message.channel.guild.channels.filter(c => c.name === text && c.type === type);
+        const exactMatches = message.channel.guild.channels.filter(c => c.name.toLowerCase() === text.toLowerCase() && c.type === type);
         if (exactMatches.length === 1) {
             return exactMatches[0];
         } else if (exactMatches.length > 1) {
@@ -328,7 +328,7 @@ class Command {
             await message.channel.createMessage({
                 embed: {
                     title: ':mag: Channel search',
-                    description: 'I found multiple channels with that name, select one by answering with their corresponding number```\n' + exactMatches.map(c => `[${i++}] - ${c.name} (Topic: ${c.topic ? c.topic.substr(0, 42) + '...' : 'None'} ; Bitrate: ${c.bitrate ? c.bitrate : "None (text channel)"})`).join("\n") + "```",
+                    description: 'I found multiple channels with that name, select one by answering with their corresponding number```\n' + exactMatches.map(c => `[${i++}] - ${c.name} (Topic: ${c.topic ? c.topic.substr(0, 42) + '...' : 'None'} ; Bitrate: ${c.bitrate ? c.bitrate : "None"})`).join("\n") + "```",
                     footer: {
                         text: 'Time limit: 60 seconds'
                     }
