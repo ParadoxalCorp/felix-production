@@ -99,7 +99,8 @@ class RemovePermission extends Command {
         }
         //Delete the permission group if empty
         if (args.targetType !== 'global' && !targetPerms.allowedCommands[0] && !targetPerms.restrictedCommands[0]) {
-            guildEntry.permissions[`${args.targetType}s`].splice(guildEntry.permissions[`${args.targetType}s`].findIndex(perms => perms.id === args.target.id));
+            let group = guildEntry.permissions[specialTargetCases[args.targetType] || `${args.targetType}s`];
+            group.splice(group.findIndex(perms => perms.id === args.target.id));
         }
         await client.database.set(guildEntry, 'guild');
         return message.channel.createMessage(`:white_check_mark: Successfully removed the permission \`${args.permission}\` which was ${restricted ? 'restricted' : 'allowed'} on the ${args.targetType === 'global' ? 'server' : args.targetType} ${args.target.name || args.target.username ? ('**' + (args.target.name || client.extendedUser(args.target).tag) + '**') : ''}`);
