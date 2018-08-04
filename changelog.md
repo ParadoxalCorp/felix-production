@@ -1,3 +1,10 @@
+# Patch 4.3.13 Changelog
+
+### Bugs fixes
+
+* Fixed the channels search being case-sensitive while it shouldn't 
+* Fixed a bug in the `removepermission` command that would cause a non-critical error if you removed the last permission set on a permission group 
+
 # Update 4.3.12 Changelog
 
 ### New commands/features
