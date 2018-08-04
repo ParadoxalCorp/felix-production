@@ -93,7 +93,7 @@ class TableInterface {
 
     async _handleBrokenStream(err) {
         this.client.database.healthy = false;
-        process.send({name: 'error', msg: inspect(err)});
+        this.client.bot.emit('error', inspect(err));
         const testQuery = await this._rethink.table(this.tableName).get('test').run().catch(() => false);
         if (!testQuery) {
             return;

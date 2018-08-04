@@ -190,19 +190,27 @@ However, single commands permissions have higher priority than their categories,
 for the entire server, which represents the whole `economy` category, but we allow the `balance` permission, users will be able to use the `balance`
 command but not any of the others commands of the `economy` category.
 
+**Update 4.3.12 changes**
+
+As of update `4.3.12`, you can use `*` alone to target all permissions at once, you can use this to give all permissions to a user in a single command for example
+This update also introduces the possibility to set categories-wide permissions, like:
+
+> felix setpermission * false category general
+
+This will restrict all commands in the channel category `general`
+
 ### Permissions priority and inheritance
 
-All permissions groups inherits the permissions of the permissions groups with lower priority, as well as override the permissions they themselves set (the set permissions
-are another important concept directly related to the inheritance)
+All permissions groups inherits the permissions of the permissions groups with lower priority, as well as override the permissions they themselves set
 
-![image](https://cdn.discordapp.com/attachments/356224772184735756/458270286672822273/felix-permissions-inheritance.png)
+![image](https://cdn.discordapp.com/attachments/356224772184735756/473890453045903360/unknown.png)
 
 Pardon the ugly schema, but figured it would be boring to only read text. This image though, regardless of being ugly or not, accurately represent the inheritance 
 and priority pyramid. 
 
-The `effective permissions` group is the result of the inheritance and priority rules applied on the lower permissions groups, it decides what commands a user can use and what commands they cannot use. The `default permissions` is the permissions group set by default globally on the bot.
+The `default permissions` is the permissions group set by default globally on the bot.
 
-Each permissions group will inherit the permissions of the lower groups, then apply their permissions over it (the priority rule). To illustrate that, we will take the following example:
+Each permissions group will inherit the permissions of the lower groups, then apply their permissions over it. To illustrate that, we will take the following example:
 
 First, we'll see what the default permissions group exactly set. At the time when this is written, the default permissions group allow the following permissions:
 

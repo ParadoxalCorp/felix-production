@@ -37,7 +37,14 @@ class ExtendedGuildEntry {
         // @ts-ignore
         const rolesInDB = member.roles.filter(role => this.permissions.roles.find(r => r.id === role)).sort((a, b) => member.guild.roles.get(a).position -
             member.guild.roles.get(b).position).map(r => { return { name: "roles", id: r }; });
-        [{ name: this.client.refs.defaultPermissions }, { name: "global" }, { name: "channels", id: channel.id }, ...rolesInDB, { name: "users", id: member.id }].forEach(val => {
+        [
+            { name: this.client.refs.defaultPermissions }, 
+            { name: "global" }, 
+            { name: "categories", id: channel.parentID }, 
+            { name: "channels", id: channel.id }, 
+            ...rolesInDB, 
+            { name: "users", id: member.id }
+        ].forEach(val => {
             if (this.getPrioritaryPermission(val.name, command, val.id) !== undefined) {
                 allowed = this.getPrioritaryPermission(val.name, command, val.id);
             }
@@ -87,17 +94,14 @@ class ExtendedGuildEntry {
             return undefined;
         }
         //Give priority to commands over categories by checking them after the categories
-        if (targetPos.allowedCommands.includes(`${command.help.category}*`)) {
-            isAllowed = true;
-        }
-        if (targetPos.restrictedCommands.includes(`${command.help.category}*`)) {
-            isAllowed = false;
-        }
-        if (targetPos.allowedCommands.includes(command.help.name)) {
-            isAllowed = true;
-        }
-        if (targetPos.restrictedCommands.includes(command.help.name)) {
-            isAllowed = false;
+        let priorityOrder = ['*', `${command.help.category}*`, command.help.name];
+        for (const permission of priorityOrder) {
+            if (targetPos.allowedCommands.includes(permission)) {
+                isAllowed = true;
+            }
+            if (targetPos.restrictedCommands.includes(permission)) {
+                isAllowed = false;
+            }
         }
         return isAllowed;
     }

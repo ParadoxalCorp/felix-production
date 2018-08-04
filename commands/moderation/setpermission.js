@@ -8,8 +8,8 @@ class SetPermission extends Command {
         this.help = {
             name: 'setpermission',
             category: 'moderation',
-            description: 'Set a new command/category permission for the server, or a channel/role/user. As always, you can run the command like `{prefix}setpermission` to be guided through the process',
-            usage: '{prefix}setpermission <command_name|category_name*> | <true|false> | <global|channel|role|user> | <channel_name|role_name|username>',
+            description: 'Set a new command/category permission for the server, or a channel category/channel/role/user. As always, you can run the command like `{prefix}setpermission` to be guided through the process',
+            usage: '{prefix}setpermission <command_name|category_name*|*> | <true|false> | <global|category|channel|role|user> | <category_name|channel_name|role_name|username>',
             externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#permissions-system'
         };
         this.conf = {
@@ -52,11 +52,11 @@ class SetPermission extends Command {
         } else if (!['true', 'false'].includes(args[1].toLowerCase())) {
             return message.channel.createMessage(':x: You must specify whether to restrict or allow this permission with `true` or `false`. If you are lost, simply run this command like `' + getPrefix(client, guildEntry) + this.help.name + '`');
         } else if (!this.validateTarget(args[2])) {
-            return message.channel.createMessage(':x: You must specify to what this permission should apply to with either `global`, `channel`, `role` or `user`. If you are lost, simply run this command like `' + getPrefix(client, guildEntry) + this.help.name + '`');
+            return message.channel.createMessage(':x: You must specify to what this permission should apply to with either `global`, `category`, `channel`, `role` or `user`. If you are lost, simply run this command like `' + getPrefix(client, guildEntry) + this.help.name + '`');
         }
         let target = args[2].toLowerCase() === 'global' ? 'global' : null;
-        if (args[2].toLowerCase() === 'channel') {
-            target = await this.getChannelFromText({client, message, text: args.slice(3).join(' '), textual: true});
+        if (['channel', 'category'].includes(args[2].toLowerCase())) {
+            target = await this.getChannelFromText({client, message, text: args.slice(3).join(' '), type: args[2].toLowerCase() === 'channel' ? 'text' : 'category'});
         } else if (args[2].toLowerCase() === 'role') {
             target = await this.getRoleFromText({client, message, text: args.slice(3).join(' ')});
         } else if (args[2].toLowerCase() === 'user') {
@@ -82,15 +82,19 @@ class SetPermission extends Command {
         if (command && command.help.category === 'admin') {
             return false;
         }
-        return !client.commands.has(arg) && !client.aliases.has(arg) && !categories.includes(arg) ? false : true;
+        return (!client.commands.has(arg) && !client.aliases.has(arg) && !categories.includes(arg) && arg !== '*') ? false : true;
     }
 
     validateTarget(arg) {
-        return arg ? ['global', 'channel', 'role', 'user'].includes(arg.toLowerCase()) : false;
+        return arg ? ['global', 'category', 'channel', 'role', 'user'].includes(arg.toLowerCase()) : false;
     }
 
     async setPermission(client, message, guildEntry, args) {
-        let targetPerms = guildEntry.permissions[args.targetType === 'global' ? 'global' : `${args.targetType}s`];
+        let specialTargetCases = {
+            global: 'global',
+            category: 'categories'
+        };
+        let targetPerms = guildEntry.permissions[specialTargetCases[args.targetType] || `${args.targetType}s`];
         if (Array.isArray(targetPerms)) {
             if (!targetPerms.find(perms => perms.id === args.target.id)) {
                 targetPerms.push(client.refs.permissionsSet(args.target.id));

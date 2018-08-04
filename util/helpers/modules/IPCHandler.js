@@ -6,10 +6,12 @@ class IPCHandler {
     /**
      * @prop {Collection} requests A collection of the current ongoing requests
      * @param {Client} client The client instance given in the constructor
+     * @param {object} [options] - An additional object of options
+     * @param {Map} [options.requests] - A collection of ongoing requests to expect
      */
-    constructor(client) {
+    constructor(client, options = {}) {
         // @ts-ignore
-        this.requests = new client.collection();
+        this.requests = options.requests || new client.collection();
         this.client = client;
         process.on('message', this._handleIncomingMessage.bind(this));
     }
@@ -218,6 +220,11 @@ class IPCHandler {
     _allClustersAnswered(id) {
         return this.requests.get(id).responses.length >= (this.clusterCount ?
             this.clusterCount - this.client.stats.clusters.filter(c => c.guilds < 1).length : 1) ? true : false;
+    }
+
+    _reload() {
+        delete require.cache[module.filename];
+        return new(require(module.filename))(this.client, {requests: this.requests});
     }
 }
 

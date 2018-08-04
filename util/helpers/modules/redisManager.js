@@ -72,6 +72,12 @@ class RedisManager extends Redis {
     get healthy() {
         return this.status === 'ready' ? true : false;
     }
+
+    _reload() {
+        this.disconnect();
+        delete require.cache[module.filename];
+        return new(require(module.filename))(this.felix);
+    }
 }
 
 module.exports = RedisManager;

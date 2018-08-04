@@ -30,13 +30,13 @@ class GetPermissions extends Command {
             if (typeof args[0] === 'undefined') {
                 args[0] = 'global';
             } else {
-                return message.channel.createMessage(':x: You must specify to what this permission should apply to with either `global`, `channel`, `role` or `user`. If you are lost, simply run this command like `' + getPrefix(client, guildEntry) + this.help.name + '`');
+                return message.channel.createMessage(':x: You must specify to what this permission should apply to with either `global`, `category`, `channel`, `role` or `user`. If you are lost, simply run this command like `' + getPrefix(client, guildEntry) + this.help.name + '`');
             }
         }
         let target = args[0].toLowerCase() === 'global' ? 'global' : null;
         let targetType = args[0].toLowerCase();
-        if (targetType === 'channel') {
-            target = await this.getChannelFromText({client, message, text: args.slice(1).join(' ')});
+        if (['category', 'channel'].includes(targetType)) {
+            target = await this.getChannelFromText({client, message, text: args.slice(1).join(' '), type: targetType === 'channel' ? 'text' : 'category'});
         } else if (targetType === 'role') {
             target = await this.getRoleFromText({client, message, text: args.slice(1).join(' ')});
         } else if (targetType === 'user') {
@@ -49,11 +49,15 @@ class GetPermissions extends Command {
     }
 
     validateTarget(arg) {
-        return arg ? ['global', 'channel', 'role', 'user'].includes(arg.toLowerCase()) : false;
+        return arg ? ['global', 'category', 'channel', 'role', 'user'].includes(arg.toLowerCase()) : false;
     }
 
     async getPermissions(client, message, guildEntry, args) {
-        let targetPerms = guildEntry.permissions[args.targetType === 'global' ? 'global' : `${args.targetType}s`];
+        let specialTargetCases = {
+            global: 'global',
+            category: 'categories'
+        };
+        let targetPerms = guildEntry.permissions[specialTargetCases[args.targetType] || `${args.targetType}s`];
         if (Array.isArray(targetPerms)) {
             targetPerms = targetPerms.find(perms => perms.id === args.target.id);
         }

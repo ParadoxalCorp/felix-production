@@ -1,6 +1,7 @@
 module.exports = {
     admins: ["YOUR_ID", "SOMEONE_TRUSTABLE", "A_SECOND_TRUSTABLE_PERSON_IF_YOU_KNOW_ANY_IDK"],
     prefix: "felix",
+    codename: 'Felix',
     //User Settings > Appearance > Enable Developer Mode > Right click on your username and the click "Copy ID". There, you got your Discord ID
     ownerID: "YOUR_ID",
     //Token is needed
@@ -30,6 +31,10 @@ module.exports = {
         db: 0,
         //The password if one is set in the redis server config
         password: ''
+    },
+    requestHandler: {
+        host: 'localhost',
+        port: '9850'
     },
     //Additional API keys that the bot use for commands for example
     apiKeys: {

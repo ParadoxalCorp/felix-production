@@ -280,24 +280,30 @@ class Command {
      * @param {Message} options.message - The message
      * @param {string} [options.text=message.content] - The text to resolve a channel from
      * @param {Boolean} [options.textual=true] - Whether the channel to resolve is a text channel or a voice channel
+     * @param {String|Number} [options.type] - The explicit type of the channel to search for, can be used to search for categories for example ('category', 'text', 'voice')
      * @returns {Promise<object|boolean>} The channel object, or false if none found
      */
     async getChannelFromText(options) {
-        let text = options.text || options.message.content;
-
-        if (typeof options.textual === 'undefined') {
-            options.textual = true;
+        const channelTypes = {
+            category: 4,
+            text: 0,
+            voice: 2
+        };
+        let type = typeof options.textual !== 'undefined' ? (options.textual ? 0 : 2) : 0;
+        if (options.type) {
+            type = !channelTypes[options.type] && channelTypes[options.type] !== 0 ? options.type : channelTypes[options.type];
         }
-        const exactMatch = await this._resolveChannelByExactMatch(options.client, options.message, text, options.textual);
+        let text = options.text || options.message.content;
+        const exactMatch = await this._resolveChannelByExactMatch(options.client, options.message, text, type);
         if (exactMatch) {
             return exactMatch;
         }
 
-        //While it is very unlikely, resolve the role by ID (and mention) if possible
+        //While it is very unlikely, resolve the channel by ID (and mention) if possible
         text = text.replace(/<|>|#/g, '');
         // @ts-ignore
         const channelByID = options.message.channel.guild.channels.get(text);
-        if (channelByID && (options.textual ? channelByID.type === 0 : channelByID.type === 2)) {
+        if (channelByID && channelByID.type === type) {
             return channelByID;
         }
 
@@ -308,13 +314,13 @@ class Command {
      * @param {Client} client - The client instance
      * @param {Message} message - The message
      * @param {string} text - The text
-     * @param {boolean} textual - Whether the channel is a text channel or a voice channel
+     * @param {boolean} type - Whether the channel is a text channel or a voice channel
      * @private
-     * @returns {Promise<Role>} The role, or false if none found
+     * @returns {Promise<Channel>} The channel, or false if none found
      */
-    async _resolveChannelByExactMatch(client, message, text, textual) {
+    async _resolveChannelByExactMatch(client, message, text, type) {
         // @ts-ignore
-        const exactMatches = message.channel.guild.channels.filter(c => c.name === text && c.type === (textual ? 0 : 2));
+        const exactMatches = message.channel.guild.channels.filter(c => c.name === text && c.type === type);
         if (exactMatches.length === 1) {
             return exactMatches[0];
         } else if (exactMatches.length > 1) {

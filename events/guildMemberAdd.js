@@ -4,7 +4,7 @@ class GuildMemberAddHandler {
     constructor() {}
 
     async handle(client, guild, member) {
-        if (member.user.bot) {
+        if (member.user.bot || !client.database || !client.database.healthy) {
             return;
         }
         const guildEntry = await client.database.getGuild(guild.id);

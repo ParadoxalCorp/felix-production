@@ -28,10 +28,11 @@ class Leave extends Command {
             return message.channel.createMessage(':x: Sorry but as they are resources-whores, music commands are only available to our patreon donators. Check the `bot` command for more info');
         }
         const connection = client.musicManager.connections.get(message.channel.guild.id);
-        if (!connection) {
+        const voiceChannel = message.channel.guild.channels.get(message.channel.guild.members.get(client.bot.user.id).voiceState.channelID);
+        if (!voiceChannel) {
             return message.channel.createMessage(':x: I am not in any voice channel');
         }
-        return connection.leave();
+        return connection ? connection.leave() : voiceChannel.leave();
     }
 }
 

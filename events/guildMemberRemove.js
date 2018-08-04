@@ -22,7 +22,7 @@ class GuildMemberRemoveHandler {
      * @memberof GuildMemberRemoveHandler
      */
     async handle(client, guild, member) {
-        if (member.user.bot) {
+        if (member.user.bot || !client.database || !client.database.healthy) {
             return;
         }
         const user = client.extendedUser(member.user);

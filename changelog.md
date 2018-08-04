@@ -1,3 +1,21 @@
+# Update 4.3.12 Changelog
+
+### New commands/features
+
+* Added the `whatanime` command in the `utility` category. This command lets you search from what anime a given image is by using [whatanime.ga](https://whatanime.ga/)
+* Added a `*` permission, allowing you to allow or restrict **all** commands at once for the specified target. With that new permission comes a new `category` target, so you 
+can now apply permissions to channel categories, letting you setup your permissions even faster. You can read more about these new features [here](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#category-permissions-and-command-permissions)
+
+### Back-end changes
+
+* Lots of small changes not worth mentioning
+* Implemented [Shoukaku](https://github.com/ParadoxalCorp/Shoukaku), this service is currently only used by the `whatanime` command but will progressively be used by more 
+and more features
+
+### Commits
+
+As of update 4.3.12, Commits won't be tracked in the changelog anymore. Refer to the pull request corresponding to the update to see the commits
+
 # Update 4.2.12 Changelog 
 
 ### Bugs fixes
