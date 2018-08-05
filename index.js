@@ -8,10 +8,7 @@ const r = process.argv.includes('--no-db') ? false : require('rethinkdbdash')({
     servers: [
         { host: config.database.host, port: config.database.port }
     ],
-    silent: true,
-    log: (message) => {
-        log.info(message);
-    }
+    silent: true
 });
 
 process.on('beforeExit', () => {
