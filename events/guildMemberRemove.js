@@ -22,11 +22,15 @@ class GuildMemberRemoveHandler {
      * @memberof GuildMemberRemoveHandler
      */
     async handle(client, guild, member) {
-        if (member.user.bot || !client.database || !client.database.healthy) {
+        if (member.user.bot) {
+            return;
+        }
+        const databaseAvailable = !client.database && !client.database.healthy;
+        const guildEntry = databaseAvailable ? await client.database.getGuild(guild.id) : client.database.guildData.cache.get(guild.id);
+        if (!guildEntry) {
             return;
         }
         const user = client.extendedUser(member.user);
-        const guildEntry = await client.database.getGuild(guild.id);
         //Farewells
         if (!guildEntry.farewells.channel || !guildEntry.farewells.enabled || !guildEntry.farewells.message) {
             return;

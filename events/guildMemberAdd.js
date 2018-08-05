@@ -4,10 +4,14 @@ class GuildMemberAddHandler {
     constructor() {}
 
     async handle(client, guild, member) {
-        if (member.user.bot || !client.database || !client.database.healthy) {
+        if (member.user.bot) {
             return;
         }
-        const guildEntry = await client.database.getGuild(guild.id);
+        const databaseAvailable = !client.database && !client.database.healthy;
+        const guildEntry = databaseAvailable ? await client.database.getGuild(guild.id) : client.database.guildData.cache.get(guild.id);
+        if (!guildEntry) {
+            return;
+        }
         const clientMember = guild.members.get(client.bot.user.id);
         const user = client.extendedUser(member.user);
         //On join role
