@@ -3,6 +3,7 @@
 const Command = require('../../util/helpers/modules/Command');
 const axios = require('axios').default;
 const querystring = require('querystring');
+const sharp = require('sharp');
 
 class WhatAnime extends Command {
     constructor() {
@@ -40,6 +41,10 @@ class WhatAnime extends Command {
             return message.channel.createMessage(`You didn't uploaded any image that can be used, if you uploaded an image, note that the image must: \n-Have one of the following extensions: ${this.extra.imageExtensions.map(e => '`.' + e + '`').join(', ')}\n-Be under 1MB`);
         }
         image = await this.downloadImage((image.attachments ? image.attachments[0] : false) || image);
+        image = await this.processImage(image);
+        if (image.length > 1000000) {
+            return message.channel.createMessage(`I tried to make it as small as could, but seems like your image is too big. whatanime.ga doesn't accept anything bigger than 1MB`);
+        }
         const formData = querystring.stringify({image});
         const request = await axios.post(`http://${client.config.requestHandler.host}:${client.config.requestHandler.port}/request`, {
             data: formData,
@@ -65,15 +70,29 @@ class WhatAnime extends Command {
 
     validateFile(attachment) {
         const fileExtension = attachment.filename.split('.')[attachment.filename.split('.').length - 1];
-        return (attachment.size > 1048576 || !this.extra.imageExtensions.includes(fileExtension)) ? false : true;
+        return this.extra.imageExtensions.includes(fileExtension);
     }
 
     async downloadImage(attachment) {
         let image = await axios.get(attachment.url, {
             responseType: 'arraybuffer'
         });
-        image = image.data.toString('base64');
-        return image;
+        return image.data;
+    }
+
+    processImage(buffer) {
+        return new Promise((resolve, reject) => {
+            const startTime = Date.now();
+            return sharp(buffer)
+                .resize(320, 180)
+                .toFormat('jpeg')
+                .toBuffer((err, buf) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(buf.toString('base64'));
+                });
+        });
     }
 }
 
