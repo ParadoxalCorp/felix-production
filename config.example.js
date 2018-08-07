@@ -104,16 +104,22 @@ module.exports = {
         music: {
             //If true, Felix will try to connect to the Lavalink server (meaning that you must launch the server), if a success, the music feature will be enabled
             enabled: false,
-            //The password and port set in the "application.yml" file that should be in the same folder if you downloaded Lavalink
-            password: 'youshallnotpass',
-            port: 2333,
-            WSPort: 80,
             //Define how long in milliseconds to wait for a song to be added when the last one ended before leaving to not waste bandwidth. Defaults to 30e4 ms (5 minutes)
             inactivityTimeout: 30e4,
             //Define how long in milliseconds before a vote to skip a song should end
             voteSkipDuration: 60000,  
             //The host of the Lavalink server, if the Lavalink server is hosted on another server, you should change to that server IP
-            host: 'localhost'
+            nodes: [{
+                //The password and port set in the "application.yml" file that should be in the same folder if you downloaded Lavalink
+                password: 'youshallnotpass',
+                port: 2333,
+                WSPort: 80,
+                host: 'localhost',
+                //Region: us/eu...
+                region: 'us',
+                //More detailed location for info purposes
+                location: 'Baguette'
+            }]
         }
     },
     process: {

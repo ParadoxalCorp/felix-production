@@ -24,15 +24,16 @@ class MusicManager {
      */
     constructor(client, options = {}) {
         this.client = client;
-        this.nodes = [
-            { host: client.config.options.music.host, port: client.config.options.music.WSPort, region: 'eu', password: client.config.options.music.password }
-        ];
-        this.baseURL = (node) => `http://${node.host}:${client.config.options.music.port}`;
+        this.nodes = [];
+        this.baseURL = (node) => `http://${node.host}:${client.config.options.music.nodes.find(n => n.host === node.host).port}`;
         this.axios = require('axios').default.create({});
         this.axios.defaults.headers.common['Accept'] = 'application/json';
         // @ts-ignore
         this.connections = new(require('../../modules/collection'))();
-        this.regions = undefined;
+        this.regions = {
+            eu: ['eu', 'amsterdam', 'frankfurt', 'russia', 'hongkong', 'singapore', 'sydney'],
+            us: ['us', 'brazil'],
+        };
         if (options.reload) {
             this.init(options);
         }
@@ -48,6 +49,7 @@ class MusicManager {
                 defaultRegion: 'eu'
             });
         }
+        this._connectToNodes();
     }
 
     /**
@@ -203,7 +205,7 @@ class MusicManager {
         if (!this.client.bot.voiceConnections.nodes) {
             return false;
         }
-        this.client.bot.voiceConnections.nodes.get(this.client.config.options.music.host).destroy();
+        this.client.bot.voiceConnections.nodes.forEach(node => node.destroy());
     }
 
     _reload() {
@@ -211,6 +213,24 @@ class MusicManager {
         delete require.cache[module.filename];
         delete require.cache[require.resolve('./musicConnection')];
         return new(require(module.filename))(this.client, {reload: true});
+    }
+
+    _connectToNodes() {
+        for (const node of this.client.config.options.music.nodes) {
+            this.client.bot.voiceConnections.createNode({
+                host: node.host,
+                port: node.WSPort,
+                password: node.password,
+                region: node.region,
+                numShards: this.client.bot.shards.size,
+                userId: this.client.bot.user.id
+            });
+            this.client.bot.voiceConnections.nodes.get(node.host).on('ready', this._onNodeConnection.bind(this, node));
+        }
+    }
+
+    _onNodeConnection(node) {
+        process.send({name: 'info', msg: `Successfully established the WebSocket connection with the Lavalink node at ${node.host}:${node.port}. Covered region for this node is set to ${node.region}`});
     }
 }
 
