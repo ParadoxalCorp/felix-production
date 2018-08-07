@@ -82,7 +82,6 @@ class WhatAnime extends Command {
 
     processImage(buffer) {
         return new Promise((resolve, reject) => {
-            const startTime = Date.now();
             return sharp(buffer)
                 .resize(320, 180)
                 .toFormat('jpeg')
