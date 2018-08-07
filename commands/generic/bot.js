@@ -151,6 +151,19 @@ class Bot extends Command {
                 inline: true
             });
         }
+        if (client.config.options.music.enabled && client.config.options.music.nodes[0]) {
+            embedFields.push({
+                name: 'Music nodes',
+                value: (() => {
+                    let nodesStatus = '';
+                    for (const node of client.config.options.music.nodes) {
+                        nodesStatus += `${node.location}: ${client.bot.voiceConnections.nodes.get(node.host).connected ? ':white_check_mark: Online' : ':x: Offline'}\n`;
+                    }
+                    nodesStatus += `\n[More info](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#music-nodes)`;
+                    return nodesStatus;
+                })()
+            });
+        }
         return embedFields;
     }
 }

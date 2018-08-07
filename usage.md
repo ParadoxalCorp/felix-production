@@ -285,3 +285,7 @@ Felix will disable all the features that needs to have access to the database, e
 #### Redis
 
 `Redis` is our cache server, it is tasked with synchronizing and sharing data across the shards and clusters of Felix (like the music queue for example). If `Redis` comes down, each shard and cluster will only have access to a limited set of data. While the main database is RethinkDB, Redis also write medium-term data to the disk, so even if the server needs to be restarted at some point, the data won't be lost
+
+#### Music nodes
+
+Felix's music nodes are [Lavalink](https://github.com/Frederikam/Lavalink) servers, allowing for a fast deployment of new ones. Each node is covering a specific part of the world, though in the future regions that are under heavy load may benefit from multiple nodes. If a node comes down, the music feature will still be available and use the other nodes. 
