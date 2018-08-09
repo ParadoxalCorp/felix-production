@@ -57,8 +57,8 @@ class Help extends Command {
             const categories = [];
 
             client.commands.forEach(c => {
-                if (!categories.includes(c.help.category) && (client.config.admins.includes(message.author.id) || c.help.category !== "admin")) {
-                    categories.push(c.help.category);
+                if (!categories.includes(c.help.category || c.category.name) && (client.config.admins.includes(message.author.id) || (c.help.category || c.category.name) !== "admin")) {
+                    categories.push(c.help.category || c.category.name);
                 }
             });
 
@@ -68,12 +68,13 @@ class Help extends Command {
                         title: ":book: Available commands",
                         description: `Here is the list of all available commands and their categories, you can use commands like \`${this.getPrefix(client, guildEntry)}<command>\`\n\n${this.extra.additionalInfo(client)}`,
                         fields: categories.map(c => {
+                            const firstCommandInCategory = client.commands.find(cmd => (cmd.help.category || cmd.category.name) === c);
                             const subCategories = this.getSubCategories(client, c);
                             const value = subCategories[0] 
                             ? subCategories.map(sc => `**${sc}**: ${client.commands.filter(command => command.help.subCategory === sc).map(command => '`' + command.help.name + '`').join(" ")}`).join('\n\n')
-                            : client.commands.filter(command => command.help.category === c).map(command => `\`${command.help.name}\``).join(" ");
+                            : client.commands.filter(command => (command.help.category || command.category.name) === c).map(command => `\`${command.help.name}\``).join(" ");
                             return {
-                                name: c,
+                                name: `${c} ${firstCommandInCategory.category ? firstCommandInCategory.category.emote : ''}`,
                                 value: value
                             };
                         }),
@@ -83,7 +84,7 @@ class Help extends Command {
                         color: client.config.options.embedColor
                     }
                 },
-                normalMessage: `Here is the list of all available commands and their categories, you can use commands like \`${this.getPrefix(client, guildEntry)}<command>\`\n\n${categories.map(c => '**' + c + '** =>' + client.commands.filter(command => command.help.category === c).map(command => '\`' + command.help.name + '\`').join(', ')).join('\n\n')}`
+                normalMessage: `Here is the list of all available commands and their categories, you can use commands like \`${this.getPrefix(client, guildEntry)}<command>\`\n\n${categories.map(c => '**' + c + '** =>' + client.commands.filter(command => (command.help.category || command.category.name) === c).map(command => '\`' + command.help.name + '\`').join(', ')).join('\n\n')}`
         };
     }
 
@@ -104,7 +105,7 @@ class Help extends Command {
         
         const embedFields = [{
             name: 'Category',
-            value: command.help.category,
+            value: command.help.category || command.category.help,
             inline: true
         }, {
             name: 'Usage',
@@ -181,7 +182,7 @@ class Help extends Command {
     getNormalCommandHelp(client, message, args, command, guildEntry) {
         //Focusing highly on readability here, one-lining this would look like hell
         let normalHelp = `**Description**: ${command.help.description.replace(/{prefix}/gim, this.getPrefix(client, guildEntry))}\n`;
-        normalHelp += `**Category**: ${command.help.category}\n`;
+        normalHelp += `**Category**: ${command.help.category || command.category.help}\n`;
         normalHelp += `**Usage**: \`${command.help.usage.replace(/{prefix}/gim, this.getPrefix(client, guildEntry))}\`\n`;
         if (command.conf.aliases[0]) {
             normalHelp += `**Aliases**: ${command.conf.aliases.map(a => '\`' + a + '\`').join(', ')}\n`;
