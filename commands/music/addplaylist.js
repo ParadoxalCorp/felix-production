@@ -1,10 +1,14 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const MusicCommands = require('../../util/helpers/modules/musicCommands');
 
-class AddPlaylist extends Command {
-    constructor() {
-        super();
+class AddPlaylist extends MusicCommands {
+    constructor(client) {
+        super(client, {
+            noArgs: ':x: You didn\'t specified a playlist link',
+            userInVC: true,
+            autoJoin: true
+        });
         this.help = {
             name: 'addplaylist',
             category: 'music',
@@ -23,25 +27,9 @@ class AddPlaylist extends Command {
     }
 
     // eslint-disable-next-line no-unused-vars 
-    async run(client, message, args, guildEntry, userEntry) {
-        if (!guildEntry.hasPremiumStatus()) {
-            return message.channel.createMessage(':x: Sorry but as they are resources-whores, music commands are only available to our patreon donators. Check the `bot` command for more info');
-        }
-        const member = message.channel.guild.members.get(message.author.id);
-        const clientMember = message.channel.guild.members.get(client.bot.user.id);
-        if (!args[0]) {
-            return message.channel.createMessage(':x: You didn\'t specified a playlist link');
-        }
-        if (!member.voiceState.channelID) {
-            return message.channel.createMessage(':x: You are not connected to any voice channel');
-        }
-        if (!clientMember.voiceState.channelID) {
-            if (Array.isArray(this.clientHasPermissions(message, client, ['voiceConnect', 'voiceSpeak'], message.channel.guild.channels.get(member.voiceState.channelID)))) {
-                return message.channel.createMessage(':x: It seems like I lack the permission to connect or to speak in the voice channel you are in :c');
-            }
-        }
-        const connection = await client.musicManager.getPlayer(message.channel.guild.channels.get(member.voiceState.channelID));
-        let tracks = await client.musicManager.resolveTracks(connection.player.node, args.join(' '));
+    async run(message, args, guildEntry, userEntry) {
+        const connection = await this.client.musicManager.getPlayer(message.channel.guild.channels.get(message.channel.guild.members.get(message.author.id).voiceState.channelID));
+        let tracks = await this.client.musicManager.resolveTracks(connection.player.node, args.join(' '));
         if (!tracks[0]) {
             return message.channel.createMessage(`:x: I could not load this playlist :c`);
         }
@@ -54,4 +42,4 @@ class AddPlaylist extends Command {
     }
 }
 
-module.exports = new AddPlaylist();
+module.exports = AddPlaylist;

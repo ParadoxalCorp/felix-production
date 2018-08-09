@@ -138,11 +138,18 @@ class MessageHandler {
         if (!queryMissingArgs && !args[0] && command.conf.expectedArgs[0]) {
             return;
         }
-
-        command.run(client, message, queryMissingArgs || args, databaseEntries.guild, databaseEntries.user)
-            .catch(err => {
-                client.bot.emit('error', err, message);
-            });
+        //Temporary code to make both the new and old commands structure cohabit 
+        if (command.client) {
+            if (command.initialCheck) {
+                const initialCheck = await command.initialCheck(message, args, databaseEntries.guild, databaseEntries.user).catch(err => client.bot.emit('error', err, message));
+                if (!initialCheck.passed) {
+                    return;
+                }
+            }
+            command.run(message, queryMissingArgs || args, databaseEntries.guild, databaseEntries.user).catch(err => client.bot.emit('error', err, message));
+        } else {
+            command.run(client, message, queryMissingArgs || args, databaseEntries.guild, databaseEntries.user).catch(err => client.bot.emit('error', err, message));
+        }
         const commandCooldownWeight = typeof command.conf.cooldownWeight === 'undefined' ? client.config.options.defaultCooldownWeight : command.conf.cooldownWeight;
         client.ratelimited.set(message.author.id, client.ratelimited.get(message.author.id) ?
             (client.ratelimited.get(message.author.id) + commandCooldownWeight) : commandCooldownWeight);

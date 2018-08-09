@@ -75,7 +75,11 @@ class Felix extends Base {
             totalCommands = totalCommands + thisCommands.length;
             thisCommands.forEach(c => {
                 try {
-                    const command = require(join(__dirname, 'commands', categories[i], c));
+                    let command = require(join(__dirname, 'commands', categories[i], c));
+                    //Temporary code to make both the new and old commands structure cohabit 
+                    if (!command.help) {
+                        command = new command(this);
+                    }
                     //Add the command and its aliases to the collection
                     if (!this.database && command.conf.requireDB) {
                         command.conf.disabled = 'This command require the database, however the database seems unavailable at the moment';
