@@ -16,6 +16,10 @@ class MusicCommands extends Command {
         super();
         this.client = client;
         this.options = options;
+        this.category = {
+            name: 'Music',
+            emote: ':musical_note: :new:'
+        };
     }
 
     //eslint-disable-next-line no-unused-vars
