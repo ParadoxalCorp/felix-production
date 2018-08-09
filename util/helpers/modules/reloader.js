@@ -35,7 +35,7 @@ class Reloader {
             command.conf.aliases.forEach(alias => this.client.aliases.set(alias, command.help.name));
     
             return command;
-        }
+        };
         if (path === 'all') {
             for (const [key, value] of this.client.commands) {
                 if (!value.conf.subCommand) {
