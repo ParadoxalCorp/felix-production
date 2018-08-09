@@ -1,13 +1,12 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const MusicCommands = require('../../util/helpers/modules/musicCommands');
 
-class Skip extends Command {
-    constructor() {
-        super();
+class Skip extends MusicCommands {
+    constructor(client) {
+        super(client, { userInVC: true });
         this.help = {
             name: 'skip',
-            category: 'music',
             description: 'Start a vote to skip the currently playing song',
             usage: '{prefix}skip'
         };
@@ -23,18 +22,15 @@ class Skip extends Command {
     }
 
     // eslint-disable-next-line no-unused-vars 
-    async run(client, message, args, guildEntry, userEntry) {
-        if (!guildEntry.hasPremiumStatus()) {
-            return message.channel.createMessage(':x: Sorry but as they are resources-whores, music commands are only available to our patreon donators. Check the `bot` command for more info');
-        }
-        const connection = client.musicManager.connections.get(message.channel.guild.id);
+    async run(message, args, guildEntry, userEntry) {
+        const connection = this.client.musicManager.connections.get(message.channel.guild.id);
         if (!connection || !connection.nowPlaying) {
             return message.channel.createMessage(':x: I am not playing anything');
         }
         if (!connection.skipVote.count) {
             connection.skipVote.count = 1;
-            connection.skipVote.callback = this.handleVoteEnd.bind(this, client, message, connection);
-            connection.skipVote.timeout = setTimeout(this.handleVoteEnd.bind(this, client, message, connection, 'timeout'), client.config.options.music.voteSkipDuration);
+            connection.skipVote.callback = this.handleVoteEnd.bind(this, this.client, message, connection);
+            connection.skipVote.timeout = setTimeout(this.handleVoteEnd.bind(this, message, connection, 'timeout'), this.client.config.options.music.voteSkipDuration);
         } else {
             if (connection.skipVote.id) {
                 return message.channel.createMessage(`:x: Another vote to skip to the song **${connection.queue.find(t => t.voteID === connection.skipVote.id).info.title}** is already ongoing`);
@@ -45,11 +41,11 @@ class Skip extends Command {
             connection.skipVote.count = connection.skipVote.count + 1;
         }
         connection.skipVote.voted.push(message.author.id);
-        return this.processVote(client, message, connection);
+        return this.processVote(message, connection);
     }
 
-    async processVote(client, message, connection) {
-        const voiceChannel = message.channel.guild.channels.get(message.channel.guild.members.get(client.bot.user.id).voiceState.channelID);
+    async processVote(message, connection) {
+        const voiceChannel = message.channel.guild.channels.get(message.channel.guild.members.get(this.client.bot.user.id).voiceState.channelID);
         const userCount = voiceChannel.voiceMembers.filter(m => !m.bot).length;
         if (connection.skipVote.count >= (userCount === 2 ? 2 : (Math.ceil(userCount / 2)))) {
             connection.resetVote();
@@ -59,7 +55,7 @@ class Skip extends Command {
         return message.channel.createMessage(`:white_check_mark: Successfully registered the vote to skip the song, as there is \`${userCount}\` users listening and already \`${connection.skipVote.count}\` voted, \`${userCount === 2 ? 1 : Math.ceil(userCount / 2) - connection.skipVote.count}\` more vote(s) are needed`);
     }
 
-    async handleVoteEnd(client, message, connection, reason) {
+    async handleVoteEnd(message, connection, reason) {
         switch (reason) {
             case 'timeout': 
                 connection.resetVote();
@@ -72,4 +68,4 @@ class Skip extends Command {
     }
 }
 
-module.exports = new Skip();
+module.exports = Skip;

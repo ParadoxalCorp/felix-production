@@ -1,13 +1,12 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const MusicCommands = require('../../util/helpers/modules/musicCommands');
 
-class ForceSkip extends Command {
-    constructor() {
-        super();
+class ClearQueue extends MusicCommands {
+    constructor(client) {
+        super(client);
         this.help = {
             name: 'clearqueue',
-            category: 'music',
             description: 'Clear the queue',
             usage: '{prefix}clearqueue'
         };
@@ -23,15 +22,12 @@ class ForceSkip extends Command {
     }
 
     // eslint-disable-next-line no-unused-vars 
-    async run(client, message, args, guildEntry, userEntry) {
-        if (!guildEntry.hasPremiumStatus()) {
-            return message.channel.createMessage(':x: Sorry but as they are resources-whores, music commands are only available to our patreon donators. Check the `bot` command for more info');
-        }
-        const connection = client.musicManager.connections.get(message.channel.guild.id);
+    async run(message, args, guildEntry, userEntry) {
+        const connection = this.client.musicManager.connections.get(message.channel.guild.id);
         if (!connection || !connection.queue[0]) {
-            const queue = await client.musicManager.getQueueOf(message.channel.guild.id);
+            const queue = await this.client.musicManager.getQueueOf(message.channel.guild.id);
             if (queue[0]) {
-                await client.redis.del(`${message.channel.guild.id}-queue`);
+                await this.client.redis.del(`${message.channel.guild.id}-queue`);
                 return message.channel.createMessage(':white_check_mark: Successfully cleared the queue');
             }
             return message.channel.createMessage(':x: There is nothing in the queue');
@@ -41,4 +37,4 @@ class ForceSkip extends Command {
     }
 }
 
-module.exports = new ForceSkip();
+module.exports = ClearQueue;

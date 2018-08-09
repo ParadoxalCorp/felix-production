@@ -1,13 +1,12 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const MusicCommands = require('../../util/helpers/modules/musicCommands');
 
-class ForceSkip extends Command {
-    constructor() {
-        super();
+class ForceSkip extends MusicCommands {
+    constructor(client) {
+        super(client, { userInVC: true });
         this.help = {
             name: 'forceskip',
-            category: 'music',
             description: 'Force skip the currently playing song',
             usage: '{prefix}forceskip'
         };
@@ -23,11 +22,8 @@ class ForceSkip extends Command {
     }
 
     // eslint-disable-next-line no-unused-vars 
-    async run(client, message, args, guildEntry, userEntry) {
-        if (!guildEntry.hasPremiumStatus()) {
-            return message.channel.createMessage(':x: Sorry but as they are resources-whores, music commands are only available to our patreon donators. Check the `bot` command for more info');
-        }
-        const connection = client.musicManager.connections.get(message.channel.guild.id);
+    async run(message, args, guildEntry, userEntry) {
+        const connection = this.client.musicManager.connections.get(message.channel.guild.id);
         if (!connection || !connection.nowPlaying) {
             return message.channel.createMessage(':x: I am not playing anything');
         }
@@ -36,4 +32,4 @@ class ForceSkip extends Command {
     }
 }
 
-module.exports = new ForceSkip();
+module.exports = ForceSkip;

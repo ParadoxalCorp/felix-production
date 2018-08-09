@@ -11,7 +11,6 @@ class AddPlaylist extends MusicCommands {
         });
         this.help = {
             name: 'addplaylist',
-            category: 'music',
             description: 'Add a YouTube playlist to the queue, note that the link must be the link to the playlist, not to the first song of the playlist',
             usage: '{prefix}addplaylist <playlist_link>'
         };

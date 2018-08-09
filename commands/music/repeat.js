@@ -1,13 +1,12 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const MusicCommands = require('../../util/helpers/modules/musicCommands');
 
-class Repeat extends Command {
-    constructor() {
-        super();
+class Repeat extends MusicCommands {
+    constructor(client) {
+        super(client, { userInVC: true });
         this.help = {
             name: 'repeat',
-            category: 'music',
             description: 'Set the repeat to repeat the queue, the current song or turn it off',
             usage: '{prefix}repeat <song|queue|off>'
         };
@@ -49,15 +48,12 @@ class Repeat extends Command {
     }
 
     // eslint-disable-next-line no-unused-vars 
-    async run(client, message, args, guildEntry, userEntry) {
-        if (!guildEntry.hasPremiumStatus()) {
-            return message.channel.createMessage(':x: Sorry but as they are resources-whores, music commands are only available to our patreon donators. Check the `bot` command for more info');
-        }
-        const connection = client.musicManager.connections.get(message.channel.guild.id);
+    async run(message, args, guildEntry, userEntry) {
+        const connection = this.client.musicManager.connections.get(message.channel.guild.id);
         if (!connection || !connection.nowPlaying) {
             return message.channel.createMessage(':x: I am not playing anything');
         }
-        if (!['off', 'queue', 'song'].includes(args[0].toLowerCase())) {
+        if (!args[0] || !['off', 'queue', 'song'].includes(args[0].toLowerCase())) {
             return message.channel.createMessage(':x: Please specify the repeat mode to toggle, can be either `queue` to repeat the queue, `song` to repeat the current song or `off` to disable the repeat');
         }
         connection.repeat = args[0].toLowerCase();
@@ -70,4 +66,4 @@ class Repeat extends Command {
     }
 }
 
-module.exports = new Repeat();
+module.exports = Repeat;

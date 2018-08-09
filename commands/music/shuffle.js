@@ -1,13 +1,12 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const MusicCommands = require('../../util/helpers/modules/musicCommands');
 
-class Shuffle extends Command {
-    constructor() {
-        super();
+class Shuffle extends MusicCommands {
+    constructor(client) {
+        super(client, { userInVC: true });
         this.help = {
             name: 'shuffle',
-            category: 'music',
             description: 'Shuffle the queue',
             usage: '{prefix}shuffle <playlist_link>'
         };
@@ -23,11 +22,8 @@ class Shuffle extends Command {
     }
 
     // eslint-disable-next-line no-unused-vars 
-    async run(client, message, args, guildEntry, userEntry) {
-        if (!guildEntry.hasPremiumStatus()) {
-            return message.channel.createMessage(':x: Sorry but as they are resources-whores, music commands are only available to our patreon donators. Check the `bot` command for more info');
-        }
-        let connection = client.musicManager.connections.get(message.channel.guild.id);
+    async run(message, args, guildEntry, userEntry) {
+        let connection = this.client.musicManager.connections.get(message.channel.guild.id);
         if (!connection || !connection.queue[0]) {
             return message.channel.createMessage(`:x: There is nothing in the queue to shuffle`);
         }
@@ -36,4 +32,4 @@ class Shuffle extends Command {
     }
 }
 
-module.exports = new Shuffle();
+module.exports = Shuffle;
