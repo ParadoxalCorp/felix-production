@@ -115,7 +115,7 @@ class Reload extends Command {
                 });
             return reloadedEvent;
         } else if (args.includes('--command')) {
-            if (args[0] !== 'all' && require(path).conf.subCommand) {
+            if (args[0] !== 'all' && (command && command.conf.subCommand)) {
                 return message.channel.createMessage(`:x: Sorry cutie, but this is a sub-command, so the only way to reload it is to re-generate it`);
             }
             const reloadedCommand = await client.IPCHandler.broadcastReload('command', args[0] === 'all' ? args[0] : path)
