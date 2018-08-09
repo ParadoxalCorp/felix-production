@@ -24,32 +24,28 @@ class Reloader {
      * @returns {Command} The reloaded command so calls can be chained 
      */
     reloadCommand(path) {
+        const reload = (commandPath) => {
+            delete require.cache[commandPath];
+            let command = require(commandPath);
+            if (!command.help) {
+                command = new command(this.client);
+            }
+            this.client.commands.set(command.help.name, command);
+            this.client.aliases.filter(a => a === command.help.name).forEach(a => this.client.aliases.delete(a));
+            command.conf.aliases.forEach(alias => this.client.aliases.set(alias, command.help.name));
+    
+            return command;
+        }
         if (path === 'all') {
             for (const [key, value] of this.client.commands) {
                 if (!value.conf.subCommand) {
-                    delete require.cache[require.resolve(`../../../commands/${value.help.category}/${key}`)];
-                    const command = require(`../../../commands/${value.help.category}/${key}`);
-                    if ((!this.client.database || !this.client.database.healthy) && command.conf.requireDB) {
-                        command.conf.disabled = ":x: This command uses the database, however the database seems unavailable at the moment";
-                    }
-                    this.client.commands.set(key, command);
-                    this.client.aliases.filter(a => a === command.help.name).forEach(a => this.client.aliases.delete(a));
-                    command.conf.aliases.forEach(alias => this.client.aliases.set(alias, command.help.name));
+                    reload(require.resolve(`../../../commands/${value.help.category}/${key}`));
                 }
             }
             // @ts-ignore
             return true;
         }
-        delete require.cache[path];
-        const command = require(path);
-        if ((!this.client.database || !this.client.database.healthy) && command.conf.requireDB) {
-            command.conf.disabled = ":x: This command uses the database, however the database seems unavailable at the moment";
-        }
-        this.client.commands.set(command.help.name, command);
-        this.client.aliases.filter(a => a === command.help.name).forEach(a => this.client.aliases.delete(a));
-        command.conf.aliases.forEach(alias => this.client.aliases.set(alias, command.help.name));
-
-        return command;
+        return reload(path);
     }
 
     /**
@@ -90,7 +86,7 @@ class Reloader {
     reloadModule(path, name, options) {
         if (path === 'all') {
             for (const path in require.cache) {
-                const toIgnore = ['node_modules', 'databaseWrapper.js', 'IPCHandler.js', 'musicManager.js', 'messageCollector.js', 'redisManager.js'];
+                const toIgnore = ['node_modules'];
                 if (!toIgnore.find(f => path.includes(f))) {
                     delete require.cache[path];
                 }
