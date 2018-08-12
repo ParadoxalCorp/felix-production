@@ -86,6 +86,7 @@ class MusicManager {
         if (!player) {
             player = await this.client.bot.joinVoiceChannel(channel.id, options).then(p => new MusicConnection(this.client, p));
             this.connections.set(channel.guild.id, player);
+            await player.defer.catch(() => {});
             player.on("inactive", this.connections.delete.bind(this.connections, channel.guild.id));
         }
         return player;
@@ -170,7 +171,7 @@ class MusicManager {
             });
     }
 
-    async genericEmbed(track, connection, title) {
+    async genericEmbed(track, connection, title, newTrack = false) {
         let fields = [
             {
             name: 'Author',
@@ -178,7 +179,7 @@ class MusicManager {
             inline: true
         }, {
             name: 'Duration',
-            value: (connection.nowPlaying.track === track.track ? `${this.parseDuration(connection.player.state.position || 0)}/` : '') + this.parseDuration(track),
+            value: (connection.nowPlaying.track === track.track ? `${this.parseDuration(newTrack ? 0 : connection.player.state.position || 0)}/` : '') + this.parseDuration(track),
             inline: true
         }];
         if (track.info.requestedBy) {
