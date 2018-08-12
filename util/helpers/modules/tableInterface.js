@@ -75,7 +75,7 @@ class TableInterface {
         if (this.cache.has(key)) {
             return new this.extension(update(this.cache.get(key)), this.client);
         }
-        if (!this._rethink.healthy) {
+        if (!this.client.database.healthy) {
             return null;
         }
         return this._rethink.table(this.tableName).get(key).run()
