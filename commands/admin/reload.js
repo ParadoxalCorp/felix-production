@@ -92,7 +92,7 @@ class Reload extends Command {
     async run(client, message, args) {
         const isPath = new RegExp(/\/|\\/gim).test(args[0]);
         const command = client.commands.get(args[0]) || client.commands.get(client.aliases.get(args[0]));
-        const path = args[0] === 'all' || this.verifyPath(args.includes('--command') && !isPath ? `../${command.help.category}/${command.help.name}` : args[0]);
+        const path = args[0] === 'all' || this.verifyPath(args.includes('--command') && !isPath ? `../${(command.help.category || command.category.name)}/${command.help.name}` : args[0]);
         if (!path) {
             return message.channel.createMessage(':x: Look, i don\'t want to be mean, but this is NOT a valid path, try again');
         }
