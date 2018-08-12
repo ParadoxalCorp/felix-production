@@ -75,6 +75,9 @@ class TableInterface {
         if (this.cache.has(key)) {
             return new this.extension(update(this.cache.get(key)), this.client);
         }
+        if (!this._rethink.healthy) {
+            return null;
+        }
         return this._rethink.table(this.tableName).get(key).run()
             .then(data => data ? new this.extension(update(data), this.client) : new this.extension(references[this.tableName === 'guilds' ? 'guildEntry' : 'userEntry'](key), this.client));
     }

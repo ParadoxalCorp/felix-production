@@ -25,8 +25,7 @@ class GuildMemberRemoveHandler {
         if (member.user.bot) {
             return;
         }
-        const databaseAvailable = !client.database && !client.database.healthy;
-        const guildEntry = databaseAvailable ? await client.database.getGuild(guild.id) : client.database.guildData.cache.get(guild.id);
+        const guildEntry = await client.database.getGuild(guild.id);
         if (!guildEntry) {
             return;
         }
