@@ -105,7 +105,7 @@ class Help extends Command {
         
         const embedFields = [{
             name: 'Category',
-            value: command.help.category || command.category.help,
+            value: command.help.category || command.category.name,
             inline: true
         }, {
             name: 'Usage',
@@ -182,7 +182,7 @@ class Help extends Command {
     getNormalCommandHelp(client, message, args, command, guildEntry) {
         //Focusing highly on readability here, one-lining this would look like hell
         let normalHelp = `**Description**: ${command.help.description.replace(/{prefix}/gim, this.getPrefix(client, guildEntry))}\n`;
-        normalHelp += `**Category**: ${command.help.category || command.category.help}\n`;
+        normalHelp += `**Category**: ${command.help.category || command.category.name}\n`;
         normalHelp += `**Usage**: \`${command.help.usage.replace(/{prefix}/gim, this.getPrefix(client, guildEntry))}\`\n`;
         if (command.conf.aliases[0]) {
             normalHelp += `**Aliases**: ${command.conf.aliases.map(a => '\`' + a + '\`').join(', ')}\n`;
