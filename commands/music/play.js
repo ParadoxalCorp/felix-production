@@ -19,11 +19,12 @@ class Play extends MusicCommands {
         const connection = await this.client.musicManager.getPlayer(message.channel.guild.channels.get(member.voiceState.channelID));
         let track;
         if (!args[0]) {
-            await connection.defer;
             if (connection.queue[0]) {
                 track = connection.queue[0];
                 if (connection.player.paused) {
                     connection.player.setPause(false);
+                } else if (connection.nowPlaying) {
+                    return message.channel.createMessage(':x: You should specify something to play');
                 } else {
                     connection.queue.shift();
                 }
@@ -43,7 +44,7 @@ class Play extends MusicCommands {
             }
         }
         connection.play(track, message.author.id);
-        const output = await this.client.musicManager.genericEmbed(track, connection, 'Now playing');
+        const output = await this.client.musicManager.genericEmbed(track, connection, 'Now playing', true);
         return message.channel.createMessage({embed: output});
     }
 
