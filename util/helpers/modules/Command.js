@@ -446,6 +446,21 @@ class Command {
         }
         return col;
     }
+
+    get commandsConf() {
+        return {
+            requireDB: false,
+            disabled: false,
+            aliases: [],
+            requirePerms: [],
+            guildOnly: false,
+            ownerOnly: false,
+            expectedArgs: [],
+            cooldownWeight: 5,
+            require: [],
+            guildOwnerOnly: false
+        };
+    }
 }
 
 module.exports = Command;
