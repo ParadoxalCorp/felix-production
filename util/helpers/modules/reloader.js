@@ -39,7 +39,7 @@ class Reloader {
         if (path === 'all') {
             for (const [key, value] of this.client.commands) {
                 if (!value.conf.subCommand) {
-                    reload(require.resolve(`../../../commands/${value.help.category || value.category.name}/${key}`));
+                    reload(require.resolve(`../../../commands/${(value.help.category || value.category.name).toLowerCase()}/${key}`));
                 }
             }
             // @ts-ignore
