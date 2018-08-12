@@ -10,15 +10,7 @@ class Leave extends MusicCommands {
             description: 'Stop playing and leave the voice channel',
             usage: '{prefix}leave'
         };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: ['stop'],
-            requirePerms: ['voiceConnect', 'voiceSpeak'],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+        this.conf = this.genericConf();
     }
 
     // eslint-disable-next-line no-unused-vars 

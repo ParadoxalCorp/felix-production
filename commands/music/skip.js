@@ -4,29 +4,18 @@ const MusicCommands = require('../../util/helpers/modules/musicCommands');
 
 class Skip extends MusicCommands {
     constructor(client) {
-        super(client, { userInVC: true });
+        super(client, { userInVC: true, playing: true });
         this.help = {
             name: 'skip',
             description: 'Start a vote to skip the currently playing song',
             usage: '{prefix}skip'
         };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['skipVote'],
-            requirePerms: ['voiceConnect', 'voiceSpeak'],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+        this.conf = this.genericConf({ aliases: ['voteskip'] });
     }
 
     // eslint-disable-next-line no-unused-vars 
     async run(message, args, guildEntry, userEntry) {
         const connection = this.client.musicManager.connections.get(message.channel.guild.id);
-        if (!connection || !connection.nowPlaying) {
-            return message.channel.createMessage(':x: I am not playing anything');
-        }
         if (!connection.skipVote.count) {
             connection.skipVote.count = 1;
             connection.skipVote.callback = this.handleVoteEnd.bind(this, this.client, message, connection);

@@ -10,7 +10,7 @@ class MusicCommands extends Command {
     /**
      * 
      * @param {Client} client - The client instance
-     * @param {{noArgs: string, userInVC: boolean, autoJoin: boolean}} [options={}]  - `noArgs` specify a message to return if no arguments are provided, `userInVC` checks if the member is in a voice channel, `autoJoin` automatically joins the voice channel if not in. These three args will make the command handler act before running the command
+     * @param {{noArgs: string, userInVC: boolean, autoJoin: boolean, playing: boolean}} [options={}]  - `noArgs` specify a message to return if no arguments are provided, `userInVC` checks if the member is in a voice channel, `autoJoin` automatically joins the voice channel if not in, `playing` checks if Felix is playing. These args will make the command handler act before running the command
      */
     constructor(client, options = {}) {
         super();
@@ -18,7 +18,11 @@ class MusicCommands extends Command {
         this.options = options;
         this.category = {
             name: 'Music',
-            emote: ':musical_note: :new:'
+            emote: ':musical_note: :new:',
+            genericConf: {
+                guildOnly: true,
+                requirePerms: ['voiceConnect', 'voiceSpeak']
+            }
         };
     }
 
@@ -38,7 +42,21 @@ class MusicCommands extends Command {
                 return message.channel.createMessage(':x: It seems like I lack the permission to connect or to speak in the voice channel you are in :c');
             }
         }
+        if (this.options.playing) {
+            const connection = this.client.musicManager.connections.get(message.channel.guild.id);
+            if (!connection || !connection.nowPlaying) {
+                return message.channel.createMessage(':x: I am not playing anything');
+            }
+        }
         return { passed: true };
+    }
+
+    isValidPosition(position, queue) {
+        return !position || !this.client.isWholeNumber(position) || (position - 1 >= queue.length) || (position - 1 < 0) ? false : true;
+    }
+
+    genericConf(commandConf = {}) {
+        return Object.assign(this.commandsConf, this.category.genericConf, commandConf);
     }
 }
 

@@ -10,15 +10,7 @@ class ClearQueue extends MusicCommands {
             description: 'Clear the queue',
             usage: '{prefix}clearqueue'
         };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['cq'],
-            requirePerms: ['voiceConnect', 'voiceSpeak'],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+        this.conf = this.genericConf({ aliases: ['cq'] });
     }
 
     // eslint-disable-next-line no-unused-vars 

@@ -4,19 +4,13 @@ const MusicCommands = require('../../util/helpers/modules/musicCommands');
 
 class Repeat extends MusicCommands {
     constructor(client) {
-        super(client, { userInVC: true });
+        super(client, { userInVC: true, playing: true });
         this.help = {
             name: 'repeat',
             description: 'Set the repeat to repeat the queue, the current song or turn it off',
             usage: '{prefix}repeat <song|queue|off>'
         };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: [],
-            requirePerms: ['voiceConnect', 'voiceSpeak'],
-            guildOnly: true,
-            ownerOnly: false,
+        this.conf = this.genericConf({ 
             expectedArgs: [{
                 description: 'Please choose what repeat mode to toggle, can be either `queue` to repeat the queue, `song` to repeat the current song or `off` to disable the repeat',
                 possibleValues: [{
@@ -30,7 +24,7 @@ class Repeat extends MusicCommands {
                     interpretAs: '{value}'
                 }]            
             }]
-        };
+        }); 
         this.extra = {
             off: {
                 sentence: 'turned off the repeat',
@@ -50,9 +44,6 @@ class Repeat extends MusicCommands {
     // eslint-disable-next-line no-unused-vars 
     async run(message, args, guildEntry, userEntry) {
         const connection = this.client.musicManager.connections.get(message.channel.guild.id);
-        if (!connection || !connection.nowPlaying) {
-            return message.channel.createMessage(':x: I am not playing anything');
-        }
         if (!args[0] || !['off', 'queue', 'song'].includes(args[0].toLowerCase())) {
             return message.channel.createMessage(':x: Please specify the repeat mode to toggle, can be either `queue` to repeat the queue, `song` to repeat the current song or `off` to disable the repeat');
         }

@@ -10,15 +10,7 @@ class Queue extends MusicCommands {
             description: 'Queue a song or check the queue, to check the queue, just run `{prefix}queue`. You can input: A `YouTube` URL (including livestreams), a `Soundcloud` URL, a `Twitch` channel URL (the channel must be live);\n\nOr a search term to search through `YouTube` or `Soundcloud`, by default the search is done on `YouTube`, to search through `Soundcloud`, you must specify it like `{prefix}queue soundcloud <search_term>`',
             usage: '{prefix}queue <song_url|search_term>'
         };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: [],
-            requirePerms: ['voiceConnect', 'voiceSpeak'],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+        this.conf = this.genericConf();
     }
 
     // eslint-disable-next-line no-unused-vars 
@@ -31,7 +23,7 @@ class Queue extends MusicCommands {
             if (!queue[0]) {
                 return message.channel.createMessage(`:x: There is nothing in the queue`);
             }
-            return message.channel.createMessage(this.formatQueue(this.client, queue, connection));
+            return message.channel.createMessage(this.formatQueue(queue, connection));
         }
         if (!member.voiceState.channelID) {
             return message.channel.createMessage(':x: You are not connected to any voice channel');

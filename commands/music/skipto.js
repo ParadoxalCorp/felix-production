@@ -4,31 +4,20 @@ const MusicCommands = require('../../util/helpers/modules/musicCommands');
 
 class SkipTo extends MusicCommands {
     constructor(client) {
-        super(client, { userInVC: true });
+        super(client, { userInVC: true, playing: true });
         this.help = {
             name: 'skipto',
             description: 'Start a vote to skip to the specified position in the queue',
             usage: '{prefix}skipto <position>'
         };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['skipVoteto'],
-            requirePerms: ['voiceConnect', 'voiceSpeak'],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+        this.conf = this.genericConf({ aliases: ['voteskipto'] });
     }
 
     // eslint-disable-next-line no-unused-vars 
     async run(message, args, guildEntry, userEntry) {
         const connection = this.client.musicManager.connections.get(message.channel.guild.id);
-        if (!connection || !connection.nowPlaying) {
-            return message.channel.createMessage(':x: I am not playing anything');
-        }
         let position = args[0];
-        if (!position || !this.client.isWholeNumber(position) || connection.queue[parseInt(position) - 1] > connection.queue.length || connection.queue[parseInt(position) - 1] < 0) {
+        if (!this.isValidPosition(position, connection.queue)) {
             return message.channel.createMessage(':x: You did not specify a valid number ! You must specify a number corresponding to the position in the queue of the song you want to skip to');
         }
         position = parseInt(position) - 1;

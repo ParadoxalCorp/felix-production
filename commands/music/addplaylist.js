@@ -14,15 +14,7 @@ class AddPlaylist extends MusicCommands {
             description: 'Add a YouTube playlist to the queue, note that the link must be the link to the playlist, not to the first song of the playlist',
             usage: '{prefix}addplaylist <playlist_link>'
         };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: ['ap'],
-            requirePerms: ['voiceConnect', 'voiceSpeak'],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+        this.conf = this.genericConf({ aliases: ['ap'] });
     }
 
     // eslint-disable-next-line no-unused-vars 

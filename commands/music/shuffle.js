@@ -10,15 +10,7 @@ class Shuffle extends MusicCommands {
             description: 'Shuffle the queue',
             usage: '{prefix}shuffle <playlist_link>'
         };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['ap'],
-            requirePerms: ['voiceConnect', 'voiceSpeak'],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+        this.conf = this.genericConf();
     }
 
     // eslint-disable-next-line no-unused-vars 
