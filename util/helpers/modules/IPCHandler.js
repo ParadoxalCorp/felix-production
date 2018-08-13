@@ -124,7 +124,8 @@ class IPCHandler {
                             id: shard.id,
                             status: shard.status,
                             latency: shard.latency,
-                            guilds: this.client.bot.guilds.filter(g => g.shard.id === shard.id).length
+                            guilds: this.client.bot.guilds.filter(g => g.shard.id === shard.id).length,
+                            musicConnections: this.client.musicManager ? this.client.musicManager.connections.size : 0
                         };
                     })
                 });
