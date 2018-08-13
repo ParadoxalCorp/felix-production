@@ -64,7 +64,7 @@ class TableInterface {
     /**
      * Get a stored value in the table from its key
      * @param {string|number} key - The key of the stored value to get
-     * @returns {Promise<any>} The stored value, or null if none are found
+     * @returns {Promise<any>} The stored value, or a new entry 
      */
     async get(key) {
         const update = (data) => {

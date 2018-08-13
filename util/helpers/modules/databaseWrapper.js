@@ -36,7 +36,7 @@ class DatabaseWrapper {
             this._initAttempts = 1;
         }
         const tableList = await this.rethink.tableList();
-        const missingTables = ['guilds', 'users', 'keys', 'stats'].filter(t => !tableList.includes(t));
+        const missingTables = ['guilds', 'users', 'stats'].filter(t => !tableList.includes(t));
         if (missingTables[0]) {
             return Promise.reject(new Error(`Couldn't initialize the database connection as the following tables are missing: ${missingTables.join(', ')}`));
         }
@@ -72,7 +72,7 @@ class DatabaseWrapper {
     /**
      * Get a stored user from their ID
      * @param {string} id - The ID of the user to get
-     * @returns {Promise<ExtendedUserEntry>} The stored user entry, or null if none are found
+     * @returns {Promise<ExtendedUserEntry>} The stored user entry, or a new one
      */
     getUser(id) {
         return this.userData.get(id);
@@ -81,7 +81,7 @@ class DatabaseWrapper {
     /**
      * Get a stored guild from its ID
      * @param {string} id - The ID of the guild to get
-     * @returns {Promise<ExtendedGuildEntry>} The stored guild entry, or null if none are found
+     * @returns {Promise<ExtendedGuildEntry>} The stored guild entry, or a new one
      */
     getGuild(id) {
         return this.guildData.get(id);
