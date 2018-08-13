@@ -130,6 +130,8 @@ class DatabaseWrapper {
         delete require.cache[module.filename];
         delete require.cache[require.resolve('./tableInterface')];
         delete require.cache[require.resolve('./databaseUpdater')];
+        this.userData = null;
+        this.guildData = null;
         const updatedDatabaseWrapper = require(module.filename);
         return new updatedDatabaseWrapper(this.client);
     }
