@@ -33,7 +33,10 @@ class Play extends MusicCommands {
             }
         }
         let tracks = track ? [] : await this.client.musicManager.resolveTracks(context.connection.player.node, context.args.join(' '));
-        track = track ? track : tracks[0];
+        if (tracks.loadType === this.client.musicManager.constants.loadTypes.playlist) {
+            return context.message.channel.createMessage(':x: Oops, this looks like a playlist to me, please use the `addplaylist` command instead');
+        }
+        track = track ? track : tracks.tracks[0];
         if (!track) {
             return context.message.channel.createMessage(`:x: I could not find any song :c, please make sure to:\n- Follow the syntax (check \`${this.getPrefix(context.guildEntry)}help ${this.help.name}\`)\n- Use HTTPS links, unsecured HTTP links aren't supported\n- If a YouTube video, I can't play it if it is age-restricted\n - If a YouTube video, it might be blocked in the country my servers are`);
         }

@@ -39,6 +39,10 @@ class Queue extends MusicCommands {
             connection = await this.client.musicManager.getPlayer(context.message.channel.guild.channels.get(member.voiceState.channelID));
         }
         let tracks = await this.client.musicManager.resolveTracks(connection.player.node, context.args.join(' '));
+        if (tracks.loadType === this.client.musicManager.constants.loadTypes.playlist) {
+            return context.message.channel.createMessage(':x: Oops, this looks like a playlist to me, please use the `addplaylist` command instead');
+        }
+        tracks = tracks.tracks;
         let queued;
         let track = tracks[0];
         if (!track) {
@@ -87,7 +91,7 @@ class Queue extends MusicCommands {
         let i = 1;
         let queue = [...connectionQueue];
         for (const track of queue) {
-            if (formattedQueue.length >= 1870) {
+            if (formattedQueue.length >= 1750) {
                 return formattedQueue += `\n\nAnd **${queue.length - i}** more... ${connection ? ("**Total queue estimated duration**: `" + this.client.musicManager.parseDuration(connection.queueDuration) + "`") : ''}`;
             }
             formattedQueue += `\`${i++}\` - **${track.info.title}** (\`${this.client.musicManager.parseDuration(track)}\`)\n`;

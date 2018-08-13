@@ -31,12 +31,21 @@ class MusicManager {
         // @ts-ignore
         this.connections = new(require('../../modules/collection'))();
         this.regions = {
-            eu: ['eu', 'amsterdam', 'frankfurt', 'russia', 'hongkong', 'singapore', 'sydney'],
-            us: ['us', 'brazil'],
+            eu: ['eu-central', 'amsterdam', 'frankfurt', 'russia', 'hongkong', 'singapore', 'sydney', 'eu-west'],
+            us: ['us-central', 'us-east', 'us-west', 'us-south', 'brazil'],
         };
         if (options.reload) {
             this.init(options);
         }
+        this.constants = {
+            loadTypes: {
+                playlist: 'PLAYLIST_LOADED',
+                track: 'TRACK_LOADED',
+                search: 'SEARCH_RESULT',
+                noResult: 'NO_MATCHES',
+                failed: 'LOAD_FAILED'
+            }
+        };
     }
 
     init(options = {}) {
@@ -66,7 +75,7 @@ class MusicManager {
                 return false;
             });
         // @ts-ignore
-        return result ? result.data : undefined; // array of tracks resolved from lavalink
+        return result ? result.data : undefined; 
     }
 
     /**
@@ -87,6 +96,7 @@ class MusicManager {
             player = await this.client.bot.joinVoiceChannel(channel.id, options).then(p => new MusicConnection(this.client, p));
             this.connections.set(channel.guild.id, player);
             await player.defer.catch(() => {});
+            process.send({name: 'info', msg: `[MusicManager] - Spawned a new player on ${channel.guild.region}, the ${this.client.config.options.music.nodes.find(n => n.host === player.player.node.host).location} node has been chosen`});
             player.on("inactive", this.connections.delete.bind(this.connections, channel.guild.id));
         }
         return player;

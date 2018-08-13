@@ -22,15 +22,19 @@ class AddPlaylist extends MusicCommands {
 
     async run(context) {
         let tracks = await this.client.musicManager.resolveTracks(context.connection.player.node, context.args.join(' '));
-        if (!tracks[0]) {
+        if (tracks.loadType !== this.client.musicManager.constants.loadTypes.playlist) {
+            return context.message.channel.createMessage(':x: Oops, this doesn\'t looks like a playlist to me, please use the `queue`, `play` and `playafter` commands for single tracks');
+        }
+        let playlistTracks = tracks.tracks;
+        if (!playlistTracks[0]) {
             return context.message.channel.createMessage(`:x: I could not load this playlist :c`);
         }
         if (!context.connection.player.playing) {
-            context.connection.play(tracks[0], context.message.author.id);
-            tracks.shift();
+            context.connection.play(playlistTracks[0], context.message.author.id);
+            playlistTracks.shift();
         } 
-        context.connection.addTracks(tracks, context.message.author.id);
-        return context.message.channel.createMessage(`:musical_note: Successfully enqueued the playlist`);
+        context.connection.addTracks(playlistTracks, context.message.author.id);
+        return context.message.channel.createMessage(':musical_note: Successfully enqueued the playlist `' + tracks.playlistInfo.name + '`');
     }
 }
 

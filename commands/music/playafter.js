@@ -21,6 +21,10 @@ class PlayAfter extends MusicCommands {
             return context.message.channel.createMessage(':x: You didn\'t specify any song to play after this one');
         }
         let tracks = await this.client.musicManager.resolveTracks(context.connection.player.node, context.args.join(' '));
+        if (tracks.loadType === this.client.musicManager.constants.loadTypes.playlist) {
+            return context.message.channel.createMessage(':x: Oops, this looks like a playlist to me, please use the `addplaylist` command instead');
+        }
+        tracks = tracks.tracks;
         let queued;
         let track = tracks[0];
         if (!track) {
