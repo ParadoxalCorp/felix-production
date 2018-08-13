@@ -140,13 +140,11 @@ class MessageHandler {
         }
         //Temporary code to make both the new and old commands structure cohabit 
         if (command.client) {
-            if (command.initialCheck) {
-                const initialCheck = await command.initialCheck(message, args, databaseEntries.guild, databaseEntries.user).catch(err => client.bot.emit('error', err, message));
-                if (!initialCheck.passed) {
-                    return;
-                }
+            const initialCheck = await command.initialCheck(message, args, databaseEntries.guild, databaseEntries.user).catch(err => client.bot.emit('error', err, message));
+            if (!initialCheck.passed) {
+                return;
             }
-            command.run(message, queryMissingArgs || args, databaseEntries.guild, databaseEntries.user).catch(err => client.bot.emit('error', err, message));
+            command.run(initialCheck.context).catch(err => client.bot.emit('error', err, message));
         } else {
             command.run(client, message, queryMissingArgs || args, databaseEntries.guild, databaseEntries.user).catch(err => client.bot.emit('error', err, message));
         }
