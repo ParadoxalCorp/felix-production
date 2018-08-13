@@ -157,9 +157,9 @@ class Bot extends Command {
                 value: (() => {
                     let nodesStatus = '';
                     for (const node of client.config.options.music.nodes) {
-                        nodesStatus += `${node.location}: ${client.bot.voiceConnections.nodes.get(node.host).connected ? ':white_check_mark: Online' : ':x: Offline'}\n`;
+                        nodesStatus += `${node.location}: ${client.bot.voiceConnections.nodes.get(node.host).connected ? ':white_check_mark: Online' : ':x: Offline'}\n\n`;
                     }
-                    nodesStatus += `\n[More info](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#music-nodes)`;
+                    nodesStatus += `[More info](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#music-nodes)`;
                     return nodesStatus;
                 })()
             });
