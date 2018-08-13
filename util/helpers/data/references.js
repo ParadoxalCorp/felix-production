@@ -6,16 +6,121 @@
  * @typedef {object} Permissions
  * @property {Array<String>} allowedCommands commands which can be used on guilds
  * @property {Array<String>} restrictedCommands commands which can't be used on guild
- * 
+ * @property {String} [id] The ID of the target these permissions apply to, this key will be missing if these permissions are global
 */
 
 /**
- * @typedef {Object} TransactionObject
- * @property {number} amount
- * @property {string} from
- * @property {string} to
- * @property {string} reason
- * @property {number} date
+ * @typedef {Object} TransactionData
+ * @property {Number} amount The change in the user's holy coins amount
+ * @property {String} from Username#Discriminator of the user from who the coins once belonged
+ * @property {String} to Username#Discriminator of who received the coins
+ * @property {String} reason The reason of the transfer
+ * @property {Number} date The UNIX timestamp of when the transfer happened 
+ */
+
+ /**
+ * @typedef {Object} ExperienceNotifications
+ * @property {String} channel The ID of the channel where to send the level-up notifications, or "dm" if set to dms
+ * @property {String} message A custom level-up message, empty if none is set
+ * @property {Boolean} enabled Whether level-up notifications are enabled
+ */
+
+ /**
+ * @typedef {Object} ActivityGuildRole
+ * @property {String} id The ID of the role set to be given at some activity threshold  
+ * @property {Boolean} static Whether the role should stay when the member wins a higher one
+ * @property {Number} at The level at which the role is set to be given
+ */
+
+/**
+ * @typedef {Object} GuildMember
+ * @property {String} id The ID of the guild member 
+ * @property {Number} experience The amount of experience this member has
+ */
+
+/**
+ * @typedef {Object} GreetingsAndFarewells This object represent both the greetings and farewells settings as they have the same structure, note that they are still independent
+ * @property {Boolean} enabled Whether the greetings/farewells are enabled on this guild
+ * @property {String} message The custom greetings/farewells message set on this guild, empty if none is set
+ * @property {String} channel The ID of the channel where to send the greetings/farewells message, if greetings, can also be "dm". Empty if none is set
+ */
+
+ /**
+ * @typedef {Object} SelfAssignableRole This object represent both the greetings and farewells settings as they have the same structure, note that they are still independent
+ * @property {String} id The ID of the self-assignable role
+ * @property {Array<String>} incompatibleRoles An array of roles with which this role is incompatible
+ */
+
+ /**
+ * @typedef {Object} GuildEntry  
+ * @property {String} id The ID of the guild
+ * @property {String} prefix The prefix of the guild, empty if none is set
+ * @property {Boolean} spacedPrefix Whether the prefix contains a space 
+ * @property {Number|Boolean} premium Whether this guild has the premium status, if a number, it is the UNIX timestamp when the premium status will expire. `true` in case of a monthly pledge
+ * @property {Array<selfAssignableRole>} selfAssignableRoles An array of self-assignable roles set on this guild
+ * @property {Array<String>} onJoinRoles An array of IDs corresponding to the roles set to be given to new members on this guild
+ * @property {{users: Permissions, roles: Permissions, channel: Permissions, categories: Permissions, global: Permissions}} permissions An object representing all the permissions set on this guild
+ * @property {{members: Array<GuildMember>, roles: Array<ActivityGuildRole>, enabled: Boolean, notifications: ExperienceNotifications}} experience An object representing the settings for the activity system on this guild
+ * @property {GreetingsAndFarewells} greetings The greetings settings
+ * @property {GreetingsAndFarewells} farewells The farewells settings
+ */
+
+ /**
+ * @typedef {Object} OwnedItem 
+ * @property {Number} count The amount of copy of this item the user has
+ * @property {Number} id The ID of the item
+ */
+
+ /**
+ * @typedef {Object} UserEconomy 
+ * @property {Number} coins The amount of holy coins this user has
+ * @property {Array<TransactionData>} transactions The custom greetings/farewells message set on this guild, empty if none is set
+ * @property {Array<OwnedItem>} items An array of items this user own
+ */
+
+/**
+ * @typedef {Object} UserLove 
+ * @property {Number} amount The amount of love points this user has been given
+ */
+
+ /**
+ * @typedef {Object} UserExperience
+ * @property {Number} amount The amount of experience this user has gained
+ */
+
+/**
+ * @typedef {Object} OwnedItem 
+ * @property {Number} count The amount of copy of this item the user has
+ * @property {Number} id The ID of the item
+ */
+
+ /**
+ * @typedef {Object} Cooldown
+ * @property {Number} max The maximum amount of cooldowns that can be stacked
+ * @property {Array<Number>} cooldowns An array of UNIX timestamps representing when each cooldown expire
+ */
+
+/**
+ * @typedef {Object} UserCooldowns
+ * @property {Number} dailyCooldown A UNIX timestamp representing when the daily cooldown expires
+ * @property {Cooldown} loveCooldown An object representing when each love cooldown expire
+ */
+
+/**
+ * @typedef {Object} PremiumStatus
+ * @property {Number} tier The patreon tier this user is in
+ * @property {Number|Boolean} expire If a number, the UNIX timestamp when the user's premium status expires. If "true", that means the user pledges monthly so there is no determined date of when their premium ends
+ */
+
+/**
+ * @typedef {Object} UserEntry  
+ * @property {String} id The ID of the user
+ * @property {Boolean} blacklisted Whether the user is blacklisted from the bot
+ * @property {PremiumStatus} premium An object representing the premium status of the user
+ * @property {UserEconomy} economy An object that represent the economic state of the user
+ * @property {UserLove} love Whether this guild has the premium status, if a number, it is the UNIX timestamp when the premium status will expire. `true` in case of a monthly pledge
+ * @property {UserExperience} experience An array of self-assignable roles set on this guild
+ * @property {UserCooldowns} cooldowns An array of IDs corresponding to the roles set to be given to new members on this guild
  */
 
 /**
@@ -38,15 +143,14 @@ class References {
 
     /**
      * Returns the default guild entry structure used in the database
-     * @param {string} id The ID of the guild
-     * @returns {object} A guild entry
+     * @param {String} id The ID of the guild
+     * @returns {GuildEntry} A guild entry
      */
     guildEntry(id) {
         return {
             id: id,
             prefix: "",
             spacedPrefix: true,
-            premium: '',
             selfAssignableRoles: [],
             onJoinRoles: [],
             permissions: {
@@ -81,9 +185,9 @@ class References {
 
     /**
      * Returns the configuration of an auto assignable role
-     * @param {string} id - The ID of the role
+     * @param {String} id - The ID of the role
      * @param {Array<String>} [incompatibleRoles=[]] - An array of roles ID with which this role is incompatible
-     * @returns {{id : string, incompatibleRoles : Array<String>}} Role ID and incompatibleRoles array */
+     * @returns {SelfAssignableRole} Role ID and incompatibleRoles array */
      selfAssignableRole(id, incompatibleRoles) {
         return {
             id,
@@ -94,7 +198,7 @@ class References {
     /**
      * Entry for guildEntry.experience.members
      * Store experience-system related data
-     * @param {string} id - The ID of the member
+     * @param {String} id - The ID of the member
      * @returns {{id : String, experience: Number}} The object
      */
     guildMember(id) {
@@ -106,8 +210,8 @@ class References {
 
     /**
      * Permission set for a channel/role/user
-     * @param {string} id - The ID of the target
-     * @returns {{allowedCommands : Array<String>, restrictedCommands: Array<String>, id: String}} The permission set for this target
+     * @param {String} id - The ID of the target
+     * @returns {Permissions} The permission set for this target
      */
     permissionsSet(id) {
         return {
@@ -119,10 +223,10 @@ class References {
 
     /**
      *
-     * @param {string} id - The ID of the role
-     * @param {number} at - The level at which this role should be given
+     * @param {String} id - The ID of the role
+     * @param {Number} at - The level at which this role should be given
      * @param {Boolean} isStatic - Whether this role should be removed when a higher one is won, if false, the role will be removed
-     * @return {{id: String, static: Boolean, at : Number}} The role object
+     * @return {ActivityGuildRole} The role object
      */
     activityGuildRole(id, at, isStatic = true) {
         return {
@@ -134,13 +238,17 @@ class References {
 
     /**
      * Returns the default user entry structure used in the database
-     * @param {string} id The ID of the user
+     * @param {String} id The ID of the user
      * @returns {object} A user entry
      */
     userEntry(id) {
         return {
             id: id,
             blacklisted: false,
+            premium: {
+                tier: 0,
+                expire: false
+            },
             economy: {
                 coins: 500,
                 transactions: [],
@@ -165,11 +273,11 @@ class References {
     /**
      *
      * @param {object} data An object of data
-     * @param {number} data.amount The amount of coins that has been debited/credited(negative if debited, positive if credited)
-     * @param {string} data.from  Username#Discriminator of the user from who the coins once belonged
-     * @param {string} data.to Username#Discriminator of who received the coins
-     * @param {string} data.reason The reason of the transfer (automatic, intended..)
-     * @return {TransactionObject} The transaction data object
+     * @param {Number} data.amount The amount of coins that has been debited/credited(negative if debited, positive if credited)
+     * @param {String} data.from  Username#Discriminator of the user from who the coins once belonged
+     * @param {String} data.to Username#Discriminator of who received the coins
+     * @param {String} data.reason The reason of the transfer (automatic, intended..)
+     * @return {TransactionData} The transaction data object
      */
     transactionData(data) {
         return {
@@ -184,7 +292,7 @@ class References {
     /**
      *
      * @param {object} item - The item
-     * @returns {{id: number, count: number}} The item database entry
+     * @returns {{id: Number, count: Number}} The item database entry
      */
     item(item) {
         return {
