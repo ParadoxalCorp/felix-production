@@ -28,6 +28,8 @@ class TableInterface {
         this.extension = params.extension.bind(params.client);
         this.initialCheck = params.initialCheck;
         this.finalCheck = params.finalCheck;
+        this._cacheDuration = 18e5;
+        this._sweepInterval = setInterval(this._sweep.bind(this), this._cacheDuration);
     }
 
     /**
@@ -73,7 +75,10 @@ class TableInterface {
             return this.finalCheck ? this.finalCheck(data) : data;
         };
         if (this.cache.has(key)) {
-            return new this.extension(update(this.cache.get(key)), this.client);
+            let cachedValue = this.cache.get(key);
+            cachedValue._lastRequestedAt = Date.now();
+            cachedValue = new this.extension(update(cachedValue), this.client);
+            return cachedValue;
         }
         if (!this.client.database.healthy) {
             return null;
@@ -103,6 +108,30 @@ class TableInterface {
         }
         this.client.database.healthy = true;
         process.send({name: 'warn', msg: `Changes stream for the table ${this.tableName} is broken but the table can still be used`});
+    }
+
+    _sweep() {
+        let clearedEntries = 0;
+        switch (this.tableName) {
+            case 'users':
+                for (let [key, value] of this.cache) {
+                    if (value._lastRequestedAt < (Date.now() - this._cacheDuration)) {
+                        this.cache.delete(key);
+                        clearedEntries++;
+                    }
+                }
+                break;
+            case 'guilds':
+                for (let [key] of this.cache) {
+                    //Remove from the cache guilds that aren't in this cluster
+                    if (!this.client.bot.guilds.has(key)) {
+                        this.cache.delete(key);
+                        clearedEntries++;
+                    }
+                }
+                break;
+        }
+        process.send({name: 'info', msg: `[TableInterface:${this.tableName}] Cache sweep done, cleared ${clearedEntries} ${this.tableName}`});
     }
 }
 
