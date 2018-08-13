@@ -12,51 +12,53 @@ class Queue extends MusicCommands {
         };
         this.conf = this.genericConf();
     }
+    /**
+    * @param {import("../../util/helpers/modules/musicCommands.js").MusicContext} context The context
+    */
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(message, args, guildEntry, userEntry) {
-        const member = message.channel.guild.members.get(message.author.id);
-        const clientMember = message.channel.guild.members.get(this.client.bot.user.id);
-        let connection = this.client.musicManager.connections.get(message.channel.guild.id);
-        if (!args[0]) {
-            let queue = connection ? connection.queue : await this.client.musicManager.getQueueOf(message.channel.guild.id);
+    async run(context) {
+        const member = context.message.channel.guild.members.get(context.message.author.id);
+        const clientMember = context.message.channel.guild.members.get(this.client.bot.user.id);
+        let connection = this.client.musicManager.connections.get(context.message.channel.guild.id);
+        if (!context.args[0]) {
+            let queue = connection ? connection.queue : await this.client.musicManager.getQueueOf(context.message.channel.guild.id);
             if (!queue[0]) {
-                return message.channel.createMessage(`:x: There is nothing in the queue`);
+                return context.message.channel.createMessage(`:x: There is nothing in the queue`);
             }
-            return message.channel.createMessage(this.formatQueue(queue, connection));
+            return context.message.channel.createMessage(this.formatQueue(queue, connection));
         }
         if (!member.voiceState.channelID) {
-            return message.channel.createMessage(':x: You are not connected to any voice channel');
+            return context.message.channel.createMessage(':x: You are not connected to any voice channel');
         }
         if (!clientMember.voiceState.channelID) {
-            if (Array.isArray(this.this.clientHasPermissions(message, this.client, ['voiceConnect', 'voiceSpeak'], message.channel.guild.channels.get(member.voiceState.channelID)))) {
-                return message.channel.createMessage(':x: It seems like I lack the permission to connect or to speak in the voice channel you are in :c');
+            if (Array.isArray(this.this.clientHasPermissions(context.message, this.client, ['voiceConnect', 'voiceSpeak'], context.message.channel.guild.channels.get(member.voiceState.channelID)))) {
+                return context.message.channel.createMessage(':x: It seems like I lack the permission to connect or to speak in the voice channel you are in :c');
             }
         }
         if (!connection) {
-            connection = await this.client.musicManager.getPlayer(message.channel.guild.channels.get(member.voiceState.channelID));
+            connection = await this.client.musicManager.getPlayer(context.message.channel.guild.channels.get(member.voiceState.channelID));
         }
-        let tracks = await this.client.musicManager.resolveTracks(connection.player.node, args.join(' '));
+        let tracks = await this.client.musicManager.resolveTracks(connection.player.node, context.args.join(' '));
         let queued;
         let track = tracks[0];
         if (!track) {
-            return message.channel.createMessage(`:x: I could not find any song :c, please make sure to:\n- Follow the syntax (check \`${this.client.commands.get('help').getPrefix(this.client, guildEntry)}help ${this.help.name}\`)\n- Use HTTPS links, unsecured HTTP links aren't supported\n- If a YouTube video, I can't play it if it is age-restricted\n - If a YouTube video, it might be blocked in the country my servers are`);
+            return context.message.channel.createMessage(`:x: I could not find any song :c, please make sure to:\n- Follow the syntax (check \`${this.getPrefix(context.guildEntry)}help ${this.help.name}\`)\n- Use HTTPS links, unsecured HTTP links aren't supported\n- If a YouTube video, I can't play it if it is age-restricted\n - If a YouTube video, it might be blocked in the country my servers are`);
         }
         if (tracks.length > 1) {
-            track = await this.client.commands.get('play').selectTrack(this.client, message, tracks);
+            track = await this.selectTrack(context, tracks);
             if (!track) {
                 return;
             }
         }
         if (track.info.isStream) {
-            return message.channel.createMessage(':x: I am sorry but you cannot add live streams to the queue, you can only play them immediately');
+            return context.message.channel.createMessage(':x: I am sorry but you cannot add live streams to the queue, you can only play them immediately');
         }
         if (!connection.player.playing && !connection.player.paused) {
-            connection.play(track, message.author.id);
+            connection.play(track, context.message.author.id);
         } else {
-            queued = connection.addTrack(track, message.author.id);
+            queued = connection.addTrack(track, context.message.author.id);
         }
-        return message.channel.createMessage({embed: {
+        return context.message.channel.createMessage({embed: {
             title: `:musical_note: ${queued ? 'Successfully enqueued' : 'Now playing'}`,
             description: `[${track.info.title}](${track.info.uri})`,
             fields: [{

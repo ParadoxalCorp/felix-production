@@ -12,12 +12,13 @@ class ForceSkip extends MusicCommands {
         };
         this.conf = this.genericConf({ aliases: ['fskip'] });
     }
+    /**
+    * @param {import("../../util/helpers/modules/musicCommands.js").MusicContext} context The context
+    */
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(message, args, guildEntry, userEntry) {
-        const connection = this.client.musicManager.connections.get(message.channel.guild.id);
-        const skippedSong = connection.skipTrack();
-        return message.channel.createMessage(`:white_check_mark: Skipped **${skippedSong.info.title}**`);       
+    async run(context) {
+        const skippedSong = context.connection.skipTrack();
+        return context.message.channel.createMessage(`:white_check_mark: Skipped \`${skippedSong.info.title}\` by \`${skippedSong.info.author}\``);       
     }
 }
 

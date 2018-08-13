@@ -12,46 +12,47 @@ class Skip extends MusicCommands {
         };
         this.conf = this.genericConf({ aliases: ['voteskip'] });
     }
+    /**
+    * @param {import("../../util/helpers/modules/musicCommands.js").MusicContext} context The context
+    */
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(message, args, guildEntry, userEntry) {
-        const connection = this.client.musicManager.connections.get(message.channel.guild.id);
-        if (!connection.skipVote.count) {
-            connection.skipVote.count = 1;
-            connection.skipVote.callback = this.handleVoteEnd.bind(this, this.client, message, connection);
-            connection.skipVote.timeout = setTimeout(this.handleVoteEnd.bind(this, message, connection, 'timeout'), this.client.config.options.music.voteSkipDuration);
+    async run(context) {
+        if (!context.connection.skipVote.count) {
+            context.connection.skipVote.count = 1;
+            context.connection.skipVote.callback = this.handleVoteEnd.bind(this, this.client, context);
+            context.connection.skipVote.timeout = setTimeout(this.handleVoteEnd.bind(this, context, 'timeout'), this.client.config.options.music.voteSkipDuration);
         } else {
-            if (connection.skipVote.id) {
-                return message.channel.createMessage(`:x: Another vote to skip to the song **${connection.queue.find(t => t.voteID === connection.skipVote.id).info.title}** is already ongoing`);
+            if (context.connection.skipVote.id) {
+                return context.message.channel.createMessage(`:x: Another vote to skip to the song **${context.connection.queue.find(t => t.voteID === context.connection.skipVote.id).info.title}** is already ongoing`);
             }
-            if (connection.skipVote.voted.includes(message.author.id)) {
-                return message.channel.createMessage(':x: You already voted to skip this song');
+            if (context.connection.skipVote.voted.includes(context.message.author.id)) {
+                return context.message.channel.createMessage(':x: You already voted to skip this song');
             }
-            connection.skipVote.count = connection.skipVote.count + 1;
+            context.connection.skipVote.count = context.connection.skipVote.count + 1;
         }
-        connection.skipVote.voted.push(message.author.id);
-        return this.processVote(message, connection);
+        context.connection.skipVote.voted.push(context.message.author.id);
+        return this.processVote(context);
     }
 
-    async processVote(message, connection) {
-        const voiceChannel = message.channel.guild.channels.get(message.channel.guild.members.get(this.client.bot.user.id).voiceState.channelID);
+    async processVote(context) {
+        const voiceChannel = context.message.channel.guild.channels.get(context.message.channel.guild.members.get(this.client.bot.user.id).voiceState.channelID);
         const userCount = voiceChannel.voiceMembers.filter(m => !m.bot).length;
-        if (connection.skipVote.count >= (userCount === 2 ? 2 : (Math.ceil(userCount / 2)))) {
-            connection.resetVote();
-            const skippedSong = connection.skipTrack();
-            return message.channel.createMessage(`:white_check_mark: Skipped **${skippedSong.info.title}**`);
+        if (context.connection.skipVote.count >= (userCount === 2 ? 2 : (Math.ceil(userCount / 2)))) {
+            context.connection.resetVote();
+            const skippedSong = context.connection.skipTrack();
+            return context.message.channel.createMessage(`:white_check_mark: Skipped **${skippedSong.info.title}**`);
         }
-        return message.channel.createMessage(`:white_check_mark: Successfully registered the vote to skip the song, as there is \`${userCount}\` users listening and already \`${connection.skipVote.count}\` voted, \`${userCount === 2 ? 1 : Math.ceil(userCount / 2) - connection.skipVote.count}\` more vote(s) are needed`);
+        return context.message.channel.createMessage(`:white_check_mark: Successfully registered the vote to skip the song, as there is \`${userCount}\` users listening and already \`${context.connection.skipVote.count}\` voted, \`${userCount === 2 ? 1 : Math.ceil(userCount / 2) - context.connection.skipVote.count}\` more vote(s) are needed`);
     }
 
-    async handleVoteEnd(message, connection, reason) {
+    async handleVoteEnd(context, reason) {
         switch (reason) {
             case 'timeout': 
-                connection.resetVote();
-                return message.channel.createMessage(':x: The vote to skip the current song ended, not enough users voted');
+                context.connection.resetVote();
+                return context.message.channel.createMessage(':x: The vote to skip the current song ended, not enough users voted');
                 break;
             case 'ended':
-                return message.channel.createMessage(':x: The vote to skip the current song has been cancelled because the song just ended');
+                return context.message.channel.createMessage(':x: The vote to skip the current song has been cancelled because the song just ended');
                 break;
         }
     }

@@ -13,12 +13,12 @@ class NowPlaying extends MusicCommands {
         this.conf = this.genericConf({ aliases: ['np'] });
     }
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(message, args, guildEntry, userEntry) {
-        const connection = this.client.musicManager.connections.get(message.channel.guild.id);
-        let track = connection.nowPlaying;
-        const output = await this.client.musicManager.genericEmbed(track, connection, 'Now playing');
-        return message.channel.createMessage({embed: output});
+    /**
+    * @param {import("../../util/helpers/modules/musicCommands.js").MusicContext} context The context
+    */
+
+    async run(context) {
+        return context.message.channel.createMessage({embed: await this.genericEmbed(context.currentTrack, context.connection, 'Now playing')});
     }
 }
 

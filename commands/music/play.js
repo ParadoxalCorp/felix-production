@@ -12,65 +12,39 @@ class Play extends MusicCommands {
         };
         this.conf = this.genericConf();
     }
+    /**
+    * @param {import("../../util/helpers/modules/musicCommands.js").MusicContext} context The context
+    */
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(message, args, guildEntry, userEntry) {
-        const member = message.channel.guild.members.get(message.author.id);
-        const connection = await this.client.musicManager.getPlayer(message.channel.guild.channels.get(member.voiceState.channelID));
+    async run(context) {
         let track;
-        if (!args[0]) {
-            if (connection.queue[0]) {
-                track = connection.queue[0];
-                if (connection.player.paused) {
-                    connection.player.setPause(false);
-                } else if (connection.nowPlaying) {
-                    return message.channel.createMessage(':x: You should specify something to play');
+        if (!context.args[0]) {
+            if (context.connection.queue[0]) {
+                track = context.connection.queue[0];
+                if (context.connection.player.paused) {
+                    context.connection.player.setPause(false);
+                } else if (context.connection.nowPlaying) {
+                    return context.message.channel.createMessage(':x: You should specify something to play');
                 } else {
-                    connection.queue.shift();
+                    context.connection.queue.shift();
                 }
             } else {
-                return message.channel.createMessage(':x: You didn\'t specified any songs to play and there is nothing in the queue');
+                return context.message.channel.createMessage(':x: You didn\'t specified any songs to play and there is nothing in the queue');
             }
         }
-        let tracks = track ? [] : await this.client.musicManager.resolveTracks(connection.player.node, args.join(' '));
+        let tracks = track ? [] : await this.client.musicManager.resolveTracks(context.connection.player.node, context.args.join(' '));
         track = track ? track : tracks[0];
         if (!track) {
-            return message.channel.createMessage(`:x: I could not find any song :c, please make sure to:\n- Follow the syntax (check \`${this.client.commands.get('help').getPrefix(this.client, guildEntry)}help ${this.help.name}\`)\n- Use HTTPS links, unsecured HTTP links aren't supported\n- If a YouTube video, I can't play it if it is age-restricted\n - If a YouTube video, it might be blocked in the country my servers are`);
+            return context.message.channel.createMessage(`:x: I could not find any song :c, please make sure to:\n- Follow the syntax (check \`${this.getPrefix(context.guildEntry)}help ${this.help.name}\`)\n- Use HTTPS links, unsecured HTTP links aren't supported\n- If a YouTube video, I can't play it if it is age-restricted\n - If a YouTube video, it might be blocked in the country my servers are`);
         }
         if (tracks.length > 1) {
-            track = await this.selectTrack(message, tracks);
+            track = await this.selectTrack(context, tracks);
             if (!track) {
                 return;
             }
         }
-        connection.play(track, message.author.id);
-        const output = await this.client.musicManager.genericEmbed(track, connection, 'Now playing', true);
-        return message.channel.createMessage({embed: output});
-    }
-
-    async selectTrack(message, tracks) {
-        tracks = tracks.splice(0, 15);
-        let searchResults = `Your search has returned multiple results, please select one by replying their corresponding number\n\n`;
-        let i = 1;
-        for (const song of tracks) {
-            searchResults += `\`${i++}\` - **${song.info.title}** by **${song.info.author}** (${this.client.musicManager.parseDuration(song)})\n`;
-        }
-        await message.channel.createMessage(searchResults);
-        const reply = await this.client.messageCollector.awaitMessage(message.channel.id, message.author.id);
-        if (!reply) {
-            message.channel.createMessage(':x: Timeout, command aborted').catch(() => {});
-            return false;
-        } else if (!this.client.isWholeNumber(reply.content)) {
-            message.channel.createMessage(':x: You must reply with a whole number').catch(() => {});
-            return false;
-        }
-        if (reply.content >= tracks.length) {
-            return tracks[tracks.length - 1];
-        } else if (reply.content <= 1) {
-            return tracks[0];
-        } else {
-            return tracks[reply.content - 1];
-        }
+        context.connection.play(track, context.message.author.id);
+        return context.message.channel.createMessage({embed: await this.genericEmbed(track, context.connection, 'Now playing', true)});
     }
 }
 

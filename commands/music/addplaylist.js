@@ -16,20 +16,21 @@ class AddPlaylist extends MusicCommands {
         };
         this.conf = this.genericConf({ aliases: ['ap'] });
     }
+    /**
+    * @param {import("../../util/helpers/modules/musicCommands.js").MusicContext} context The context
+    */
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(message, args, guildEntry, userEntry) {
-        const connection = await this.client.musicManager.getPlayer(message.channel.guild.channels.get(message.channel.guild.members.get(message.author.id).voiceState.channelID));
-        let tracks = await this.client.musicManager.resolveTracks(connection.player.node, args.join(' '));
+    async run(context) {
+        let tracks = await this.client.musicManager.resolveTracks(context.connection.player.node, context.args.join(' '));
         if (!tracks[0]) {
-            return message.channel.createMessage(`:x: I could not load this playlist :c`);
+            return context.message.channel.createMessage(`:x: I could not load this playlist :c`);
         }
-        if (!connection.player.playing) {
-            connection.play(tracks[0], message.author.id);
+        if (!context.connection.player.playing) {
+            context.connection.play(tracks[0], context.message.author.id);
             tracks.shift();
         } 
-        connection.addTracks(tracks, message.author.id);
-        return message.channel.createMessage(`:musical_note: Successfully enqueued the playlist`);
+        context.connection.addTracks(tracks, context.message.author.id);
+        return context.message.channel.createMessage(`:musical_note: Successfully enqueued the playlist`);
     }
 }
 

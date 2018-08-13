@@ -12,12 +12,13 @@ class Pause extends MusicCommands {
         };
         this.conf = this.genericConf();
     }
+    /**
+    * @param {import("../../util/helpers/modules/musicCommands.js").MusicContext} context The context
+    */
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(message, args, guildEntry, userEntry) {
-        const connection = this.client.musicManager.connections.get(message.channel.guild.id);
-        await connection.player.setPause(connection.player.paused ? false : true);
-        return message.channel.createMessage(`:white_check_mark: Successfully ${connection.player.paused ? 'paused' : 'resumed'} the playback`);       
+    async run(context) {
+        context.connection.player.setPause(context.connection.player.paused ? false : true);
+        return context.message.channel.createMessage(`:white_check_mark: Successfully ${context.connection.player.paused ? 'paused' : 'resumed'} the playback`);       
     }
 }
 

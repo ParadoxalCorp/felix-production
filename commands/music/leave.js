@@ -12,15 +12,15 @@ class Leave extends MusicCommands {
         };
         this.conf = this.genericConf();
     }
+    /**
+    * @param {import("../../util/helpers/modules/musicCommands.js").MusicContext} context The context
+    */
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(message, args, guildEntry, userEntry) {
-        const connection = this.client.musicManager.connections.get(message.channel.guild.id);
-        const voiceChannel = message.channel.guild.channels.get(message.channel.guild.members.get(this.client.bot.user.id).voiceState.channelID);
-        if (!voiceChannel) {
-            return message.channel.createMessage(':x: I am not in any voice channel');
+    async run(context) {
+        if (!context.clientVC) {
+            return context.message.channel.createMessage(':x: I am not in any voice channel');
         }
-        return connection ? connection.leave() : voiceChannel.leave();
+        return context.connection ? context.connection.leave() : context.clientVC.leave();
     }
 }
 

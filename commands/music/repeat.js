@@ -40,20 +40,21 @@ class Repeat extends MusicCommands {
             }
         };
     }
+    /**
+    * @param {import("../../util/helpers/modules/musicCommands.js").MusicContext} context The context
+    */
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(message, args, guildEntry, userEntry) {
-        const connection = this.client.musicManager.connections.get(message.channel.guild.id);
-        if (!args[0] || !['off', 'queue', 'song'].includes(args[0].toLowerCase())) {
-            return message.channel.createMessage(':x: Please specify the repeat mode to toggle, can be either `queue` to repeat the queue, `song` to repeat the current song or `off` to disable the repeat');
+    async run(context) {
+        if (!context.args[0] || !['off', 'queue', 'song'].includes(context.args[0].toLowerCase())) {
+            return context.message.channel.createMessage(':x: Please specify the repeat mode to toggle, can be either `queue` to repeat the queue, `song` to repeat the current song or `off` to disable the repeat');
         }
-        connection.repeat = args[0].toLowerCase();
-        if (connection.repeat === "queue") {
-            if (connection.nowPlaying) {
-                connection.addTrack(connection.nowPlaying);
+        context.connection.repeat = context.args[0].toLowerCase();
+        if (context.connection.repeat === "queue") {
+            if (context.connection.nowPlaying) {
+                context.connection.addTrack(context.connection.nowPlaying);
             }
         }
-        return message.channel.createMessage(`${this.extra[connection.repeat].emote} Successfully ${this.extra[connection.repeat].sentence}`);       
+        return context.message.channel.createMessage(`${this.extra[context.connection.repeat].emote} Successfully ${this.extra[context.connection.repeat].sentence}`);       
     }
 }
 

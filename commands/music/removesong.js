@@ -12,17 +12,18 @@ class RemoveSong extends MusicCommands {
         };
         this.conf = this.genericConf({ aliases: ['rs'] });
     }
+    /**
+    * @param {import("../../util/helpers/modules/musicCommands.js").MusicContext} context The context
+    */
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(message, args, guildEntry, userEntry) {
-        const connection = this.client.musicManager.connections.get(message.channel.guild.id);
-        let position = args[0];
-        if (!this.isValidPosition(position, connection.queue)) {
-            return message.channel.createMessage(':x: You did not specify a valid number ! You must specify a number corresponding to the position in the queue of the song you want to skip to');
+    async run(context) {
+        let position = context.args[0];
+        if (!this.isValidPosition(position, context.connection.queue)) {
+            return context.message.channel.createMessage(':x: You did not specify a valid number ! You must specify a number corresponding to the position in the queue of the song you want to skip to');
         }
         position = parseInt(position) - 1;
-        const removedTrack = connection.removeTrack(position);
-        return message.channel.createMessage(`:white_check_mark: Successfully removed the track \`${removedTrack.info.title}\` by \`${removedTrack.info.author}\``);
+        const removedTrack = context.connection.removeTrack(position);
+        return context.message.channel.createMessage(`:white_check_mark: Successfully removed the track \`${removedTrack.info.title}\` by \`${removedTrack.info.author}\``);
     }
 }
 

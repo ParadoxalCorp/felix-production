@@ -12,15 +12,16 @@ class Shuffle extends MusicCommands {
         };
         this.conf = this.genericConf();
     }
+    /**
+    * @param {import("../../util/helpers/modules/musicCommands.js").MusicContext} context The context
+    */
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(message, args, guildEntry, userEntry) {
-        let connection = this.client.musicManager.connections.get(message.channel.guild.id);
-        if (!connection || !connection.queue[0]) {
-            return message.channel.createMessage(`:x: There is nothing in the queue to shuffle`);
+    async run(context) {
+        if (!context.connection || !context.connection.queue[0]) {
+            return context.message.channel.createMessage(`:x: There is nothing in the queue to shuffle`);
         }
-        connection.editQueue([...connection.queue].sort(() => Math.random() - Math.random()));
-        return message.channel.createMessage(`:musical_note: Successfully shuffled the queue`);
+        context.connection.editQueue([...context.connection.queue].sort(() => Math.random() - Math.random()));
+        return context.message.channel.createMessage(`:musical_note: Successfully shuffled the queue`);
     }
 }
 
