@@ -115,7 +115,7 @@ class TableInterface {
         switch (this.tableName) {
             case 'users':
                 for (let [key, value] of this.cache) {
-                    if (value._lastRequestedAt < (Date.now() - this._cacheDuration)) {
+                    if (!value._lastRequestedAt || (value._lastRequestedAt < (Date.now() - this._cacheDuration))) {
                         this.cache.delete(key);
                         clearedEntries++;
                     }
