@@ -42,10 +42,7 @@ class MusicCommands extends Command {
     async initialCheck(message, args, guildEntry, userEntry) {
         const member = message.channel.guild.members.get(message.author.id);
         const clientMember = message.channel.guild.members.get(this.client.bot.user.id);
-        if (!guildEntry.hasPremiumStatus()) {
-            return message.channel.createMessage(':x: Sorry but as they are resources-whores, music commands are only available to our patreon donators. Check the `bot` command for more info');
-        }
-        else if (this.options.noArgs && !args[0]) {
+        if (this.options.noArgs && !args[0]) {
             return message.channel.createMessage(this.options.noArgs);
         } else if (this.options.userInVC && (clientMember.voiceState.channelID && clientMember.voiceState.channelID !== member.voiceState.channelID)) {
             return message.channel.createMessage(':x: You must be connected in a voice channel with me to use that');
