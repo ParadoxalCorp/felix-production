@@ -171,33 +171,6 @@ class MusicManager {
             });
     }
 
-    async genericEmbed(track, connection, title, newTrack = false) {
-        let fields = [
-            {
-            name: 'Author',
-            value: track.info.author,
-            inline: true
-        }, {
-            name: 'Duration',
-            value: (connection.nowPlaying.track === track.track ? `${this.parseDuration(newTrack ? 0 : connection.player.state.position || 0)}/` : '') + this.parseDuration(track),
-            inline: true
-        }];
-        if (track.info.requestedBy) {
-            let user = await this.client.fetchUser(track.info.requestedBy);
-            // @ts-ignore
-            fields.push({
-                name: 'Requested by',
-                value: user.tag
-            });
-        }
-        return {
-            title: `:musical_note: ${title}`,
-            description: `[${track.info.title}](${track.info.uri})`,
-            fields: fields,
-            color: this.client.config.options.embedColor
-        };
-    }
-
     /**
      * Destroy the WS connection with Lavalink
      * @returns {void | Boolean} return false or destroy connection
