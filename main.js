@@ -213,8 +213,10 @@ class Felix extends Base {
             process.send({name: 'info', msg: `Finished the ongoing tasks and closed the Redis connection`});
         }
         if (this.musicManager) {
-            this.musicManager.disconnect();
-            process.send({name: 'info', msg: `Sent exit code to the Lavalink server`});
+            let lavalinkExit = this.musicManager.disconnect();
+            if (lavalinkExit !== false) {
+                process.send({name: 'info', msg: `Sent exit code to the Lavalink server`});
+            }
         }
         if (this.database && this.database.healthy) {
             this.database.rethink.getPoolMaster().drain();
