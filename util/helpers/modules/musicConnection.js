@@ -2,9 +2,37 @@
 
 /** 
  * @typedef {import("../../../main.js")} Client
- * @typedef {import("eris-lavalink")} Eris_Lavalink
+ * @typedef {import("eris-lavalink").Player} ErisLavalinkPlayer
  * @typedef {import("events")} NodeEvents
  * @typedef {import("eventemitter3")} EventEmitter3
+ */
+
+/**
+ * @typedef {Object} LavalinkTrackInfo
+ * @property {String} identifier The unique identifier of the track, as defined by the provider (youtube, soundcloud..)
+ * @property {Boolean} isSeekable Whether the use of the seek method is possible
+ * @property {String} author The name of the author of the track
+ * @property {Number} length The duration of the track in milliseconds
+ * @property {Boolean} isStream Whether the track is a live-stream
+ * @property {Number} cooldowns The current position of the player in the track, represented in milliseconds
+ * @property {String} title The title of the track
+ * @property {String} uri The URL to the track 
+ */
+
+ /**
+ * @typedef {Object} LavalinkTrack  
+ * @property {String} track The encoded title of the track
+ * @property {LavalinkTrackInfo} info An object of info about the track
+ */
+
+/**
+ * @typedef {Object} ExtendedTrack  
+ * @property {String} voteID If any, the ID of the ongoing vote targeting this track
+ * @property {{requestedBy: String }} info Info about the track
+ */
+
+ /**
+ * @typedef {LavalinkTrack & ExtendedTrack} FelixTrack  
  */
 
 /** @type {any} */
@@ -20,19 +48,25 @@ const EventEmitter = (() => {
 
 /**
  * Provides methods to easily manage the queue and the ongoing vote if any, as well as synchronize the queue with redis and handle events in the background
+ * @extends EventEmitter3
  */
 class MusicConnection extends EventEmitter {
     /**
      * Create a new MusicConnection instance, this can only be done with an active player
      * @param {Client} client - The client instance
-     * @param {Eris_Lavalink} player - The eris-lavalink player 
+     * @param {ErisLavalinkPlayer} player - The eris-lavalink player 
      */
     constructor(client, player) {
         super();
+        /** @type {Client} The client instance */
         this.client = client;
+        /** @type {ErisLavalinkPlayer} The eris-lavalink player */
         this.player = player;
+        /** @type {String} The repeat mode, can be "off", "song" or "queue" */
         this.repeat = "off";
+        /** @type {FelixTrack} The currently playing track, or null if none is playing */
         this.nowPlaying;
+        /** @type {Array<FelixTrack>} An array of tracks representing the queue */
         this.queue = [];
         this.inactivityTimeout;
         this.inactiveSince;
@@ -46,9 +80,9 @@ class MusicConnection extends EventEmitter {
 
     /**
      * Called in the constructor, this method gets the queue from redis
-     * @private
      * @param {function} resolve - The resolver of this.defer
      * @memberof MusicConnection
+     * @protected
      * @returns {Promise<void>} Nothing worth it
      */
     async _init(resolve) {
@@ -66,7 +100,7 @@ class MusicConnection extends EventEmitter {
 
     /**
      * Add a track to the queue
-     * @param {object} track - The track object returned by Lavalink 
+     * @param {LavalinkTrack} track - The track object returned by Lavalink 
      * @param {string} requestedBy - The ID of the user who requested this track
      * @param {boolean} [unshift=false] - Whether the track should be pushed at the start of the queue or not, default to false
      * @returns {{position: number, timeUntilPlaying: number}} An object containing the position at which the song has been queued and the estimated time in ms before it will be played 
@@ -117,7 +151,7 @@ class MusicConnection extends EventEmitter {
     /**
      * Remove the track in the queue at the given position
      * @param {number} position - The position in the queue of the track to remove
-     * @returns {object} The removed track
+     * @returns {FelixTrack} The removed track
      */
     removeTrack(position) {
         const removedTrack = this.queue.splice(position, 1)[0];
@@ -142,7 +176,7 @@ class MusicConnection extends EventEmitter {
     /**
      * Skip the currently playing track and start the next one
      * @param {number} [to=0] - The position in the queue at which to jump to
-     * @returns {object} The skipped track
+     * @returns {FelixTrack} The skipped track
      */
     skipTrack(to = 0) {
         const skippedSong = { ...this.nowPlaying };
@@ -172,7 +206,7 @@ class MusicConnection extends EventEmitter {
      * Play a given song
      * @param {object} song - The Lavalink track to play 
      * @param {string} [requestedBy] - The ID of the user who requested this track
-     * @returns {object} The given song
+     * @returns {FelixTrack} The given song
      */
     play(song, requestedBy) {
         if (this.inactiveSince) {
@@ -194,7 +228,7 @@ class MusicConnection extends EventEmitter {
         if (this.player.paused) {
             this.player.setPause(false);
         }
-        return song;
+        return this.nowPlaying;
     }
 
     /**
