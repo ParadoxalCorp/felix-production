@@ -9,7 +9,7 @@
  * @typedef {import("./extendedUser.js").User} ExtendedUser
  * @typedef {import("eris").Message} Message
  * @typedef {import("../../../main.js")} Client
- * @typedef {import("./extendedGuildEntry.js")} GuildEntry
+ * @typedef {import("./extendedGuildEntry.js") & import("../data/references").GuildEntry} GuildEntry
  */
 
 
@@ -19,7 +19,13 @@
  */
 
 class Command {
-    constructor() {}
+    /**
+     * Create a new instance of Command
+     * @param {Client} client The client instance
+     */
+    constructor(client) {
+        this.client = client;
+    }
 
     /**
      * Check if a message calls for a command
@@ -447,8 +453,8 @@ class Command {
         return col;
     }
 
-    get commandsConf() {
-        return {
+    commandsConf(categoryConf = {}, commandConf = {}) {
+        return Object.assign({
             requireDB: false,
             disabled: false,
             aliases: [],
@@ -459,7 +465,19 @@ class Command {
             cooldownWeight: 5,
             require: [],
             guildOwnerOnly: false
-        };
+        }, categoryConf, commandConf);
+    }
+
+    /**
+     * 
+     * @param {Client|GuildEntry} client - The client instance, or the guild entry if the client instance has been given in the constructor
+     * @param {GuildEntry} guildEntry - The guild's database entry, if given as first argument, this is not needed
+     * @returns {String} The prefix
+     */
+    getPrefix(client, guildEntry) {
+        client = client.bot ? client : this.client;
+        guildEntry = guildEntry || client;
+        return guildEntry && guildEntry.prefix ? (guildEntry.prefix + (guildEntry.spacedPrefix ? ' ' : '')) : `${client.config.prefix} `;
     }
 }
 
