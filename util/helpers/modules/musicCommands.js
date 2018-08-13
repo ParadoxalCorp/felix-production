@@ -111,7 +111,7 @@ class MusicCommands extends Command {
      * 
      * @param {MusicContext} context - The context
      * @param {Array<FelixTrack>} tracks - An array of tracks to create a selection menu from
-     * @returns {Promise<FelixTrack>} The selected track
+     * @returns {Promise<FelixTrack | Boolean>} The selected track
      */
 
     async selectTrack(context, tracks) {

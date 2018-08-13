@@ -10,7 +10,6 @@ class IPCHandler {
      * @param {Map} [options.requests] - A collection of ongoing requests to expect
      */
     constructor(client, options = {}) {
-        // @ts-ignore
         this.requests = options.requests || new client.collection();
         this.client = client;
         process.on('message', this._handleIncomingMessage.bind(this));

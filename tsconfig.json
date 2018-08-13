@@ -1,22 +1,25 @@
 {
 	"compilerOptions": {
-			"target": "es2018",
-			"noEmit": true,
-			"checkJs": true,
-			"allowJs": true,
-			"module": "commonjs",
-			"watch": true,
-			"skipLibCheck": false,
-			"lib": [
-				"esnext"
-			],
-			"types": [
-					"node"
-			]
+		"target": "es2018",
+		"noEmit": true,
+		"checkJs": true,
+		"allowJs": true,
+		"module": "commonjs",
+		"watch": true,
+		"skipLibCheck": false,
+		"lib": [
+			"esnext"
+		],
+		"types": [
+			"node",
+			"sharp",
+			"ioredis",
+			"mocha"
+		]
 	},
 	"exclude": [
-			"node_modules/*",
-			"tests",
-			"commands"
+		"node_modules/*",
+		"tests",
+		"commands"
 	]
 }

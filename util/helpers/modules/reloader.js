@@ -55,7 +55,6 @@ class Reloader {
      */
     reloadEventListener(path) {
         if (path === 'all') {
-            // @ts-ignore
             fs.readdir(join(process.cwd(), 'events'), (err, events) => {
                 for (const event of events) {
                     const eventName = event.split(/\/|\\/gm)[path.split(/\/|\\/gm).length - 1].split('.')[0];

@@ -7,7 +7,6 @@
 
 const fs = require('fs');
 const { join } = require('path');
-// @ts-ignore
 const { Base } = require('eris-sharder');
 
 /**
@@ -40,12 +39,9 @@ class Felix extends Base {
     launch() {
         //Assign modules to the client
         Object.assign(this, require('./util')(this));
-        // @ts-ignore
         this.ratelimited = new this.collection();
         //This will be filled with mentions prefix once ready
-        // @ts-ignore
         this.commands = new this.collection();
-        // @ts-ignore
         this.aliases = new this.collection();
         this.bot.on('ready', this.ready.bind(this));
         process.on('beforeExit', this.beforeExit.bind(this));
@@ -54,8 +50,7 @@ class Felix extends Base {
         this.loadEventsListeners();
         this.verifyPackages();
         if (this.config.apiKeys['weebSH'] && this.packages.taihou) {
-            // @ts-ignore
-            this.weebSH = new(require('taihou'))(this.config.apiKeys['weebSH'], false, {
+            this.weebSH = new (require('taihou'))(this.config.apiKeys['weebSH'], false, {
                 userAgent: `Felix/${this.package.version}/${this.config.process.environment}`,
                 toph: {
                     nsfw: false
@@ -117,7 +112,7 @@ class Felix extends Base {
     }
 
     async ready() {
-        process.send({name: 'info', msg: 'Ready got emitted'});
+        process.send({ name: 'info', msg: 'Ready got emitted' });
         //This code is only meant to be executed on launch, and not every time ready is emitted
         if (this.launchedOnce) {
             return;
@@ -129,18 +124,18 @@ class Felix extends Base {
             process.exit(0);
         }
         if (this.weebSH) {
-            const generate = async() => {
+            const generate = async () => {
                 return this.imageHandler.generateSubCommands()
                     .then(generated => {
-                        process.send({name: 'info', msg: `Generated ${generated} image sub-commands`});
+                        process.send({ name: 'info', msg: `Generated ${generated} image sub-commands` });
                     })
                     .catch(err => {
-                         process.send({name: 'error', msg: `Failed to generate image sub-commands: ${err.stack || err}`});
+                        process.send({ name: 'error', msg: `Failed to generate image sub-commands: ${err.stack || err}` });
                     });
             };
             await generate();
             this._imageTypesInterval = setInterval(generate, this.config.options.imageTypesInterval);
-        } 
+        }
         this.verifyMusic();
         this.prefixes.push(`<@!${this.bot.user.id}>`, `<@${this.bot.user.id}>`);
         process.send({ name: "info", msg: `Logged in as ${this.bot.user.username}#${this.bot.user.discriminator}, running Felix ${this.package.version}` });
@@ -161,7 +156,7 @@ class Felix extends Base {
                         } else {
                             command.conf.disabled = `This command requires the \`${requirement}\` API key, but it is missing`;
                         }
-                        process.send({name: 'warn', msg: `${this.config.removeDisabledCommands ? 'Removed' : 'Disabled'} the command ${command.help.name} because the ${requirement} API key is missing`});
+                        process.send({ name: 'warn', msg: `${this.config.removeDisabledCommands ? 'Removed' : 'Disabled'} the command ${command.help.name} because the ${requirement} API key is missing` });
                     }
                 } else {
                     if (!this.moduleIsInstalled(requirement)) {
@@ -170,7 +165,7 @@ class Felix extends Base {
                         } else {
                             command.conf.disabled = `This command requires the \`${requirement}\` package, but it is missing`;
                         }
-                        process.send({name: 'warn', msg: `${this.config.removeDisabledCommands ? 'Removed' : 'Disabled'} the command ${command.help.name} because the ${requirement} package is missing`});
+                        process.send({ name: 'warn', msg: `${this.config.removeDisabledCommands ? 'Removed' : 'Disabled'} the command ${command.help.name} because the ${requirement} package is missing` });
                     } else {
                         this.packages[requirement] = require(requirement);
                     }
@@ -193,7 +188,7 @@ class Felix extends Base {
             } else {
                 this.commands.filter(c => c.help.category === 'music').forEach(c => this.commands.get(c.help.name).conf.disabled === `This command requires the music to be enabled`);
             }
-            return process.send({name: 'warn', msg: `${this.config.removeDisabledCommands ? 'Removed' : 'Disabled'} the music commands because config.options.music.enabled is set to false`});
+            return process.send({ name: 'warn', msg: `${this.config.removeDisabledCommands ? 'Removed' : 'Disabled'} the music commands because config.options.music.enabled is set to false` });
         }
         if (!this.moduleIsInstalled('eris-lavalink')) {
             if (this.config.removeDisabledCommands) {
@@ -201,28 +196,28 @@ class Felix extends Base {
             } else {
                 this.commands.filter(c => c.help.category === 'music').forEach(c => this.commands.get(c.help.name).conf.disabled === `This command require the \`eris-lavalink\` package which is missing`);
             }
-            return process.send({name: 'warn', msg: `${this.config.removeDisabledCommands ? 'Removed' : 'Disabled'} the music commands because the \`eris-lavalink\` package is missing`});
+            return process.send({ name: 'warn', msg: `${this.config.removeDisabledCommands ? 'Removed' : 'Disabled'} the music commands because the \`eris-lavalink\` package is missing` });
         }
         this.musicManager.init();
     }
 
     async beforeExit() {
-        process.send({name: 'warn', msg: `Exit process engaged, finishing the ongoing tasks..`});
+        process.send({ name: 'warn', msg: `Exit process engaged, finishing the ongoing tasks..` });
         if (this.redis && this.redis.healthy) {
             await this.redis.quit();
-            process.send({name: 'info', msg: `Finished the ongoing tasks and closed the Redis connection`});
+            process.send({ name: 'info', msg: `Finished the ongoing tasks and closed the Redis connection` });
         }
         if (this.musicManager) {
             let lavalinkExit = this.musicManager.disconnect();
             if (lavalinkExit !== false) {
-                process.send({name: 'info', msg: `Sent exit code to the Lavalink server`});
+                process.send({ name: 'info', msg: `Sent exit code to the Lavalink server` });
             }
         }
         if (this.database && this.database.healthy) {
             this.database.rethink.getPoolMaster().drain();
-            process.send({name: 'info', msg: `Finished the ongoing tasks and closed the RethinkDB connection`});
+            process.send({ name: 'info', msg: `Finished the ongoing tasks and closed the RethinkDB connection` });
         }
-        process.send({name: 'warn', msg: `All ongoing tasks finished, exiting..`});
+        process.send({ name: 'warn', msg: `All ongoing tasks finished, exiting..` });
     }
 }
 

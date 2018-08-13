@@ -5,6 +5,7 @@
  * @typedef {import("eris").User} User
  * @typedef {import("eris").Member} Member
  * @typedef {import("eris").Guild} Guild
+ * @typedef {import("eris").Channel} Channel
  * @typedef {import("eris").PermissionOverwrite} PermissionOverwrite
  * @typedef {import("./extendedUser.js").User} ExtendedUser
  * @typedef {import("eris").Message} Message
@@ -21,7 +22,7 @@
 class Command {
     /**
      * Create a new instance of Command
-     * @param {Client} client The client instance
+     * @param {Client} [client] The client instance
      */
     constructor(client) {
         this.client = client;
@@ -300,6 +301,7 @@ class Command {
             type = !channelTypes[options.type] && channelTypes[options.type] !== 0 ? options.type : channelTypes[options.type];
         }
         let text = options.text || options.message.content;
+        // @ts-ignore
         const exactMatch = await this._resolveChannelByExactMatch(options.client, options.message, text, type);
         if (exactMatch) {
             return exactMatch;

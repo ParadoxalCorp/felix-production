@@ -88,12 +88,6 @@
  * @property {Number} amount The amount of experience this user has gained
  */
 
-/**
- * @typedef {Object} OwnedItem 
- * @property {Number} count The amount of copy of this item the user has
- * @property {Number} id The ID of the item
- */
-
  /**
  * @typedef {Object} Cooldown
  * @property {Number} max The maximum amount of cooldowns that can be stacked

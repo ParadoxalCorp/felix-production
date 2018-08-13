@@ -10,7 +10,6 @@ class InteractiveList {
      */
     constructor(client) {
         this.client = client;
-        // @ts-ignore
         this.ongoingList = new client.collection();
     }
 
