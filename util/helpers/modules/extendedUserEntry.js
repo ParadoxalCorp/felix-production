@@ -130,6 +130,22 @@ class ExtendedUserEntry {
     }
 
     /**
+     * Check if this user has the premium status
+     * @returns {boolean} Whether this user has the premium status 
+     */
+    hasPremiumStatus() {
+        // @ts-ignore
+        if (typeof this.premium.expire === 'number') {
+            // @ts-ignore
+            return this.premium.expire > Date.now();
+        } else {
+            // @ts-ignore
+            return this.premium.expire ? true : false;
+        }
+        
+    }
+
+    /**
      * Return this without the additional methods, essentially returns a proper database entry, ready to be saved into the database
      * Note that this shouldn't be called before saving it into the database, as the database wrapper already does it
      * @returns {*} - This, as a proper database entry object (without the additional methods)
