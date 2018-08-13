@@ -55,6 +55,7 @@ class ClientStats extends Command {
                                 nodesStatus += `=> Used memory: [${normalizeMemory(lavalinkNode.stats.memory.used)}]\n`;
                                 nodesStatus += `=> Allocated memory: [${normalizeMemory(lavalinkNode.stats.memory.allocated)}]\n`;
                                 nodesStatus += `=> Free memory: [${normalizeMemory(lavalinkNode.stats.memory.free)}]\n`;
+                                nodesStatus += `=> Reservable memory: [${normalizeMemory(lavalinkNode.stats.memory.reservable)}]\n`;
                                 nodesStatus += `=> Cores: [${lavalinkNode.stats.cpu.cores}]\n`;
                                 nodesStatus += `=> System load: [${normalizeLoad(lavalinkNode.stats.cpu.systemLoad)}]\n`;
                                 nodesStatus += `=> Node load: [${normalizeLoad(lavalinkNode.stats.cpu.lavalinkLoad)}]\n`;
