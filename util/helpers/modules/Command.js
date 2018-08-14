@@ -7,7 +7,7 @@
  * @typedef {import("eris").Guild} Guild
  * @typedef {import("eris").Channel} Channel
  * @typedef {import("eris").PermissionOverwrite} PermissionOverwrite
- * @typedef {import("./extendedUser.js").User} ExtendedUser
+ * @typedef {import("./extendedUser.js").extendUser} ExtendedUser
  * @typedef {import("eris").Message} Message
  * @typedef {import("../../../main.js")} Client
  * @typedef {import("./extendedGuildEntry.js") & import("../data/references").GuildEntry} GuildEntry
@@ -36,7 +36,7 @@ class Command {
      * @returns {Promise<object | undefined>} - The command object, or undefined if the message is not prefixed or the command does not exist
      */
     parseCommand(message, client) {
-        return new Promise(async(resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             const args = message.content.split(/\s+/);
             // @ts-ignore
             const guildEntry = message.channel.guild && client.database && client.database.healthy ?
@@ -79,8 +79,8 @@ class Command {
     _parseUnspacedCommand(message, client, guildEntry, args) {
         const mentionTest = message.content.startsWith(`<@${client.bot.user.id}>`) || message.content.startsWith(`<@!${client.bot.user.id}`);
         const supposedCommand = !mentionTest
-        ? args.shift().slice(guildEntry.getPrefix.length).toLowerCase() 
-        : (args[1] ? args[1].toLowerCase() : false);
+            ? args.shift().slice(guildEntry.getPrefix.length).toLowerCase()
+            : (args[1] ? args[1].toLowerCase() : false);
         const prefix = !mentionTest ? message.content.substr(0, guildEntry.getPrefix.length) : args[0];
         return {
             prefix,
@@ -163,7 +163,7 @@ class Command {
      * @param {string} [options.text=message.content] - The text from which users should be resolved, if none provided, it will use the message content
      * @returns {Promise<User | Boolean>} The resolved user, or false if none could be resolved
      */
-    async getUserFromText(options ) {
+    async getUserFromText(options) {
         if (!options.client || !options.message) {
             Promise.reject(new Error(`The options.client and options.message parameters are mandatory`));
         }
@@ -231,7 +231,7 @@ class Command {
      * @param {string} [options.text=message.content] - The text from which roles should be resolved, if none provided, it will use the message content
      * @returns {Promise<Role | Boolean>} The resolved role, or false if none could be resolved
      */
-    async getRoleFromText(options ) {
+    async getRoleFromText(options) {
         if (!options.client || !options.message) {
             Promise.reject(new Error(`The options.client and options.message parameters are mandatory`));
         }
@@ -361,24 +361,24 @@ class Command {
         /** @type {Array} */
         let args = [];
 
-        const queryArg = async(arg, ongoingQuery) => {
+        const queryArg = async (arg, ongoingQuery) => {
             const queryMsg = ongoingQuery || await message.channel.createMessage('Note that you can cancel this query anytime by replying `cancel`\n\n' + arg.description);
             const response = await client.messageCollector.awaitMessage(message.channel.id, message.author.id);
             if (!response || response.content.toLowerCase() === "cancel") {
-                queryMsg.delete().catch(() => {});
+                queryMsg.delete().catch(() => { });
                 return false;
             }
             if ((arg.possibleValues && !arg.possibleValues.find(value => value.name === "*" || value.name.toLowerCase() === response.content.toLowerCase())) || (arg.validate && !arg.validate(client, message, response.content))) {
                 message.channel.createMessage(':x: This is not a valid answer, please reply again with a valid answer')
                     .then(m => {
                         setTimeout(() => {
-                            m.delete().catch(() => {});
+                            m.delete().catch(() => { });
                         }, 5000);
                     });
                 const reQuery = await queryArg(arg, queryMsg);
                 return reQuery;
             } else {
-                queryMsg.delete().catch(() => {});
+                queryMsg.delete().catch(() => { });
                 const value = arg.possibleValues ? arg.possibleValues.find(value => value.name.toLowerCase() === response.content.toLowerCase() || value.name === '*') : false;
                 return value ? (value.interpretAs === false ? undefined : value.interpretAs.replace(/{value}/gim, response.content.toLowerCase())) : response.content;
             }
@@ -393,7 +393,7 @@ class Command {
                         return false;
                     });
                 if (query === false) {
-                    message.channel.createMessage(':x: Command aborted').catch(() => {});
+                    message.channel.createMessage(':x: Command aborted').catch(() => { });
                     return false;
                 }
                 if (query !== undefined) {

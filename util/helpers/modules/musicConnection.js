@@ -48,7 +48,7 @@ const EventEmitter = (() => {
 
 /**
  * Provides methods to easily manage the queue and the ongoing vote if any, as well as synchronize the queue with redis and handle events in the background
- * @extends EventEmitter3
+ * @extends EventEmitter
  */
 class MusicConnection extends EventEmitter {
     /**

@@ -4,10 +4,11 @@
  * @typedef {import("eris").User} ErisUser
  */
 
-const User = require('../../../node_modules/eris/lib/structures/User');
+ /**  */
+const User = require("eris").User;
 
 /**
- * @extends ErisUser
+ * @extends User
  */
 class ExtendedUser extends User {
     constructor(user, client) {
