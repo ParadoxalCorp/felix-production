@@ -164,13 +164,16 @@ class MusicManager {
     }
 
     /**
-     * Get the queue of a guild, note that this should only be used if you don't have access to the MusicConnection instance of the guild, as this method only fetch from redis
+     * Get the queue of a guild
      * @param {string | Guild} guild - The guild ID or object to get the queue from
      * @returns {Promise<array>} The queue, or an empty array if none has been retrieved from redis
      */
     async getQueueOf(guild) {
         if (!this.client.redis || !this.client.redis.healthy) {
             return [];
+        }
+        if (this.connections.get(guild.id || guild)) {
+            return this.connections.get(guild.id || guild).queue;
         }
         //@ts-ignore
         return this.client.redis.get(`${guild.id ? guild.id : guild}-queue`)
