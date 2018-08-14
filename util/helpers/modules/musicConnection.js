@@ -28,7 +28,7 @@
 /**
  * @typedef {Object} ExtendedTrack  
  * @property {String} voteID If any, the ID of the ongoing vote targeting this track
- * @property {{requestedBy: String }} info Info about the track
+ * @property {{requestedBy: String, _id: Number }} info Info about the track
  */
 
  /**
@@ -109,7 +109,8 @@ class MusicConnection extends EventEmitter {
         this.queue[unshift ? "unshift" : "push"]({
             info: {
                 ...track.info,
-                requestedBy
+                requestedBy,
+                _id: this._generateID()
             },
             track: track.track
         });
@@ -141,6 +142,7 @@ class MusicConnection extends EventEmitter {
     addTracks(tracks, requestedBy, unshift = false) {
         tracks = tracks.map(t => {
             t.info.requestedBy = requestedBy;
+            t.info._id = this._generateID();
             return t;
         });
         this.queue = unshift ? tracks.concat(this.queue) : this.queue.concat(tracks);
@@ -216,7 +218,8 @@ class MusicConnection extends EventEmitter {
         this.nowPlaying = {
             info: {
                 ...song.info,
-                requestedBy: requestedBy || song.info.requestedBy
+                requestedBy: requestedBy || song.info.requestedBy,
+                _id: song.info._id || this._generateID()
             },
             track: song.track,
             voteID: song.voteID
@@ -359,6 +362,14 @@ class MusicConnection extends EventEmitter {
         if (!this.nowPlaying.info.isStream) {
             this.player.seek(lastPosition);
         }
+    }
+
+    /**
+     * @private
+     * @returns {Number} A unique identifier
+     */
+    _generateID() {
+        return Date.now() * process.pid;
     }
 }
 
