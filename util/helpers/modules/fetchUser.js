@@ -6,9 +6,9 @@ const Endpoints = require('../../../node_modules/eris/lib/rest/Endpoints');
 const User = require('../../../node_modules/eris/lib/structures/User');
 
 /**
- * 
+ * @typedef {Function} fetchUser
  * @param {string} id - The ID of the user to fetch
- * @returns {Promise<object>} The user object
+ * @returns {Promise<import("./extendedUser.js")>} The user object
  */
 const fetchUser = async(client, id) => {
     if (client.bot.users.has(id)) {

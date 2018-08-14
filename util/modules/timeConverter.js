@@ -2,8 +2,9 @@
 
 /**
  * Provides some utility methods to parse time
+ * @typedef {TimeConverter} TimeConverter
  */
-class timeConverter {
+class TimeConverter {
     constructor() {}
 
     /**
@@ -101,4 +102,4 @@ class timeConverter {
     }
 }
 
-module.exports = new timeConverter();
+module.exports = new TimeConverter();

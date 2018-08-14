@@ -1,6 +1,7 @@
 'use strict';
 
 /**
+ * @typedef {Function} prompt
  * Prompt the user through the terminal
  * @param {string} question - The question to prompt 
  * @returns {Promise<string>} The answer

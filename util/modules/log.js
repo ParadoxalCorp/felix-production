@@ -2,8 +2,7 @@
 //Afaik this frame animation proof of concept
 
 /**
- * @typedef Draft
- * @type {Object}
+ * @typedef {Object} Draft
  * @property {Boolean} spinning
  * @property {string} text
  * @property {any} draft
@@ -17,6 +16,7 @@ const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '
 /**
  * Provides some fancy colored logs for errors, warns and info, but also animated logs
  * @prop {Map} drafts A map of all the current draft-logs going on
+ * @typedef {Log} Log 
  */
 class Log {
     constructor() {

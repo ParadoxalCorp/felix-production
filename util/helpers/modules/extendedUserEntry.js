@@ -145,6 +145,32 @@ class ExtendedUserEntry {
         
     }
 
+    //eslint-disable-next-line valid-jsdoc
+    /**
+     * Get the limitations of this user's tier 
+     * @returns {import("../data/references.js").TierLimits} The user's tier limits
+     */
+    get tierLimits() {
+        const perks = (profileBgSize, playlistLoadLimit, playlistSaveLimit, maxSavedPlaylists) => { return { profileBgSize, playlistLoadLimit, playlistSaveLimit, maxSavedPlaylists }; };
+        switch (this.premium.tier) {
+            case 0:
+                return perks(1e6, 100, 100, 3);
+                break;
+            case 1:
+                return perks(2e6, 200, 200, 4);
+                break;
+            case 2:
+                return perks(4e6, 400, 400, 5);
+                break;
+            case 3:
+                return perks(10e6, 500, 500, 8);
+                break;
+            case 4:
+                return perks(50e6, 600, 1000, 10);
+                break;
+        }
+    }
+
     /**
      * Return this without the additional methods, essentially returns a proper database entry, ready to be saved into the database
      * Note that this shouldn't be called before saving it into the database, as the database wrapper already does it

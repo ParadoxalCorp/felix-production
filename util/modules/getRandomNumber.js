@@ -1,6 +1,7 @@
 'use strict';
 
 /**
+ * @typedef {Function} getRandomNumber
  * Get a random number in the specified interval
  * @param {number} min - The minimum 
  * @param {number} max - The maximum 
