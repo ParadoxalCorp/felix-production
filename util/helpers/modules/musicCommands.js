@@ -42,9 +42,7 @@ class MusicCommands extends Command {
     async initialCheck(message, args, guildEntry, userEntry) {
         const member = message.channel.guild.members.get(message.author.id);
         const clientMember = message.channel.guild.members.get(this.client.bot.user.id);
-        if (this.options.noArgs && !args[0]) {
-            return message.channel.createMessage(this.options.noArgs);
-        } else if (this.options.userInVC && (clientMember.voiceState.channelID && clientMember.voiceState.channelID !== member.voiceState.channelID)) {
+        if (this.options.userInVC && (clientMember.voiceState.channelID && clientMember.voiceState.channelID !== member.voiceState.channelID)) {
             return message.channel.createMessage(':x: You must be connected in a voice channel with me to use that');
         } 
         const userVC = message.channel.guild.channels.get(member.voiceState.channelID);
@@ -61,6 +59,9 @@ class MusicCommands extends Command {
             if (!connection || !connection.nowPlaying) {
                 return message.channel.createMessage(':x: I am not playing anything');
             }
+        }
+        if (this.options.noArgs && !args[0]) {
+            return message.channel.createMessage(this.options.noArgs);
         }
         return { 
             passed: true,
@@ -81,14 +82,14 @@ class MusicCommands extends Command {
         return !position || !this.client.isWholeNumber(position) || (position - 1 >= queue.length) || (position - 1 < 0) ? false : true;
     }
 
-    async genericEmbed(track, connection, title, newTrack = false) {
+    async genericEmbed(track, connection, title) {
         let fields = [{
             name: 'Author',
             value: track.info.author,
             inline: true
         }, {
             name: 'Duration',
-            value: (connection.nowPlaying.track === track.track ? `${this.client.musicManager.parseDuration(newTrack ? 0 : connection.player.state.position || 0)}/` : '') + this.client.musicManager.parseDuration(track),
+            value: (connection.nowPlaying.info._id === track.info._id ? `${this.client.musicManager.parseDuration(connection.player.state.position || 0)}/` : '') + this.client.musicManager.parseDuration(track),
             inline: true
         }];
         if (track.info.requestedBy) {
