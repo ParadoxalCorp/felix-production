@@ -4,7 +4,7 @@ const MusicCommands = require('../../util/helpers/modules/musicCommands');
 
 class PlayAfter extends MusicCommands {
     constructor(client) {
-        super(client, { userInVC: true, playing: true });
+        super(client, { userInVC: true, playing: true, noArgs: ':x: You didn\'t specify any song to play after this one' });
         this.help = {
             name: 'playafter',
             description: 'Push to the first position in the queue a song. You can input: A `YouTube` URL (including livestreams), a `Soundcloud` URL, a `Twitch` channel URL (the channel must be live);\n\nOr a search term to search through `YouTube` or `Soundcloud`, by default the search is done on `YouTube`, to search through `Soundcloud`, you must specify it like `{prefix}queue soundcloud <search_term>`',
@@ -17,21 +17,17 @@ class PlayAfter extends MusicCommands {
     */
 
     async run(context) {
-        if (!context.args[0]) {
-            return context.message.channel.createMessage(':x: You didn\'t specify any song to play after this one');
-        }
-        let tracks = await this.client.musicManager.resolveTracks(context.connection.player.node, context.args.join(' '));
-        if (tracks.loadType === this.client.musicManager.constants.loadTypes.playlist) {
+        const resolveTracks = await this.client.musicManager.resolveTracks(context.connection.player.node, context.args.join(' '));
+        if (resolveTracks.loadType === this.client.musicManager.constants.loadTypes.playlist) {
             return context.message.channel.createMessage(':x: Oops, this looks like a playlist to me, please use the `addplaylist` command instead');
         }
-        tracks = tracks.tracks;
         let queued;
-        let track = tracks[0];
+        let track = resolveTracks.tracks[0];
         if (!track) {
             return context.message.channel.createMessage(`:x: I could not find any song :c, please make sure to:\n- Follow the syntax (check \`${this.getPrefix(context.guildEntry)}help ${this.help.name}\`)\n- Use HTTPS links, unsecured HTTP links aren't supported\n- If a YouTube video, I can't play it if it is age-restricted\n - If a YouTube video, it might be blocked in the country my servers are`);
         }
-        if (tracks.length > 1) {
-            track = await this.selectTrack(context, tracks);
+        if (resolveTracks.tracks.length > 1) {
+            track = await this.selectTrack(context, resolveTracks.tracks);
             if (!track) {
                 return;
             }

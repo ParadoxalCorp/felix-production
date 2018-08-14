@@ -38,18 +38,17 @@ class Queue extends MusicCommands {
         if (!connection) {
             connection = await this.client.musicManager.getPlayer(context.message.channel.guild.channels.get(member.voiceState.channelID));
         }
-        let tracks = await this.client.musicManager.resolveTracks(connection.player.node, context.args.join(' '));
-        if (tracks.loadType === this.client.musicManager.constants.loadTypes.playlist) {
+        const resolvedTracks = await this.client.musicManager.resolveTracks(connection.player.node, context.args.join(' '));
+        if (resolvedTracks.loadType === this.client.musicManager.constants.loadTypes.playlist) {
             return context.message.channel.createMessage(':x: Oops, this looks like a playlist to me, please use the `addplaylist` command instead');
         }
-        tracks = tracks.tracks;
         let queued;
-        let track = tracks[0];
+        let track = resolvedTracks.tracks[0];
         if (!track) {
             return context.message.channel.createMessage(`:x: I could not find any song :c, please make sure to:\n- Follow the syntax (check \`${this.getPrefix(context.guildEntry)}help ${this.help.name}\`)\n- Use HTTPS links, unsecured HTTP links aren't supported\n- If a YouTube video, I can't play it if it is age-restricted\n - If a YouTube video, it might be blocked in the country my servers are`);
         }
-        if (tracks.length > 1) {
-            track = await this.selectTrack(context, tracks);
+        if (resolvedTracks.tracks.length > 1) {
+            track = await this.selectTrack(context, resolvedTracks.tracks);
             if (!track) {
                 return;
             }

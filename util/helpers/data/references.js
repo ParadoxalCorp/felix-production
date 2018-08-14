@@ -106,6 +106,14 @@
  * @property {Number|Boolean} expire If a number, the UNIX timestamp when the user's premium status expires. If "true", that means the user pledges monthly so there is no determined date of when their premium ends
  */
 
+ /**
+ * @typedef {Object} TierLimits
+ * @property {Number} profileBgSize The maximum size of the background set for the rank command
+ * @property {Number} playlistLoadLimit The maximum size of a playlist that can be loaded at once
+ * @property {Number} playlistSaveLimit The maximum size of a playlist that can be saved
+ * @property {Number} maxSavedPlaylists The maximum count of playlists that can be saved
+ */
+
 /**
  * @typedef {Object} UserEntry  
  * @property {String} id The ID of the user
@@ -120,6 +128,7 @@
 /**
  * This class provides all the default data model the process may use, for example, the default data models for guild and user entries in the database
  * @class References
+ * @typedef {References} References 
  */
 class References {
     constructor() {
