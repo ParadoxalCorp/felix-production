@@ -4,7 +4,7 @@ const MusicCommands = require('../../util/helpers/modules/musicCommands');
 
 class SavePlaylist extends MusicCommands {
     constructor(client) {
-        super(client)
+        super(client);
         this.help = {
             name: 'saveplaylist',
             description: 'Save the current queue in your playlists, allowing you to load it whenever you want',
