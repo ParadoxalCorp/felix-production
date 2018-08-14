@@ -36,7 +36,7 @@ class DatabaseWrapper {
             this._initAttempts = 1;
         }
         const tableList = await this.rethink.tableList();
-        const missingTables = ['guilds', 'users', 'stats'].filter(t => !tableList.includes(t));
+        const missingTables = ['guilds', 'users', 'stats', 'playlists'].filter(t => !tableList.includes(t));
         if (missingTables[0]) {
             return Promise.reject(new Error(`Couldn't initialize the database connection as the following tables are missing: ${missingTables.join(', ')}`));
         }

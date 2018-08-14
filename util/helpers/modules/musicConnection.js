@@ -14,7 +14,15 @@
  * @property {String} author The name of the author of the track
  * @property {Number} length The duration of the track in milliseconds
  * @property {Boolean} isStream Whether the track is a live-stream
- * @property {Number} cooldowns The current position of the player in the track, represented in milliseconds
+ * @property {Number} position The current position of the player in the track, represented in milliseconds
+ * @property {String} title The title of the track
+ * @property {String} uri The URL to the track 
+ */
+
+ /**
+ * @typedef {Object} PartialLavalinkTrackInfo
+ * @property {String} author The name of the author of the track
+ * @property {Number} length The duration of the track in milliseconds
  * @property {String} title The title of the track
  * @property {String} uri The URL to the track 
  */
@@ -23,6 +31,12 @@
  * @typedef {Object} LavalinkTrack  
  * @property {String} track The encoded title of the track
  * @property {LavalinkTrackInfo} info An object of info about the track
+ */
+
+/**
+ * @typedef {Object} PartialLavalinkTrack  
+ * @property {String} track The encoded title + uri of the track
+ * @property {PartialLavalinkTrackInfo} info An object of info about the track
  */
 
 /**
@@ -208,13 +222,14 @@ class MusicConnection extends EventEmitter {
      * Play a given song
      * @param {object} song - The Lavalink track to play 
      * @param {string} [requestedBy] - The ID of the user who requested this track
+     * @param {object} [options] - An object of options to pass to Lavalink
      * @returns {FelixTrack} The given song
      */
-    play(song, requestedBy) {
+    play(song, requestedBy, options) {
         if (this.inactiveSince) {
             this.inactiveSince = null;
         }
-        this.player.play(song.track);
+        this.player.play(song.track, options);
         this.nowPlaying = {
             info: {
                 ...song.info,
@@ -358,10 +373,7 @@ class MusicConnection extends EventEmitter {
     _resume() {
         //Experimental attempt at resuming where a song got stuck/ran into an error
         const lastPosition = this.player.state.position;
-        this.play(this.nowPlaying);
-        if (!this.nowPlaying.info.isStream) {
-            this.player.seek(lastPosition);
-        }
+        this.play(this.nowPlaying, null, (!this.nowPlaying.info.isStream ? { startTime: lastPosition } : null));
     }
 
     /**
