@@ -83,17 +83,12 @@
  * @property {Number} amount The amount of love points this user has been given
  */
 
- /**
+/**
  * @typedef {Object} UserPlaylist
- * @property {String} name The name of the playlist
  * @property {String} id The id of the playlist
+ * @property {String} userID The id of the user owning this playlist
+ * @property {String} name The name of the playlist
  * @property {Array<import("../modules/musicConnection.js").PartialLavalinkTrack>} tracks An array of partial lavalink tracks
- */
-
-  /**
- * @typedef {Object} UserPlaylists
- * @property {String} id The id of the user
- * @property {Array} playlists An array that should contain the playlists
  */
 
  /**
@@ -318,29 +313,19 @@ class References {
     }
 
     /**
-     * Data model of a user playlists 
-     * @param {String} id - The ID of the user
-     * @returns {UserPlaylists} The UserPlaylists data model
-     */
-    userPlaylists(id) {
-        return {
-            id,
-            playlists: []
-        };
-    }
-
-    /**
      * Data model of a user playlist
      * @param {String} name - The name of the playlist
      * @param {String} id - The ID of the playlist
+     * @param {String} userID - The ID of the user owning this playlist
      * @param {Array<import("../modules/musicConnection.js").LavalinkTrack>} tracks - An array of tracks
      * @returns {UserPlaylist} 
      */
 
-    userPlaylist(name, id, tracks) {
+    userPlaylist(name, id, userID, tracks) {
         return {
             name,
             id,
+            userID,
             tracks: tracks.map(t => {
                 return {
                     track: t.track,
@@ -348,7 +333,8 @@ class References {
                         author: t.info.author,
                         length: t.info.length,
                         title: t.info.title,
-                        uri: t.info.uri
+                        uri: t.info.uri,
+                        identifier: t.info.identifier
                     }
                 };
             })
