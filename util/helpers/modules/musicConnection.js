@@ -21,6 +21,7 @@
 
  /**
  * @typedef {Object} PartialLavalinkTrackInfo
+ * @property {String} identifier The unique identifier of the track, as defined by the provider (youtube, soundcloud..)
  * @property {String} author The name of the author of the track
  * @property {Number} length The duration of the track in milliseconds
  * @property {String} title The title of the track
@@ -149,13 +150,15 @@ class MusicConnection extends EventEmitter {
     /**
      * Add multiple tracks to the queue
      * @param {array} tracks - An array of Lavalink tracks to add to the queue
-     * @param {string} requestedBy - The ID of the user who requested these tracks
+     * @param {string} [requestedBy] - The ID of the user who requested these tracks, can be omitted if already specified
      * @param {boolean} [unshift=false] - Whether to add these tracks at the beginning of the queue or at the end, defaults to false
      * @returns {number} The new length of the queue
      */
     addTracks(tracks, requestedBy, unshift = false) {
         tracks = tracks.map(t => {
-            t.info.requestedBy = requestedBy;
+            if (requestedBy) {
+                t.info.requestedBy = requestedBy;
+            }
             t.info._id = this._generateID();
             return t;
         });
