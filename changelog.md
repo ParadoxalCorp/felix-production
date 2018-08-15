@@ -1,3 +1,9 @@
+# Patch 4.3.14 Changelog
+
+### Bugs fixes
+
+* Fixed a bug that would under very specific conditions changes the saved custom farewells and greetings message
+
 # Patch 4.3.13 Changelog
 
 ### Bugs fixes
