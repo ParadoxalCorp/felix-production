@@ -2,6 +2,27 @@
 
 /** @typedef {import("../../../main.js")} Client */
 
+/** @typedef {Object} ClusterStats
+ * @prop {Number} cluster The ID of the cluster
+ * @prop {Number} shards The amount of shards on this cluster
+ * @prop {Number} guilds The amount of guilds on this cluster
+ * @prop {Number} ram The RSS RAM usage of this cluster (in MB)
+ * @prop {Number} voice The amount of voice connections on this cluster
+ * @prop {Number} uptime The uptime of this cluster in milliseconds
+ * @prop {Number} exclusiveGuilds (idk)
+ * @prop {Number} largeGuilds The amount of large guilds on this server (250+ members) 
+ */
+
+ /** @typedef {Object} ClientStats
+ * @prop {Number} guilds The total amount of guilds the bot is in
+ * @prop {Number} users The amount of users cached on this cluster
+ * @prop {Number} voice The total amount of voice connections of the bot
+ * @prop {Number} exclusiveGuilds idk
+ * @prop {Number} largeGuilds The total amount of large guilds the bot is in
+ * @prop {Number} totalRam The total RSS RAM usage (in MB)
+ * @prop {Array<ClusterStats>} clusters An array of objects with the stats of each cluster
+ */
+
 class IPCHandler {
     /**
      * @prop {Collection} requests A collection of the current ongoing requests

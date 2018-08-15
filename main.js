@@ -8,6 +8,23 @@
 const fs = require('fs');
 const { join } = require('path');
 const { Base } = require('eris-sharder');
+const config = require('./config');
+
+/**
+ * @typedef {Object} BaseClient 
+ * @prop {Boolean} maintenance A boolean representing whether the bot is in maintenance, if true, the bot should be unresponsive to anyone who isn't specified as admin in the config
+ * @prop {import("./util/modules/collection.js")} collection Discord.js's collections
+ * @prop {config} config The config file
+ * @prop {Object} package This projects's package.json
+ * @prop {Array<string>} prefixes An array of prefixes the bot listens to
+ * @prop {import("./util/helpers/modules/IPCHandler.js").ClientStats} stats
+ * @prop {import("./util/helpers/modules/utils.js")} utils 
+ * @prop {Object} packages A name:package set, the point of this is very limited, kek.
+ * @prop {Boolean} launchedOnce Whether the bot has already been launched
+ * @prop {ErisClient} bot The eris client instance
+ */
+
+/** @typedef {BaseClient & import("./structures/index.js").Structures & import("./util/index.js").Utils} Client */
 
 /**
  *
@@ -17,16 +34,15 @@ const { Base } = require('eris-sharder');
  */
 class Felix extends Base {
     /** 
-     * @param {ErisClient} bot Eris Client 
+     * @param {Client} bot Eris Client 
      * @constructor Felix
     */
     constructor(bot) {
         super(bot);
-
         /** If true, this would ignore all messages from everyone besides the owner */
         this.maintenance = false;
         this.collection = require('./util/modules/collection');
-        this.config = require('./config');
+        this.config = config;
         // @ts-ignore
         this.package = require('./package');
         this.prefixes = this.config.prefix ? [this.config.prefix] : [];
@@ -37,7 +53,7 @@ class Felix extends Base {
         this.utils = new(require('./util/helpers/modules/utils'))(this);
         /** @type {Object} */
         this.packages = {};
-        this.launchedOnce;
+        this.launchedOnce = false;
     }
 
     launch() {

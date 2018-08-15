@@ -13,6 +13,50 @@
  * @typedef {import("./extendedGuildEntry.js") & import("../data/references").GuildEntry} GuildEntry
  */
 
+ /** @typedef {Object} CommandHelp
+  * @prop {String} name The name of the command 
+  * @prop {String} description The description of the command
+  * @prop {String} usage A quick example of how to use the command, every instance of {prefix} will be replaced by the actual prefix in the help command 
+  */
+
+ /** @typedef {Object} PossibleArgValue
+  * @prop {String} name The value, if the arg does not match this, the user will be queried again. You can use `*` to make it match everything
+  * @prop {String} [interpretAs] This is especially helpful when the syntax of the command isn't how you would humanly prompt a user, this define what exactly will be pushed in the `args` array, note that `{value}` will be replaced by value. If `false`, it won't be pushed into the `args` array
+  */
+
+ /** @typedef {Object} ExpectedArg
+  * @prop {String} description A string describing what is the expected argument, this will be displayed in the query
+  * @prop {Function} [condition] A function that will be called with the client, message and args parameters. If the function resolves to a falsy value, this argument won't be queried
+  * @prop {Array<PossibleArgValue>} [possibleValues] An array representing the possible values for this arg, if not specified, anything passes. Otherwise, if the argument doesn't match the specified possible values, the arg will be re-queried
+  */
+
+ /** @typedef {Object} CommandConf
+  * @prop {Boolean} [requireDB=false] Whether the command requires the database or not, if true, the command won't be called when the connection with the database has been lost 
+  * @prop {Boolean|String} [disabled=false] Whether the command is temporarily disabled, if true, this should be a string explaining why the command is disabled
+  * @prop {Array<String>} [aliases=[]] An array of aliases for this command
+  * @prop {Array<String>} [requirePerms=[]] An array of case-sensitive permissions the bot needs to execute the command, if the bot miss one of the specified permissions, the command won't be called (note that sendMessages and embedLinks are already included)
+  * @prop {Boolean} [guildOnly=false] Whether the command can only be used in a guild and not in dms
+  * @prop {Boolean} [ownerOnly=false] Whether the command can only be used by the owner set in the config
+  * @prop {Array<ExpectedArg>} [expectedArgs=[]] An array of arguments the command needs in order to properly execute the action
+  * @prop {Number} [cooldownWeight=5] The "weight" of the command, roughly representing how big the output is, to determine how much the command should impact the user's cooldown
+  * @prop {Array<string>} [require=[]] An array of API Keys name (must be the same than set in the config) the command needs, if they are missing from the config, the command will be disabled
+  * @prop {Boolean} [guildOwnerOnly=false] Whether this command should be restricted to the guild's owner (if true, must be combined with guildOnly)
+  */
+
+ /** @typedef {Object} CommandCategory
+  * @prop {String} name The name of the category
+  * @prop {String} emote Emotes representing the category to display on the help command
+  * @prop {String} [conf={}] A conf object that will override the default conf, but still get overwritten by the command conf
+  */
+
+ /** @typedef {Object} CommandOptions
+  * 
+  */
+
+ /** @typedef {Object} CommandOptions
+  * 
+  */
+
 
 /**
  * Provide some utility methods to parse the args of a message, check the required permissions...
@@ -24,7 +68,7 @@ class Command {
      * Create a new instance of Command
      * @param {Client} [client] The client instance
      */
-    constructor(client) {
+    constructor(client, options) {
         this.client = client;
     }
 

@@ -55,7 +55,7 @@ module.exports = (client) => {
         reactionCollector: new(require('./helpers/modules/reactionCollector'))(client.bot),
         traverse: require('./modules/traverse'),
         interactiveList: new(require('./helpers/modules/interactiveList'))(client),
-        extendedUser: require('./helpers/modules/extendedUser').bind(client),
+        extendedUser: require('./helpers/modules/extendedUser').bind(null, client),
         extendedUserEntry: require('./helpers/modules/extendedUserEntry'),
         extendedGuildEntry: require('./helpers/modules/extendedGuildEntry'),
         prompt: require('./modules/prompt'),
