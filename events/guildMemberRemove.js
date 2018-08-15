@@ -31,7 +31,7 @@ class GuildMemberRemoveHandler {
         if (!guildEntry.farewells.channel || !guildEntry.farewells.enabled || !guildEntry.farewells.message) {
             return;
         }
-        let message = guildEntry.farewells.message = this.replaceFarewellTags(guild, user, guildEntry.farewells.message);
+        let message = this.replaceFarewellTags(guild, user, guildEntry.farewells.message);
         
         let channel = guild.channels.get(guildEntry.farewells.channel);
         if (!channel || channel.type !== 0) {
