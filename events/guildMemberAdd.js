@@ -21,7 +21,7 @@ class GuildMemberAddHandler {
         if (!guildEntry.greetings.channel || !guildEntry.greetings.enabled || !guildEntry.greetings.message) {
             return;
         }
-        let message = guildEntry.greetings.message = this.replaceGreetingsTags(guild, user, guildEntry.greetings.message);
+        let message = this.replaceGreetingsTags(guild, user, guildEntry.greetings.message);
         let channel = guildEntry.greetings.channel === "dm" ? undefined : guild.channels.get(guildEntry.greetings.channel);
         if (guildEntry.greetings.channel !== 'dm' && (!channel || channel.type !== 0)) {
             return;
