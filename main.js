@@ -31,6 +31,10 @@ class Felix extends Base {
         this.package = require('./package');
         this.prefixes = this.config.prefix ? [this.config.prefix] : [];
         this.stats;
+        /** @type {import("./structures/index.js")} */
+        this.structures = require('./structures/index.js');
+        /** @type {import("./util/helpers/modules/utils.js")} */
+        this.utils = new(require('./util/helpers/modules/utils'))(this);
         /** @type {Object} */
         this.packages = {};
         this.launchedOnce;
