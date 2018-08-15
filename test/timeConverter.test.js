@@ -2,7 +2,6 @@
 
 const timeConverter = require('../util/modules/timeConverter');
 const assert = require('assert').strict;
-const os = require("os")
 
 describe('TimeConverter', function () {
     describe('#toElapsedTime()', function () {
@@ -30,9 +29,7 @@ describe('TimeConverter', function () {
 
     describe('#toHumanDate()', function () {
         it('typeof toHumanDate() formatted string', function () {
-
             assert.deepEqual(typeof timeConverter.toHumanDate(1534249942186, true), "string");
-
         });
     });
 });
