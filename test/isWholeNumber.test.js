@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-const isWholeNumber = require('../util/modules/isWholeNumber');
+const isWholeNumber = require('../utils/isWholeNumber');
 const assert = require('assert').strict;
 
 describe('isWholeNumber()', function () {

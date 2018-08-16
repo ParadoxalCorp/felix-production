@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-const getRandomNumber = require('../util/modules/getRandomNumber');
+const getRandomNumber = require('../utils/getRandomNumber');
 const assert = require('assert').strict;
 
 describe('getRandomNumber()', function () {

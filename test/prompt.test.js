@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-const prompt = require('../util/modules/prompt');
+const prompt = require('../utils/prompt');
 const stdin = require("mock-stdin").stdin();
 
 describe('prompt()', function () {
