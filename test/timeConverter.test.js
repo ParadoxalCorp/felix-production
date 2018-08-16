@@ -15,7 +15,7 @@ describe('TimeConverter', function () {
         });
 
         it("typeof non-readable format", () => {
-            assert.deepEqual(typeof timeConverter.toElapsedTime(1934329731689, true), "string")
+            assert.deepEqual(typeof timeConverter.toElapsedTime(1934329731689, true), "string");
         });
     });
     
