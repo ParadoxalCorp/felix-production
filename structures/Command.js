@@ -227,14 +227,14 @@ class Command {
         // @ts-ignore
         if (options.message.channel.guild.members.get(options.text)) {
             // @ts-ignore
-            return options.client.structures.ExtendedUser(options.message.channel.guild.members.get(options.text), this.client);
+            return new options.client.structures.ExtendedUser(options.message.channel.guild.members.get(options.text), this.client);
         }
 
         const mention = new RegExp(/<@|<!@/g);
         if (mention.test(options.text)) {
             const id = options.text.replace(/<@!/g, '').replace(/<@/g, '').replace(/>/g, '');
             const user = options.client.bot.users.get(id);
-            return user ? options.client.structures.ExtendedUser(user) : false;
+            return user ? new options.client.structures.ExtendedUser(user, this.client) : false;
         }
 
         return false;
@@ -468,13 +468,13 @@ class Command {
         // @ts-ignore
         if (!isNaN(userResolvable)) {
             const user = client.bot.users.get(userResolvable);
-            return new client.structures.ExtendedUser(user ? user : defaultUser);
+            return new client.structures.ExtendedUser(user ? user : defaultUser, this.client);
         } else if (typeof userResolvable === 'string') {
             const spliced = userResolvable.split('#');
             const user = client.bot.users.filter(u => u.username === spliced[0] && u.discriminator === spliced[1]).random();
-            return client.structures.ExtendedUser(user ? user : defaultUser);
+            return new client.structures.ExtendedUser(user ? user : defaultUser, this.client);
         } else if (typeof userResolvable === 'object') {
-            return client.structures.ExtendedUser(userResolvable);
+            return new client.structures.ExtendedUser(userResolvable, this.client);
         }
     }
 
