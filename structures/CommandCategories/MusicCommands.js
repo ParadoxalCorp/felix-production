@@ -2,7 +2,7 @@
 
 /**   
 * @typedef {import("../../main.js").Client} Client
-* @typedef {import("./musicConnection").FelixTrack} FelixTrack
+* @typedef {import("../HandlersStructures/musicConnection").FelixTrack} FelixTrack
 * @typedef {import("../Command.js").PartialCommandOptions} PartialCommandOptions
 */
 

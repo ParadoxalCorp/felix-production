@@ -1,6 +1,6 @@
 //Actually that may reveal itself useful at some point, so let's keep it
 
-/** @typedef {import("../../../main.js")} Client */
+/** @typedef {import("../main.js")} Client */
 
 /** @typedef {Object} ClusterStats
  * @prop {Number} cluster The ID of the cluster
@@ -10,10 +10,10 @@
  * @prop {Number} voice The amount of voice connections on this cluster
  * @prop {Number} uptime The uptime of this cluster in milliseconds
  * @prop {Number} exclusiveGuilds (idk)
- * @prop {Number} largeGuilds The amount of large guilds on this server (250+ members) 
+ * @prop {Number} largeGuilds The amount of large guilds on this server (250+ members)
  */
 
- /** @typedef {Object} ClientStats
+/** @typedef {Object} ClientStats
  * @prop {Number} guilds The total amount of guilds the bot is in
  * @prop {Number} users The amount of users cached on this cluster
  * @prop {Number} voice The total amount of voice connections of the bot
@@ -33,7 +33,7 @@ class IPCHandler {
     constructor(client, options = {}) {
         this.requests = options.requests || new client.Collection();
         this.client = client;
-        process.on('message', this._handleIncomingMessage.bind(this));
+        process.on("message", this._handleIncomingMessage.bind(this));
     }
 
     /**
@@ -42,38 +42,38 @@ class IPCHandler {
      */
     fetchShardsStats() {
         const ID = Date.now();
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             this.requests.set(ID, {
                 responses: [],
                 resolve: resolve
             });
             this.client.ipc.broadcast("fetchShardsStats", {
                 id: ID,
-                type: 'fetchShardsStats',
+                type: "fetchShardsStats",
                 clusterID: this.client.clusterID
             });
         });
     }
 
     /**
-     * 
+     *
      * @param {string} type - The type of the file that should be reloaded, either "command", "event" or "module"
      * @param {string} path - The absolute path of the file that should be reloaded
-     * @param {string} [name] - If a module, the name of the module 
+     * @param {string} [name] - If a module, the name of the module
      * @param {object} [options] - If a module, the options that Reloader.reloadModule() expect
      * @returns {Promise<array>} An array containing the responses of each clusters, if the reload failed in at least one cluster, the promise is rejected
      */
     broadcastReload(type, path, name, options) {
-        const ID = `${this.client.getRandomNumber(1000, 10000) + Date.now()}`;
+        const ID = `${this.client.utils.getRandomNumber(1000, 10000) + Date.now()}`;
         return new Promise((resolve, reject) => {
             this.requests.set(ID, {
                 responses: [],
                 resolve: resolve,
                 reject: reject
             });
-            this.client.ipc.broadcast('reload', {
+            this.client.ipc.broadcast("reload", {
                 id: ID,
-                type: 'reload',
+                type: "reload",
                 clusterID: this.client.clusterID,
                 data: {
                     type: type,
@@ -96,9 +96,9 @@ class IPCHandler {
                 resolve: resolve,
                 reject: reject
             });
-            this.client.ipc.broadcast('fetchGuild', {
+            this.client.ipc.broadcast("fetchGuild", {
                 id: ID,
-                type: 'fetchGuild',
+                type: "fetchGuild",
                 clusterID: this.client.clusterID,
                 data: id
             });
@@ -113,12 +113,9 @@ class IPCHandler {
      */
     _handleIncomingMessage(message) {
         switch (message.type) {
-            case 'shardsStats':
+            case "shardsStats":
                 let request = this.requests.get(message.id);
-                request.responses.push({
-                    clusterID: message.clusterID,
-                    data: message.data
-                });
+                request.responses.push({clusterID: message.clusterID, data: message.data});
 
                 if (this._allClustersAnswered(message.id)) {
                     //Resolve the request and reorder the responses in case it wasn't already
@@ -127,16 +124,16 @@ class IPCHandler {
                 }
                 break;
 
-            case 'statsUpdate':
+            case "statsUpdate":
                 this.client.stats = message.data;
                 if (!this.clusterCount) {
                     this.clusterCount = message.data.clusters.length;
                 }
                 break;
 
-            case 'fetchShardsStats':
-                this.client.ipc.sendTo(message.clusterID, 'shardsStats', {
-                    type: 'shardsStats',
+            case "fetchShardsStats":
+                this.client.ipc.sendTo(message.clusterID, "shardsStats", {
+                    type: "shardsStats",
                     id: message.id,
                     clusterID: this.client.clusterID,
                     data: this.client.bot.shards.map(shard => {
@@ -145,44 +142,43 @@ class IPCHandler {
                             status: shard.status,
                             latency: shard.latency,
                             guilds: this.client.bot.guilds.filter(g => g.shard.id === shard.id).length,
-                            musicConnections: this.client.handlers.MusicManager ? this.client.handlers.MusicManager.connections.size : 0
+                            musicConnections: this.client.handlers.MusicManager
+                                ? this.client.handlers.MusicManager.connections.size
+                                : 0
                         };
                     })
                 });
                 break;
 
-            case 'reload':
+            case "reload":
                 let success = true;
                 try {
                     if (message.data.type === "event") {
                         this.client.reloader.reloadEventListener(message.data.path);
                     } else if (message.data.type === "command") {
-                        this.client.reloader.reloadCommand(message.data.path);
+                        this.client.handlers.Reloader.reloadCommand(message.data.path);
                     } else if (message.data.type === "module") {
                         this.client.reloader.reloadModule(message.data.path, message.data.name, message.data.options);
                     }
                 } catch (err) {
                     success = false;
-                    this.client.bot.emit('error', err);
+                    this.client.bot.emit("error", err);
                 }
 
-                this.client.ipc.sendTo(message.clusterID, 'reloadDone', {
-                    type: 'reloadDone',
+                this.client.ipc.sendTo(message.clusterID, "reloadDone", {
+                    type: "reloadDone",
                     id: message.id,
                     clusterID: this.client.clusterID,
                     data: success
                 });
                 break;
 
-            case 'reloadDone':
+            case "reloadDone":
                 let reloadRequest = this.requests.get(message.id);
                 if (!reloadRequest) {
                     return;
                 }
-                reloadRequest.responses.push({
-                    clusterID: message.clusterID,
-                    data: message.data
-                });
+                reloadRequest.responses.push({clusterID: message.clusterID, data: message.data});
 
                 if (this._allClustersAnswered(message.id)) {
                     //Resolve the request and reorder the responses in case it wasn't already
@@ -194,24 +190,26 @@ class IPCHandler {
                     this.requests.delete(message.id);
                 }
                 break;
-            
-            case 'fetchGuild':
+
+            case "fetchGuild":
                 let guild = this.client.bot.guilds.get(message.data);
                 if (guild) {
-                    guild = { ...guild }; //Shallow clone
+                    guild = {
+                        ...guild
+                    }; //Shallow clone
                     guild.members = Array.from(guild.members.values());
                     guild.roles = Array.from(guild.roles.values());
                     guild.channels = Array.from(guild.channels.values());
                 }
-                this.client.ipc.sendTo(message.clusterID, 'requestedGuild', {
-                    type: 'requestedGuild',
+                this.client.ipc.sendTo(message.clusterID, "requestedGuild", {
+                    type: "requestedGuild",
                     id: message.id,
                     clusterID: this.client.clusterID,
                     data: guild
                 });
                 break;
 
-            case 'requestedGuild':
+            case "requestedGuild":
                 if (!this.requests.has(message.id)) {
                     return;
                 }
@@ -228,7 +226,10 @@ class IPCHandler {
                 break;
         }
         if (process.argv.includes("--dev")) {
-            process.send({ name: "log", msg: `Received the message ${message.type} from cluster ${message.clusterID}: ${JSON.stringify(message, null, 2)}` });
+            process.send({
+                name: "log",
+                msg: `Received the message ${message.type} from cluster ${message.clusterID}: ${JSON.stringify(message, null, 2)}`
+            });
         }
     }
 
@@ -239,8 +240,12 @@ class IPCHandler {
      * @private
      */
     _allClustersAnswered(id) {
-        return this.requests.get(id).responses.length >= (this.clusterCount ?
-            this.clusterCount - this.client.stats.clusters.filter(c => c.guilds < 1).length : 1) ? true : false;
+        return this.requests.get(id).responses.length >= (
+            this.clusterCount
+            ? this.clusterCount - this.client.stats.clusters.filter(c => c.guilds < 1).length
+            : 1)
+            ? true
+            : false;
     }
 
     _reload() {

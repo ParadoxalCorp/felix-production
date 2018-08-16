@@ -8,6 +8,7 @@
 
 /**
  * @typedef {Object} LavalinkTrackInfo
+ * @property {any} requestedBy The user which the song is requested by
  * @property {String} identifier The unique identifier of the track, as defined by the provider (youtube, soundcloud..)
  * @property {Boolean} isSeekable Whether the use of the seek method is possible
  * @property {String} author The name of the author of the track
@@ -29,6 +30,7 @@
 
  /**
  * @typedef {Object} LavalinkTrack  
+ * @property {string} voteID The vote id
  * @property {String} track The encoded title of the track
  * @property {LavalinkTrackInfo} info An object of info about the track
  */

@@ -88,7 +88,7 @@
  * @property {String} id The id of the playlist
  * @property {String} userID The id of the user owning this playlist
  * @property {String} name The name of the playlist
- * @property {Array<import("../modules/musicConnection.js").PartialLavalinkTrack>} tracks An array of partial lavalink tracks
+ * @property {Array<import("../structures/HandlersStructures/MusicConnection").PartialLavalinkTrack>} tracks An array of partial lavalink tracks
  */
 
  /**
@@ -317,7 +317,7 @@ class References {
      * @param {String} name - The name of the playlist
      * @param {String} id - The ID of the playlist
      * @param {String} userID - The ID of the user owning this playlist
-     * @param {Array<import("../modules/musicConnection.js").LavalinkTrack>} tracks - An array of tracks
+     * @param {Array<import("../structures/HandlersStructures/MusicConnection.js").LavalinkTrack>} tracks - An array of tracks
      * @returns {UserPlaylist} 
      */
 

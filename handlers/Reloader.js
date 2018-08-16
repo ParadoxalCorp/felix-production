@@ -90,7 +90,7 @@ class Reloader {
                     delete require.cache[path];
                 }
             }
-            Object.assign(this.client, require('../../index')(this.client));
+            Object.assign(this.client, require('../index')(this.client));
             return true;
         }
         delete require.cache[path];

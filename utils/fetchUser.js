@@ -8,7 +8,7 @@ const User = require("eris").User;
 /**
  * @typedef {Function} fetchUser
  * @param {string} id - The ID of the user to fetch
- * @returns {Promise<import("./extendedUser.js").extendUser>} The user object
+ * @returns {Promise<import("../structures/ExtendedStructures/ExtendedUser")>} The user object
  */
 const fetchUser = async(client, id) => {
     if (client.bot.users.has(id)) {

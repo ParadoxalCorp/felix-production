@@ -7,7 +7,7 @@ class ExtendedUser extends User {
     /**
      * 
      * @param {User} user 
-     * @param {import("../main.js")} client - The client instance
+     * @param {import("../../main.js")} client - The client instance
      */
     
     constructor(user, client) {

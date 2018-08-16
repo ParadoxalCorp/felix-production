@@ -1,6 +1,6 @@
-/** @typedef {import("../../../main.js")} Client */
-/** @typedef {import("../modules/economyManager.js")} EconomyManager */
-/** @typedef {import("../modules/extendedUserEntry.js")} UserEntry */
+/** @typedef {import("../../main.js")} Client */
+/** @typedef {import("../../handlers/economyManager.js")} EconomyManager */
+/** @typedef {import("../ExtendedStructures/extendedUserEntry.js")} UserEntry */
 
 
 /**

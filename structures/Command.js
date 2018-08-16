@@ -7,13 +7,14 @@
  * @typedef {import("eris").Guild} Guild
  * @typedef {import("eris").Channel} Channel
  * @typedef {import("eris").PermissionOverwrite} PermissionOverwrite
- * @typedef {import("./extendedUser.js").extendUser} ExtendedUser
+ * @typedef {import("./ExtendedStructures/ExtendedUser")} ExtendedUser
  * @typedef {import("eris").Message} Message
- * @typedef {import("../../../main.js")} Client
- * @typedef {import("./extendedGuildEntry.js") & import("../data/references").GuildEntry} GuildEntry
+ * @typedef {import("../main.js")} Client
+ * @typedef {import("./ExtendedStructures/ExtendedGuildEntry.js") & import("./references").GuildEntry} GuildEntry
  */
 
  /** @typedef {Object} CommandHelp
+  * @prop {string} category The category of the command
   * @prop {String} name The name of the command 
   * @prop {String} description The description of the command
   * @prop {String} usage A quick example of how to use the command, every instance of {prefix} will be replaced by the actual prefix in the help command 
