@@ -24,9 +24,9 @@ class Daily extends Command {
 
     async run(client, message, args, guildEntry, userEntry) {
         if (userEntry.isInCooldown('dailyCooldown')) {
-            return message.channel.createMessage(`Ahhh, I am very sorry but you still have to wait \`${client.utils.TimeConverter.toElapsedTime(userEntry.cooldowns.dailyCooldown - Date.now(), true)}\` before using daily again`);
+            return message.channel.createMessage(`Ahhh, I am very sorry but you still have to wait \`${client.utils.timeConverter.toElapsedTime(userEntry.cooldowns.dailyCooldown - Date.now(), true)}\` before using daily again`);
         }
-        let randomEvent = client.config.options.economyEvents.dailyEvents ? client.getRandomNumber(1, 100) <= client.config.options.economyEvents.dailyEventsRate : false;
+        let randomEvent = client.config.options.economyEvents.dailyEvents ? client.utils.getRandomNumber(1, 100) <= client.config.options.economyEvents.dailyEventsRate : false;
         if (randomEvent) {
             randomEvent = this.runRandomDailyEvent(client, message, userEntry);
         } else {
@@ -38,15 +38,15 @@ class Daily extends Command {
     }
 
     runRandomDailyEvent(client, message, userEntry) {
-        const dailyEvent = client.handlers.EconomyManager.dailyEvents[client.getRandomNumber(0, client.handlers.EconomyManager.dailyEvents.length - 1)];
-        const eventCoinsChangeRate = Array.isArray(dailyEvent.changeRate) ? client.getRandomNumber(dailyEvent.changeRate[0], dailyEvent.changeRate[1]) : dailyEvent.changeRate;
+        const dailyEvent = client.handlers.EconomyManager.dailyEvents[client.utils.getRandomNumber(0, client.handlers.EconomyManager.dailyEvents.length - 1)];
+        const eventCoinsChangeRate = Array.isArray(dailyEvent.changeRate) ? client.utils.getRandomNumber(dailyEvent.changeRate[0], dailyEvent.changeRate[1]) : dailyEvent.changeRate;
         const eventCoinsChange = Math.round(Math.abs(client.config.options.dailyCoins / 100 * eventCoinsChangeRate));
         const conditionalVariant = (() => {
             const conditionalVariants = dailyEvent.conditionalVariants.filter(v => v.condition(userEntry));
-            const randomVariant = conditionalVariants[client.getRandomNumber(0, conditionalVariants.length - 1)];
+            const randomVariant = conditionalVariants[client.utils.getRandomNumber(0, conditionalVariants.length - 1)];
             return randomVariant && randomVariant.context ? randomVariant.context(userEntry) : randomVariant;
         })();
-        const conditionalVariantSuccess = conditionalVariant ? client.getRandomNumber(0, 100) < conditionalVariant.successRate : false;
+        const conditionalVariantSuccess = conditionalVariant ? client.utils.getRandomNumber(0, 100) < conditionalVariant.successRate : false;
         let resultText = 'Hai ! Here\'s your daily holy coins... Wait... ';
         if (conditionalVariant) {
             resultText += conditionalVariantSuccess ? conditionalVariant.success.replace(/{value}/gim, eventCoinsChange) : conditionalVariant.fail.replace(/{value}/gim, eventCoinsChange);

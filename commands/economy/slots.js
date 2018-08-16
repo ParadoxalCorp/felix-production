@@ -72,7 +72,7 @@ class Slots extends Command {
         if (!slots.match) {
             return this.sendResults(client, message, slots, "**Nothing**, you don't lose nor win any holy coins, everyone's happy right?", animatedSlots);
         }
-        const randomSlotsEvent = client.getRandomNumber(1, 100) <= client.config.options.economyEvents.slotsEventsRate;
+        const randomSlotsEvent = client.utils.getRandomNumber(1, 100) <= client.config.options.economyEvents.slotsEventsRate;
         const coinsChange = Math.round(gambledCoins * (slots.match[0].multiplier * (slots.match.length - 1)));
         if (randomSlotsEvent && client.config.options.economyEvents.slotsEvents) {
             return this.runRandomSlotsEvent(client, message, userEntry, slots, coinsChange, animatedSlots);
@@ -84,10 +84,10 @@ class Slots extends Command {
     }
 
     runSlots(client) {
-        const getLine = () => { return this.extra.slotsOutputs[client.getRandomNumber(0, this.extra.slotsOutputs.length - 1)]; };
+        const getLine = () => { return this.extra.slotsOutputs[client.utils.getRandomNumber(0, this.extra.slotsOutputs.length - 1)]; };
         const results = [getLine()];
         //Increase the chances of having a two-lines match
-        results.push(client.getRandomNumber(0, 5) !== 0 ? results[0] : getLine(), getLine());
+        results.push(client.utils.getRandomNumber(0, 5) !== 0 ? results[0] : getLine(), getLine());
 
         return {
             getLine: getLine,
@@ -178,15 +178,15 @@ class Slots extends Command {
 
     runRandomSlotsEvent(client, message, userEntry, slots, coinsChange, animatedSlots) {
         const filteredSlotsEvents = client.handlers.EconomyManager.slotsEvents.filter(e => e.case === (coinsChange > 0 ? 'won' : 'lost'));
-        const slotsEvent = filteredSlotsEvents[client.getRandomNumber(0, filteredSlotsEvents.length - 1)];
-        const eventCoinsChangeRate = Array.isArray(slotsEvent.changeRate) ? client.getRandomNumber(slotsEvent.changeRate[0], slotsEvent.changeRate[1]) : slotsEvent.changeRate;
+        const slotsEvent = filteredSlotsEvents[client.utils.getRandomNumber(0, filteredSlotsEvents.length - 1)];
+        const eventCoinsChangeRate = Array.isArray(slotsEvent.changeRate) ? client.utils.getRandomNumber(slotsEvent.changeRate[0], slotsEvent.changeRate[1]) : slotsEvent.changeRate;
         const eventCoinsChange = Math.round(Math.abs(coinsChange / 100 * eventCoinsChangeRate));
         const conditionalVariant = (() => {
             const conditionalVariants = slotsEvent.conditionalVariants.filter(v => v.condition(userEntry));
-            const randomVariant = conditionalVariants[client.getRandomNumber(0, conditionalVariants.length - 1)];
+            const randomVariant = conditionalVariants[client.utils.getRandomNumber(0, conditionalVariants.length - 1)];
             return randomVariant && randomVariant.context ? randomVariant.context(userEntry) : randomVariant;
         })();
-        const conditionalVariantSuccess = conditionalVariant ? client.getRandomNumber(0, 100) < conditionalVariant.successRate : false;
+        const conditionalVariantSuccess = conditionalVariant ? client.utils.getRandomNumber(0, 100) < conditionalVariant.successRate : false;
         let resultText;
         let targetFunc;
         if (coinsChange > 0) {

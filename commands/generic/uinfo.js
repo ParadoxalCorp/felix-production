@@ -25,7 +25,7 @@ class Uinfo extends Command {
 
     async run(client, message, args, guildEntry, userEntry) {
         const user = await this.getUserFromText({ message, client, text: args[0] });
-        const target = user ? client.structures.ExtendedUser(user) : client.structures.ExtendedUser(message.author);
+        const target = user ? new client.structures.ExtendedUser(user, client.bot) : new client.structures.ExtendedUser(message.author, client.bot);
         const targetEntry = target.id !== message.author.id ? await client.handlers.DatabaseWrapper.getUser(target.id) : userEntry;
         const localLevelDetails = client.handlers.ExperienceHandler.getLevelDetails(guildEntry.getLevelOf(target.id));
         const globalLevelDetails = client.handlers.ExperienceHandler.getLevelDetails(targetEntry.getLevel());
@@ -57,13 +57,13 @@ class Uinfo extends Command {
 
         embedFields.push({
             name: ":date: Created",
-            value: client.utils.TimeConverter.toHumanDate(member.createdAt),
+            value: client.utils.timeConverter.toHumanDate(member.createdAt),
             inline: true
         });
 
         embedFields.push({
             name: ":date: Joined",
-            value: client.utils.TimeConverter.toHumanDate(member.joinedAt),
+            value: client.utils.timeConverter.toHumanDate(member.joinedAt),
             inline: true
         });
 

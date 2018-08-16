@@ -221,7 +221,7 @@ class Command {
         options.text = options.text || options.message.content;
         const exactMatch = await this._resolveUserByExactMatch(options.client, options.message, options.text);
         if (exactMatch) {
-            return options.client.structures.ExtendedUser(exactMatch, this.client);
+            return new options.client.structures.ExtendedUser(exactMatch, this.client);
         }
         //While it is unlikely, resolve the user by ID if possible
         // @ts-ignore
@@ -468,7 +468,7 @@ class Command {
         // @ts-ignore
         if (!isNaN(userResolvable)) {
             const user = client.bot.users.get(userResolvable);
-            return client.structures.ExtendedUser(user ? user : defaultUser);
+            return new client.structures.ExtendedUser(user ? user : defaultUser);
         } else if (typeof userResolvable === 'string') {
             const spliced = userResolvable.split('#');
             const user = client.bot.users.filter(u => u.username === spliced[0] && u.discriminator === spliced[1]).random();

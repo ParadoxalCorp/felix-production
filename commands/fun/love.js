@@ -27,12 +27,12 @@ class Love extends Command {
         const remainingLps = this.getRemainingLps(userEntry);
         if (!args[0]) {
             if (!remainingLps) {
-                const remainingTime = client.utils.TimeConverter.toElapsedTime(userEntry.getNearestCooldown('loveCooldown') - Date.now());
+                const remainingTime = client.utils.timeConverter.toElapsedTime(userEntry.getNearestCooldown('loveCooldown') - Date.now());
                 return message.channel.createMessage(`:x: You already used all your love points, time remaining: ${remainingTime.days}d ${remainingTime.hours}h ${remainingTime.minutes}m ${remainingTime.seconds}s`);
             }
             return message.channel.createMessage(`You have \`${remainingLps}\` love point(s) available`);
         } else if (userEntry.isInCooldown('loveCooldown')) {
-            const remainingTime = client.utils.TimeConverter.toElapsedTime(userEntry.getNearestCooldown('loveCooldown') - Date.now());
+            const remainingTime = client.utils.timeConverter.toElapsedTime(userEntry.getNearestCooldown('loveCooldown') - Date.now());
             return message.channel.createMessage(`:x: You already used all your love points, time remaining: ${remainingTime.days}d ${remainingTime.hours}h ${remainingTime.minutes}m ${remainingTime.seconds}s`);
         }
         const user = lp === parseInt(args[0]) ? args.splice(1).join(' ') : args.join(' ');
@@ -51,7 +51,7 @@ class Love extends Command {
             userEntry.addCooldown('loveCooldown', client.config.options.loveCooldown);
         }
         await Promise.all([client.handlers.DatabaseWrapper.set(userEntry, 'user'), client.handlers.DatabaseWrapper.set(targetEntry, 'user')]);
-        return message.channel.createMessage(`:heart: Haii ! You just gave **${lp}** love point to **${client.structures.ExtendedUser(targetUser).tag}**`);
+        return message.channel.createMessage(`:heart: Haii ! You just gave **${lp}** love point to **${new client.structures.ExtendedUser(targetUser).tag}**`);
     }
 
     getRemainingLps(userEntry) {

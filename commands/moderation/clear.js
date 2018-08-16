@@ -31,8 +31,8 @@ class Clear extends Command {
         }
         let filtered = [];
         const slice = (collection, count) => {
-            const newColl = new client.collection();
-            const colEntries = new client.collection(collection).sort((a, b) => b.timestamp - a.timestamp).entries();
+            const newColl = new client.Collection();
+            const colEntries = new client.Collection(collection).sort((a, b) => b.timestamp - a.timestamp).entries();
             for (let i = 0; i < count; i++) {
                 const value = colEntries.next().value;
                 newColl.set(value[0], value[1]);

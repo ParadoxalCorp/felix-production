@@ -27,7 +27,7 @@ class Avatar extends Command {
     //eslint-disable-next-line no-unused-vars
     async run(client, message, args, guildEntry, userEntry) {
         const user = await this.getUserFromText({ message, client, text: args.join(' ') });
-        const target = user || client.structures.ExtendedUser(message.author);
+        const target = user || new client.structures.ExtendedUser(message.author, client.bot);
         return message.channel.createMessage({
             embed: {
                 title: `Link to the avatar of ${target.username}`,
