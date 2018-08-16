@@ -35,6 +35,7 @@ jobs:
         
       # run tests!
       - run: npm test
+      - run: npm eslint-check
 
 notify:
   webhooks:
