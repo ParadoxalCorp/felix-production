@@ -29,7 +29,7 @@ class GuildMemberRemoveHandler {
         if (!guildEntry) {
             return;
         }
-        const user = client.structures.ExtendedUser(member.user);
+        const user = new client.structures.ExtendedUser(member.user, client.bot);
         //Farewells
         if (!guildEntry.farewells.channel || !guildEntry.farewells.enabled || !guildEntry.farewells.message) {
             return;
