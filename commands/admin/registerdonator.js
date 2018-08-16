@@ -37,7 +37,7 @@ class RegisterDonator extends Command {
         const user = await client.utils.utils.fetchUser(args[1]);
         let res = `:white_check_mark: Successfully given premium status to the user \`${user.tag}\` at tier \`${args[0]}\`\n\n`;
         if (args[2]) {
-            res += `The premium status of this user will expire in **${client.utils.TimeConverter.toElapsedTime(args[2], true)}** the **${client.utils.TimeConverter.toHumanDate(newDonator.premium.expire, true)}**`;
+            res += `The premium status of this user will expire in **${client.utils.timeConverter.toElapsedTime(args[2], true)}** the **${client.utils.timeConverter.toHumanDate(newDonator.premium.expire, true)}**`;
         }
         return message.channel.createMessage(res);
     }
