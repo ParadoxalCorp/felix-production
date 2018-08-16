@@ -199,10 +199,7 @@ class Felix extends Base {
     }
 
     initializeHandlers() {
-        if (this.config.options.music.enabled) {
-            this.handlers.MusicManager = new this.handlers.MusicManager(this);
-            this.handlers.MusicManager.init();
-        }
+        this.handlers.MusicManager = new this.handlers.MusicManager(this);
         this.handlers.DatabaseWrapper = process.argv.includes('--no-db') ? false : new this.handlers.DatabaseWrapper(this);
         this.handlers.RedisManager = new this.handlers.RedisManager(this);
         this.handlers.EconomyManager = new this.handlers.EconomyManager(this);
@@ -212,7 +209,6 @@ class Felix extends Base {
         this.handlers.MessageCollector = new this.handlers.MessageCollector(this);
         this.handlers.Reloader = new this.handlers.Reloader(this);
         this.handlers.ReactionCollector = new this.handlers.ReactionCollector(this);
-
     }
 
     async beforeExit() {

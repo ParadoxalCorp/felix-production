@@ -49,6 +49,9 @@ class MusicManager {
                 failed: 'LOAD_FAILED'
             }
         };
+        if (client.config.options.music.enabled) {
+            this.init(options);
+        }
     }
 
     init(options = {}) {
