@@ -37,7 +37,7 @@ class Execute extends Command {
                     depth: client.commands.get('eval').getMaxDepth(outputType, args.join(' '))
                 });
             }
-            output = client.redact(output.length > 1980 ? output.substr(0, 1977) + '...' : output);
+            output = client.utils.utils.redact(output.length > 1980 ? output.substr(0, 1977) + '...' : output);
             return message.channel.createMessage('```js\n' + output + '```');
             exec.kill();
         });
