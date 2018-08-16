@@ -221,20 +221,20 @@ class Command {
         options.text = options.text || options.message.content;
         const exactMatch = await this._resolveUserByExactMatch(options.client, options.message, options.text);
         if (exactMatch) {
-            return options.client.extendedUser(exactMatch);
+            return options.client.structures.ExtendedUser(exactMatch, this.client);
         }
         //While it is unlikely, resolve the user by ID if possible
         // @ts-ignore
         if (options.message.channel.guild.members.get(options.text)) {
             // @ts-ignore
-            return options.client.extendedUser(options.message.channel.guild.members.get(options.text));
+            return options.client.structures.ExtendedUser(options.message.channel.guild.members.get(options.text), this.client);
         }
 
         const mention = new RegExp(/<@|<!@/g);
         if (mention.test(options.text)) {
             const id = options.text.replace(/<@!/g, '').replace(/<@/g, '').replace(/>/g, '');
             const user = options.client.bot.users.get(id);
-            return user ? options.client.extendedUser(user) : false;
+            return user ? options.client.structures.ExtendedUser(user) : false;
         }
 
         return false;
@@ -266,7 +266,7 @@ class Command {
                     }
                 }
             });
-            const reply = await client.messageCollector.awaitMessage(message.channel.id, message.author.id, 60000).catch(err => {
+            const reply = await client.handlers.MessageCollector.awaitMessage(message.channel.id, message.author.id, 60000).catch(err => {
                 client.bot.emit("error", err);
                 return false;
             });
@@ -323,7 +323,7 @@ class Command {
                     }
                 }
             });
-            const reply = await client.messageCollector.awaitMessage(message.channel.id, message.author.id, 60000).catch(err => {
+            const reply = await client.handlers.MessageCollector.awaitMessage(message.channel.id, message.author.id, 60000).catch(err => {
                 client.bot.emit("error", err);
                 return false;
             });
@@ -393,7 +393,7 @@ class Command {
                     }
                 }
             });
-            const reply = await client.messageCollector.awaitMessage(message.channel.id, message.author.id, 60000).catch(err => {
+            const reply = await client.handlers.MessageCollector.awaitMessage(message.channel.id, message.author.id, 60000).catch(err => {
                 client.bot.emit("error", err);
                 return false;
             });
@@ -414,7 +414,7 @@ class Command {
 
         const queryArg = async (arg, ongoingQuery) => {
             const queryMsg = ongoingQuery || await message.channel.createMessage('Note that you can cancel this query anytime by replying `cancel`\n\n' + arg.description);
-            const response = await client.messageCollector.awaitMessage(message.channel.id, message.author.id);
+            const response = await client.handlers.MessageCollector.awaitMessage(message.channel.id, message.author.id);
             if (!response || response.content.toLowerCase() === "cancel") {
                 queryMsg.delete().catch(() => { });
                 return false;
@@ -431,7 +431,7 @@ class Command {
             } else {
                 queryMsg.delete().catch(() => { });
                 const value = arg.possibleValues ? arg.possibleValues.find(value => value.name.toLowerCase() === response.content.toLowerCase() || value.name === '*') : false;
-                return value ? (value.interpretAs === false ? undefined : value.interpretAs.replace(/{value}/gim, response.content.toLowerCase())) : response.content;
+                return value ? (value.interpretAs === false ? undefined : (value.interpretAs ? value.interpretAs.replace(/{value}/gim, response.content.toLowerCase()) : response.content.toLowerCase())) : response.content;
             }
         };
 
@@ -468,13 +468,13 @@ class Command {
         // @ts-ignore
         if (!isNaN(userResolvable)) {
             const user = client.bot.users.get(userResolvable);
-            return client.extendedUser(user ? user : defaultUser);
+            return client.structures.ExtendedUser(user ? user : defaultUser);
         } else if (typeof userResolvable === 'string') {
             const spliced = userResolvable.split('#');
             const user = client.bot.users.filter(u => u.username === spliced[0] && u.discriminator === spliced[1]).random();
-            return client.extendedUser(user ? user : defaultUser);
+            return client.structures.ExtendedUser(user ? user : defaultUser);
         } else if (typeof userResolvable === 'object') {
-            return client.extendedUser(userResolvable);
+            return client.structures.ExtendedUser(userResolvable);
         }
     }
 

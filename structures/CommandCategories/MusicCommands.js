@@ -67,7 +67,7 @@ class MusicCommands extends Command {
      * @returns {Boolean} Whether the given position is a valid track position
      */
     isValidPosition(position, queue) {
-        return !position || !this.client.isWholeNumber(position) || (position - 1 >= queue.length) || (position - 1 < 0) ? false : true;
+        return !position || !this.client.utils.isWholeNumber(position) || (position - 1 >= queue.length) || (position - 1 < 0) ? false : true;
     }
 
     async genericEmbed(track, connection, title) {
@@ -81,7 +81,7 @@ class MusicCommands extends Command {
             inline: true
         }];
         if (track.info.requestedBy) {
-            let user = await this.client.fetchUser(track.info.requestedBy);
+            let user = await this.client.utils.utils.fetchUser(track.info.requestedBy);
             // @ts-ignore
             fields.push({
                 name: 'Requested by',
@@ -111,11 +111,11 @@ class MusicCommands extends Command {
             searchResults += `\`${i++}\` - **${song.info.title}** by **${song.info.author}** (${this.client.handlers.MusicManager.parseDuration(song)})\n`;
         }
         await context.message.channel.createMessage(searchResults);
-        const reply = await this.client.messageCollector.awaitMessage(context.message.channel.id, context.message.author.id);
+        const reply = await this.client.handlers.MessageCollector.awaitMessage(context.message.channel.id, context.message.author.id);
         if (!reply) {
             context.message.channel.createMessage(':x: Timeout, command aborted').catch(() => {});
             return false;
-        } else if (!this.client.isWholeNumber(reply.content)) {
+        } else if (!this.client.utils.isWholeNumber(reply.content)) {
             context.message.channel.createMessage(':x: You must reply with a whole number').catch(() => {});
             return false;
         }

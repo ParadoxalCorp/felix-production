@@ -4,16 +4,16 @@ const MusicCommands = require('../../structures/CommandCategories/MusicCommands'
 
 class Shuffle extends MusicCommands {
     constructor(client) {
-        super(client, { userInVC: true });
-        this.help = {
-            name: 'shuffle',
-            description: 'Shuffle the queue',
-            usage: '{prefix}shuffle <playlist_link>'
-        };
-        this.conf = this.genericConf();
+        super(client, {
+            help: {
+                name: 'shuffle',
+                description: 'Shuffle the queue',
+                usage: '{prefix}shuffle <playlist_link>'
+            }
+        }, { userInVC: true });
     }
     /**
-    * @param {import("../../structures/CommandCategories/MusicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/Contexts/MusicContext")} context The context
     */
 
     async run(context) {

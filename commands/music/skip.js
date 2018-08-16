@@ -4,16 +4,17 @@ const MusicCommands = require('../../structures/CommandCategories/MusicCommands'
 
 class Skip extends MusicCommands {
     constructor(client) {
-        super(client, { userInVC: true, playing: true });
-        this.help = {
-            name: 'skip',
-            description: 'Start a vote to skip the currently playing song',
-            usage: '{prefix}skip'
-        };
-        this.conf = this.genericConf({ aliases: ['voteskip'] });
+        super(client, {
+            help: {
+                name: 'skip',
+                description: 'Start a vote to skip the currently playing song',
+                usage: '{prefix}skip'
+            },
+            conf: { aliases: ['voteskip'] }
+        }, { userInVC: true, playing: true });
     }
     /**
-    * @param {import("../../structures/CommandCategories/MusicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/Contexts/MusicContext")} context The context
     */
 
     async run(context) {

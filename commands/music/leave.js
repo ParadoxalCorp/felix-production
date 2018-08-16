@@ -4,16 +4,16 @@ const MusicCommands = require('../../structures/CommandCategories/MusicCommands'
 
 class Leave extends MusicCommands {
     constructor(client) {
-        super(client, { userInVC: true });
-        this.help = {
-            name: 'leave',
-            description: 'Stop playing and leave the voice channel',
-            usage: '{prefix}leave'
-        };
-        this.conf = this.genericConf();
+        super(client, {
+            help: {
+                name: 'leave',
+                description: 'Stop playing and leave the voice channel',
+                usage: '{prefix}leave'
+            }
+        }, { userInVC: true });
     }
     /**
-    * @param {import("../../structures/CommandCategories/MusicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/Contexts/MusicContext")} context The context
     */
 
     async run(context) {

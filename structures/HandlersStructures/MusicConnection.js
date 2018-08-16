@@ -41,7 +41,7 @@
 
  /** @typedef {Object} ExtendedTrackInfo
   * @prop {String} requestedBy The ID of the user who requested this track
-  * @prop {String} _id The generated ID for this track, for internal purposes
+  * @prop {Number} _id The generated ID for this track, for internal purposes
   */
 
 /**
@@ -196,10 +196,13 @@ class MusicConnection extends EventEmitter {
 
     /**
      * Skip the currently playing track and start the next one
-     * @param {number} [to=0] - The position in the queue at which to jump to
+     * @param {Number|String} [to=0] - The position in the queue at which to jump to
      * @returns {FelixTrack} The skipped track
      */
     skipTrack(to = 0) {
+        if (typeof to === "string") {
+            to = parseInt(to);
+        }
         const skippedSong = { ...this.nowPlaying };
         if (this.queue[0]) {
             this.play(this.queue[to]);

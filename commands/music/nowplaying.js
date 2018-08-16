@@ -4,17 +4,18 @@ const MusicCommands = require('../../structures/CommandCategories/MusicCommands'
 
 class NowPlaying extends MusicCommands {
     constructor(client) {
-        super(client, { playing: true });
-        this.help = {
-            name: 'nowplaying',
-            description: 'Check the currently playing song',
-            usage: '{prefix}nowplaying'
-        };
-        this.conf = this.genericConf({ aliases: ['np'] });
+        super(client, {
+            help: {
+                name: 'nowplaying',
+                description: 'Check the currently playing song',
+                usage: '{prefix}nowplaying'
+            },
+            conf: { aliases: ['np'] }
+        }, { playing: true });
     }
 
     /**
-    * @param {import("../../structures/CommandCategories/MusicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/Contexts/MusicContext")} context The context
     */
 
     async run(context) {

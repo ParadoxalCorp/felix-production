@@ -97,7 +97,7 @@ class Experience extends Command {
             }, {
                 //Skip if the given role name is invalid or if the specified level isn't a whole number
                 condition: (client, message, args) => {
-                    if (!args.includes('add_role') || !args[2] || !client.isWholeNumber(args[2])) {
+                    if (!args.includes('add_role') || !args[2] || !client.utils.isWholeNumber(args[2])) {
                         return false;
                     }
                     return true;
@@ -168,7 +168,7 @@ class Experience extends Command {
         const alreadySet = role ? guildEntry.experience.roles.find(r => r.id === role.id) : false;
         if (!role) {
             return message.channel.createMessage(`:x: I couldn't find the role \`${args[1]}\` in this server`);
-        } else if (!client.isWholeNumber(args[2])) {
+        } else if (!client.utils.isWholeNumber(args[2])) {
             return message.channel.createMessage(':x: The level must be a whole number');
         } else if (alreadySet) {
             return message.channel.createMessage(`:x: The role \`${role.name}\` is already set to be given at the level \`${alreadySet.at}\`. Please remove it first before adding it back`);

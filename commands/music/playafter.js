@@ -4,16 +4,17 @@ const MusicCommands = require('../../structures/CommandCategories/MusicCommands'
 
 class PlayAfter extends MusicCommands {
     constructor(client) {
-        super(client, { userInVC: true, playing: true, noArgs: ':x: You didn\'t specify any song to play after this one' });
-        this.help = {
-            name: 'playafter',
-            description: 'Push to the first position in the queue a song. You can input: A `YouTube` URL (including livestreams), a `Soundcloud` URL, a `Twitch` channel URL (the channel must be live);\n\nOr a search term to search through `YouTube` or `Soundcloud`, by default the search is done on `YouTube`, to search through `Soundcloud`, you must specify it like `{prefix}queue soundcloud <search_term>`',
-            usage: '{prefix}playafter <song_url|search_term>'
-        };
-        this.conf = this.genericConf({ aliases: ['playnext'] });
+        super(client, {
+            help: {
+                name: 'playafter',
+                description: 'Push to the first position in the queue a song. You can input: A `YouTube` URL (including livestreams), a `Soundcloud` URL, a `Twitch` channel URL (the channel must be live);\n\nOr a search term to search through `YouTube` or `Soundcloud`, by default the search is done on `YouTube`, to search through `Soundcloud`, you must specify it like `{prefix}queue soundcloud <search_term>`',
+                usage: '{prefix}playafter <song_url|search_term>'
+            },
+            conf: { aliases: ['playneft'] }
+        }, { userInVC: true, playing: true, noArgs: ':x: You didn\'t specify any song to play after this one' });
     }
     /**
-    * @param {import("../../structures/CommandCategories/MusicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/Contexts/MusicContext")} context The context
     */
 
     async run(context) {

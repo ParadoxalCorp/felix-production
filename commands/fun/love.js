@@ -23,7 +23,7 @@ class Love extends Command {
     }
 
     async run(client, message, args, guildEntry, userEntry) {
-        let lp = client.isWholeNumber(args[0]) && args[1] ? parseInt(args[0]) : 1;
+        let lp = client.utils.isWholeNumber(args[0]) && args[1] ? parseInt(args[0]) : 1;
         const remainingLps = this.getRemainingLps(userEntry);
         if (!args[0]) {
             if (!remainingLps) {
@@ -51,7 +51,7 @@ class Love extends Command {
             userEntry.addCooldown('loveCooldown', client.config.options.loveCooldown);
         }
         await Promise.all([client.handlers.DatabaseWrapper.set(userEntry, 'user'), client.handlers.DatabaseWrapper.set(targetEntry, 'user')]);
-        return message.channel.createMessage(`:heart: Haii ! You just gave **${lp}** love point to **${client.extendedUser(targetUser).tag}**`);
+        return message.channel.createMessage(`:heart: Haii ! You just gave **${lp}** love point to **${client.structures.ExtendedUser(targetUser).tag}**`);
     }
 
     getRemainingLps(userEntry) {

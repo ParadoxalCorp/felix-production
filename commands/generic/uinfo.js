@@ -25,7 +25,7 @@ class Uinfo extends Command {
 
     async run(client, message, args, guildEntry, userEntry) {
         const user = await this.getUserFromText({ message, client, text: args[0] });
-        const target = user ? client.extendedUser(user) : client.extendedUser(message.author);
+        const target = user ? client.structures.ExtendedUser(user) : client.structures.ExtendedUser(message.author);
         const targetEntry = target.id !== message.author.id ? await client.handlers.DatabaseWrapper.getUser(target.id) : userEntry;
         const localLevelDetails = client.handlers.ExperienceHandler.getLevelDetails(guildEntry.getLevelOf(target.id));
         const globalLevelDetails = client.handlers.ExperienceHandler.getLevelDetails(targetEntry.getLevel());

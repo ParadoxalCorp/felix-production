@@ -26,7 +26,7 @@ class ShitWaifu extends Command {
 
     //eslint-disable-next-line no-unused-vars
     async run(client, message, args, guildEntry, userEntry) {
-        const user = args[0] ? await this.getUserFromText({client: client, message: message, text: args[0]}).then(u => u || client.extendedUser(message.author)) : client.extendedUser(message.author);
+        const user = args[0] ? await this.getUserFromText({client: client, message: message, text: args[0]}).then(u => u || client.structures.ExtendedUser(message.author)) : client.structures.ExtendedUser(message.author);
         let typing = false;
         //If the queue contains 2 items or more, expect that this request will take some seconds and send typing to let the user know
         if (client.weebSH.korra.requestHandler.queue.length >= 2) {

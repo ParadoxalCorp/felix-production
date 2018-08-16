@@ -4,16 +4,17 @@ const MusicCommands = require('../../structures/CommandCategories/MusicCommands'
 
 class SeePlaylists extends MusicCommands {
     constructor(client) {
-        super(client);
-        this.help = {
-            name: 'seeplaylists',
-            description: 'See your saved playlists',
-            usage: '{prefix}seeplaylists'
-        };
-        this.conf = this.genericConf({ requireDB: true });
+        super(client, {
+            help: {
+                name: 'seeplaylists',
+                description: 'See your saved playlists',
+                usage: '{prefix}seeplaylists'
+            },
+            conf: { requireDB: true }
+        });
     }
     /**
-    * @param {import("../../structures/CommandCategories/MusicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/Contexts/MusicContext")} context The context
     */
 
     async run(context) {

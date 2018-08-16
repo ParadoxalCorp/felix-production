@@ -42,7 +42,7 @@ class Anime extends Command {
                     color: client.config.options.embedColor
                 }
             });
-            const reply = await client.messageCollector.awaitMessage(message.channel.id, message.author.id);
+            const reply = await client.handlers.MessageCollector.awaitMessage(message.channel.id, message.author.id);
             if (!reply) {
                 query.delete().catch(() => {});
                 return message.channel.createMessage(":x: Timeout: Command aborted");

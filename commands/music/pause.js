@@ -4,16 +4,16 @@ const MusicCommands = require('../../structures/CommandCategories/MusicCommands'
 
 class Pause extends MusicCommands {
     constructor(client) {
-        super(client, { userInVC: true, playing: true });
-        this.help = {
-            name: 'pause',
-            description: 'Pause or resume the playback',
-            usage: '{prefix}pause'
-        };
-        this.conf = this.genericConf();
+        super(client, {
+            help: {
+                name: 'pause',
+                description: 'Pause or resume the playback',
+                usage: '{prefix}pause'
+            }
+        }, { userInVC: true, playing: true });
     }
     /**
-    * @param {import("../../structures/CommandCategories/MusicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/Contexts/MusicContext")} context The context
     */
 
     async run(context) {

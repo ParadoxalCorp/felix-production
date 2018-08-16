@@ -61,7 +61,7 @@ class Slots extends Command {
             return message.channel.createMessage(`You currently have \`${userEntry.economy.coins}\` holy coins`);
         }
         const gambledCoins = Number(args[0]);
-        if (!client.isWholeNumber(gambledCoins) || gambledCoins <= 0) {
+        if (!client.utils.isWholeNumber(gambledCoins) || gambledCoins <= 0) {
             return message.channel.createMessage(':x: Please input a whole number');
         }
         if (gambledCoins > userEntry.economy.coins) {

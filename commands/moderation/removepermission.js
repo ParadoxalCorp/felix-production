@@ -103,7 +103,7 @@ class RemovePermission extends Command {
             group.splice(group.findIndex(perms => perms.id === args.target.id));
         }
         await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
-        return message.channel.createMessage(`:white_check_mark: Successfully removed the permission \`${args.permission}\` which was ${restricted ? 'restricted' : 'allowed'} on the ${args.targetType === 'global' ? 'server' : args.targetType} ${args.target.name || args.target.username ? ('**' + (args.target.name || client.extendedUser(args.target).tag) + '**') : ''}`);
+        return message.channel.createMessage(`:white_check_mark: Successfully removed the permission \`${args.permission}\` which was ${restricted ? 'restricted' : 'allowed'} on the ${args.targetType === 'global' ? 'server' : args.targetType} ${args.target.name || args.target.username ? ('**' + (args.target.name || client.structures.ExtendedUser(args.target).tag) + '**') : ''}`);
     }
 }
 

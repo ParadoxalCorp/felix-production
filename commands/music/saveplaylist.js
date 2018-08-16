@@ -4,21 +4,22 @@ const MusicCommands = require('../../structures/CommandCategories/MusicCommands'
 
 class SavePlaylist extends MusicCommands {
     constructor(client) {
-        super(client);
-        this.help = {
-            name: 'saveplaylist',
-            description: 'Save the current queue in your playlists, allowing you to load it whenever you want',
-            usage: '{prefix}saveplaylist <name>'
-        };
-        this.conf = this.genericConf({ 
-            requireDB: true,
-            expectedArgs: [{
-                description: 'Please specify the name you want to give to this playlist'
-            }]
+        super(client, {
+            help: {
+                name: 'saveplaylist',
+                description: 'Save the current queue in your playlists, allowing you to load it whenever you want',
+                usage: '{prefix}saveplaylist <name>'
+            },
+            conf: {
+                requireDB: true,
+                expectedArgs: [{
+                    description: 'Please specify the name you want to give to this playlist'
+                }]
+            }
         });
     }
     /**
-    * @param {import("../../structures/CommandCategories/MusicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/Contexts/MusicContext")} context The context
     */
 
     async run(context) {

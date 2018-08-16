@@ -27,7 +27,7 @@ class ClearPermissions extends Command {
     // eslint-disable-next-line no-unused-vars 
     async run(client, message, args, guildEntry, userEntry) {
         await message.channel.createMessage('Are you sure you want to do that? Reply with `yes` to confirm or anything else to abort');
-        const confirmation = await client.messageCollector.awaitMessage(message.channel.id, message.author.id);
+        const confirmation = await client.handlers.MessageCollector.awaitMessage(message.channel.id, message.author.id);
         if (!confirmation || confirmation.content.toLowerCase().trim() !== 'yes') {
             return message.channel.createMessage(':x: Command aborted');
         }

@@ -110,7 +110,7 @@ class Leaderboard extends Command {
         let leaderboard = global ? client.handlers.DatabaseWrapper.userData.cache.map(u => u) : guildEntry.experience.members;
         if (global) {
             leaderboard = leaderboard.map(e => databaseUpdater(e, 'user')).sort((a, b) => b.experience.amount - a.experience.amount).map(u => {
-                u.levelDetails = client.handlers.ExperienceHandler.getLevelDetails(new client.extendedUserEntry(u).getLevel());
+                u.levelDetails = client.handlers.ExperienceHandler.getLevelDetails(new client.structures.ExtendedUserEntry(u).getLevel());
                 return u;
             });
         } else {
@@ -140,7 +140,7 @@ class Leaderboard extends Command {
 
     async fetchUsers(client, leaderboard) {
         let resolvedUsers = new client.collection();
-        await Promise.all(leaderboard.slice(0, 10).map(u => client.fetchUser(u.id)))
+        await Promise.all(leaderboard.slice(0, 10).map(u => client.utils.utils.fetchUser(u.id)))
             .then(fetchedUsers => {
                 let i = 0;
                 for (let user of fetchedUsers) {

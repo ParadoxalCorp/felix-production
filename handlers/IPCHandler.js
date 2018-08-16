@@ -154,11 +154,11 @@ class IPCHandler {
                 let success = true;
                 try {
                     if (message.data.type === "event") {
-                        this.client.reloader.reloadEventListener(message.data.path);
+                        this.client.handlers.Reloader.reloadEventListener(message.data.path);
                     } else if (message.data.type === "command") {
                         this.client.handlers.Reloader.reloadCommand(message.data.path);
                     } else if (message.data.type === "module") {
-                        this.client.reloader.reloadModule(message.data.path, message.data.name, message.data.options);
+                        this.client.handlers.Reloader.reloadModule(message.data.path, message.data.name, message.data.options);
                     }
                 } catch (err) {
                     success = false;

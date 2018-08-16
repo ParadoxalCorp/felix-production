@@ -4,16 +4,16 @@ const MusicCommands = require('../../structures/CommandCategories/MusicCommands'
 
 class Queue extends MusicCommands {
     constructor(client) {
-        super(client);
-        this.help = {
-            name: 'queue',
-            description: 'Queue a song or check the queue, to check the queue, just run `{prefix}queue`. You can input: A `YouTube` URL (including livestreams), a `Soundcloud` URL, a `Twitch` channel URL (the channel must be live);\n\nOr a search term to search through `YouTube` or `Soundcloud`, by default the search is done on `YouTube`, to search through `Soundcloud`, you must specify it like `{prefix}queue soundcloud <search_term>`',
-            usage: '{prefix}queue <song_url|search_term>'
-        };
-        this.conf = this.genericConf();
+        super(client, {
+            help: {
+                name: 'queue',
+                description: 'Queue a song or check the queue, to check the queue, just run `{prefix}queue`. You can input: A `YouTube` URL (including livestreams), a `Soundcloud` URL, a `Twitch` channel URL (the channel must be live);\n\nOr a search term to search through `YouTube` or `Soundcloud`, by default the search is done on `YouTube`, to search through `Soundcloud`, you must specify it like `{prefix}queue soundcloud <search_term>`',
+                usage: '{prefix}queue <song_url|search_term>'
+            }
+        });
     }
     /**
-    * @param {import("../../structures/CommandCategories/MusicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/Contexts/MusicContext")} context The context
     */
 
     async run(context) {

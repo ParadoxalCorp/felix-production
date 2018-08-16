@@ -128,7 +128,7 @@ class ExperienceHandler {
     }
 
     _notifyUser(message, guildEntry, levelDetails, wonRoles) {
-        const user = this.client.extendedUser(message.author);
+        const user = this.client.structures.ExtendedUser(message.author);
         const wonRolesNotif = wonRoles ? `and won the role(s) ${wonRoles.join(', ')}` : false;
         let notif = (guildEntry.experience.notifications.message || this.client.config.options.experience.defaultLevelUpMessage)
             .replace(/%USERTAG%/g, user.tag)

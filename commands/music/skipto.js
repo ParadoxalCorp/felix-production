@@ -4,16 +4,17 @@ const MusicCommands = require('../../structures/CommandCategories/MusicCommands'
 
 class SkipTo extends MusicCommands {
     constructor(client) {
-        super(client, { userInVC: true, playing: true });
-        this.help = {
-            name: 'skipto',
-            description: 'Start a vote to skip to the specified position in the queue',
-            usage: '{prefix}skipto <position>'
-        };
-        this.conf = this.genericConf({ aliases: ['voteskipto'] });
+        super(client, {
+            help: {
+                name: 'skipto',
+                description: 'Start a vote to skip to the specified position in the queue',
+                usage: '{prefix}skipto <position>'
+            },
+            conf: { aliases: ['voteskipto'] }
+        }, { userInVC: true, playing: true });
     }
     /**
-    * @param {import("../../structures/CommandCategories/MusicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/Contexts/MusicContext")} context The context
     */
 
     async run(context) {
@@ -38,7 +39,7 @@ class SkipTo extends MusicCommands {
             context.connection.skipVote.count = context.connection.skipVote.count + 1;
         }
         context.connection.skipVote.voted.push(context.message.author.id);
-        return this.processVote(this.client, context);
+        return this.processVote(context);
     }
 
     async processVote(context) {

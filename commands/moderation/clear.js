@@ -26,7 +26,7 @@ class Clear extends Command {
     // eslint-disable-next-line no-unused-vars
     async run(client, message, args, guildEntry, userEntry) {
         const limit = args[0]; 
-        if (!limit || !client.isWholeNumber(limit)) {
+        if (!limit || !client.utils.isWholeNumber(limit)) {
             return message.channel.createMessage(`:x: You didn't specify how many messages to delete`);
         }
         let filtered = [];

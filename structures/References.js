@@ -143,7 +143,7 @@ class References {
         /** @type {Permissions} The default permissions object */
         this.defaultPermissions = {
             allowedCommands: ['generic*', 'fun*', 'economy*', 'misc*', 'utility*', 'image*', 'music*'],
-            restrictedCommands: ['settings*', 'forceskip']
+            restrictedCommands: ['settings*', 'forceskip', 'forceskipto']
         };
         /** @type {Permissions} The default permissions object, but with empty arrays */
         this.globalPermissionsSet = {

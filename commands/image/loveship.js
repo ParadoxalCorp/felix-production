@@ -30,7 +30,7 @@ class LoveShip extends Command {
             return message.channel.createMessage(':x: You need to specify at least one user to ship');
         }
         const firstUser = await this.getUserFromText({client: client, message: message, text: args[0]});
-        const secondUser = args[1] ? await this.getUserFromText({client: client, message: message, text: args.splice(1).join(' ')}).then(u => u ? u : client.extendedUser(message.author)) : client.extendedUser(message.author);
+        const secondUser = args[1] ? await this.getUserFromText({client: client, message: message, text: args.splice(1).join(' ')}).then(u => u ? u : client.structures.ExtendedUser(message.author)) : client.structures.ExtendedUser(message.author);
         if (!firstUser && secondUser.id === message.author.id) {
             return message.channel.createMessage(':x: I\'m sorry but I couldn\'t find the users you specified :c');
         } else if (firstUser.id === secondUser.id) {

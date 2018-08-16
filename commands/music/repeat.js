@@ -4,27 +4,25 @@ const MusicCommands = require('../../structures/CommandCategories/MusicCommands'
 
 class Repeat extends MusicCommands {
     constructor(client) {
-        super(client, { userInVC: true, playing: true });
-        this.help = {
-            name: 'repeat',
-            description: 'Set the repeat to repeat the queue, the current song or turn it off',
-            usage: '{prefix}repeat <song|queue|off>'
-        };
-        this.conf = this.genericConf({ 
-            expectedArgs: [{
-                description: 'Please choose what repeat mode to toggle, can be either `queue` to repeat the queue, `song` to repeat the current song or `off` to disable the repeat',
-                possibleValues: [{
-                    name: 'queue',
-                    interpretAs: '{value}'
-                }, {
-                    name: 'song',
-                    interpretAs: '{value}'
-                }, {
-                    name: 'off',
-                    interpretAs: '{value}'
-                }]            
-            }]
-        }); 
+        super(client, {
+            help: {
+                name: 'repeat',
+                description: 'Set the repeat to repeat the queue, the current song or turn it off',
+                usage: '{prefix}repeat <song|queue|off>'
+            },
+            conf: {
+                expectedArgs: [{
+                    description: 'Please choose what repeat mode to toggle, can be either `queue` to repeat the queue, `song` to repeat the current song or `off` to disable the repeat',
+                    possibleValues: [{
+                        name: 'queue'
+                    }, {
+                        name: 'song'
+                    }, {
+                        name: 'off'
+                    }]            
+                }]
+            }
+        }, { userInVC: true, playing: true });
         this.extra = {
             off: {
                 sentence: 'turned off the repeat',
@@ -41,7 +39,7 @@ class Repeat extends MusicCommands {
         };
     }
     /**
-    * @param {import("../../structures/CommandCategories/MusicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/Contexts/MusicContext")} context The context
     */
 
     async run(context) {

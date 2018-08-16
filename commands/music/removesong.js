@@ -4,16 +4,17 @@ const MusicCommands = require('../../structures/CommandCategories/MusicCommands'
 
 class RemoveSong extends MusicCommands {
     constructor(client) {
-        super(client, { userInVC: true, playing: true });
-        this.help = {
-            name: 'removesong',
-            description: 'Remove the song at the specified position in the queue',
-            usage: '{prefix}removesong <position>'
-        };
-        this.conf = this.genericConf({ aliases: ['rs'] });
+        super(client, {
+            help: {
+                name: 'removesong',
+                description: 'Remove the song at the specified position in the queue',
+                usage: '{prefix}removesong <position>'
+            },
+            conf: { aliases: ['rs'] }
+        }, { userInVC: true, playing: true });
     }
     /**
-    * @param {import("../../structures/CommandCategories/MusicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/Contexts/MusicContext")} context The context
     */
 
     async run(context) {

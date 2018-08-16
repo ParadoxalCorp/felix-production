@@ -1,6 +1,6 @@
 'use strict';
 
-const MusicCommands = require('../../structures/CommandCategories/MusicCommandss.js');
+const MusicCommands = require('../../structures/CommandCategories/MusicCommands.js');
 
 class Play extends MusicCommands {
     constructor(client) {

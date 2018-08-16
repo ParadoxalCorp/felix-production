@@ -48,7 +48,7 @@ class Rank extends Command {
       const fsn = require('fs-nextra');
       
       const user = await this.getUserFromText({ message, client, text: args.join(' ') });
-      const target = user ? client.extendedUser(user) : client.extendedUser(message.author);
+      const target = user ? client.structures.ExtendedUser(user) : client.structures.ExtendedUser(message.author);
       const targetEntry = target.id !== message.author.id ? await client.handlers.DatabaseWrapper.getUser(target.id) : userEntry;
       const localLevelDetails = client.handlers.ExperienceHandler.getLevelDetails(guildEntry.getLevelOf(target.id));
       const globalLevelDetails = client.handlers.ExperienceHandler.getLevelDetails(targetEntry.getLevel());
@@ -56,7 +56,7 @@ class Rank extends Command {
       const member = message.channel.guild.members.get(target.id);
       let leaderboardG = client.handlers.DatabaseWrapper.userData.cache.map(u => u);
       leaderboardG = leaderboardG.map(e => databaseUpdater(e, 'user')).sort((a, b) => b.experience.amount - a.experience.amount).map(u => {
-          u.levelDetails = client.handlers.ExperienceHandler.getLevelDetails(new client.extendedUserEntry(u).getLevel());
+          u.levelDetails = client.handlers.ExperienceHandler.getLevelDetails(new client.structures.ExtendedUserEntry(u).getLevel());
           return u;
       });
       let leaderboardL = guildEntry.experience.members;

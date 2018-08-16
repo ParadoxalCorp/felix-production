@@ -111,7 +111,7 @@ class SetPermission extends Command {
         }
         targetPerms[args.override ? 'allowedCommands' : 'restrictedCommands'].push(args.permission);
         await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
-        return message.channel.createMessage(`:white_check_mark: Successfully ${args.override ? 'allowed' : 'restricted'} the permission \`${args.permission}\` for the ${args.targetType === 'global' ? 'server' : args.targetType} ${args.target.name || args.target.username ? ('**' + (args.target.name || client.extendedUser(args.target).tag) + '**') : ''}`);
+        return message.channel.createMessage(`:white_check_mark: Successfully ${args.override ? 'allowed' : 'restricted'} the permission \`${args.permission}\` for the ${args.targetType === 'global' ? 'server' : args.targetType} ${args.target.name || args.target.username ? ('**' + (args.target.name || client.structures.ExtendedUser(args.target).tag) + '**') : ''}`);
     }
 }
 

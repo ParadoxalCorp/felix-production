@@ -4,16 +4,17 @@ const MusicCommands = require('../../structures/CommandCategories/MusicCommands'
 
 class ClearQueue extends MusicCommands {
     constructor(client) {
-        super(client);
-        this.help = {
-            name: 'clearqueue',
-            description: 'Clear the queue',
-            usage: '{prefix}clearqueue'
-        };
-        this.conf = this.genericConf({ aliases: ['cq'] });
+        super(client, {
+            help: {
+                name: 'clearqueue',
+                description: 'Clear the queue',
+                usage: '{prefix}clearqueue'
+            },
+            conf: { aliases: ['cq'] }
+        });
     }
     /**
-    * @param {import("../../structures/CommandCategories/MusicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/Contexts/MusicContext")} context The context
     */
 
     async run(context) {

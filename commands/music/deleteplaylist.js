@@ -4,16 +4,17 @@ const MusicCommands = require('../../structures/CommandCategories/MusicCommands'
 
 class DeletePlaylist extends MusicCommands {
     constructor(client) {
-        super(client);
-        this.help = {
-            name: 'deleteplaylist',
-            description: 'Delete one of your saved playlists',
-            usage: '{prefix}deleteplaylist <playlist_id>'
-        };
-        this.conf = this.genericConf({ requireDB: true, expectedArgs: [{description: 'Please specify the ID of the playlist to delete'}] });
+        super(client, {
+            help: {
+                name: 'deleteplaylist',
+                description: 'Delete one of your saved playlists',
+                usage: '{prefix}deleteplaylist <playlist_id>'
+            },
+            conf: { requireDB: true, expectedArgs: [{description: 'Please specify the ID of the playlist to delete'}] }
+        });
     }
     /**
-    * @param {import("../../structures/CommandCategories/MusicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/Contexts/MusicContext")} context The context
     */
 
     async run(context) {
