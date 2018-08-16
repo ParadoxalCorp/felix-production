@@ -1,6 +1,6 @@
 'use strict';
 
-/** @typedef {import("../../../main.js")} Client */
+/** @typedef {import("../main.js")} Client */
 
 /**
  * Generate the image sub-commands and such
