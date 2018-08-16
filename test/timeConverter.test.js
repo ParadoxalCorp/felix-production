@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-const timeConverter = require('../utils/timeConverter');
+const timeConverter = require('../utils/TimeConverter');
 const assert = require('assert').strict;
 
 describe('TimeConverter', function () {
