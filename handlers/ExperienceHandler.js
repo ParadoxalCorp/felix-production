@@ -128,7 +128,7 @@ class ExperienceHandler {
     }
 
     _notifyUser(message, guildEntry, levelDetails, wonRoles) {
-        const user = this.client.structures.ExtendedUser(message.author);
+        const user = new this.client.structures.ExtendedUser(message.author, this.client.bot);
         const wonRolesNotif = wonRoles ? `and won the role(s) ${wonRoles.join(', ')}` : false;
         let notif = (guildEntry.experience.notifications.message || this.client.config.options.experience.defaultLevelUpMessage)
             .replace(/%USERTAG%/g, user.tag)
@@ -156,7 +156,7 @@ class ExperienceHandler {
         const lowerRemovableRoles = guildEntry.experience.roles.filter(r => r.at < levelDetails.nextLevel && !r.static && member.roles.includes(r.id) && !highestRoles.find(role => r.id === role.id));
         if (lowerRemovableRoles[0]) {
             for (const role of lowerRemovableRoles) {
-                await this.client.sleep(1000);
+                await this.client.utils.sleep(1000);
                 member.removeRole(role.id, `This role isn't set as static and the member won a higher role`).catch(() => {});
             }
         }
