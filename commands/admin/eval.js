@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 const { inspect } = require('util');
 
 class Eval extends Command {
@@ -43,7 +43,7 @@ class Eval extends Command {
                     showHidden: true
                 });
             }
-            return message.channel.createMessage("**Input:**\n```js\n" + toEval + "```\n**Output:**\n```js\n" + client.redact(err) + "```");
+            return message.channel.createMessage("**Input:**\n```js\n" + toEval + "```\n**Output:**\n```js\n" + client.utils.utils.redact(err) + "```");
         }
     }
 

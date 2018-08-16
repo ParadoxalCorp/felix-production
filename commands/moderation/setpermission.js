@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class SetPermission extends Command {
     constructor() {
@@ -97,7 +97,7 @@ class SetPermission extends Command {
         let targetPerms = guildEntry.permissions[specialTargetCases[args.targetType] || `${args.targetType}s`];
         if (Array.isArray(targetPerms)) {
             if (!targetPerms.find(perms => perms.id === args.target.id)) {
-                targetPerms.push(client.refs.permissionsSet(args.target.id));
+                targetPerms.push(client.structures.References.permissionsSet(args.target.id));
             }
             targetPerms = targetPerms.find(perms => perms.id === args.target.id);
         }
@@ -110,7 +110,7 @@ class SetPermission extends Command {
             oppositePerm.splice(oppositePerm.findIndex(perm => perm === args.permission), 1);
         }
         targetPerms[args.override ? 'allowedCommands' : 'restrictedCommands'].push(args.permission);
-        await client.database.set(guildEntry, 'guild');
+        await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
         return message.channel.createMessage(`:white_check_mark: Successfully ${args.override ? 'allowed' : 'restricted'} the permission \`${args.permission}\` for the ${args.targetType === 'global' ? 'server' : args.targetType} ${args.target.name || args.target.username ? ('**' + (args.target.name || client.extendedUser(args.target).tag) + '**') : ''}`);
     }
 }

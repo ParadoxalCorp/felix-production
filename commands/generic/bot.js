@@ -1,7 +1,7 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
-const TimeConverter = require(`../../util/modules/timeConverter.js`);
+const Command = require('../../structures/Command');
+const TimeConverter = require(`../../utils/TimeConverter.js`);
 const moment = require("moment");
 const os = require('os');
 
@@ -136,18 +136,18 @@ class Bot extends Command {
                     }
                     return `${message.channel.guild.shard.id}/${shardCount}`;
                 })(),
-                inline: client.redis ? false : true
+                inline: client.handlers.RedisManager ? false : true
             });
         }
         embedFields.push({
             name: 'Database status',
-            value: `${client.database && client.database.healthy ? ':white_check_mark: Online' : ':x: Offline'}\n[More info](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#rethinkdb)`,
+            value: `${client.handlers.DatabaseWrapper && client.handlers.DatabaseWrapper.healthy ? ':white_check_mark: Online' : ':x: Offline'}\n[More info](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#rethinkdb)`,
             inline: true
         });
-        if (client.redis) {
+        if (client.handlers.RedisManager) {
             embedFields.push({
                 name: 'Redis status',
-                value: `${client.redis.healthy ? ':white_check_mark: Online' : ':x: Offline'}\n[More info](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#redis)`,
+                value: `${client.handlers.RedisManager.healthy ? ':white_check_mark: Online' : ':x: Offline'}\n[More info](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#redis)`,
                 inline: true
             });
         }

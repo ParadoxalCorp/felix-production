@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class SetPrefix extends Command {
     constructor() {
@@ -32,7 +32,7 @@ class SetPrefix extends Command {
         }
         guildEntry.prefix = (args[0] === client.config.prefix) && spaced ? '' : args[0];
         guildEntry.spacedPrefix = spaced;
-        await client.database.set(guildEntry, "guild");
+        await client.handlers.DatabaseWrapper.set(guildEntry, "guild");
         return message.channel.createMessage(`:white_check_mark: Alright, the prefix has successfully been set as a ${spaced ? 'spaced' : 'unspaced'} prefix to \`${args[0]}\`, commands will now look like \`${args[0] + (spaced ? ' ' : '')}ping\``);
     }
 }

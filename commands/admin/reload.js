@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 const { inspect } = require('util');
 
 class Reload extends Command {
@@ -99,7 +99,7 @@ class Reload extends Command {
         const fileName = typeof path === 'string' ? path.split(/\/|\\/gm)[path.split(/\/|\\/gm).length - 1].split('.')[0] : false;
 
         if (args.includes('--event')) {
-            const reloadedEvent = await client.IPCHandler.broadcastReload('event', args[0] === 'all' ? args[0] : path)
+            const reloadedEvent = await client.handlers.IPCHandler.broadcastReload('event', args[0] === 'all' ? args[0] : path)
                 .then(() => {
                     if (args[0] === 'all') {
                         return message.channel.createMessage(`:white_check_mark: Successfully reloaded all events listeners\n\n:warning: Don't forget to reload all modules now, to add back their listeners`);
@@ -118,7 +118,7 @@ class Reload extends Command {
             if (args[0] !== 'all' && (command && command.conf.subCommand)) {
                 return message.channel.createMessage(`:x: Sorry cutie, but this is a sub-command, so the only way to reload it is to re-generate it`);
             }
-            const reloadedCommand = await client.IPCHandler.broadcastReload('command', args[0] === 'all' ? args[0] : path)
+            const reloadedCommand = await client.handlers.IPCHandler.broadcastReload('command', args[0] === 'all' ? args[0] : path)
                 .then(() => {
                     if (args[0] === 'all') {
                         return message.channel.createMessage(':white_check_mark: Successfully reloaded all commands');
@@ -134,7 +134,7 @@ class Reload extends Command {
                 });
             return reloadedCommand;
         } else if (args.includes('--module')) {
-            const reloadedModule = await client.IPCHandler.broadcastReload('module', args[0] === 'all' ? args[0] : path, fileName, this.parseArguments(args))
+            const reloadedModule = await client.handlers.IPCHandler.broadcastReload('module', args[0] === 'all' ? args[0] : path, fileName, this.parseArguments(args))
                 .then(() => {
                     if (args[0] === 'all') {
                         return message.channel.createMessage(':white_check_mark: Successfully reloaded all modules');

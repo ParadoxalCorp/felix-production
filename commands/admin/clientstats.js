@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class ClientStats extends Command {
     constructor() {
@@ -59,7 +59,7 @@ class ClientStats extends Command {
                                 nodesStatus += `=> Cores: [${lavalinkNode.stats.cpu.cores}]\n`;
                                 nodesStatus += `=> System load: [${normalizeLoad(lavalinkNode.stats.cpu.systemLoad)}]\n`;
                                 nodesStatus += `=> Node load: [${normalizeLoad(lavalinkNode.stats.cpu.lavalinkLoad)}]\n`;
-                                nodesStatus += `=> Uptime: [${client.timeConverter.toElapsedTime(lavalinkNode.stats.uptime, true)}]\n`;
+                                nodesStatus += `=> Uptime: [${client.utils.TimeConverter.toElapsedTime(lavalinkNode.stats.uptime, true)}]\n`;
                                 nodesStatus += `=> Players: [${lavalinkNode.stats.players}]\n`;
                                 nodesStatus += `=> Paused players: [${lavalinkNode.stats.players - lavalinkNode.stats.playingPlayers}]\n`;
                             }
@@ -70,10 +70,10 @@ class ClientStats extends Command {
                 color: client.config.options.embedColor
             }
         });
-        const clustersShardsStats = await client.IPCHandler.fetchShardsStats();
+        const clustersShardsStats = await client.handlers.IPCHandler.fetchShardsStats();
         return message.channel.createMessage('```ini\n' + client.stats.clusters.map(c => {
             const cluster = clustersShardsStats.find(cl => cl.clusterID === c.cluster);
-            let clusterStats = `Cluster [${c.cluster}]: [${c.shards}] shard(s) | [${c.guilds}] guild(s) | [${c.ram.toFixed(2)}]MB RAM used | Up for [${client.timeConverter.toElapsedTime(c.uptime, true)}] | Music connections: [${cluster.data[0].musicConnections}]\n`;
+            let clusterStats = `Cluster [${c.cluster}]: [${c.shards}] shard(s) | [${c.guilds}] guild(s) | [${c.ram.toFixed(2)}]MB RAM used | Up for [${client.utils.TimeConverter.toElapsedTime(c.uptime, true)}] | Music connections: [${cluster.data[0].musicConnections}]\n`;
             for (const shard of cluster.data) {
                 clusterStats += `=> Shard [${shard.id}]: [${shard.guilds}] guild(s) | [${shard.status}] | ~[${shard.latency}]ms\n`;
             }

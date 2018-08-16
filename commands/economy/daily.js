@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class Daily extends Command {
     constructor() {
@@ -24,7 +24,7 @@ class Daily extends Command {
 
     async run(client, message, args, guildEntry, userEntry) {
         if (userEntry.isInCooldown('dailyCooldown')) {
-            return message.channel.createMessage(`Ahhh, I am very sorry but you still have to wait \`${client.timeConverter.toElapsedTime(userEntry.cooldowns.dailyCooldown - Date.now(), true)}\` before using daily again`);
+            return message.channel.createMessage(`Ahhh, I am very sorry but you still have to wait \`${client.utils.TimeConverter.toElapsedTime(userEntry.cooldowns.dailyCooldown - Date.now(), true)}\` before using daily again`);
         }
         let randomEvent = client.config.options.economyEvents.dailyEvents ? client.getRandomNumber(1, 100) <= client.config.options.economyEvents.dailyEventsRate : false;
         if (randomEvent) {
@@ -33,12 +33,12 @@ class Daily extends Command {
             userEntry.addCoins(client.config.options.dailyCoins);
         }
         userEntry.addCooldown('dailyCooldown', client.config.options.dailyCooldown);
-        await client.database.set(randomEvent ? randomEvent.user : userEntry, "user");
+        await client.handlers.DatabaseWrapper.set(randomEvent ? randomEvent.user : userEntry, "user");
         return message.channel.createMessage(randomEvent ? randomEvent.text : `Hai ! You received \`${client.config.options.dailyCoins}\` holy coins, you now have \`${userEntry.economy.coins}\` holy coins`);
     }
 
     runRandomDailyEvent(client, message, userEntry) {
-        const dailyEvent = client.economyManager.dailyEvents[client.getRandomNumber(0, client.economyManager.dailyEvents.length - 1)];
+        const dailyEvent = client.handlers.EconomyManager.dailyEvents[client.getRandomNumber(0, client.handlers.EconomyManager.dailyEvents.length - 1)];
         const eventCoinsChangeRate = Array.isArray(dailyEvent.changeRate) ? client.getRandomNumber(dailyEvent.changeRate[0], dailyEvent.changeRate[1]) : dailyEvent.changeRate;
         const eventCoinsChange = Math.round(Math.abs(client.config.options.dailyCoins / 100 * eventCoinsChangeRate));
         const conditionalVariant = (() => {

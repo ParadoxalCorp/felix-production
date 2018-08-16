@@ -1,19 +1,29 @@
 'use strict';
 
-/** @typedef {import("../../../main.js")} Client */
+/** @typedef {import("../main.js").Client} Client */
+
+/**
+ * @typedef LevelDetails 
+ * @prop {number} level The level  
+ * @prop {number} nextLevel The next level (basically level + 1 yes)
+ * @prop {number} thisLevelExp The experience required to reach this level
+ * @prop {number} nextLevelExp The experience required to reach the next level
+ */
 
 class ExperienceHandler {
 
     /**
-     *Creates an instance of ExperienceHandler.
+     * Creates an instance of ExperienceHandler.
      * @param {Client} client client
      * @memberof ExperienceHandler
      */
     constructor(client) {
+        /** @type {Client} */
         this.client = client;
-        this.cooldowns = new(require('../../modules/collection'))();
+        /** @type {import("../utils/Collection")} */
+        this.cooldowns = new client.Collection();
         this._sweepInterval = setInterval(this._sweep.bind(this), client.config.options.experience.sweepInterval);
-        this.levelledUp = new(require('../../modules/collection'))();
+        this.levelledUp = new client.Collection();
     }
 
     async handle(message, guildEntry, userEntry) {
@@ -28,11 +38,11 @@ class ExperienceHandler {
             return totalUploadSize;
         })() : false;
         const expGain = totalSize ? this.client.config.options.experience.uploadGainFormula(totalSize) : this.client.config.options.experience.gainFormula(message.content.length);
-        const levelDetails = this.client.getLevelDetails(guildEntry.getLevelOf(message.author.id));
+        const levelDetails = this.client.handlers.ExperienceHandler.getLevelDetails(guildEntry.getLevelOf(message.author.id));
         const totalExperience = guildEntry.addExperience(expGain).to(message.author.id);
         userEntry.addExperience(expGain);
         this._addCooldown(this.client.config.options.experience.cooldown).to(message.author.id);
-        await Promise.all([this.client.database.set(guildEntry, 'guild'), this.client.database.set(userEntry, 'user')]);
+        await Promise.all([this.client.handlers.DatabaseWrapper.set(guildEntry, 'guild'), this.client.handlers.DatabaseWrapper.set(userEntry, 'user')]);
         if ((totalExperience >= levelDetails.nextLevelExp) && (this.levelledUp.get(message.author.id) !== levelDetails.nextLevel)) {
             this.levelledUp.set(message.author.id, levelDetails.nextLevel);
             const wonRoles = guildEntry.experience.roles.find(r => r.at <= levelDetails.nextLevel) ? await this._addWonRoles(message, guildEntry, levelDetails) : false;
@@ -47,6 +57,20 @@ class ExperienceHandler {
             }
         }
         return true;
+    }
+
+    /**
+     * Get some information about the given level
+     * @param {Number} level - The level to get the details from
+     * @returns {LevelDetails} The given level details
+     */
+    getLevelDetails(level) {
+        return {
+            level: level,
+            nextLevel: level + 1,
+            thisLevelExp: Math.floor(this.client.config.options.experience.baseXP * (level ** this.client.config.options.experience.exponent)),
+            nextLevelExp: Math.floor(this.client.config.options.experience.baseXP * ((level + 1) ** this.client.config.options.experience.exponent))
+        };
     }
 
     _sweep() {

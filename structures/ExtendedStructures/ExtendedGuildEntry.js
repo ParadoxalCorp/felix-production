@@ -1,15 +1,26 @@
 'use strict';
 
 /**
- * @typedef {import("eris").Guild} guildEntry
- * @typedef {import("../../../main.js")} Client
+ * @typedef {import("../References.js").GuildEntry} GuildEntry
+ * @typedef {import("../../main.js").Client} Client
+ * @typedef {import("../Command.js")} Command
+ * @typedef {import("eris").TextChannel} TextChannel
+ * @typedef {import("../References").GuildMember} GuildMember
  * */
+
+ /** @typedef {Function} ToMember
+  * @param {String} id The ID of the member to add experience to
+ */
+
+ /** @typedef {Object} AddExperienceInterface
+  * @prop {ToMember} to Defines to who the amount of experience should be added
+  */
 
 /** @class ExtendedGuildEntry */
 class ExtendedGuildEntry {
     /**
      * 
-     * @param {guildEntry} guildEntry - The guild entry
+     * @param {GuildEntry} guildEntry - The guild entry
      * @param {Client} client - The client instance
      */
     constructor(guildEntry, client) {
@@ -24,10 +35,10 @@ class ExtendedGuildEntry {
 
     /**
      * Check if the specified member has the permission to run the given command
-     * @param {string} memberID - The member ID to check if they have the permission to run the specified command
-     * @param {*} command - The command
-     * @param {*} channel - The channel in which the command is attempted to be used
-     * @returns {boolean} Whether or not the specified member is allowed to use the given command
+     * @param {String} memberID - The member ID to check if they have the permission to run the specified command
+     * @param {Command} command - The command
+     * @param {TextChannel} channel - The channel in which the command is attempted to be used
+     * @returns {Boolean} Whether or not the specified member is allowed to use the given command
      */
     memberHasPermission(memberID, command, channel) {
         let allowed;
@@ -38,7 +49,7 @@ class ExtendedGuildEntry {
         const rolesInDB = member.roles.filter(role => this.permissions.roles.find(r => r.id === role)).sort((a, b) => member.guild.roles.get(a).position -
             member.guild.roles.get(b).position).map(r => { return { name: "roles", id: r }; });
         [
-            { name: this.client.refs.defaultPermissions }, 
+            { name: this.client.structures.References.defaultPermissions }, 
             { name: "global" }, 
             { name: "categories", id: channel.parentID }, 
             { name: "channels", id: channel.id }, 
@@ -65,10 +76,10 @@ class ExtendedGuildEntry {
 
     /**
      * Get the prioritary permission of a target and check if they are allowed to use the given command
-     * @param {string} target - The name of the permissions to check ("channels", "roles", "users"..) OR an array/object following the exact same structure than the rest
-     * @param {*} command - The command
-     * @param {string} [targetID] - Optional, the ID of the target to get the prioritary permission for
-     * @returns {boolean} Whether or not the target is allowed to use the command
+     * @param {String} target - The name of the permissions to check ("channels", "roles", "users"..) OR an array/object following the exact same structure than the rest
+     * @param {Command} command - The command
+     * @param {String} [targetID] - Optional, the ID of the target to get the prioritary permission for
+     * @returns {Boolean} Whether or not the target is allowed to use the command
      */
     getPrioritaryPermission(target, command, targetID) {
         let targetPos;
@@ -108,32 +119,32 @@ class ExtendedGuildEntry {
 
     /**
      * Get the activity level of a member
-     * @param {string} id The ID of the member to get the level from
-     * @returns {number} The level
+     * @param {String} id The ID of the member to get the level from
+     * @returns {Number} The level
      * @example Guild.getLevelOf("123456789");
      */
     getLevelOf(id) {
         // @ts-ignore
-        const member = this.experience.members.find(m => m.id === id) || this.client.refs.guildMember(id);
+        const member = this.experience.members.find(m => m.id === id) || this.client.structures.References.guildMember(id);
         return Math.floor(Math.pow(member.experience / this.client.config.options.experience.baseXP, 1 / this.client.config.options.experience.exponent));
     }
 
     /**
      * Get the activity-related member object of a member of the guild
-     * @param {string} id - The ID of the member
-     * @returns {object} The member object
+     * @param {String} id - The ID of the member
+     * @returns {GuildMember} The member object
      * @example Guild.getMember("123456789");
      */
     getMember(id) {
         // @ts-ignore
-        return this.experience.members.find(m => m.id === id) || this.client.refs.guildMember(id);
+        return this.experience.members.find(m => m.id === id) || this.client.structures.References.guildMember(id);
     }
 
     /**
      * 
      * 
-     * @param {number} amount - The amount of experience to add 
-     * @returns {{to: function}} An object, with a .to(id) callback function to call with the ID of the member to add the experience to. 
+     * @param {Number} amount - The amount of experience to add 
+     * @returns {AddExperienceInterface} An object, with a .to(id) callback function to call with the ID of the member to add the experience to. 
      * @example Guild.addExperience(15).to("123456798");
      */
     addExperience(amount) {
@@ -143,7 +154,7 @@ class ExtendedGuildEntry {
                 let member = this.experience.members[this.experience.members.findIndex(m => m.id === id)];
                 if (!member) {
                     // @ts-ignore
-                    this.experience.members.push(this.client.refs.guildMember(id));
+                    this.experience.members.push(this.client.structures.References.guildMember(id));
                     // @ts-ignore
                     member = this.experience.members[this.experience.members.findIndex(m => m.id === id)];
                 }
@@ -155,8 +166,8 @@ class ExtendedGuildEntry {
 
     /**
      * Remove a role set to be given at a certain level
-     * @param {string} id - The ID of the role to remove
-     * @returns {number} The new count of roles set to be given at a certain level
+     * @param {String} id - The ID of the role to remove
+     * @returns {Number} The new count of roles set to be given at a certain level
      * @example Guild.removeActivityRole("123456789");
      */
     removeActivityRole(id) {
@@ -168,7 +179,7 @@ class ExtendedGuildEntry {
 
     /**
      * Check if the guild has the premium status
-     * @returns {boolean} Whether the guild has the premium status or not 
+     * @returns {Boolean} Whether the guild has the premium status or not 
      */
     hasPremiumStatus() {
         // @ts-ignore
@@ -185,7 +196,7 @@ class ExtendedGuildEntry {
     /**
      * Return this without the additional methods, essentially returns a proper database entry, ready to be saved into the database
      * Note that this shouldn't be called before saving it into the database, as the database wrapper already does it
-     * @returns {*} - This, as a proper database entry object (without the additional methods)
+     * @returns {GuildEntry} - This, as a proper database entry object (without the additional methods)
      */
     toDatabaseEntry() {
         const cleanObject = (() => {

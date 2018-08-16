@@ -1,19 +1,19 @@
 'use strict';
 
-const MusicCommands = require('../../util/helpers/modules/musicCommands');
+const MusicCommands = require('../../structures/CommandCategories/MusicCommandss.js');
 
 class Play extends MusicCommands {
     constructor(client) {
-        super(client, { userInVC: true, autoJoin: true });
-        this.help = {
-            name: 'play',
-            description: 'Play a song, you can input: A `YouTube` URL (including livestreams), a `Soundcloud` URL, a `Twitch` channel URL (the channel must be live);\n\nOr a search term to search through `YouTube` or `Soundcloud`, by default the search is done on `YouTube`, to search through `Soundcloud`, you must specify it like `{prefix}play soundcloud <search_term>`',
-            usage: '{prefix}play <song_url|search_term>'
-        };
-        this.conf = this.genericConf();
+        super(client, {
+            help: {
+                name: 'play',
+                description: 'Play a song, you can input: A `YouTube` URL (including livestreams), a `Soundcloud` URL, a `Twitch` channel URL (the channel must be live);\n\nOr a search term to search through `YouTube` or `Soundcloud`, by default the search is done on `YouTube`, to search through `Soundcloud`, you must specify it like `{prefix}play soundcloud <search_term>`',
+                usage: '{prefix}play <song_url|search_term>'
+            },
+        }, { userInVC: true, autoJoin: true });
     }
     /**
-    * @param {import("../../util/helpers/modules/musicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/Contexts/MusicContext.js")} context The context
     */
 
     async run(context) {
@@ -32,8 +32,8 @@ class Play extends MusicCommands {
                 return context.message.channel.createMessage(':x: You didn\'t specified any songs to play and there is nothing in the queue');
             }
         }
-        let tracks = track ? [] : await this.client.musicManager.resolveTracks(context.connection.player.node, context.args.join(' '));
-        if (tracks.loadType === this.client.musicManager.constants.loadTypes.playlist) {
+        let tracks = track ? [] : await this.client.handlers.MusicManager.resolveTracks(context.connection.player.node, context.args.join(' '));
+        if (tracks.loadType === this.client.handlers.MusicManager.constants.loadTypes.playlist) {
             return context.message.channel.createMessage(':x: Oops, this looks like a playlist to me, please use the `addplaylist` command instead');
         }
         track = track ? track : tracks.tracks[0];

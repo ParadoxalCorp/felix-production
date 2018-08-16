@@ -1,17 +1,25 @@
 'use strict';
 
-const references = require('../data/references');
-const config = require('../../../config');
+/** @typedef {import("../References").UserEntry} UserEntry
+ * @typedef {import("../references.js").TierLimits} TierLimits
+*/
+
+const references = require('../References');
+const config = require('../../config');
 
 class ExtendedUserEntry {
+    /**
+     * 
+     * @param {UserEntry} userEntry - The user entry
+     */
     constructor(userEntry) {
         Object.assign(this, userEntry);
     }
 
     /**
      * Check if a user has the specified item
-     * @param {number} itemID - The ID of the item 
-     * @returns {boolean} Whether or not the user has the specified item
+     * @param {Number} itemID - The ID of the item 
+     * @returns {Boolean} Whether or not the user has the specified item
      */
     hasItem(itemID) {
         // @ts-ignore
@@ -20,7 +28,7 @@ class ExtendedUserEntry {
 
     /**
      * Add an item to the user entry, handle already owned items cases (increment the count). This modifies the object
-     * @param {number} itemID - The ID of the item to add
+     * @param {Number} itemID - The ID of the item to add
      * @returns {void}
      */
     addItem(itemID) {
@@ -35,8 +43,8 @@ class ExtendedUserEntry {
 
     /**
      * Subtract coins from the user
-     * @param {number} amount - The amount of coins to subtract
-     * @returns {number} The coins of the user after subtraction 
+     * @param {Number} amount - The amount of coins to subtract
+     * @returns {Number} The coins of the user after subtraction 
      */
     subtractCoins(amount) {
         // @ts-ignore
@@ -47,8 +55,8 @@ class ExtendedUserEntry {
 
     /**
      * Add coins to the user
-     * @param {number} amount - The amount of coins to add
-     * @returns {number} The coins of the user after the coins were added 
+     * @param {Number} amount - The amount of coins to add
+     * @returns {Number} The coins of the user after the coins were added 
      */
     addCoins(amount) {
         // @ts-ignore
@@ -59,8 +67,8 @@ class ExtendedUserEntry {
 
     /**
      * Quickly compare the current timestamp with the cooldown to see if the user is in cooldown
-     * @param {string} cooldown - The name of the cooldown
-     * @return {boolean} Whether or not the user is in cooldown
+     * @param {String} cooldown - The name of the cooldown
+     * @return {Boolean} Whether or not the user is in cooldown
      */
     isInCooldown(cooldown) {
         // @ts-ignore
@@ -78,9 +86,9 @@ class ExtendedUserEntry {
 
     /**
      * Add a cooldown to the user
-     * @param {string} cooldown - The name of the cooldown
-     * @param {number} duration - The duration in milliseconds of the cooldown
-     * @returns {number} The timestamp at which the cooldown will expire
+     * @param {String} cooldown - The name of the cooldown
+     * @param {Number} duration - The duration in milliseconds of the cooldown
+     * @returns {Number} The timestamp at which the cooldown will expire
      */
     addCooldown(cooldown, duration) {
         // @ts-ignore
@@ -102,8 +110,8 @@ class ExtendedUserEntry {
 
     /**
      * To use on a cooldown that can have multiple cooldowns, get the first cooldown that will expire
-     * @param {string} cooldown - The name of the cooldown
-     * @returns {number} The timestamp of the nearest cooldown, or undefined if all of them are expired
+     * @param {String} cooldown - The name of the cooldown
+     * @returns {Number} The timestamp of the nearest cooldown, or undefined if all of them are expired
      */
     getNearestCooldown(cooldown) {
         // @ts-ignore
@@ -113,8 +121,8 @@ class ExtendedUserEntry {
 
     /**
      * Add experience to the user
-     * @param {number} amount The amount of experience to add to the user
-     * @returns {number} The total experience of the user
+     * @param {Number} amount The amount of experience to add to the user
+     * @returns {Number} The total experience of the user
      * @memberof ExtendedUserEntry
      */
     addExperience(amount) {
@@ -131,7 +139,7 @@ class ExtendedUserEntry {
 
     /**
      * Check if this user has the premium status
-     * @returns {boolean} Whether this user has the premium status 
+     * @returns {Boolean} Whether this user has the premium status 
      */
     hasPremiumStatus() {
         // @ts-ignore
@@ -145,10 +153,9 @@ class ExtendedUserEntry {
         
     }
 
-    //eslint-disable-next-line valid-jsdoc
     /**
      * Get the limitations of this user's tier 
-     * @returns {import("../data/references.js").TierLimits} The user's tier limits
+     * @returns {TierLimits} The user's tier limits
      */
     get tierLimits() {
         const perks = (profileBgSize, playlistLoadLimit, playlistSaveLimit, maxSavedPlaylists) => { return { profileBgSize, playlistLoadLimit, playlistSaveLimit, maxSavedPlaylists }; };

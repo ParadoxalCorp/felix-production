@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class RemoveDonator extends Command {
     constructor() {
@@ -24,9 +24,9 @@ class RemoveDonator extends Command {
 
     // eslint-disable-next-line no-unused-vars 
     async run(client, message, args, guildEntry, userEntry) {
-        const donator = await client.database.getUser(args[0]);
-        donator.premium = client.refs.userEntry(args[0]).premium;
-        await client.database.set(donator);
+        const donator = await client.handlers.DatabaseWrapper.getUser(args[0]);
+        donator.premium = client.structures.References.userEntry(args[0]).premium;
+        await client.handlers.DatabaseWrapper.set(donator);
         const user = await client.fetchUser(args[0]);
         return message.channel.createMessage(`:white_check_mark: Successfully disabled the premium status of the user **${user.tag}**`);
     }

@@ -1,6 +1,6 @@
 'use strict';
 
-const references = require('../data/references');
+const references = require('../structures/References');
 
 const databaseUpdater = (data, type, source) => {
     const defaultDataModel = source ? source : (type === "guild" ? references.guildEntry(data.id) : references.userEntry(data.id));

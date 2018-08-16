@@ -3,7 +3,7 @@
 
 //Written by Ota#1354 the 26/06/2018
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class Avatar extends Command {
     constructor() {

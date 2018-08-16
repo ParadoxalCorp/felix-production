@@ -51,7 +51,7 @@ class ImageHandler {
 
     async generateSubCommands() {
         const imageTypes = await this.client.weebSH.toph.getImageTypes({preview: true});
-        const Command = require('./Command');
+        const Command = require('../structures/Command');
         let generated = 0;
         const imageHandler = this;
         for (const type of imageTypes.types) {

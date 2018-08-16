@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class Experience extends Command {
     constructor() {
@@ -84,11 +84,11 @@ class Experience extends Command {
             return message.channel.createMessage(`:x: I couldn't find the role \`${args[1]}\` in this server`);
         } else if (alreadySet) {
             guildEntry.selfAssignableRoles.find(r => r.id === role.id).incompatibleRoles = resolvedRoles;
-            await client.database.set(guildEntry, 'guild');
+            await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
             return message.channel.createMessage(`:white_check_mark: Successfully updated the roles with which \`${role.name}\` can't be stacked`);
         }
-        guildEntry.selfAssignableRoles.push(client.refs.selfAssignableRole(role.id, resolvedRoles));
-        await client.database.set(guildEntry, 'guild');
+        guildEntry.selfAssignableRoles.push(client.structures.References.selfAssignableRole(role.id, resolvedRoles));
+        await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
         const warning = this._checkPermissions(client, message, guildEntry);
         return message.channel.createMessage(`:white_check_mark: Successfully set the role \`${role.name}\` as a self-assignable role ${warning !== true ? ('\n\n' + warning) : ''}`);
     }
@@ -102,7 +102,7 @@ class Experience extends Command {
             return message.channel.createMessage(`:x: This role isn't set as self-assignable`);
         }
         guildEntry.selfAssignableRoles.splice(guildEntry.selfAssignableRoles.findIndex(r => r === role.id), 1);
-        await client.database.set(guildEntry, 'guild');
+        await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
         return message.channel.createMessage(`:white_check_mark: Successfully removed the role \`${role.name}\``);
     }
 

@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 const axios = require('axios');
 const moment = require('moment');
 
@@ -79,7 +79,7 @@ class Npm extends Command {
         if (results[0].date) {
             embedFields.push({
                 name: 'Latest release',
-                value: `${client.timeConverter.toHumanDate(new Date(results[0].date).getTime())} (${moment().to(new Date(results[0].date).getTime())})`
+                value: `${client.utils.TimeConverter.toHumanDate(new Date(results[0].date).getTime())} (${moment().to(new Date(results[0].date).getTime())})`
             });
         }
         return message.channel.createMessage({

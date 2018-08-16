@@ -1,11 +1,14 @@
 'use strict';
 
-const MusicConnection = require('./musicConnection');
+const MusicConnection = require('../structures/HandlersStructures/MusicConnection');
 
 /**
  * @typedef {import("eris").Guild} Guild
  * @typedef {import("eris").EmbedBase} Embed
- * @typedef {import("../../../main.js")} Client
+ * @typedef {import("../main.js").Client} Client
+ * @typedef {import("eris").Channel} Channel
+ * @typedef {import("../structures/HandlersStructures/MusicConnection").LavalinkTrack} LavalinkTrack
+ * @typedef {import("../structures/HandlersStructures/MusicConnection").FelixTrack} FelixTrack
  */
 
 
@@ -29,7 +32,7 @@ class MusicManager {
         this.axios = require('axios').default.create({});
         this.axios.defaults.headers.common['Accept'] = 'application/json';
         // @ts-ignore
-        this.connections = new(require('../../modules/collection'))();
+        this.connections = new client.Collection();
         this.regions = {
             eu: ['eu-central', 'amsterdam', 'frankfurt', 'russia', 'hongkong', 'singapore', 'sydney', 'eu-west'],
             us: ['us-central', 'us-east', 'us-west', 'us-south', 'brazil'],
@@ -65,7 +68,7 @@ class MusicManager {
      * Resolve a list of tracks from the given query
      * @param {object} node - The node 
      * @param {string} query - The query
-     * @returns {Promise<array>} An array of resolved tracks
+     * @returns {Promise<Array>} An array of resolved tracks
      */
     async resolveTracks(node, query) {
         query = this._parseQuery(query);
@@ -80,7 +83,7 @@ class MusicManager {
 
     /**
      * Get or create a music player for the specified channel
-     * @param {object|string} channel - The Eris channel object (must be a guild voice channel) or its ID
+     * @param {Channel|String} channel - The Eris channel object (must be a guild voice channel) or its ID
      * @returns {Promise<MusicConnection>} A MusicConnection instance
      */
     async getPlayer(channel) {
@@ -104,8 +107,8 @@ class MusicManager {
     
     /**
      * Parse a song duration and make it human-readable
-     * @param {object|number} track - The track object or the duration of the song in milliseconds
-     * @returns {string} The human-readable duration of the video
+     * @param {LavalinkTrack|Number} track - The track object or the duration of the song in milliseconds
+     * @returns {String} The human-readable duration of the video
      */
     parseDuration(track) {
         const ms = track.info ? false : track;
@@ -138,8 +141,8 @@ class MusicManager {
 
     /**
      * @private
-     * @param {string} query - The query to parse
-     * @returns {string} The encoded query formatted according to the pattern identified 
+     * @param {String} query - The query to parse
+     * @returns {String} The encoded query formatted according to the pattern identified 
      */
     _parseQuery(query) {
         const args = query.split(/\s+/g);
@@ -165,18 +168,18 @@ class MusicManager {
 
     /**
      * Get the queue of a guild
-     * @param {string | Guild} guild - The guild ID or object to get the queue from
-     * @returns {Promise<array>} The queue, or an empty array if none has been retrieved from redis
+     * @param {String | Guild} guild - The guild ID or object to get the queue from
+     * @returns {Promise<Array<FelixTrack>>} The queue, or an empty array if none has been retrieved from redis
      */
     async getQueueOf(guild) {
-        if (!this.client.redis || !this.client.redis.healthy) {
+        if (!this.client.handlers.RedisManager || !this.client.handlers.RedisManager.healthy) {
             return [];
         }
         if (this.connections.get(guild.id || guild)) {
             return this.connections.get(guild.id || guild).queue;
         }
         //@ts-ignore
-        return this.client.redis.get(`${guild.id ? guild.id : guild}-queue`)
+        return this.client.handlers.RedisManager.get(`${guild.id ? guild.id : guild}-queue`)
             .then(q => q ? JSON.parse(q) : [])
             .catch(err => {
                 this.client.bot.emit("error", err);
@@ -198,7 +201,7 @@ class MusicManager {
     _reload() {
         this.disconnect();
         delete require.cache[module.filename];
-        delete require.cache[require.resolve('./musicConnection')];
+        delete require.cache[require.resolve('../structures/HandlersStructures/MusicConnection')];
         return new(require(module.filename))(this.client, {reload: true});
     }
 

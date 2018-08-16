@@ -1,18 +1,22 @@
 'use strict';
 
-/** @typedef {import("../../../main.js")} Client */
+/** @typedef {import("../main.js").Client} Client */
 
 const { inspect } = require('util');
-const TableInterface = require('./tableInterface');
-const ExtendedGuildEntry = require('./extendedGuildEntry');
-const ExtendedUserEntry = require('./extendedUserEntry');
+const TableInterface = require('../structures/HandlersStructures/TableInterface');
+const ExtendedGuildEntry = require('../structures/ExtendedStructures/extendedGuildEntry');
+const ExtendedUserEntry = require('../structures/ExtendedStructures/extendedUserEntry');
 
+/**
+ * @class DatabaseWrapper
+ */
 class DatabaseWrapper {
     /**
      * 
      * @param {Client} client - The client instance
      */
     constructor(client) {
+        /** @type {Client} */
         this.client = client;
         this.rethink = require("rethinkdbdash")({
             servers: [
@@ -23,10 +27,13 @@ class DatabaseWrapper {
             password: client.config.database.password,
             db: client.config.database.database
         });
+        /** @type {Boolean} Whether the connection is in a healthy state */
         this.healthy = false;
         this.rethink.getPoolMaster().on('healthy', this._onHealthy.bind(this));
         this._initAttempts = 0;
+        /** @type {TableInterface} */
         this.userData;
+        /** @type {TableInterface} */
         this.guildData;
         this._init.bind(this)().catch(this._handleFailedInit.bind(this));
     }
@@ -56,7 +63,7 @@ class DatabaseWrapper {
                 //Requires to change the structure from an array containing strings (role ids) to objects (role ids + incompatible roles)
                 data.selfAssignableRoles = data.selfAssignableRoles.map(selfAssignableRoles => {
                     if (typeof selfAssignableRoles === "string") {
-                      return this.client.refs.selfAssignableRole(selfAssignableRoles);
+                      return this.client.structures.References.selfAssignableRole(selfAssignableRoles);
                     }
                     return selfAssignableRoles;
                 });
@@ -71,7 +78,7 @@ class DatabaseWrapper {
 
     /**
      * Get a stored user from their ID
-     * @param {string} id - The ID of the user to get
+     * @param {String} id - The ID of the user to get
      * @returns {Promise<ExtendedUserEntry>} The stored user entry, or a new one
      */
     getUser(id) {
@@ -80,7 +87,7 @@ class DatabaseWrapper {
 
     /**
      * Get a stored guild from its ID
-     * @param {string} id - The ID of the guild to get
+     * @param {String} id - The ID of the guild to get
      * @returns {Promise<ExtendedGuildEntry>} The stored guild entry, or a new one
      */
     getGuild(id) {
@@ -90,8 +97,8 @@ class DatabaseWrapper {
     /**
      * 
      * @param {*} value - The value to insert, must contain a `id` property
-     * @param {string} type - The type, or name of the table, can be omitted if the value is a Extended<...>Entry instance
-     * @returns {Promise<any>} The value
+     * @param {String} type - The type, or name of the table, can be omitted if the value is a Extended<...>Entry instance
+     * @returns {Promise<*>} The value
      */
     set(value, type) {
         type = type ? type : (value instanceof ExtendedUserEntry ? 'users' : 'guilds');
@@ -128,10 +135,10 @@ class DatabaseWrapper {
         this.healthy = false;
         this.rethink.getPoolMaster().drain();
         delete require.cache[module.filename];
-        delete require.cache[require.resolve('./tableInterface')];
-        delete require.cache[require.resolve('./databaseUpdater')];
-        this.userData = null;
-        this.guildData = null;
+        delete require.cache[require.resolve('../structures/HandlersStructures/TableInterface')];
+        delete require.cache[require.resolve('../utils/databaseUpdater')];
+        this.userData = undefined;
+        this.guildData = undefined;
         const updatedDatabaseWrapper = require(module.filename);
         return new updatedDatabaseWrapper(this.client);
     }

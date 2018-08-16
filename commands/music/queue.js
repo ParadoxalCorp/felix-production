@@ -1,6 +1,6 @@
 'use strict';
 
-const MusicCommands = require('../../util/helpers/modules/musicCommands');
+const MusicCommands = require('../../structures/CommandCategories/MusicCommands');
 
 class Queue extends MusicCommands {
     constructor(client) {
@@ -13,15 +13,15 @@ class Queue extends MusicCommands {
         this.conf = this.genericConf();
     }
     /**
-    * @param {import("../../util/helpers/modules/musicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/CommandCategories/MusicCommands.js").MusicContext} context The context
     */
 
     async run(context) {
         const member = context.message.channel.guild.members.get(context.message.author.id);
         const clientMember = context.message.channel.guild.members.get(this.client.bot.user.id);
-        let connection = this.client.musicManager.connections.get(context.message.channel.guild.id);
+        let connection = this.client.handlers.MusicManager.connections.get(context.message.channel.guild.id);
         if (!context.args[0]) {
-            let queue = connection ? connection.queue : await this.client.musicManager.getQueueOf(context.message.channel.guild.id);
+            let queue = connection ? connection.queue : await this.client.handlers.MusicManager.getQueueOf(context.message.channel.guild.id);
             if (!queue[0]) {
                 return context.message.channel.createMessage(`:x: There is nothing in the queue`);
             }
@@ -36,10 +36,10 @@ class Queue extends MusicCommands {
             }
         }
         if (!connection) {
-            connection = await this.client.musicManager.getPlayer(context.message.channel.guild.channels.get(member.voiceState.channelID));
+            connection = await this.client.handlers.MusicManager.getPlayer(context.message.channel.guild.channels.get(member.voiceState.channelID));
         }
-        const resolvedTracks = await this.client.musicManager.resolveTracks(connection.player.node, context.args.join(' '));
-        if (resolvedTracks.loadType === this.client.musicManager.constants.loadTypes.playlist) {
+        const resolvedTracks = await this.client.handlers.MusicManager.resolveTracks(connection.player.node, context.args.join(' '));
+        if (resolvedTracks.loadType === this.client.handlers.MusicManager.constants.loadTypes.playlist) {
             return context.message.channel.createMessage(':x: Oops, this looks like a playlist to me, please use the `addplaylist` command instead');
         }
         let queued;
@@ -70,11 +70,11 @@ class Queue extends MusicCommands {
                 inline: true
             }, {
                 name: 'Duration',
-                value: this.client.musicManager.parseDuration(track),
+                value: this.client.handlers.MusicManager.parseDuration(track),
                 inline: true
             }, {
                 name: 'Estimated time until playing',
-                value: this.client.musicManager.parseDuration(queued.timeUntilPlaying)
+                value: this.client.handlers.MusicManager.parseDuration(queued.timeUntilPlaying)
             }],
             color: this.client.config.options.embedColor
         }});
@@ -84,19 +84,19 @@ class Queue extends MusicCommands {
         let formattedQueue = '';
         if (connection) {
             formattedQueue += `:musical_note: Now playing: **${connection.nowPlaying.info.title}** `;
-            formattedQueue += `(${this.client.musicManager.parseDuration(connection.player.state.position)}/${this.client.musicManager.parseDuration(connection.nowPlaying)})\n`;
+            formattedQueue += `(${this.client.handlers.MusicManager.parseDuration(connection.player.state.position)}/${this.client.handlers.MusicManager.parseDuration(connection.nowPlaying)})\n`;
             formattedQueue += `Repeat: ${this.client.commands.get('repeat').extra[connection.repeat].emote}\n\n`;
         }
         let i = 1;
         let queue = [...connectionQueue];
         for (const track of queue) {
             if (formattedQueue.length >= 1750) {
-                return formattedQueue += `\n\nAnd **${queue.length - i}** more... ${connection ? ("**Total queue estimated duration**: `" + this.client.musicManager.parseDuration(connection.queueDuration) + "`") : ''}`;
+                return formattedQueue += `\n\nAnd **${queue.length - i}** more... ${connection ? ("**Total queue estimated duration**: `" + this.client.handlers.MusicManager.parseDuration(connection.queueDuration) + "`") : ''}`;
             }
-            formattedQueue += `\`${i++}\` - **${track.info.title}** (\`${this.client.musicManager.parseDuration(track)}\`)\n`;
+            formattedQueue += `\`${i++}\` - **${track.info.title}** (\`${this.client.handlers.MusicManager.parseDuration(track)}\`)\n`;
         }
         if (connection) {
-            formattedQueue += `\n**Total queue estimated duration**: \`${this.client.musicManager.parseDuration(connection.queueDuration)}\``;
+            formattedQueue += `\n**Total queue estimated duration**: \`${this.client.handlers.MusicManager.parseDuration(connection.queueDuration)}\``;
         }
         return formattedQueue;
     }

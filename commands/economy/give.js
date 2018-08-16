@@ -4,7 +4,7 @@
  * @typedef {import("eris").Message} Message
  */
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class Give extends Command {
     constructor() {
@@ -53,8 +53,8 @@ class Give extends Command {
             return message.channel.createMessage(':x: Yeah well, how to say this.. you can\'t give more coins than you have..');
         }
         //@ts-ignore
-        const receiverEntry = await client.database.getUser(receiver.id) || client.refs.userEntry(receiver.id);
-        const transaction = await client.economyManager.transfer({ from: userEntry, to: receiverEntry, amount: coins });
+        const receiverEntry = await client.handlers.DatabaseWrapper.getUser(receiver.id) || client.structures.References.userEntry(receiver.id);
+        const transaction = await client.handlers.EconomyManager.transfer({ from: userEntry, to: receiverEntry, amount: coins });
         //@ts-ignore
         return message.channel.createMessage(`:white_check_mark: You just transferred \`${transaction.donor.debited}\` of your holy coins to \`${receiver.username + '#' + receiver.discriminator}\``);
     }

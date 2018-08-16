@@ -1,6 +1,6 @@
 'use strict';
 
-const MusicCommands = require('../../util/helpers/modules/musicCommands');
+const MusicCommands = require('../../structures/CommandCategories/MusicCommands');
 
 class SeePlaylists extends MusicCommands {
     constructor(client) {
@@ -13,11 +13,11 @@ class SeePlaylists extends MusicCommands {
         this.conf = this.genericConf({ requireDB: true });
     }
     /**
-    * @param {import("../../util/helpers/modules/musicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/CommandCategories/MusicCommands.js").MusicContext} context The context
     */
 
     async run(context) {
-        const userPlaylists = await this.client.database.rethink.table("playlists").filter({userID: context.message.author.id}).run();
+        const userPlaylists = await this.client.handlers.DatabaseWrapper.rethink.table("playlists").filter({userID: context.message.author.id}).run();
         if (!userPlaylists[0]) {
             return context.message.channel.createMessage(':x: You do not have any saved playlists :v, save one with the `saveplaylist` command');
         }

@@ -609,7 +609,7 @@ Returns: {Object} - An object containing detailled data regarding the level and 
 Call example:
 
 ```js
-client.getLevelDetails(1, 57);
+client.handlers.ExperienceHandler.getLevelDetails(1, 57);
 ```
 
 Response structure:

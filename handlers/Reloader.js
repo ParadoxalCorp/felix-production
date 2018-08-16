@@ -1,10 +1,10 @@
 'use strict';
 
-/** @typedef {import("../../../main.js")} Client */
+/** @typedef {import("../main.js").Client} Client */
 
 const fs = require('fs');
 const { join } = require('path');
-/** @typedef {import("eris").Command} Command */
+/** @typedef {import("../structures/Command.js")} Command */
 
 /**
  * Provides methods to reload events listeners, modules and commands

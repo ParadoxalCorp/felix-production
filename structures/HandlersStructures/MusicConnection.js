@@ -1,9 +1,8 @@
 'use strict';
 
 /** 
- * @typedef {import("../../../main.js")} Client
+ * @typedef {import("../../main.js").Client} Client
  * @typedef {import("eris-lavalink").Player} ErisLavalinkPlayer
- * @typedef {import("events")} NodeEvents
  * @typedef {import("eventemitter3")} EventEmitter3
  */
 
@@ -40,30 +39,33 @@
  * @property {PartialLavalinkTrackInfo} info An object of info about the track
  */
 
+ /** @typedef {Object} ExtendedTrackInfo
+  * @prop {String} requestedBy The ID of the user who requested this track
+  * @prop {String} _id The generated ID for this track, for internal purposes
+  */
+
 /**
  * @typedef {Object} ExtendedTrack  
  * @property {String} voteID If any, the ID of the ongoing vote targeting this track
- * @property {{requestedBy: String, _id: Number }} info Info about the track
+ * @property {ExtendedTrackInfo} info Info about the track
  */
 
  /**
  * @typedef {LavalinkTrack & ExtendedTrack} FelixTrack  
  */
 
-/** @type {any} */
-const EventEmitter = (() => {
-    let eventEmitter;
-    try {
-        eventEmitter = require('eventemitter3');
-    } catch (err) {
-        eventEmitter = require('events');
-    }
-    return eventEmitter;
-})();
+ /**
+ * @typedef {Object} AddedTrack  
+ * @property {Number} position The position of the track in the queue
+ * @property {Number} timeUntilPlaying Estimated time in milliseconds before the track will be played
+ */
+
+const EventEmitter = require('eventemitter3');
 
 /**
  * Provides methods to easily manage the queue and the ongoing vote if any, as well as synchronize the queue with redis and handle events in the background
  * @extends EventEmitter
+ * @class MusicConnection
  */
 class MusicConnection extends EventEmitter {
     /**
@@ -101,8 +103,8 @@ class MusicConnection extends EventEmitter {
      * @returns {Promise<void>} Nothing worth it
      */
     async _init(resolve) {
-        if (this.client.redis && this.client.redis.healthy) {
-            await this.client.redis.get(`${this.player.guildId}-queue`)
+        if (this.client.handlers.RedisManager && this.client.handlers.RedisManager.healthy) {
+            await this.client.handlers.RedisManager.get(`${this.player.guildId}-queue`)
                 .then(q => {
                     this.queue = q ? JSON.parse(q) : [];
                 })
@@ -116,9 +118,9 @@ class MusicConnection extends EventEmitter {
     /**
      * Add a track to the queue
      * @param {LavalinkTrack} track - The track object returned by Lavalink 
-     * @param {string} requestedBy - The ID of the user who requested this track
-     * @param {boolean} [unshift=false] - Whether the track should be pushed at the start of the queue or not, default to false
-     * @returns {{position: number, timeUntilPlaying: number}} An object containing the position at which the song has been queued and the estimated time in ms before it will be played 
+     * @param {String} requestedBy - The ID of the user who requested this track
+     * @param {Boolean} [unshift=false] - Whether the track should be pushed at the start of the queue or not, default to false
+     * @returns {AddedTrack} An object containing the position at which the song has been queued and the estimated time in ms before it will be played 
      */
     addTrack(track, requestedBy, unshift = false) {
         this.queue[unshift ? "unshift" : "push"]({
@@ -149,10 +151,10 @@ class MusicConnection extends EventEmitter {
 
     /**
      * Add multiple tracks to the queue
-     * @param {array} tracks - An array of Lavalink tracks to add to the queue
-     * @param {string} [requestedBy] - The ID of the user who requested these tracks, can be omitted if already specified
-     * @param {boolean} [unshift=false] - Whether to add these tracks at the beginning of the queue or at the end, defaults to false
-     * @returns {number} The new length of the queue
+     * @param {Array<LavalinkTrack>} tracks - An array of Lavalink tracks to add to the queue
+     * @param {String} [requestedBy] - The ID of the user who requested these tracks, can be omitted if already specified
+     * @param {Boolean} [unshift=false] - Whether to add these tracks at the beginning of the queue or at the end, defaults to false
+     * @returns {Number} The new length of the queue
      */
     addTracks(tracks, requestedBy, unshift = false) {
         tracks = tracks.map(t => {
@@ -223,8 +225,8 @@ class MusicConnection extends EventEmitter {
 
     /**
      * Play a given song
-     * @param {object} song - The Lavalink track to play 
-     * @param {string} [requestedBy] - The ID of the user who requested this track
+     * @param {LavalinkTrack} song - The Lavalink track to play 
+     * @param {String} [requestedBy] - The ID of the user who requested this track
      * @param {object} [options] - An object of options to pass to Lavalink
      * @returns {FelixTrack} The given song
      */
@@ -285,7 +287,7 @@ class MusicConnection extends EventEmitter {
 
     /**
      * The total duration of the queue
-     * @returns {number} The total duration of the queue in ms
+     * @returns {Number} The total duration of the queue in ms
      */
     get queueDuration() {
         let total = 0;
@@ -311,10 +313,10 @@ class MusicConnection extends EventEmitter {
      */
     clearQueue() {
         this.queue = [];
-        if (!this.client.redis) {
+        if (!this.client.handlers.RedisManager) {
             return;
         }
-        return this.client.redis.del(`${this.player.guildId}-queue`);
+        return this.client.handlers.RedisManager.del(`${this.player.guildId}-queue`);
     }
     
     /**
@@ -322,8 +324,8 @@ class MusicConnection extends EventEmitter {
      * @returns {void}
      */
     _saveQueue() {
-        if (this.client.redis && this.client.redis.healthy) {
-            this.client.redis.set(`${this.player.guildId}-queue`, JSON.stringify(this.queue))
+        if (this.client.handlers.RedisManager && this.client.handlers.RedisManager.healthy) {
+            this.client.handlers.RedisManager.set(`${this.player.guildId}-queue`, JSON.stringify(this.queue))
                 .catch(err => this.client.bot.emit("error", err));
         }
     }

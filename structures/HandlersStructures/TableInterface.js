@@ -1,12 +1,12 @@
 // @ts-nocheck
 'use strict';
 
-/** @typedef {import("../../../main.js")} Client */
+/** @typedef {import("../../main.js").Client} Client */
 
 const { inspect } = require('util');
-const Collection = require('../../modules/collection');
-const databaseUpdater = require('./databaseUpdater');
-const references = require('../data/references');
+const Collection = require('../../utils/Collection');
+const databaseUpdater = require('../../utils/databaseUpdater');
+const references = require('../References');
 
 class TableInterface {
     /**
@@ -19,14 +19,19 @@ class TableInterface {
      * @param {function} params.finalCheck - A function that will be called with the `data`parameter after the databaseUpdater, specify one to manipulate the updated data 
      */
     constructor(params) {
+        /** @type {Client} */
         this.client = params.client;
         this._rethink = params.rethink;
         this.table = this._init(params.tableName);
         this.changesStream;
+        /** @type {Collection} The cache for this table */
         this.cache = new Collection();
+        /** @type {String} The name of the table */
         this.tableName = params.tableName;
         this.extension = params.extension.bind(params.client);
+        /** @type {Function} */
         this.initialCheck = params.initialCheck;
+        /** @type {Function} */
         this.finalCheck = params.finalCheck;
         this._cacheDuration = 18e5;
         this._sweepInterval = setInterval(this._sweep.bind(this), this._cacheDuration);
@@ -34,9 +39,9 @@ class TableInterface {
 
     /**
      * 
-     * @param {string} tableName - The name of the table
+     * @param {String} tableName - The name of the table
      * @private
-     * @returns {Promise<object>} The RethinkDB table
+     * @returns {Promise<Object>} The RethinkDB table
      */
     async _init(tableName) {
         await this._rethink.table(tableName).changes({ squash: true, includeInitial: true, includeTypes: true }).run()
@@ -53,8 +58,8 @@ class TableInterface {
 
     /**
      * Set or update an entry in the database
-     * @param {object} data - The extended entry class or the raw data object to set
-     * @returns {Promise<any>} The updated data 
+     * @param {Object} data - The extended entry class or the raw data object to set
+     * @returns {Promise<Object>} The updated data 
      */
     async set(data) {
         return this._rethink.table(this.tableName).get(data.id).replace(data.toDatabaseEntry ? data.toDatabaseEntry() : data, {returnChanges: 'always'}).run()
@@ -65,8 +70,8 @@ class TableInterface {
 
     /**
      * Get a stored value in the table from its key
-     * @param {string|number} key - The key of the stored value to get
-     * @returns {Promise<any>} The stored value, or a new entry 
+     * @param {String|Number} key - The key of the stored value to get
+     * @returns {Promise<Object>} The stored value, or a new entry 
      */
     async get(key) {
         const update = (data) => {
@@ -80,7 +85,7 @@ class TableInterface {
             cachedValue = new this.extension(update(cachedValue), this.client);
             return cachedValue;
         }
-        if (!this.client.database.healthy) {
+        if (!this.client.handlers.DatabaseWrapper.healthy) {
             return null;
         }
         return this._rethink.table(this.tableName).get(key).run()
@@ -100,13 +105,13 @@ class TableInterface {
     }
 
     async _handleBrokenStream(err) {
-        this.client.database.healthy = false;
+        this.client.handlers.DatabaseWrapper.healthy = false;
         this.client.bot.emit('error', inspect(err));
         const testQuery = await this._rethink.table(this.tableName).get('test').run().catch(() => false);
         if (!testQuery) {
             return;
         }
-        this.client.database.healthy = true;
+        this.client.handlers.DatabaseWrapper.healthy = true;
         process.send({name: 'warn', msg: `Changes stream for the table ${this.tableName} is broken but the table can still be used`});
     }
 

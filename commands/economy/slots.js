@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class Slots extends Command {
     constructor() {
@@ -156,28 +156,28 @@ class Slots extends Command {
     async outputLostGamble(client, message, userEntry, slots, lostCoins, randomEvent, animatedSlots) {
         //In case the user lose/win coins during the slots animation, fetch the latest coins amount
         if (animatedSlots) {
-            userEntry = await client.database.getUser(userEntry.id);
+            userEntry = await client.handlers.DatabaseWrapper.getUser(userEntry.id);
         }
         userEntry.economy.coins = (userEntry.economy.coins + lostCoins) < 0 ? 0 : userEntry.economy.coins + lostCoins;
-        await client.database.set(userEntry, "user");
+        await client.handlers.DatabaseWrapper.set(userEntry, "user");
         const resultText = `${randomEvent ? (randomEvent + '\n\n') : 'You **lose**, '}\`${Math.abs(lostCoins)}\` holy coins has been debited from your account. You now have \`${userEntry.economy.coins}\` holy coins`;
         return this.sendResults(client, message, slots, resultText, animatedSlots);
     }
 
     async outputWonGamble(client, message, userEntry, slots, wonCoins, randomEvent, animatedSlots) {
         if (animatedSlots) {
-            userEntry = await client.database.getUser(userEntry.id);
+            userEntry = await client.handlers.DatabaseWrapper.getUser(userEntry.id);
         }
         wonCoins = Math.ceil(wonCoins);
         userEntry.economy.coins = (userEntry.economy.coins + wonCoins) >= client.config.options.coinsLimit ?
             client.config.options.coinsLimit : userEntry.economy.coins + wonCoins;
-        await client.database.set(userEntry, "user");
+        await client.handlers.DatabaseWrapper.set(userEntry, "user");
         const resultText = `${randomEvent ? (randomEvent + '\n\n') : 'You **win**, '}\`${wonCoins}\` holy coins has been credited to your account. You now have \`${userEntry.economy.coins}\` holy coins`;
         return this.sendResults(client, message, slots, resultText, animatedSlots);
     }
 
     runRandomSlotsEvent(client, message, userEntry, slots, coinsChange, animatedSlots) {
-        const filteredSlotsEvents = client.economyManager.slotsEvents.filter(e => e.case === (coinsChange > 0 ? 'won' : 'lost'));
+        const filteredSlotsEvents = client.handlers.EconomyManager.slotsEvents.filter(e => e.case === (coinsChange > 0 ? 'won' : 'lost'));
         const slotsEvent = filteredSlotsEvents[client.getRandomNumber(0, filteredSlotsEvents.length - 1)];
         const eventCoinsChangeRate = Array.isArray(slotsEvent.changeRate) ? client.getRandomNumber(slotsEvent.changeRate[0], slotsEvent.changeRate[1]) : slotsEvent.changeRate;
         const eventCoinsChange = Math.round(Math.abs(coinsChange / 100 * eventCoinsChangeRate));

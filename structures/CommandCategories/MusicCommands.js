@@ -1,45 +1,36 @@
 'use strict';
 
 /**   
-* @typedef {import("../../../main.js")} Client
+* @typedef {import("../../main.js").Client} Client
 * @typedef {import("./musicConnection").FelixTrack} FelixTrack
+* @typedef {import("../Command.js").PartialCommandOptions} PartialCommandOptions
 */
 
-/**
-* @typedef {Object} MusicContext 
-* @property {import("eris").Message} message The message 
-* @property {Array<string>} args The parsed args 
-* @property {import("../data/references.js").GuildEntry & import("./extendedGuildEntry.js")} guildEntry The database entry of the guild, undefined if used in DM
-* @property {import("../data/references.js").UserEntry & import("./extendedUserEntry.js")} userEntry The database entry of the user
-* @property {import("./musicConnection.js")} connection The MusicConnection instance of the guild, if any
-* @property {import("./musicConnection.js").FelixTrack} currentTrack The currently playing track, if any
-* @property {import("eris").VoiceChannel} clientVC The voice channel the bot is in, if any
-* @property {import("eris").VoiceChannel} userVC The voice channel the user is in, if any
-*/
+const MusicContext = require('../Contexts/MusicContext.js');
 
-const Command = require('./Command');
+const Command = require('../Command');
 
 class MusicCommands extends Command {
     /**
      * 
      * @param {Client} client - The client instance
+     * @param {PartialCommandOptions}  commandOptions - The general command configuration
      * @param {{noArgs: string, userInVC: boolean, autoJoin: boolean, playing: boolean}} [options={}]  - `noArgs` specify a message to return if no arguments are provided, `userInVC` checks if the member is in a voice channel, `autoJoin` automatically joins the voice channel if not in, `playing` checks if Felix is playing. These args will make the command handler act before running the command
      */
-    constructor(client, options = {}) {
-        super(client);
-        this.options = options;
-        this.category = {
+    constructor(client, commandOptions, options = {}) {
+        super(client, { ...commandOptions, category: {
             name: 'Music',
-            emote: ':musical_note: :new:'
-        };
-        this.genericConf = this.commandsConf.bind(null, {
-            guildOnly: true,
-            requirePerms: ['voiceConnect', 'voiceSpeak']
-        });
+            emote: ':musical_note: :new:',
+            conf: {
+                guildOnly: true,
+                requirePerms: ['voiceConnect', 'voiceSpeak']
+            }
+        }});
+        this.options = options;
     }
 
     //eslint-disable-next-line no-unused-vars
-    async initialCheck(message, args, guildEntry, userEntry) {
+    async initialCheck(client, message, args, guildEntry, userEntry) {
         const member = message.channel.guild.members.get(message.author.id);
         const clientMember = message.channel.guild.members.get(this.client.bot.user.id);
         if (this.options.userInVC && (clientMember.voiceState.channelID && clientMember.voiceState.channelID !== member.voiceState.channelID)) {
@@ -51,10 +42,10 @@ class MusicCommands extends Command {
                 return message.channel.createMessage(':x: It seems like I lack the permission to connect or to speak in the voice channel you are in :c');
             }
             if (userVC) {
-                await this.client.musicManager.getPlayer(userVC);
+                await this.client.handlers.MusicManager.getPlayer(userVC);
             }
         }
-        const connection = this.client.musicManager.connections.get(message.channel.guild.id);
+        const connection = this.client.handlers.MusicManager.connections.get(message.channel.guild.id);
         if (this.options.playing) {
             if (!connection || !connection.nowPlaying) {
                 return message.channel.createMessage(':x: I am not playing anything');
@@ -65,10 +56,7 @@ class MusicCommands extends Command {
         }
         return { 
             passed: true,
-            context: { message, args, guildEntry, userEntry, connection, 
-                currentTrack: connection ? connection.nowPlaying : null, 
-                clientVC: message.channel.guild.channels.get(message.channel.guild.members.get(this.client.bot.user.id).voiceState.channelID), userVC
-            }
+            context: new MusicContext(client, message, args, guildEntry, userEntry)
         };
     }
 
@@ -89,7 +77,7 @@ class MusicCommands extends Command {
             inline: true
         }, {
             name: 'Duration',
-            value: (connection.nowPlaying.info._id === track.info._id ? `${this.client.musicManager.parseDuration(connection.player.state.position || 0)}/` : '') + this.client.musicManager.parseDuration(track),
+            value: (connection.nowPlaying.info._id === track.info._id ? `${this.client.handlers.MusicManager.parseDuration(connection.player.state.position || 0)}/` : '') + this.client.handlers.MusicManager.parseDuration(track),
             inline: true
         }];
         if (track.info.requestedBy) {
@@ -120,7 +108,7 @@ class MusicCommands extends Command {
         let searchResults = `Your search has returned multiple results, please select one by replying their corresponding number\n\n`;
         let i = 1;
         for (const song of tracks) {
-            searchResults += `\`${i++}\` - **${song.info.title}** by **${song.info.author}** (${this.client.musicManager.parseDuration(song)})\n`;
+            searchResults += `\`${i++}\` - **${song.info.title}** by **${song.info.author}** (${this.client.handlers.MusicManager.parseDuration(song)})\n`;
         }
         await context.message.channel.createMessage(searchResults);
         const reply = await this.client.messageCollector.awaitMessage(context.message.channel.id, context.message.author.id);

@@ -55,6 +55,11 @@
   * @prop {CommandCategory} category An object describing the category; this should be passed by the command's category class and not the command itself
   */
 
+  /** @typedef {Object} PartialCommandOptions
+  * @prop {CommandHelp} help An object detailing the command
+  * @prop {CommandConf} conf The configuration of the command
+  */
+
 /**
  * Provide some utility methods to parse the args of a message, check the required permissions...
  * @class Command
@@ -66,10 +71,10 @@ class Command {
      * @param {Client} [client] - The client instance
      * @param {CommandOptions} [options] - General configuration of the command
      */
-    constructor(client, options) {
+    constructor(client, options = {}) {
         this.client = client;
         this.help = options.help;
-        this.conf = this.commandsConf(options.category.conf, options.conf);
+        this.conf = this.commandsConf(options.category ? options.category.conf : {}, options.conf);
         this.category = options.category;
     }
 
@@ -84,9 +89,9 @@ class Command {
         return new Promise(async (resolve, reject) => {
             const args = message.content.split(/\s+/);
             // @ts-ignore
-            const guildEntry = message.channel.guild && client.database && client.database.healthy ?
+            const guildEntry = message.channel.guild && client.handlers.DatabaseWrapper && client.handlers.DatabaseWrapper.healthy ?
                 // @ts-ignore
-                await client.database.getGuild(message.channel.guild.id).catch(err => {
+                await client.handlers.DatabaseWrapper.getGuild(message.channel.guild.id).catch(err => {
                     return reject(err);
                 }) :
                 false;

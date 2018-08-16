@@ -1,6 +1,6 @@
 'use strict';
 const axios = require("axios");
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 //Written by Ota#1354 the 26/06/2018
 

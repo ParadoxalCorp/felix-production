@@ -14,9 +14,9 @@ class EconomyManager {
      */
     constructor(client) {
         this.client = client;
-        this.marketItems = require('../data/marketItems');
-        this.slotsEvents = require('../data/slotsEvents')(client, this);
-        this.dailyEvents = require('../data/dailyEvents')(client, this);
+        this.marketItems = require('../structures/HandlersStructures/marketItems');
+        this.slotsEvents = require('../structures/HandlersStructures/slotsEvents')(client, this);
+        this.dailyEvents = require('../structures/HandlersStructures/dailyEvents')(client, this);
     }
 
     /**
@@ -41,7 +41,7 @@ class EconomyManager {
         params.from.economy.coins = params.from.economy.coins - transactionSummary.donor.debited;
         params.to.economy.coins = params.to.economy.coins + transactionSummary.receiver.credited;
         const registeredTransaction = this._registerTransaction(transactionSummary, params.from, params.to);
-        await Promise.all([this.client.database.set(registeredTransaction.donor, 'user'), this.client.database.set(registeredTransaction.receiver, 'user')]);
+        await Promise.all([this.client.handlers.DatabaseWrapper.set(registeredTransaction.donor, 'user'), this.client.handlers.DatabaseWrapper.set(registeredTransaction.receiver, 'user')]);
         return transactionSummary;
     }
 
@@ -54,14 +54,14 @@ class EconomyManager {
      * @private 
      */
     _registerTransaction(transactionSummary, donor, receiver) {
-        donor.economy.transactions.unshift(this.client.refs.transactionData({
+        donor.economy.transactions.unshift(this.client.structures.References.transactionData({
             amount: -transactionSummary.donor.debited,
             from: transactionSummary.donor.user,
             to: transactionSummary.receiver.user,
             reason: 'transfer'
         }));
         donor.economy.transactions = donor.economy.transactions.slice(0, 10);
-        receiver.economy.transactions.unshift(this.client.refs.transactionData({
+        receiver.economy.transactions.unshift(this.client.structures.References.transactionData({
             amount: transactionSummary.receiver.credited,
             from: transactionSummary.donor.user,
             to: transactionSummary.receiver.user,

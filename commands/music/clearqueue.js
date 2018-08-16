@@ -1,6 +1,6 @@
 'use strict';
 
-const MusicCommands = require('../../util/helpers/modules/musicCommands');
+const MusicCommands = require('../../structures/CommandCategories/MusicCommands');
 
 class ClearQueue extends MusicCommands {
     constructor(client) {
@@ -13,14 +13,14 @@ class ClearQueue extends MusicCommands {
         this.conf = this.genericConf({ aliases: ['cq'] });
     }
     /**
-    * @param {import("../../util/helpers/modules/musicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/CommandCategories/MusicCommands.js").MusicContext} context The context
     */
 
     async run(context) {
         if (!context.connection || !context.connection.queue[0]) {
-            const queue = await this.client.musicManager.getQueueOf(context.message.channel.guild.id);
+            const queue = await this.client.handlers.MusicManager.getQueueOf(context.message.channel.guild.id);
             if (queue[0]) {
-                await this.client.redis.del(`${context.message.channel.guild.id}-queue`);
+                await this.client.handlers.RedisManager.del(`${context.message.channel.guild.id}-queue`);
                 return context.message.channel.createMessage(':white_check_mark: Successfully cleared the queue');
             }
             return context.message.channel.createMessage(':x: There is nothing in the queue');

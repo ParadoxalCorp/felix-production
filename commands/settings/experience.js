@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class Experience extends Command {
     constructor() {
@@ -146,7 +146,7 @@ class Experience extends Command {
     async enable(client, message, args, guildEntry) {
         if (!guildEntry.experience.enabled) {
             guildEntry.experience.enabled = true;
-            await client.database.set(guildEntry, 'guild');
+            await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
             return message.channel.createMessage(':white_check_mark: Alright, the activity system is now enabled, members will gain experience as they speak');
         } else {
             return message.channel.createMessage(':x: The activity system is already enabled');
@@ -156,7 +156,7 @@ class Experience extends Command {
     async disable(client, message, args, guildEntry) {
         if (guildEntry.experience.enabled) {
             guildEntry.experience.enabled = false;
-            await client.database.set(guildEntry, 'guild');
+            await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
             return message.channel.createMessage(':white_check_mark: Alright, the activity system is now disabled');
         } else {
             return message.channel.createMessage(':x: The activity system is already disabled');
@@ -177,8 +177,8 @@ class Experience extends Command {
         } else if (parseInt(args[2]) > client.config.options.experience.maxRolesLevel) {
             return message.channel.createMessage(`:x: \`${client.config.options.experience.maxRolesLevel}\` is the maximum level at which you can assign roles, as it isn't realistically possible to reach it`);
         }
-        guildEntry.experience.roles.push(client.refs.activityGuildRole(role.id, parseInt(args[2]), args.includes('static')));
-        await client.database.set(guildEntry, 'guild');
+        guildEntry.experience.roles.push(client.structures.References.activityGuildRole(role.id, parseInt(args[2]), args.includes('static')));
+        await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
         let warning = '';
         const hasPerm = Array.isArray(this.clientHasPermissions(message, client, ['manageRoles'])) ? false : true;
         if (!hasPerm || role.position > this.getHighestRole(client.bot.user.id, message.channel.guild).position) {
@@ -199,7 +199,7 @@ class Experience extends Command {
             return message.channel.createMessage(`:x: This role isn't set to be given at any level, therefore, i can't remove it`);
         }
         guildEntry.removeActivityRole(role.id);
-        await client.database.set(guildEntry, 'guild');
+        await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
         return message.channel.createMessage(`:white_check_mark: Successfully removed the role \`${role.name}\` which was set to be given at the level \`${isSet.at}\``);
     }
 
@@ -244,7 +244,7 @@ class Experience extends Command {
     async enableLevelUpNotifs(client, message, args, guildEntry) {
         if (!guildEntry.experience.notifications.enabled) {
             guildEntry.experience.notifications.enabled = true;
-            await client.database.set(guildEntry, 'guild');
+            await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
             return message.channel.createMessage(':white_check_mark: Alright, the level up notifications are now enabled');
         } else {
             return message.channel.createMessage(':x: The level up notifications are already enabled');
@@ -254,7 +254,7 @@ class Experience extends Command {
     async disableLevelUpNotifs(client, message, args, guildEntry) {
         if (guildEntry.experience.notifications.enabled) {
             guildEntry.experience.notifications.enabled = false;
-            await client.database.set(guildEntry, 'guild');
+            await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
             return message.channel.createMessage(':white_check_mark: Alright, the level up notifications are now disabled');
         } else {
             return message.channel.createMessage(':x: The level up notifications are already disabled');
@@ -267,7 +267,7 @@ class Experience extends Command {
                 return message.channel.createMessage(`:x: The level up notifications target is already set to \`${args[1].toLowerCase()}\``);
             }
             guildEntry.experience.notifications.channel = args[1].toLowerCase();
-            await client.database.set(guildEntry, 'guild');
+            await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
             return message.channel.createMessage(`:white_check_mark: Alright, the level up notifications target has been updated`);
         }
         const channel = await this.getChannelFromText({ client: client, message: message, text: args[1] });
@@ -277,7 +277,7 @@ class Experience extends Command {
             return message.channel.createMessage(`:x: The level up notifications target is already set to the channel <#${channel.id}>`);
         }
         guildEntry.experience.notifications.channel = channel.id;
-        await client.database.set(guildEntry, 'guild');
+        await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
         const hasPerm = Array.isArray(this.clientHasPermissions(message, client, ['sendMessages'], channel)) ? false : true;
         return message.channel.createMessage(`:white_check_mark: Alright, the level up notifications target has been set to the channel <#${channel.id}>` + (!hasPerm ? `\n\n:warning: It seems like i don\'t have enough permissions to send messages in <#${channel.id}>, you may want to fix that` : ''));
     }
@@ -287,7 +287,7 @@ class Experience extends Command {
             return message.channel.createMessage(':x: You must specify the new level up message to use');
         }
         guildEntry.experience.notifications.message = args[2] ? args.join(' ') : args[1];
-        await client.database.set(guildEntry, 'guild');
+        await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
         return message.channel.createMessage(':white_check_mark: Alright, the level up message has been updated');
     }
 

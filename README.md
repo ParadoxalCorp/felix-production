@@ -24,5 +24,7 @@ As of version 4.1.3, Felix use Redis, available [here](https://redis.io/download
 ## Versioning 
 
 Felix's versioning works like semantic versioning, in the `major.minor.patch` format 
+
 Bug fixes increments `patch` and new features/enhancements increments `minor`
+
 Major rewrites of the back-end/interface increments `major`, each `major` increment comes with a reset of `minor` and `patch`

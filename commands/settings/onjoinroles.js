@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class OnJoinRoles extends Command {
     constructor() {
@@ -77,7 +77,7 @@ class OnJoinRoles extends Command {
             return message.channel.createMessage(`:x: There is already \`${guildEntry.onJoinRoles.length}\` roles set to be given to new members, you can't add any more than that`);
         } 
         guildEntry.onJoinRoles.push(role.id);
-        await client.database.set(guildEntry, 'guild');
+        await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
         let warning = '';
         const hasPerm = Array.isArray(this.clientHasPermissions(message, client, ['manageRoles'])) ? false : true;
         if (!hasPerm || role.position > this.getHighestRole(client.bot.user.id, message.channel.guild).position) {
@@ -100,7 +100,7 @@ class OnJoinRoles extends Command {
             return message.channel.createMessage(`:x: This role isn't set to be given to new members, therefore, i can't remove it`);
         }
         guildEntry.onJoinRoles.splice(guildEntry.onJoinRoles.findIndex(r => r === role.id), 1);
-        await client.database.set(guildEntry, 'guild');
+        await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
         return message.channel.createMessage(`:white_check_mark: Successfully removed the role \`${role.name}\``);
     }
 

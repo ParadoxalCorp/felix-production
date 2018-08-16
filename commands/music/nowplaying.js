@@ -1,6 +1,6 @@
 'use strict';
 
-const MusicCommands = require('../../util/helpers/modules/musicCommands');
+const MusicCommands = require('../../structures/CommandCategories/MusicCommands');
 
 class NowPlaying extends MusicCommands {
     constructor(client) {
@@ -14,7 +14,7 @@ class NowPlaying extends MusicCommands {
     }
 
     /**
-    * @param {import("../../util/helpers/modules/musicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/CommandCategories/MusicCommands.js").MusicContext} context The context
     */
 
     async run(context) {

@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class SetGreetings extends Command {
     constructor() {
@@ -82,7 +82,7 @@ class SetGreetings extends Command {
     async enable(client, message, args, guildEntry) {
         if (!guildEntry.greetings.enabled) {
             guildEntry.greetings.enabled = true;
-            await client.database.set(guildEntry, 'guild');
+            await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
             return message.channel.createMessage(':white_check_mark: Alright, the greetings are now enabled. Make sure to also set up a greetings message and the target');
         } else {
             return message.channel.createMessage(':x: The greetings are already enabled');
@@ -92,7 +92,7 @@ class SetGreetings extends Command {
     async disable(client, message, args, guildEntry) {
         if (guildEntry.greetings.enabled) {
             guildEntry.greetings.enabled = false;
-            await client.database.set(guildEntry, 'guild');
+            await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
             return message.channel.createMessage(':white_check_mark: Alright, the greetings are now disabled');
         } else {
             return message.channel.createMessage(':x: The greetings are already disabled');
@@ -105,7 +105,7 @@ class SetGreetings extends Command {
                 return message.channel.createMessage(`:x: The greetings target is already set to \`${args[1].toLowerCase()}\``);
             }
             guildEntry.greetings.channel = args[1].toLowerCase();
-            await client.database.set(guildEntry, 'guild');
+            await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
             return message.channel.createMessage(`:white_check_mark: Alright, the greetings target has been updated`);
         }
         const channel = await this.getChannelFromText({ client: client, message: message, text: args[1] });
@@ -115,7 +115,7 @@ class SetGreetings extends Command {
             return message.channel.createMessage(`:x: The greetings target is already set to the channel <#${channel.id}>`);
         }
         guildEntry.greetings.channel = channel.id;
-        await client.database.set(guildEntry, 'guild');
+        await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
         const hasPerm = Array.isArray(this.clientHasPermissions(message, client, ['sendMessages'], channel)) ? false : true;
         return message.channel.createMessage(`:white_check_mark: Alright, the greetings target has been set to the channel <#${channel.id}>` + (!hasPerm ? `\n\n:warning: It seems like i don\'t have enough permissions to send messages in <#${channel.id}>, you may want to fix that` : ''));
     }
@@ -125,7 +125,7 @@ class SetGreetings extends Command {
             return message.channel.createMessage(':x: You must specify the new greetings message to use');
         }
         guildEntry.greetings.message = args[2] ? args.splice(1).join(' ') : args[1];
-        await client.database.set(guildEntry, 'guild');
+        await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
         return message.channel.createMessage(':white_check_mark: Alright, the greetings message has been updated');
     }
 

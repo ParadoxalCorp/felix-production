@@ -1,7 +1,7 @@
 'use strict';
 //@ts-check
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class Uinfo extends Command {
     constructor() {
@@ -26,9 +26,9 @@ class Uinfo extends Command {
     async run(client, message, args, guildEntry, userEntry) {
         const user = await this.getUserFromText({ message, client, text: args[0] });
         const target = user ? client.extendedUser(user) : client.extendedUser(message.author);
-        const targetEntry = target.id !== message.author.id ? await client.database.getUser(target.id) : userEntry;
-        const localLevelDetails = client.getLevelDetails(guildEntry.getLevelOf(target.id));
-        const globalLevelDetails = client.getLevelDetails(targetEntry.getLevel());
+        const targetEntry = target.id !== message.author.id ? await client.handlers.DatabaseWrapper.getUser(target.id) : userEntry;
+        const localLevelDetails = client.handlers.ExperienceHandler.getLevelDetails(guildEntry.getLevelOf(target.id));
+        const globalLevelDetails = client.handlers.ExperienceHandler.getLevelDetails(targetEntry.getLevel());
         const userExp = guildEntry.experience.members.find(u => u.id === target.id) ? guildEntry.experience.members.find(u => u.id === target.id).experience : 0;
         const member = message.channel.guild.members.get(target.id);
 
@@ -57,13 +57,13 @@ class Uinfo extends Command {
 
         embedFields.push({
             name: ":date: Created",
-            value: client.timeConverter.toHumanDate(member.createdAt),
+            value: client.utils.TimeConverter.toHumanDate(member.createdAt),
             inline: true
         });
 
         embedFields.push({
             name: ":date: Joined",
-            value: client.timeConverter.toHumanDate(member.joinedAt),
+            value: client.utils.TimeConverter.toHumanDate(member.joinedAt),
             inline: true
         });
 

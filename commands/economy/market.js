@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class Market extends Command {
     constructor() {
@@ -35,7 +35,7 @@ class Market extends Command {
     }
 
     mapItems(client, message, guildEntry, userEntry) {
-        return client.economyManager.marketItems.map(item => {
+        return client.handlers.EconomyManager.marketItems.map(item => {
             const price = typeof item.price === 'function' ? item.price(client, guildEntry, userEntry) : item.price;
             return {
                 embed: {
@@ -51,7 +51,7 @@ class Market extends Command {
                         inline: true
                     }],
                     footer: {
-                        text: `Showing page {index}/${client.economyManager.marketItems.length} ${client.config.admins.includes(message.author.id) ? '| Item ID: ' + item.id : ''}`
+                        text: `Showing page {index}/${client.handlers.EconomyManager.marketItems.length} ${client.config.admins.includes(message.author.id) ? '| Item ID: ' + item.id : ''}`
                     },
                     image: {
                         url: item.image
@@ -77,7 +77,7 @@ class Market extends Command {
         if (item.run) {
             item.run(client, guildEntry, userEntry);
         }
-        await client.database.set(userEntry, 'user');
+        await client.handlers.DatabaseWrapper.set(userEntry, 'user');
         message.exit();
         return message.channel.createMessage(`:white_check_mark: The \`${item.name}\` has been added to your belongings, you now have \`${userEntry.economy.coins}\` holy coins`);
     }

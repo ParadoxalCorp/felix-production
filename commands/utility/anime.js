@@ -1,4 +1,4 @@
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class Anime extends Command {
     constructor() {

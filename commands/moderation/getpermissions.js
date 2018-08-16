@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class GetPermissions extends Command {
     constructor() {
@@ -75,8 +75,8 @@ class GetPermissions extends Command {
             color: client.config.options.embedColor,
             fields: (() => {
                 if (args.targetType === 'global') {
-                    targetPerms.allowedCommands = targetPerms.allowedCommands.concat(client.refs.defaultPermissions.allowedCommands.map(perm => `${perm} (default)`));
-                    targetPerms.restrictedCommands = targetPerms.restrictedCommands.concat(client.refs.defaultPermissions.restrictedCommands.map(perm => `${perm} (default)`));
+                    targetPerms.allowedCommands = targetPerms.allowedCommands.concat(client.structures.References.defaultPermissions.allowedCommands.map(perm => `${perm} (default)`));
+                    targetPerms.restrictedCommands = targetPerms.restrictedCommands.concat(client.structures.References.defaultPermissions.restrictedCommands.map(perm => `${perm} (default)`));
                 }
                 return [{
                     name: 'Allowed permissions',

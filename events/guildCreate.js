@@ -4,12 +4,12 @@ class GuildCreateHandler {
     constructor() {}
 
     async handle(client, guild) {
-        if (!client.database || !client.database.healthy) {
+        if (!client.handlers.DatabaseWrapper || !client.handlers.DatabaseWrapper.healthy) {
             return;
         }
-        const guildIsInDb = await client.database.getGuild(guild.id);
+        const guildIsInDb = await client.handlers.DatabaseWrapper.getGuild(guild.id);
         if (!guildIsInDb) {
-            client.database.set(client.refs.guildEntry(guild.id))
+            client.handlers.DatabaseWrapper.set(client.structures.References.guildEntry(guild.id))
                 .catch(err => {
                     client.bot.emit('error', err);
                 });

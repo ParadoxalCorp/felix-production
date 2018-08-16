@@ -1,7 +1,7 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
-const TimeConverter = require(`../../util/modules/timeConverter.js`);
+const Command = require('../../structures/Command');
+const TimeConverter = require(`../../utils/TimeConverter.js`);
 
 class Sinfo extends Command {
     constructor() {

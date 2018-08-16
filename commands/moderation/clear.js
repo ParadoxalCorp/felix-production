@@ -1,7 +1,7 @@
 'use strict';
 //@ts-check
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class Clear extends Command {
     constructor() {

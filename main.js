@@ -11,20 +11,20 @@ const { Base } = require('eris-sharder');
 const config = require('./config');
 
 /**
- * @typedef {Object} BaseClient 
+ * @typedef {Object} Client 
  * @prop {Boolean} maintenance A boolean representing whether the bot is in maintenance, if true, the bot should be unresponsive to anyone who isn't specified as admin in the config
- * @prop {import("./util/modules/collection.js")} collection Discord.js's collections
+ * @prop {import("./utils/Collection.js")} Collection Discord.js's collections
+ * @prop {import("./handlers/index.js").Handlers} handlers The handlers for each part of the client
+ * @prop {import("./structures/index.js").Structures} structures Contains most of the classes, data models and such that structures the client
  * @prop {config} config The config file
  * @prop {Object} package This projects's package.json
  * @prop {Array<string>} prefixes An array of prefixes the bot listens to
- * @prop {import("./util/helpers/modules/IPCHandler.js").ClientStats} stats
- * @prop {import("./util/helpers/modules/utils.js")} utils 
+ * @prop {import("./handlers/IPCHandler.js").ClientStats} stats The stats of the client
+ * @prop {import("./utils/index.js").Utils} utils Some util methods and classes
  * @prop {Object} packages A name:package set, the point of this is very limited, kek.
  * @prop {Boolean} launchedOnce Whether the bot has already been launched
  * @prop {ErisClient} bot The eris client instance
  */
-
-/** @typedef {BaseClient & import("./structures/index.js").Structures & import("./util/index.js").Utils} Client */
 
 /**
  *
@@ -41,28 +41,29 @@ class Felix extends Base {
         super(bot);
         /** If true, this would ignore all messages from everyone besides the owner */
         this.maintenance = false;
-        this.collection = require('./util/modules/collection');
+        this.Collection = require('./utils/Collection');
         this.config = config;
         // @ts-ignore
         this.package = require('./package');
         this.prefixes = this.config.prefix ? [this.config.prefix] : [];
         this.stats;
-        /** @type {import("./structures/index.js")} */
+        /** @type {import("./handlers/index.js").Handlers} */
+        this.handlers = require('./handlers/index.js');
+        /** @type {import("./structures/index.js").Structures} */
         this.structures = require('./structures/index.js');
-        /** @type {import("./util/helpers/modules/utils.js")} */
-        this.utils = new(require('./util/helpers/modules/utils'))(this);
+        /** @type {import("./utils/index.js").Utils} */
+        this.utils = require('./utils/index.js')(this);
         /** @type {Object} */
         this.packages = {};
         this.launchedOnce = false;
     }
 
     launch() {
-        //Assign modules to the client
-        Object.assign(this, require('./util')(this));
-        this.ratelimited = new this.collection();
+        this.initializeHandlers();
+        this.ratelimited = new this.Collection();
         //This will be filled with mentions prefix once ready
-        this.commands = new this.collection();
-        this.aliases = new this.collection();
+        this.commands = new this.Collection();
+        this.aliases = new this.Collection();
         this.bot.on('ready', this.ready.bind(this));
         process.on('beforeExit', this.beforeExit.bind(this));
         process.on('SIGINT', this.beforeExit.bind(this));
@@ -96,19 +97,16 @@ class Felix extends Base {
                         command = new command(this);
                     }
                     //Add the command and its aliases to the collection
-                    if (!this.database && command.conf.requireDB) {
-                        command.conf.disabled = 'This command require the database, however the database seems unavailable at the moment';
-                    }
                     this.commands.set(command.help.name, command);
                     command.conf.aliases.forEach(alias => {
                         this.aliases.set(alias, command.help.name);
                     });
                 } catch (err) {
-                    this.log.error(`Failed to load command ${c}: ${err.stack || err}`);
+                    this.utils.log.error(`Failed to load command ${c}: ${err.stack || err}`);
                 }
             });
         }
-        this.log.info(`Loaded ${this.commands.size}/${totalCommands} commands`);
+        this.utils.log.info(`Loaded ${this.commands.size}/${totalCommands} commands`);
     }
 
     loadEventsListeners() {
@@ -123,10 +121,10 @@ class Felix extends Base {
                 this.bot.on(eventName, event.handle.bind(event, this));
                 delete require.cache[require.resolve(join(__dirname, 'events', e))];
             } catch (err) {
-                this.log.error(`Failed to load event ${e}: ${err.stack || err}`);
+                this.utils.log.error(`Failed to load event ${e}: ${err.stack || err}`);
             }
         });
-        this.log.info(`Loaded ${loadedEvents}/${events.length} events`);
+        this.utils.log.info(`Loaded ${loadedEvents}/${events.length} events`);
         process.on('unhandledRejection', (err) => this.bot.emit('error', err));
         process.on('uncaughtException', (err) => this.bot.emit('error', err));
     }
@@ -140,12 +138,12 @@ class Felix extends Base {
             this.launchedOnce = true;
         }
         if (!this.bot.user.bot) {
-            this.log.error(`Invalid login details were provided, the process will exit`);
+            this.utils.log.error(`Invalid login details were provided, the process will exit`);
             process.exit(0);
         }
         if (this.weebSH) {
             const generate = async () => {
-                return this.imageHandler.generateSubCommands()
+                return this.handlers.ImageHandler.generateSubCommands()
                     .then(generated => {
                         process.send({ name: 'info', msg: `Generated ${generated} image sub-commands` });
                     })
@@ -156,7 +154,6 @@ class Felix extends Base {
             await generate();
             this._imageTypesInterval = setInterval(generate, this.config.options.imageTypesInterval);
         }
-        this.verifyMusic();
         this.prefixes.push(`<@!${this.bot.user.id}>`, `<@${this.bot.user.id}>`);
         process.send({ name: "info", msg: `Logged in as ${this.bot.user.username}#${this.bot.user.discriminator}, running Felix ${this.package.version}` });
         this.bot.shards.forEach(s => {
@@ -179,7 +176,7 @@ class Felix extends Base {
                         process.send({ name: 'warn', msg: `${this.config.removeDisabledCommands ? 'Removed' : 'Disabled'} the command ${command.help.name} because the ${requirement} API key is missing` });
                     }
                 } else {
-                    if (!this.moduleIsInstalled(requirement)) {
+                    if (!this.utils.moduleIsInstalled(requirement)) {
                         if (this.config.removeDisabledCommands) {
                             this.commands.delete(command.help.name);
                         } else {
@@ -201,40 +198,37 @@ class Felix extends Base {
         }
     }
 
-    verifyMusic() {
-        if (!this.config.options.music.enabled) {
-            if (this.config.removeDisabledCommands) {
-                this.commands.filter(c => c.help.category === 'music').forEach(c => this.commands.delete(c.help.name));
-            } else {
-                this.commands.filter(c => c.help.category === 'music').forEach(c => this.commands.get(c.help.name).conf.disabled === `This command requires the music to be enabled`);
-            }
-            return process.send({ name: 'warn', msg: `${this.config.removeDisabledCommands ? 'Removed' : 'Disabled'} the music commands because config.options.music.enabled is set to false` });
+    initializeHandlers() {
+        if (this.config.options.music.enabled) {
+            this.handlers.MusicManager = new this.handlers.MusicManager(this);
+            this.handlers.MusicManager.init();
         }
-        if (!this.moduleIsInstalled('eris-lavalink')) {
-            if (this.config.removeDisabledCommands) {
-                this.commands.filter(c => c.help.category === 'music').forEach(c => this.commands.delete(c.help.name));
-            } else {
-                this.commands.filter(c => c.help.category === 'music').forEach(c => this.commands.get(c.help.name).conf.disabled === `This command require the \`eris-lavalink\` package which is missing`);
-            }
-            return process.send({ name: 'warn', msg: `${this.config.removeDisabledCommands ? 'Removed' : 'Disabled'} the music commands because the \`eris-lavalink\` package is missing` });
-        }
-        this.musicManager.init();
+        this.handlers.DatabaseWrapper = process.argv.includes('--no-db') ? false : new this.handlers.DatabaseWrapper(this);
+        this.handlers.RedisManager = new this.handlers.RedisManager(this);
+        this.handlers.EconomyManager = new this.handlers.EconomyManager(this);
+        this.handlers.ExperienceHandler = new this.handlers.ExperienceHandler(this);
+        this.handlers.IPCHandler = new this.handlers.IPCHandler(this);
+        this.handlers.ImageHandler = new this.handlers.ImageHandler(this);
+        this.handlers.MessageCollector = new this.handlers.MessageCollector(this);
+        this.handlers.Reloader = new this.handlers.Reloader(this);
+        this.handlers.ReactionCollector = new this.handlers.ReactionCollector(this);
+
     }
 
     async beforeExit() {
         process.send({ name: 'warn', msg: `Exit process engaged, finishing the ongoing tasks..` });
-        if (this.redis && this.redis.healthy) {
-            await this.redis.quit();
+        if (this.handlers.RedisManager && this.handlers.RedisManager.healthy) {
+            await this.handlers.RedisManager.quit();
             process.send({ name: 'info', msg: `Finished the ongoing tasks and closed the Redis connection` });
         }
-        if (this.musicManager) {
-            let lavalinkExit = this.musicManager.disconnect();
+        if (this.handlers.MusicManager) {
+            let lavalinkExit = this.handlers.MusicManager.disconnect();
             if (lavalinkExit !== false) {
                 process.send({ name: 'info', msg: `Sent exit code to the Lavalink server` });
             }
         }
-        if (this.database && this.database.healthy) {
-            this.database.rethink.getPoolMaster().drain();
+        if (this.handlers.DatabaseWrapper && this.handlers.DatabaseWrapper.healthy) {
+            this.handlers.DatabaseWrapper.rethink.getPoolMaster().drain();
             process.send({ name: 'info', msg: `Finished the ongoing tasks and closed the RethinkDB connection` });
         }
         process.send({ name: 'warn', msg: `All ongoing tasks finished, exiting..` });

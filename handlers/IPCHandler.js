@@ -31,7 +31,7 @@ class IPCHandler {
      * @param {Map} [options.requests] - A collection of ongoing requests to expect
      */
     constructor(client, options = {}) {
-        this.requests = options.requests || new client.collection();
+        this.requests = options.requests || new client.Collection();
         this.client = client;
         process.on('message', this._handleIncomingMessage.bind(this));
     }
@@ -145,7 +145,7 @@ class IPCHandler {
                             status: shard.status,
                             latency: shard.latency,
                             guilds: this.client.bot.guilds.filter(g => g.shard.id === shard.id).length,
-                            musicConnections: this.client.musicManager ? this.client.musicManager.connections.size : 0
+                            musicConnections: this.client.handlers.MusicManager ? this.client.handlers.MusicManager.connections.size : 0
                         };
                     })
                 });

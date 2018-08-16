@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class Love extends Command {
     constructor() {
@@ -27,12 +27,12 @@ class Love extends Command {
         const remainingLps = this.getRemainingLps(userEntry);
         if (!args[0]) {
             if (!remainingLps) {
-                const remainingTime = client.timeConverter.toElapsedTime(userEntry.getNearestCooldown('loveCooldown') - Date.now());
+                const remainingTime = client.utils.TimeConverter.toElapsedTime(userEntry.getNearestCooldown('loveCooldown') - Date.now());
                 return message.channel.createMessage(`:x: You already used all your love points, time remaining: ${remainingTime.days}d ${remainingTime.hours}h ${remainingTime.minutes}m ${remainingTime.seconds}s`);
             }
             return message.channel.createMessage(`You have \`${remainingLps}\` love point(s) available`);
         } else if (userEntry.isInCooldown('loveCooldown')) {
-            const remainingTime = client.timeConverter.toElapsedTime(userEntry.getNearestCooldown('loveCooldown') - Date.now());
+            const remainingTime = client.utils.TimeConverter.toElapsedTime(userEntry.getNearestCooldown('loveCooldown') - Date.now());
             return message.channel.createMessage(`:x: You already used all your love points, time remaining: ${remainingTime.days}d ${remainingTime.hours}h ${remainingTime.minutes}m ${remainingTime.seconds}s`);
         }
         const user = lp === parseInt(args[0]) ? args.splice(1).join(' ') : args.join(' ');
@@ -45,12 +45,12 @@ class Love extends Command {
         if (remainingLps < lp) {
             lp = remainingLps;
         }
-        const targetEntry = await client.database.getUser(targetUser.id);
+        const targetEntry = await client.handlers.DatabaseWrapper.getUser(targetUser.id);
         targetEntry.love.amount = targetEntry.love.amount + lp;
         for (let i = 0; i < lp; i++) {
             userEntry.addCooldown('loveCooldown', client.config.options.loveCooldown);
         }
-        await Promise.all([client.database.set(userEntry, 'user'), client.database.set(targetEntry, 'user')]);
+        await Promise.all([client.handlers.DatabaseWrapper.set(userEntry, 'user'), client.handlers.DatabaseWrapper.set(targetEntry, 'user')]);
         return message.channel.createMessage(`:heart: Haii ! You just gave **${lp}** love point to **${client.extendedUser(targetUser).tag}**`);
     }
 

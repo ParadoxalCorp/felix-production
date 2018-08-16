@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 const axios = require('axios').default;
 const querystring = require('querystring');
 const sharp = require('sharp');

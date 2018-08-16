@@ -1,6 +1,6 @@
 'use strict';
 
-const MusicCommands = require('../../util/helpers/modules/musicCommands');
+const MusicCommands = require('../../structures/CommandCategories/MusicCommands');
 
 class Skip extends MusicCommands {
     constructor(client) {
@@ -13,7 +13,7 @@ class Skip extends MusicCommands {
         this.conf = this.genericConf({ aliases: ['voteskip'] });
     }
     /**
-    * @param {import("../../util/helpers/modules/musicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/CommandCategories/MusicCommands.js").MusicContext} context The context
     */
 
     async run(context) {

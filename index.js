@@ -3,7 +3,7 @@
 const config = require('./config');
 const { Master: Sharder } = require('eris-sharder');
 const axios = require('axios');
-const log = require('./util/modules/log');
+const log = require('./utils/log');
 const r = process.argv.includes('--no-db') ? false : require('rethinkdbdash')({
     servers: [
         { host: config.database.host, port: config.database.port }

@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class Transactions extends Command {
     constructor() {
@@ -47,7 +47,7 @@ class Transactions extends Command {
                         const fields = [];
                         for (const transaction of transactionGroup) {
                             fields.push({
-                                name: client.timeConverter.toHumanDate(transaction.date),
+                                name: client.utils.TimeConverter.toHumanDate(transaction.date),
                                 value: '```diff\n' + `From: ${this.resolveUser(client, transaction.from).tag}\nTo: ${this.resolveUser(client, transaction.to).tag}\nCoins: ${transaction.amount < 0 ? transaction.amount : '+' + transaction.amount}` + '```',
                             });
                         }

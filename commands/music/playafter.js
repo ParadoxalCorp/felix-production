@@ -1,6 +1,6 @@
 'use strict';
 
-const MusicCommands = require('../../util/helpers/modules/musicCommands');
+const MusicCommands = require('../../structures/CommandCategories/MusicCommands');
 
 class PlayAfter extends MusicCommands {
     constructor(client) {
@@ -13,12 +13,12 @@ class PlayAfter extends MusicCommands {
         this.conf = this.genericConf({ aliases: ['playnext'] });
     }
     /**
-    * @param {import("../../util/helpers/modules/musicCommands.js").MusicContext} context The context
+    * @param {import("../../structures/CommandCategories/MusicCommands.js").MusicContext} context The context
     */
 
     async run(context) {
-        const resolveTracks = await this.client.musicManager.resolveTracks(context.connection.player.node, context.args.join(' '));
-        if (resolveTracks.loadType === this.client.musicManager.constants.loadTypes.playlist) {
+        const resolveTracks = await this.client.handlers.MusicManager.resolveTracks(context.connection.player.node, context.args.join(' '));
+        if (resolveTracks.loadType === this.client.handlers.MusicManager.constants.loadTypes.playlist) {
             return context.message.channel.createMessage(':x: Oops, this looks like a playlist to me, please use the `addplaylist` command instead');
         }
         let queued;

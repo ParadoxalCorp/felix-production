@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class SetFarewells extends Command {
     constructor() {
@@ -82,7 +82,7 @@ class SetFarewells extends Command {
     async enable(client, message, args, guildEntry) {
         if (!guildEntry.farewells.enabled) {
             guildEntry.farewells.enabled = true;
-            await client.database.set(guildEntry, 'guild');
+            await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
             return message.channel.createMessage(':white_check_mark: Alright, the farewells are now enabled. Make sure to also set up a farewells message and the target');
         } else {
             return message.channel.createMessage(':x: The farewells are already enabled');
@@ -92,7 +92,7 @@ class SetFarewells extends Command {
     async disable(client, message, args, guildEntry) {
         if (guildEntry.farewells.enabled) {
             guildEntry.farewells.enabled = false;
-            await client.database.set(guildEntry, 'guild');
+            await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
             return message.channel.createMessage(':white_check_mark: Alright, the farewells are now disabled');
         } else {
             return message.channel.createMessage(':x: The farewells are already disabled');
@@ -107,7 +107,7 @@ class SetFarewells extends Command {
             return message.channel.createMessage(`:x: The farewells target is already set to the channel <#${channel.id}>`);
         }
         guildEntry.farewells.channel = channel.id;
-        await client.database.set(guildEntry, 'guild');
+        await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
         const hasPerm = Array.isArray(this.clientHasPermissions(message, client, ['sendMessages'], channel)) ? false : true;
         return message.channel.createMessage(`:white_check_mark: Alright, the farewells target has been set to the channel <#${channel.id}>` + (!hasPerm ? `\n\n:warning: It seems like i don\'t have enough permissions to send messages in <#${channel.id}>, you may want to fix that` : ''));
     }
@@ -117,7 +117,7 @@ class SetFarewells extends Command {
             return message.channel.createMessage(':x: You must specify the new farewells message to use');
         }
         guildEntry.farewells.message = args[2] ? args.splice(1).join(' ') : args[1];
-        await client.database.set(guildEntry, 'guild');
+        await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
         return message.channel.createMessage(':white_check_mark: Alright, the farewells message has been updated');
     }
 

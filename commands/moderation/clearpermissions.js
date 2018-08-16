@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class ClearPermissions extends Command {
     constructor() {
@@ -31,8 +31,8 @@ class ClearPermissions extends Command {
         if (!confirmation || confirmation.content.toLowerCase().trim() !== 'yes') {
             return message.channel.createMessage(':x: Command aborted');
         }
-        guildEntry.permissions = client.refs.guildEntry('1').permissions;
-        await client.database.set(guildEntry, 'guild');
+        guildEntry.permissions = client.structures.References.guildEntry('1').permissions;
+        await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
         return message.channel.createMessage(':white_check_mark: Successfully cleared all permissions');
     }
 }

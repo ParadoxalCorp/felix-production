@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class Connect extends Command {
     constructor() {
@@ -24,7 +24,7 @@ class Connect extends Command {
 
     //eslint-disable-next-line no-unused-vars
     async run(client, message, args, guildEntry, userEntry) {
-        client.database = client.database ? client.database._reload() : new(require('../../util/helpers/modules/databaseWrapper'))(client);
+        client.handlers.DatabaseWrapper = client.handlers.DatabaseWrapper ? client.handlers.DatabaseWrapper._reload() : new(require('../../util/helpers/modules/databaseWrapper'))(client);
         return message.channel.createMessage('Welp I launched the connection process, can\'t do much more tho so check the console to see if it worked lul');
     }
 }

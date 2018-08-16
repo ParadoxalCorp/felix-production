@@ -1,6 +1,6 @@
 'use strict';
 
-const Command = require('../../util/helpers/modules/Command');
+const Command = require('../../structures/Command');
 
 class Inventory extends Command {
     constructor() {
@@ -31,7 +31,7 @@ class Inventory extends Command {
 
     mapItems(client, userEntry) {
         let ownedItemsWorth = 0;
-        for (const item of client.economyManager.marketItems) {
+        for (const item of client.handlers.EconomyManager.marketItems) {
             if (userEntry.hasItem(item.id)) {
                 ownedItemsWorth = ownedItemsWorth + item.price;
             }
@@ -43,14 +43,14 @@ class Inventory extends Command {
                 fields: (() => {
                     let familiesOwned = [];
                     for (const item of userEntry.economy.items) {
-                        if (!familiesOwned.includes(client.economyManager.getItem(item.id).family) && client.economyManager.getItem(item.id).family !== 'Ships') {
-                            familiesOwned.push(client.economyManager.getItem(item.id).family);
+                        if (!familiesOwned.includes(client.handlers.EconomyManager.getItem(item.id).family) && client.handlers.EconomyManager.getItem(item.id).family !== 'Ships') {
+                            familiesOwned.push(client.handlers.EconomyManager.getItem(item.id).family);
                         }
                     }
                     familiesOwned = familiesOwned.map(f => {
                         return {
-                            name: `${client.economyManager.marketItems.filter(i => i.family === f)[0].emote} ${f}`,
-                            value: client.economyManager.marketItems.filter(i => i.family === f && userEntry.hasItem(i.id)).map(i => `${i.emote} ${i.name} (x${userEntry.economy.items.find(item => item.id === i.id).count})`).join(', ')
+                            name: `${client.handlers.EconomyManager.marketItems.filter(i => i.family === f)[0].emote} ${f}`,
+                            value: client.handlers.EconomyManager.marketItems.filter(i => i.family === f && userEntry.hasItem(i.id)).map(i => `${i.emote} ${i.name} (x${userEntry.economy.items.find(item => item.id === i.id).count})`).join(', ')
                         };
                     });
 

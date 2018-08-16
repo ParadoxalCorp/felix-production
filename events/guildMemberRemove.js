@@ -25,7 +25,7 @@ class GuildMemberRemoveHandler {
         if (member.user.bot) {
             return;
         }
-        const guildEntry = await client.database.getGuild(guild.id);
+        const guildEntry = await client.handlers.DatabaseWrapper.getGuild(guild.id);
         if (!guildEntry) {
             return;
         }
