@@ -57,7 +57,7 @@
  * @property {String} prefix The prefix of the guild, empty if none is set
  * @property {Boolean} spacedPrefix Whether the prefix contains a space 
  * @property {Number|Boolean} premium Whether this guild has the premium status, if a number, it is the UNIX timestamp when the premium status will expire. `true` in case of a monthly pledge
- * @property {Array<selfAssignableRole>} selfAssignableRoles An array of self-assignable roles set on this guild
+ * @property {Array<SelfAssignableRole>} selfAssignableRoles An array of self-assignable roles set on this guild
  * @property {Array<String>} onJoinRoles An array of IDs corresponding to the roles set to be given to new members on this guild
  * @property {{users: Permissions, roles: Permissions, channel: Permissions, categories: Permissions, global: Permissions}} permissions An object representing all the permissions set on this guild
  * @property {{members: Array<GuildMember>, roles: Array<ActivityGuildRole>, enabled: Boolean, notifications: ExperienceNotifications}} experience An object representing the settings for the activity system on this guild
