@@ -56,7 +56,7 @@ class Rank extends Command {
       const member = message.channel.guild.members.get(target.id);
       let leaderboardG = client.handlers.DatabaseWrapper.userData.cache.map(u => u);
       leaderboardG = leaderboardG.map(e => databaseUpdater(e, 'user')).sort((a, b) => b.experience.amount - a.experience.amount).map(u => {
-          u.levelDetails = client.handlers.ExperienceHandler.getLevelDetails(client.structures.ExtendedUserEntry(u).getLevel());
+          u.levelDetails = client.handlers.ExperienceHandler.getLevelDetails(client.handlers.ExperienceHandler.getLevelDetails(u.id));
           return u;
       });
       let leaderboardL = guildEntry.experience.members;
@@ -73,6 +73,7 @@ class Rank extends Command {
         family: 'rank' // Police family
       });
       //Declaration of Canvas and creating a template (Length 300 and Width 300)
+      // @ts-ignore
       const GetRank = new Canvas(300, 300)
       //Background (Changeable in the future logically)
       .addImage(await fsn.readFile(`${resources}back0.jpg`), 0, 0, 300, 300) //We will look for the image "Background" in the folder "imgs" (x=0, y=0, Length=300, Width=300)
