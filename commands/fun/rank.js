@@ -3,10 +3,6 @@
 
 //Written by Ota#1354 the 26/06/2018
 
-/**
- * @typedef {import("../../util/index.js")} client
- */
-
 const axios = require("axios");
 const Command = require('../../structures/Command');
 const databaseUpdater = require('../../utils/databaseUpdater');
@@ -32,23 +28,13 @@ class Rank extends Command {
         };
     }
     
-    /**
-     *
-     *
-     * @param {client} client hi
-     * @param {*} message hi
-     * @param {*} args hi
-     * @param {*} guildEntry hi
-     * @param {*} userEntry hi
-     * @returns {*} hi
-     * @memberof Rank
-     */
+
   async run(client, message, args, guildEntry, userEntry) {
       const { Canvas } = require('canvas-constructor');
       const fsn = require('fs-nextra');
       
       const user = await this.getUserFromText({ message, client, text: args.join(' ') });
-      const target = user ?  new client.structures.ExtendedUser(user) : new client.structures.ExtendedUser(message.author);
+      const target = user ?  new client.structures.ExtendedUser(user, client.bot) : new client.structures.ExtendedUser(message.author, client.bot);
       const targetEntry = target.id !== message.author.id ? await client.handlers.DatabaseWrapper.getUser(target.id) : userEntry;
       const localLevelDetails = client.handlers.ExperienceHandler.getLevelDetails(guildEntry.getLevelOf(target.id));
       const globalLevelDetails = client.handlers.ExperienceHandler.getLevelDetails(targetEntry.getLevel());
