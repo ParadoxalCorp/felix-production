@@ -97,7 +97,7 @@ class DatabaseWrapper {
     /**
      * 
      * @param {*} value - The value to insert, must contain a `id` property
-     * @param {String} type - The type, or name of the table, can be omitted if the value is a Extended<...>Entry instance
+     * @param {String} [type] - The type, or name of the table, can be omitted if the value is a Extended<...>Entry instance
      * @returns {Promise<*>} The value
      */
     set(value, type) {
