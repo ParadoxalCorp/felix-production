@@ -9,7 +9,7 @@ const MiscContext = require('../Contexts/MiscContext');
 
 const Command = require('../Command');
 
-class FunCommands extends Command {
+class MiscCommands extends Command {
     /**
      * 
      * @param {Client} client - The client instance
@@ -37,4 +37,4 @@ class FunCommands extends Command {
 
 }
 
-module.exports = FunCommands;
+module.exports = MiscCommands;
