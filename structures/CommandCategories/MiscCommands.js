@@ -5,7 +5,7 @@
 * @typedef {import("../Command.js").PartialCommandOptions} PartialCommandOptions
 */
 
-const FunContext = require('../Contexts/FunContext');
+const MiscContext = require('../Contexts/MiscContext');
 
 const Command = require('../Command');
 
@@ -32,7 +32,7 @@ class FunCommands extends Command {
         }
         return { 
             passed: true,
-            context: new FunContext(client, message, args, guildEntry, userEntry)
+            context: new MiscContext(client, message, args, guildEntry, userEntry)
         };
     }
 

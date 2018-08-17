@@ -1,7 +1,7 @@
-/** @typedef {import("../../main.js").Client} Client 
+/** @typedef {import("../../main").Client} Client 
  * @typedef {import("eris").Message} Message
- * @typedef {import("../References.js").GuildEntry & import("../ExtendedStructures/ExtendedGuildEntry.js")} GuildEntry
- * @typedef {import("../References.js").UserEntry & import("../ExtendedStructures/ExtendedUserEntry.js")} UserEntry
+ * @typedef {import("../References").GuildEntry & import("../ExtendedStructures/ExtendedGuildEntry")} GuildEntry
+ * @typedef {import("../References").UserEntry & import("../ExtendedStructures/ExtendedUserEntry")} UserEntry
 */
 
 const BaseContext = require('./BaseContext');
