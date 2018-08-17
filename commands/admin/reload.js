@@ -92,7 +92,6 @@ class Reload extends Command {
 
     async run(client, message, args) {
         if (['utils', 'handlers', 'commands', 'structures'].includes(args[0].toLowerCase())) {
-            let reload = await client.handlers.IPCHandler.broadcastReload(args[0].toLowerCase());
             return message.channel.createMessage(`:white_check_mark: Successfully reloaded all ${args[0].toLowerCase()}`);
         }
         const isPath = new RegExp(/\/|\\/gim).test(args[0]);
