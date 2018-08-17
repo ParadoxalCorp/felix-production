@@ -1,27 +1,22 @@
 'use strict';
 
-const Command = require('../../structures/Command');
+const GenericCommands = require('../../structures/CommandCategories/ImageCommands');
 
-class ShitWaifu extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'shitwaifu',
-            description: 'Uh well, I think the name is pretty self-explanatory',
-            usage: '{prefix}shitwaifu <user_resolvable>',
-            category: 'image',
-            subCategory: 'image-generation'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: [],
-            requirePerms: ['attachFiles'],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: [],
-            require: ['weebSH', 'taihou']
-        };
+class ShitWaifu extends GenericCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'shitwaifu',
+                description: 'Uh well, I think the name is pretty self-explanatory',
+                usage: '{prefix}shitwaifu <user_resolvable>',
+                subCategory: 'image-generation'
+            },
+            conf: {
+                requirePerms: ['attachFiles'],
+                guildOnly: true,
+                require: ['weebSH', 'taihou']
+            },
+        });
     }
 
     //eslint-disable-next-line no-unused-vars

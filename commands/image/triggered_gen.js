@@ -1,30 +1,25 @@
 'use strict';
 const axios = require("axios");
-const Command = require('../../structures/Command');
+const GenericCommands = require('../../structures/CommandCategories/ImageCommands');
 
-//Written by Ota#1354 the 26/06/2018
-
-class TriggeredGen extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'triggered_gen',
-            description: 'Generate a triggered image with the avatar of the specified user, or yours if nobody is specified',
-            usage: '{prefix}triggered_gen <user_resolvable>',
-            category: 'image',
-            subCategory: 'image-generation'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: ['trig_gen', 'triggeredgen', 'triggen'],
-            requirePerms: ['attachFiles'],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: [],
-            require: []
-        };
+class TriggeredGen extends GenericCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'triggered_gen',
+                description: 'Generate a triggered image with the avatar of the specified user, or yours if nobody is specified',
+                usage: '{prefix}triggered_gen <user_resolvable>',
+                subCategory: 'image-generation'
+            },
+            conf: {
+                aliases: ['trig_gen', 'triggeredgen', 'triggen'],
+                requirePerms: ['attachFiles'],
+                guildOnly: true,
+                require: ['weebSH', 'taihou']
+            },
+        });
     }
+
     //eslint-disable-next-line no-unused-vars
     async run(client, message, args, guildEntry, userEntry) {
         const user = await this.getUserFromText({ message, client, text: args.join(' ') });

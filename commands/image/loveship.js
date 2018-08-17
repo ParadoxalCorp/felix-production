@@ -1,27 +1,23 @@
 'use strict';
 
-const Command = require('../../structures/Command');
+const GenericCommands = require('../../structures/CommandCategories/ImageCommands');
 
-class LoveShip extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'loveship',
-            description: 'Ship a user with another user !',
-            usage: '{prefix}loveship <user_resolvable> <user_resolvable>',
-            category: 'image',
-            subCategory: 'image-generation'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: ['ship'],
-            requirePerms: ['attachFiles'],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: [],
-            require: ['weebSH', 'taihou']
-        };
+class LoveShip extends GenericCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'loveship',
+                description: 'Ship a user with another user !',
+                usage: '{prefix}loveship <user_resolvable> <user_resolvable>',
+                subCategory: 'image-generation'
+            },
+            conf: {
+                aliases: ['ship'],
+                requirePerms: ['attachFiles'],
+                guildOnly: true,
+                require: ['weebSH', 'taihou']
+            },
+        });
     }
 
     //eslint-disable-next-line no-unused-vars

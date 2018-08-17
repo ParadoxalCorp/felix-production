@@ -51,33 +51,28 @@ class ImageHandler {
 
     async generateSubCommands() {
         const imageTypes = await this.client.weebSH.toph.getImageTypes({preview: true});
-        const Command = require('../structures/Command');
+        const ImageCommands = require('../structures/CommandCategories/ImageCommands');
         let generated = 0;
         const imageHandler = this;
         for (const type of imageTypes.types) {
             const preview = imageTypes.preview.find(p => p.type === type);
-            class SubCommand extends Command {
-                constructor() {
-                super();
-                this.help = {
-                    name: type,
-                    category: 'image',
-                    subCategory: imageHandler.interactions[type] ? 'interactions' : 'images',
-                    preview: preview.url,
-                    description: `Return a ${type} image`,
-                    usage: imageHandler.interactions[type] ? imageHandler.interactions[type].usage : `${type}`
-                };
-                this.conf = {
-                    guildOnly: imageHandler.interactions[type] ? true : false,
-                    requireDB: false,
-                    require: ['weebSH', 'taihou'],
-                    disabled: false,
-                    aliases: [],
-                    ownerOnly: false,
-                    requirePerms: ['embedLinks'],
-                    expectedArgs: [],
-                    subCommand: true
-                };
+            class SubCommand extends ImageCommands {
+                constructor(client) {
+                super(client , {
+                    help : {
+                        name: type,
+                        subCategory: imageHandler.interactions[type] ? 'interactions' : 'images',
+                        preview: preview.url,
+                        description: `Return a ${type} image`,
+                        usage: imageHandler.interactions[type] ? imageHandler.interactions[type].usage : `${type}`
+                    },
+                    conf : {
+                        guildOnly: imageHandler.interactions[type] ? true : false,
+                        require: ['weebSH', 'taihou'],
+                        requirePerms: ['embedLinks'],
+                        subCommand: true
+                    },
+                });
             }
                 async run(client, message, args) {
                     const image = await client.weebSH.toph.getRandomImage(type);
