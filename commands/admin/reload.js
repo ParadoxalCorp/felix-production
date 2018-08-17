@@ -47,6 +47,7 @@ class Reload extends Command {
                 description: 'Please specify the path of the file you want to reload/add, or, if a command that is already loaded, the name of the command. Input `all` if you want to reload all commands/modules/events listeners',
             }, {
                 description: 'Please specify the type of the file you want to reload, can be either `event`, `command` or `module`',
+                condition: (client, message, args) => !['utils', 'handlers', 'commands', 'structures'].includes(args[0].toLowerCase()),
                 possibleValues: [{
                     name: 'command',
                     interpretAs: '--command'
@@ -90,6 +91,10 @@ class Reload extends Command {
     }
 
     async run(client, message, args) {
+        if (['utils', 'handlers', 'commands', 'structures'].includes(args[0].toLowerCase())) {
+            let reload = await client.handlers.IPCHandler.broadcastReload(args[0].toLowerCase());
+            return message.channel.createMessage(`:white_check_mark: Successfully reloaded all ${args[0].toLowerCase()}`);
+        }
         const isPath = new RegExp(/\/|\\/gim).test(args[0]);
         const command = client.commands.get(args[0]) || client.commands.get(client.aliases.get(args[0]));
         const path = args[0] === 'all' || this.verifyPath(args.includes('--command') && !isPath ? `../${(command.help.category || command.category.name).toLowerCase()}/${command.help.name}` : args[0]);

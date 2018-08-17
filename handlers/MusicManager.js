@@ -205,6 +205,9 @@ class MusicManager {
         this.disconnect();
         delete require.cache[module.filename];
         delete require.cache[require.resolve('../structures/HandlersStructures/MusicConnection')];
+        this.client.handlers.MusicManager = undefined;
+        this.connections = undefined;
+        this.client.bot.voiceConnections = undefined;
         return new(require(module.filename))(this.client, {reload: true});
     }
 

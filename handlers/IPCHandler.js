@@ -1,6 +1,9 @@
 //Actually that may reveal itself useful at some point, so let's keep it
 
-/** @typedef {import("../main.js")} Client */
+/** @typedef {import("../main.js")} Client 
+ * @typedef {import("../utils/Collection.js")} Collection
+*/
+
 
 /** @typedef {Object} ClusterStats
  * @prop {Number} cluster The ID of the cluster
@@ -25,12 +28,12 @@
 
 class IPCHandler {
     /**
-     * @prop {Collection} requests A collection of the current ongoing requests
      * @param {Client} client The client instance given in the constructor
      * @param {object} [options] - An additional object of options
-     * @param {Map} [options.requests] - A collection of ongoing requests to expect
+     * @param {Collection} [options.requests] - A collection of ongoing requests to expect
      */
     constructor(client, options = {}) {
+        /** @type {Collection} A collection of the current ongoing requests */
         this.requests = options.requests || new client.Collection();
         this.client = client;
         process.on("message", this._handleIncomingMessage.bind(this));
@@ -159,6 +162,14 @@ class IPCHandler {
                         this.client.handlers.Reloader.reloadCommand(message.data.path);
                     } else if (message.data.type === "module") {
                         this.client.handlers.Reloader.reloadModule(message.data.path, message.data.name, message.data.options);
+                    } else if (message.data.type === "utils") {
+                        this.client.handlers.Reloader.reloadUtils();
+                    } else if (message.data.type === "commands") {
+                        this.client.handlers.Reloader.reloadCommands();
+                    } else if (message.data.type === "structures") {
+                        this.client.handlers.Reloader.reloadStructures();
+                    } else if (message.data.type === "handlers") {
+                        this.client.handlers.Reloader.reloadHandlers();
                     }
                 } catch (err) {
                     success = false;

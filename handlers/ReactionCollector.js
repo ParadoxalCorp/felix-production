@@ -14,6 +14,7 @@
 /**
  * A reaction collector which does not create a new event listener each collectors, but rather only use one added when its instantiated
  * @prop {object} collectors An object representing all the ongoing collectors
+ * @prop {Client} client The client instance
  */
 class ReactionCollector {
     /**
@@ -22,7 +23,7 @@ class ReactionCollector {
      */
     constructor(client) {
         this.collectors = {};
-
+        this.client = client;
         client.bot.on('messageReactionAdd', this.verify.bind(this));
     }
 
@@ -64,6 +65,12 @@ class ReactionCollector {
 
             setTimeout(resolve.bind(null, false), timeout);
         });
+    }
+
+    _reload() {
+        delete require.cache[module.filename];
+        this.client.bot.removeListener('messageReactionAdd', this.verify.bind(this));
+        return new(require(module.filename))(this.client, this.collectors);
     }
 }
 

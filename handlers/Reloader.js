@@ -21,7 +21,7 @@ class Reloader {
     /**
      * Reload the command at the given path, or add it if it wasn't already here
      * @param {string} path - The absolute path to the command
-     * @returns {Command} The reloaded command so calls can be chained 
+     * @returns {Command|Boolean} The reloaded command so calls can be chained, or true if all commands were reloaded
      */
     reloadCommand(path) {
         const reload = (commandPath) => {
@@ -46,6 +46,14 @@ class Reloader {
             return true;
         }
         return reload(path);
+    }
+
+    /**
+     * Reloads all commands
+     * @returns {Command|Boolean} The reloaded command so calls can be chained, or true if all commands were reloaded
+     */
+    reloadCommands() {
+        return this.reloadCommand("all");
     }
 
     /**
@@ -111,6 +119,41 @@ class Reloader {
         }
 
         return actualModule;
+    }
+
+    /**
+     * Reloads all utils
+     * @returns {Boolean} Returns true if the reload was a success
+     */
+    reloadUtils() {
+        delete require.cache[require.resolve("../utils/index.js")];
+        this.client.handlers.utils = require("../utils/index.js")(this.client);
+        return true;
+    }
+
+    /**
+     * Reloads all handlers
+     * @returns {void}
+     */
+    reloadHandlers() {
+        return this.client.initializeHandlers(true);
+    }
+
+    reloadStructures() {
+        const folders = ['CommandCategories', 'Contexts', 'ExtendedStructures', 'HandlersStructures'];
+        const files = fs.readdirSync(join(process.cwd(), 'structures'));
+        function reloadFiles (filesToReload, path) {
+            for (const file of filesToReload) {
+                if (!folders.includes(file)) {
+                    delete require.cache[path || require.resolve(`../structures/${file}`)];
+                } else {
+                    let folderPath = join(process.cwd(), 'structures', file);
+                    reloadFiles(fs.readdirSync(folderPath), folderPath);
+                }
+            }
+        }
+        reloadFiles(files);
+        this.client.structures = require('../structures/index.js');
     }
 }
 

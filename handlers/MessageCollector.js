@@ -6,16 +6,18 @@
 
 /**
  * A message collector which does not create a new event listener each collectors, but rather only use one added when its instantiated
- * @prop {object} collectors An object representing all the ongoing collectors
+ * @prop {Object} collectors An object representing all the ongoing collectors
+ * @prop {Client} client The client instance
  */
 class MessageCollector {
     /**
      * Instantiating this class create a new messageCreate listener, which will be used for all calls to awaitMessage
      * @param {Client} client - The client instance
+     * @param {{collectors: Object}} [options={}] - An additional object of options
      */
-    constructor(client) {
-        this.collectors = {};
-
+    constructor(client, options = {}) {
+        this.collectors = options.collectors || {};
+        this.client = client;
         client.bot.on('messageCreate', this.verify.bind(this));
     }
 
@@ -53,6 +55,12 @@ class MessageCollector {
 
             setTimeout(resolve.bind(null, false), timeout);
         });
+    }
+
+    _reload() {
+        delete require.cache[module.filename];
+        this.client.bot.removeListener('messageCreate', this.verify.bind(this));
+        return new(require(module.filename))(this.client, this.collectors);
     }
 }
 

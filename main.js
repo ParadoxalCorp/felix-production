@@ -198,12 +198,18 @@ class Felix extends Base {
         }
     }
 
-    initializeHandlers() {
+    initializeHandlers(reload) {
         for (const handler in this.handlers) {
             if (handler === "DatabaseWrapper") {
-                this.handlers.DatabaseWrapper = process.argv.includes('--no-db') ? false : new this.handlers.DatabaseWrapper(this);
+                this.handlers.DatabaseWrapper = process.argv.includes('--no-db') ? false : (reload ? this.handlers.DatabaseWrapper._reload() : new this.handlers.DatabaseWrapper(this));
             } else {
-                this.handlers[handler] = new this.handlers[handler](this);
+                if (reload && !this.handlers[handler]._reload) {
+                    this.handlers[handler] = undefined;
+                    delete require.cache[require.resolve(`./handlers/${handler}`)];
+                    this.handlers[handler] = new(require(`./handlers/${handler}`))(this);
+                } else {
+                    this.handlers[handler] = (reload ? this.handlers[handler]._reload() : new this.handlers[handler](this));
+                }
             }
         }
     }
