@@ -14,7 +14,7 @@
  */
 
  /** @typedef {Object} CommandHelp
-  * @prop {string} category The category of the command
+  * @prop {string} [category] The category of the command. This option shuuld only be set in structures/CommandCategories
   * @prop {String} name The name of the command 
   * @prop {String} description The description of the command
   * @prop {String} usage A quick example of how to use the command, every instance of {prefix} will be replaced by the actual prefix in the help command 
