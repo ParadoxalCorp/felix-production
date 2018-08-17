@@ -19,7 +19,7 @@ class GenericCommands extends Command {
      */
     constructor(client, commandOptions, options = {}) {
         super(client, { ...commandOptions, category: {
-            name: 'generic',
+            name: 'Generic',
         }});
         this.options = options;
     }
