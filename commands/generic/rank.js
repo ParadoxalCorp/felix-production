@@ -12,7 +12,7 @@ class Rank extends Command {
         super();
         this.help = {
             name: 'rank',
-            category: 'fun',
+            category: 'generic',
             description: 'Display your local and global experience details',
             usage: '{prefix}rank'
         };
