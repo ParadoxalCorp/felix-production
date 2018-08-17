@@ -1,25 +1,20 @@
 'use strict';
 
-const Command = require('../../structures/Command');
+const FunCommands = require('../../structures/CommandCategories/FunCommands');
 
-class Iam extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'iamnot',
-            category: 'misc',
-            description: 'Remove a self-assignable role from yourself, you can see the list of self-assignable roles set on this server with `{prefix}iamnot`',
-            usage: '{prefix}iamnot <role_name>'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: [],
-            requirePerms: ['manageRoles'],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class IamNot extends FunCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'iamnot',
+                description: 'Remove a self-assignable role from yourself, you can see the list of self-assignable roles set on this server with `{prefix}iamnot',
+                usage: '{prefix}iamnot <role_name>',
+            },
+            conf: {
+                requirePerms: ["manageRoles"],
+                guildOnly: true
+            }
+        });
     }
 
     // eslint-disable-next-line no-unused-vars 
@@ -99,4 +94,4 @@ class Iam extends Command {
     }
 }
 
-module.exports = new Iam();
+module.exports = new IamNot();

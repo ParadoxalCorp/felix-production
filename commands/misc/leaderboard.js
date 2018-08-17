@@ -1,48 +1,46 @@
 'use strict';
 
-const Command = require('../../structures/Command');
+const FunCommands = require('../../structures/CommandCategories/FunCommands');
 const databaseUpdater = require('../../utils/databaseUpdater');
 
-class Leaderboard extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'leaderboard',
-            category: 'misc',
-            description: 'Get the leaderboard of the most loved, richest and active users. Here\'s an example of how to use the command: `{prefix}leaderboard love global`, this will show the global love points leaderboard',
-            usage: '{prefix}leaderboard <love|coins|experience> | <global|local>'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['lb'],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: [{
-                description: 'Please choose what leaderboard to show, can be either `love`, `coins` or `experience`',
-                possibleValues: [{
-                    name: 'love',
-                    interpretAs: '{value}'
+class Leaderboard extends FunCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'leaderboard',
+                description: 'Get the leaderboard of the most loved, richest and active users. Here\'s an example of how to use the command: `{prefix}leaderboard love global`, this will show the global love points leaderboard',
+                usage: '{prefix}leaderboard <love|coins|experience> | <global|local>',
+            },
+            conf: {
+                aliases: ["lb"],
+                requireDB: true,
+                guildOnly: true,
+                expectedArgs: [{
+                    description: 'Please choose what leaderboard to show, can be either `love`, `coins` or `experience`',
+                    possibleValues: [{
+                        name: 'love',
+                        interpretAs: '{value}'
+                    }, {
+                        name: 'coins',
+                        interpretAs: '{value}'
+                    }, {
+                        name: 'experience',
+                        interpretAs: '{value}'
+                    }]
                 }, {
-                    name: 'coins',
-                    interpretAs: '{value}'
-                }, {
-                    name: 'experience',
-                    interpretAs: '{value}'
+                    description: 'Please specify whether the leaderboard to show is the global or the local (this server) one, can be either `global` or `local`',
+                    possibleValues: [{
+                        name: 'global',
+                        interpretAs: '{value}'
+                    }, {
+                        name: 'local',
+                        interpretAs: '{value}'
+                    }]
                 }]
-            }, {
-                description: 'Please specify whether the leaderboard to show is the global or the local (this server) one, can be either `global` or `local`',
-                possibleValues: [{
-                    name: 'global',
-                    interpretAs: '{value}'
-                }, {
-                    name: 'local',
-                    interpretAs: '{value}'
-                }]
-            }]
-        };
+            }
+        });
     }
+
 
     // eslint-disable-next-line no-unused-vars 
     async run(client, message, args, guildEntry, userEntry) {
@@ -59,6 +57,7 @@ class Leaderboard extends Command {
         }
     }
 
+    
     async getLoveLeaderboard(client, message, args) {
         const global = args[1] && args[1].toLowerCase() === 'local' ? false : true;
         let leaderboard = Array.from((!global ? client.handlers.DatabaseWrapper.userData.cache.filter(u => message.channel.guild.members.has(u.id)) 
