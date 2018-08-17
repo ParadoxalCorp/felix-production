@@ -12,7 +12,7 @@ class GuildMemberAddHandler {
             return;
         }
         const clientMember = guild.members.get(client.bot.user.id);
-        const user = new client.structures.ExtendedUser(member.user, client.bot );
+        const user = new client.structures.ExtendedUser(member.user, client );
         //On join role
         if (guildEntry.onJoinRoles[0] && clientMember.permission.has('manageRoles')) {
             this.addRoles(guild, member, guildEntry).catch(() => {});

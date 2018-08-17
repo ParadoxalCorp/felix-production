@@ -11,7 +11,7 @@ class ExtendedUser extends User {
      */
     
     constructor(user, client) {
-        super(user, client.bot ? client.bot : client);
+        super(user, client.bot);
     }
 
     /**

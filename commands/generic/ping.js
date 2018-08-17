@@ -1,25 +1,16 @@
 'use strict';
 
-const Command = require('../../structures/Command');
+const GenericCommands = require('../../structures/CommandCategories/GenericCommands');
 
-class Ping extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'ping',
-            category: 'generic',
-            description: 'pong',
-            usage: '{prefix}ping'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Ping extends GenericCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'ping',
+                description: 'pong',
+                usage: '{prefix}ping',
+            }
+        });
     }
 
     // eslint-disable-next-line no-unused-vars 

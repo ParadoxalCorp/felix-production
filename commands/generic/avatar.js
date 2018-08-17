@@ -3,31 +3,26 @@
 
 //Written by Ota#1354 the 26/06/2018
 
-const Command = require('../../structures/Command');
+const GenericCommands = require('../../structures/CommandCategories/GenericCommands');
 
-class Avatar extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'avatar',
-            category: 'generic',
-            description: 'Display and give a link to the avatar of the specified user, or to yours if nobody is specified',
-            usage: '{prefix}avatar <user_resolvable>'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Avatar extends GenericCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'avatar',
+                description: 'Display and give a link to the avatar of the specified user, or to yours if nobody is specified',
+                usage: '{prefix}avatar <user_resolvable>',
+            },
+            conf: {
+                guildOnly: true
+            }
+        });
     }
+
     //eslint-disable-next-line no-unused-vars
     async run(client, message, args, guildEntry, userEntry) {
         const user = await this.getUserFromText({ message, client, text: args.join(' ') });
-        const target = user || new client.structures.ExtendedUser(message.author, client.bot);
+        const target = user || new client.structures.ExtendedUser(message.author, client);
         return message.channel.createMessage({
             embed: {
                 title: `Link to the avatar of ${target.username}`,

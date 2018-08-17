@@ -1,26 +1,21 @@
 'use strict';
 
-const Command = require('../../structures/Command');
-const TimeConverter = require(`../../utils/TimeConverter.js`);
+const TimeConverter = require(`../../utils/TimeConverter`);
+const GenericCommands = require('../../structures/CommandCategories/GenericCommands');
 
-class Sinfo extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'sinfo',
-            category: 'generic',
-            description: 'Display some ~~useless~~ info about this server',
-            usage: '{prefix}sinfo'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: ['serverinfo'],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Sinfo extends GenericCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'sinfo',
+                description: 'Display some ~~useless~~ info about this server',
+                usage: '{prefix}sinfo',
+            },
+            conf: {
+                aliases: ["serverinfo"],
+                guildOnly: true
+            }
+        });
     }
 
     async run(client, message) {

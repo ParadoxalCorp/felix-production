@@ -1,40 +1,33 @@
-'use strict';
-//@ts-check
-
 //Written by Ota#1354 the 26/06/2018
 
 const axios = require("axios");
-const Command = require('../../structures/Command');
 const databaseUpdater = require('../../utils/databaseUpdater');
+const GenericCommands = require('../../structures/CommandCategories/GenericCommands');
 
-class Rank extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'rank',
-            category: 'generic',
-            description: 'Display your local and global experience details',
-            usage: '{prefix}rank'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: [],
-            requirePerms: ['attachFiles'],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: [],
-            require: ['fs-nextra', 'canvas-constructor', 'canvas']
-        };
+class Rank extends GenericCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'rank',
+                description: 'Display your local and global experience details',
+                usage: '{prefix}rank',
+            },
+            conf: {
+                guildOnly: true,
+                requireDB: true,
+                requirePerms: ['attachFiles'],
+                aliases: ["sys", "info", "stats"],
+                require: ['fs-nextra', 'canvas-constructor', 'canvas']
+            }
+        });
     }
-    
 
   async run(client, message, args, guildEntry, userEntry) {
       const { Canvas } = require('canvas-constructor');
       const fsn = require('fs-nextra');
       
       const user = await this.getUserFromText({ message, client, text: args.join(' ') });
-      const target = user ?  new client.structures.ExtendedUser(user, client.bot) : new client.structures.ExtendedUser(message.author, client.bot);
+      const target = user ?  new client.structures.ExtendedUser(user, client) : new client.structures.ExtendedUser(message.author, client);
       const targetEntry = target.id !== message.author.id ? await client.handlers.DatabaseWrapper.getUser(target.id) : userEntry;
       const localLevelDetails = client.handlers.ExperienceHandler.getLevelDetails(guildEntry.getLevelOf(target.id));
       const globalLevelDetails = client.handlers.ExperienceHandler.getLevelDetails(targetEntry.getLevel());

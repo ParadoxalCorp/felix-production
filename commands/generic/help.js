@@ -1,33 +1,26 @@
 'use strict';
 
-const Command = require('../../structures/Command');
+const GenericCommands = require('../../structures/CommandCategories/GenericCommands');
 
-class Help extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'help',
-            category: 'generic',
-            description: 'Display the list of available commands or get more details on a specific command.\n\nYou can use the `--noEmbed` and `--dm` options to respectively send the help without embed and send it in your direct messages. Like `{prefix}help --noEmbed`, note that those options are case-insensitive and can be combined',
-            usage: '{prefix}help'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: ['halp'],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
-        this.extra = {
-            additionalInfo: (client) => {
-                let info = `Hey ! Update ${client.package.version} is out ! Check out the [changelog](https://github.com/ParadoxalCorp/felix-production/blob/master/changelog.md)\n`;
-                info += `Have a few minutes to fill a survey ? If so, how about [filling this survey](https://goo.gl/forms/bl9pk7qLAl5WDJ2y2)?\n`;
-                info += `You can find a detailed documentation [here](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md)`;
-                return info;
-            }
-        };
+class Help extends GenericCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'help',
+                description: 'Display the list of available commands or get more details on a specific command.\n\nYou can use the `--noEmbed` and `--dm` options to respectively send the help without embed and send it in your direct messages. Like `{prefix}help --noEmbed`, note that those options are case-insensitive and can be combined',
+                usage: '{prefix}help',
+            },
+            conf: {
+                aliases: ["halp"]
+            },
+        });
+    }
+    
+    extra (client) {
+        let info = `Hey ! Update ${client.package.version} is out ! Check out the [changelog](https://github.com/ParadoxalCorp/felix-production/blob/master/changelog.md)\n`;
+        info += `Have a few minutes to fill a survey ? If so, how about [filling this survey](https://goo.gl/forms/bl9pk7qLAl5WDJ2y2)?\n`;
+        info += `You can find a detailed documentation [here](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md)`;
+        return info;
     }
 
     async run(client, message, args, guildEntry) {
@@ -66,7 +59,7 @@ class Help extends Command {
                 embedMessage: {
                     embed: {
                         title: ":book: Available commands",
-                        description: `Here is the list of all available commands and their categories, you can use commands like \`${this.getPrefix(client, guildEntry)}<command>\`\n\n${this.extra.additionalInfo(client)}`,
+                        description: `Here is the list of all available commands and their categories, you can use commands like \`${this.getPrefix(client, guildEntry)}<command>\`\n\n${this.extra(client)}`,
                         fields: categories.map(c => {
                             const firstCommandInCategory = client.commands.find(cmd => (cmd.help.category || cmd.category.name) === c);
                             const subCategories = this.getSubCategories(client, c);

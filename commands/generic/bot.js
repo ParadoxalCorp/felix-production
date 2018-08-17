@@ -1,28 +1,24 @@
 'use strict';
 
-const Command = require('../../structures/Command');
 const TimeConverter = require(`../../utils/TimeConverter.js`);
 const moment = require("moment");
 const os = require('os');
 
-class Bot extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'bot',
-            category: 'generic',
-            description: 'Display some ~~useless~~ info about Felix',
-            usage: '{prefix}bot'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: ["sys", "info", "stats"],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+const GenericCommands = require('../../structures/CommandCategories/GenericCommands');
+
+class Bot extends GenericCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'bot',
+                description: 'Display some ~~useless~~ info about Felix',
+                usage: '{prefix}bot',
+            },
+            conf: {
+                aliases: ["sys", "info", "stats"],
+                guildOnly: true
+            }
+        });
     }
 
     async run(client, message) {

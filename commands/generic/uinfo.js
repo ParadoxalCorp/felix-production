@@ -1,31 +1,24 @@
-'use strict';
-//@ts-check
+const GenericCommands = require('../../structures/CommandCategories/GenericCommands');
 
-const Command = require('../../structures/Command');
-
-class Uinfo extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'uinfo',
-            category: 'generic',
-            description: 'Display some ~~useless~~ info about the user',
-            usage: '{prefix}uinfo'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['userinfo', 'profile'],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Uinfo extends GenericCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'uinfo',
+                description: 'Display some ~~useless~~ info about the user',
+                usage: '{prefix}uinfo',
+            },
+            conf: {
+                aliases: ['userinfo', 'profile'],
+                requireDB: true,
+                guildOnly: true
+            }
+        });
     }
 
     async run(client, message, args, guildEntry, userEntry) {
         const user = await this.getUserFromText({ message, client, text: args[0] });
-        const target = user ? new client.structures.ExtendedUser(user, client.bot) : new client.structures.ExtendedUser(message.author, client.bot);
+        const target = user ? new client.structures.ExtendedUser(user, client) : new client.structures.ExtendedUser(message.author, client);
         const targetEntry = target.id !== message.author.id ? await client.handlers.DatabaseWrapper.getUser(target.id) : userEntry;
         const localLevelDetails = client.handlers.ExperienceHandler.getLevelDetails(guildEntry.getLevelOf(target.id));
         const globalLevelDetails = client.handlers.ExperienceHandler.getLevelDetails(targetEntry.getLevel());

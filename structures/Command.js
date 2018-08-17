@@ -56,9 +56,9 @@
   * @prop {CommandCategory} category An object describing the category; this should be passed by the command's category class and not the command itself
   */
 
-  /** @typedef {Object} PartialCommandOptions
+  /** @typedef {Object} Par tialCommandOptions
   * @prop {CommandHelp} help An object detailing the command
-  * @prop {CommandConf} conf The configuration of the command
+  * @prop {CommandConf} [conf] The configuration of the command
   */
 
 /**

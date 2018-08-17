@@ -62,7 +62,7 @@ class GetPermissions extends Command {
             targetPerms = targetPerms.find(perms => perms.id === args.target.id);
         }
         if (!targetPerms) {
-            return message.channel.createMessage(`:x: There is not any permissions set for the ${args.targetType} **${(args.target.name || new client.structures.ExtendedUser(args.target).tag, client.bot)}**`);
+            return message.channel.createMessage(`:x: There is not any permissions set for the ${args.targetType} **${(args.target.name || new client.structures.ExtendedUser(args.target).tag, client)}**`);
         }
         const embed = this.formatPermissions(client, message, guildEntry, args, targetPerms);
         const withinLimits = embed.fields[0].value.length < 1024 && embed.fields[1].value.length < 1024;
@@ -71,7 +71,7 @@ class GetPermissions extends Command {
 
     formatPermissions(client, message, guildEntry, args, targetPerms) {
         return {
-            title: `${args.targetType === 'global' ? 'Global' : ''} Permissions ${args.targetType !== 'global' ? ('for the ' + args.targetType + ' ' + (args.target.name || new client.structures.ExtendedUser(args.target).tag), client.bot) : ''}`,
+            title: `${args.targetType === 'global' ? 'Global' : ''} Permissions ${args.targetType !== 'global' ? ('for the ' + args.targetType + ' ' + (args.target.name || new client.structures.ExtendedUser(args.target).tag), client) : ''}`,
             color: client.config.options.embedColor,
             fields: (() => {
                 if (args.targetType === 'global') {
