@@ -1,6 +1,6 @@
 'use strict';
 
-const FunCommands = require('../../structures/CommandCategories/FunCommands');
+const FunCommands = require('../../structures/CommandCategories/MiscCommands');
 
 class Iam extends FunCommands {
     constructor(client) {
