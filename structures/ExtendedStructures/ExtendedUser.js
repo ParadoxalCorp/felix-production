@@ -11,7 +11,7 @@ class ExtendedUser extends User {
      */
     
     constructor(user, client) {
-        super(user, client);
+        super(user, client.bot ? client.bot : client);
     }
 
     /**
@@ -23,8 +23,8 @@ class ExtendedUser extends User {
 
     /**
      * Sends a DM to the user
-     * @param {String | Object} message The message content
-     * @param {Object} file A file to upload along
+     * @param {import("eris").MessageContent} message The message content
+     * @param {import("eris").MessageFile} file A file to upload along
      * @returns {Promise<import("eris").Message>} The sent message
      */
 

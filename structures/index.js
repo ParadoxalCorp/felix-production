@@ -1,5 +1,7 @@
 /** @typedef {Object} Structures
  * @prop {import("./ExtendedStructures/ExtendedUser.js")} ExtendedUser An extended eris user
+ * @prop {import("./ExtendedStructures/ExtendedUserEntry")} ExtendedUserEntry An extended user database entry
+ * @prop {import("./ExtendedStructures/ExtendedGuildEntry")} ExtendedGuildEntry An extended guild database entry
  * @prop {import("./CommandCategories/MusicCommands.js")} MusicCommands The MusicCommands category
  * @prop {import("./HandlersStructures/MusicConnection.js")} MusicConnection The MusicConnection class
  * @prop {import("./References.js").References} References The generic data models references
@@ -12,6 +14,8 @@
 
 module.exports = {
     ExtendedUser: require('./ExtendedStructures/ExtendedUser.js'),
+    ExtendedUserEntry: require('./ExtendedStructures/ExtendedUserEntry.js'),
+    ExtendedGuildEntry: require('./ExtendedStructures/ExtendedGuildEntry.js'),
     MusicCommands: require('./CommandCategories/MusicCommands.js'),
     MusicConnection: require('./HandlersStructures/MusicConnection.js'),
     //Backward compatibility

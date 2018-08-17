@@ -30,7 +30,7 @@ class Transactions extends Command {
         if (splicedTransactions.length < 2) {
             return message.channel.createMessage(splicedTransactions[0]);
         } else {
-            return this.client.handlers.InteractiveList.createPaginatedMessage({
+            return client.handlers.InteractiveList.createPaginatedMessage({
                 channel: message.channel,
                 messages: splicedTransactions,
                 userID: message.author.id

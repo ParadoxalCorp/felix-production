@@ -199,16 +199,13 @@ class Felix extends Base {
     }
 
     initializeHandlers() {
-        this.handlers.MusicManager = new this.handlers.MusicManager(this);
-        this.handlers.DatabaseWrapper = process.argv.includes('--no-db') ? false : new this.handlers.DatabaseWrapper(this);
-        this.handlers.RedisManager = new this.handlers.RedisManager(this);
-        this.handlers.EconomyManager = new this.handlers.EconomyManager(this);
-        this.handlers.ExperienceHandler = new this.handlers.ExperienceHandler(this);
-        this.handlers.IPCHandler = new this.handlers.IPCHandler(this);
-        this.handlers.ImageHandler = new this.handlers.ImageHandler(this);
-        this.handlers.MessageCollector = new this.handlers.MessageCollector(this);
-        this.handlers.Reloader = new this.handlers.Reloader(this);
-        this.handlers.ReactionCollector = new this.handlers.ReactionCollector(this);
+        for (const handler in this.handlers) {
+            if (handler === "DatabaseWrapper") {
+                this.handlers.DatabaseWrapper = process.argv.includes('--no-db') ? false : new this.handlers.DatabaseWrapper(this);
+            } else {
+                this.handlers[handler] = new this.handlers[handler](this);
+            }
+        }
     }
 
     async beforeExit() {

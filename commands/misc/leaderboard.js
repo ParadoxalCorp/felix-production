@@ -139,7 +139,7 @@ class Leaderboard extends Command {
     }
 
     async fetchUsers(client, leaderboard) {
-        let resolvedUsers = new client.collection;
+        let resolvedUsers = new client.Collection();
         await Promise.all(leaderboard.slice(0, 10).map(u => client.utils.utils.fetchUser(u.id)))
             .then(fetchedUsers => {
                 let i = 0;

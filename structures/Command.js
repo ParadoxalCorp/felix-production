@@ -212,7 +212,7 @@ class Command {
      * @param {Client} options.client - The client instance
      * @param {Message} options.message - The message from which to get the user from
      * @param {string} [options.text=message.content] - The text from which users should be resolved, if none provided, it will use the message content
-     * @returns {Promise<User | Boolean>} The resolved user, or false if none could be resolved
+     * @returns {Promise<ExtendedUser | Boolean>} The resolved user, or false if none could be resolved
      */
     async getUserFromText(options) {
         if (!options.client || !options.message) {
@@ -221,20 +221,20 @@ class Command {
         options.text = options.text || options.message.content;
         const exactMatch = await this._resolveUserByExactMatch(options.client, options.message, options.text);
         if (exactMatch) {
-            return new options.client.structures.ExtendedUser(exactMatch, this.client);
+            return new options.client.structures.ExtendedUser(exactMatch, this.client || options.client);
         }
         //While it is unlikely, resolve the user by ID if possible
         // @ts-ignore
         if (options.message.channel.guild.members.get(options.text)) {
             // @ts-ignore
-            return new options.client.structures.ExtendedUser(options.message.channel.guild.members.get(options.text), this.client);
+            return new options.client.structures.ExtendedUser(options.message.channel.guild.members.get(options.text), this.client || options.client);
         }
 
         const mention = new RegExp(/<@|<!@/g);
         if (mention.test(options.text)) {
             const id = options.text.replace(/<@!/g, '').replace(/<@/g, '').replace(/>/g, '');
             const user = options.client.bot.users.get(id);
-            return user ? new options.client.structures.ExtendedUser(user, this.client) : false;
+            return user ? new options.client.structures.ExtendedUser(user, this.client || options.client) : false;
         }
 
         return false;

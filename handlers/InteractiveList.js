@@ -10,7 +10,7 @@ class InteractiveList {
      */
     constructor(client) {
         this.client = client;
-        this.ongoingList = new client.collection();
+        this.ongoingList = new client.Collection();
     }
 
     /**

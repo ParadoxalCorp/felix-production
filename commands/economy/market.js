@@ -23,7 +23,7 @@ class Market extends Command {
     }
 
     async run(client, message, args, guildEntry, userEntry) {
-        return this.client.handlers.InteractiveList.createPaginatedMessage({
+        return client.handlers.InteractiveList.createPaginatedMessage({
             channel: message.channel,
             userID: message.author.id,
             reactions: [{
