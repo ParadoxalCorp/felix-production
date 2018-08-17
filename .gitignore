@@ -3,3 +3,7 @@ node_modules
 /package-lock.json
 .vscode
 .nyc_output
+
+codealike.json
+config.withmusic.js
+config.withoutmusic.js
