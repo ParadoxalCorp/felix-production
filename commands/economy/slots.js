@@ -1,60 +1,54 @@
-'use strict';
+const EconomyCommands = require('../../structures/CommandCategories/EconomyCommands');
 
-const Command = require('../../structures/Command');
-
-class Slots extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'slots',
-            description: 'Gamble your holy coins on your luck, and if you dont have any luck, well, good luck.\n\nYou can use the `--noEmbed` option to send the slots results without an embed, like `{prefix}slots 200 --noEmbed` and the `--noRoll` option to disable roll animations (if any). Note that these options is case-insensitive',
-            usage: '{prefix}slots <coins>',
-            category: "economy"
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: [],
-            cooldownWeight: 2
-        };
-        this.extra = {
-            slotsOutputs: [{
-                multiplier: 1,
-                name: ":cherries:"
-            }, {
-                multiplier: 1,
-                name: ":french_bread:"
-            }, {
-                multiplier: 1,
-                name: ":beer:"
-            }, {
-                multiplier: 1,
-                name: ":coffee:"
-            }, {
-                multiplier: 2,
-                name: ":gem:"
-            }, {
-                multiplier: -1,
-                name: ":money_with_wings:"
-            }, {
-                multiplier: -1,
-                name: ":bomb:"
-            }, {
-                multiplier: -1,
-                name: ":space_invader:"
-            }, {
-                multiplier: -1,
-                name: ":gun:"
-            }, {
-                multiplier: -1,
-                name: ":coffin:"
-            }]
-        };
+class Slots extends EconomyCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'slots',
+                description: 'Gamble your holy coins on your luck, and if you dont have any luck, well, good luck.\n\nYou can use the `--noEmbed` option to send the slots results without an embed, like `{prefix}slots 200 --noEmbed` and the `--noRoll` option to disable roll animations (if any). Note that these options is case-insensitive',
+                usage: '{prefix}slots <coins>',
+            },
+            conf : {
+                requireDB: true,
+                cooldownWeight: 2
+            },
+            // @ts-ignore
+            extra : {
+                slotsOutputs: [{
+                    multiplier: 1,
+                    name: ":cherries:"
+                }, {
+                    multiplier: 1,
+                    name: ":french_bread:"
+                }, {
+                    multiplier: 1,
+                    name: ":beer:"
+                }, {
+                    multiplier: 1,
+                    name: ":coffee:"
+                }, {
+                    multiplier: 2,
+                    name: ":gem:"
+                }, {
+                    multiplier: -1,
+                    name: ":money_with_wings:"
+                }, {
+                    multiplier: -1,
+                    name: ":bomb:"
+                }, {
+                    multiplier: -1,
+                    name: ":space_invader:"
+                }, {
+                    multiplier: -1,
+                    name: ":gun:"
+                }, {
+                    multiplier: -1,
+                    name: ":coffin:"
+                }]
+            },
+        });
     }
+
 
     async run(client, message, args, guildEntry, userEntry) {
         if (!args[0]) {

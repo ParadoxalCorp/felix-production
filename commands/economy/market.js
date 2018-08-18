@@ -1,25 +1,17 @@
-'use strict';
+const EconomyCommands = require('../../structures/CommandCategories/EconomyCommands');
 
-const Command = require('../../structures/Command');
-
-class Market extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'market',
-            category: 'economy',
-            description: 'The place to see and purchase available items with holy coins',
-            usage: '{prefix}market'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Market extends EconomyCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'market',
+                description: 'The place to see and purchase available items with holy coins',
+                usage: '{prefix}market'
+            },
+            conf : {
+                requireDB: true,
+            },
+        });
     }
 
     async run(client, message, args, guildEntry, userEntry) {

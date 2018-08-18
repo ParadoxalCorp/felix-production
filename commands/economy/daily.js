@@ -1,25 +1,17 @@
-'use strict';
+const EconomyCommands = require('../../structures/CommandCategories/EconomyCommands');
 
-const Command = require('../../structures/Command');
-
-class Daily extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'daily',
-            category: 'economy',
-            description: 'Get your daily holy coins',
-            usage: '{prefix}daily'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Daily extends EconomyCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'daily',
+                description: 'Get your daily holy coins',
+                usage: '{prefix}daily'
+            },
+            conf : {
+                requireDB: true,
+            },
+        });
     }
 
     async run(client, message, args, guildEntry, userEntry) {

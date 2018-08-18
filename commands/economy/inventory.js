@@ -1,25 +1,17 @@
-'use strict';
+const EconomyCommands = require('../../structures/CommandCategories/EconomyCommands');
 
-const Command = require('../../structures/Command');
-
-class Inventory extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'inventory',
-            category: 'economy',
-            description: 'Check the items you possess',
-            usage: '{prefix}inventory'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Inventory extends EconomyCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'inventory',
+                description: 'Check the items you possess',
+                usage: '{prefix}inventory'
+            },
+            conf : {
+                requireDB: true,
+            },
+        });
     }
 
     async run(client, message, args, guildEntry, userEntry) {

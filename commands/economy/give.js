@@ -1,45 +1,26 @@
-'use strict';
+const EconomyCommands = require('../../structures/CommandCategories/EconomyCommands');
 
-/**
- * @typedef {import("eris").Message} Message
- */
-
-const Command = require('../../structures/Command');
-
-class Give extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'give',
-            category: 'economy',
-            description: 'Give some of your holy coins to the specified user',
-            usage: '{prefix}give <user> <coins>'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['transfer'],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: [{
-                description: 'To which user should i give the coins? You can specify a nickname, a username or a user ID'
-            }, {
-                description: 'How many coins do you want to give?'
-            }]
-        };
+class Give extends EconomyCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'give',
+                description: 'Give some of your holy coins to the specified user',
+                usage: '{prefix}give <user> <coins>'
+            },
+            conf : {
+                aliases: ['transfer'],
+                requireDB: true,
+                guildOnly: true,
+                expectedArgs: [{
+                    description: 'To which user should i give the coins? You can specify a nickname, a username or a user ID'
+                }, {
+                    description: 'How many coins do you want to give?'
+                }]
+            },
+        });
     }
-    /**
-     *
-     *
-     * @param {*} client hi
-     * @param {Message} message hi
-     * @param {Array} args hi 
-     * @param {*} guildEntry hi
-     * @param {*} userEntry hi
-     * @returns {Promise<Message>} hi
-     * @memberof Give
-     */
+
     async run(client, message, args, guildEntry, userEntry) {
         const userInput = args.length >= 2 ? args.slice(0, args.length - 1) : false;
         if (!userInput) {

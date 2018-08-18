@@ -1,25 +1,18 @@
-'use strict';
+const EconomyCommands = require('../../structures/CommandCategories/EconomyCommands');
 
-const Command = require('../../structures/Command');
-
-class Navalbase extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'navalbase',
-            category: 'economy',
-            description: 'Check your fleet',
-            usage: '{prefix}navalbase'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['fleet', 'port', 'nb', 'base'],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Navalbase extends EconomyCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'navalbase',
+                description: 'Check your fleet',
+                usage: '{prefix}navalbase'
+            },
+            conf : {
+                aliases: ['fleet', 'port', 'nb', 'base'],
+                requireDB: true,
+            },
+        });
     }
 
     async run(client, message, args, guildEntry, userEntry) {
