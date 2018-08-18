@@ -18,19 +18,23 @@ class Avatar extends GenericCommands {
     async run(client, message, args, guildEntry, userEntry) {
         const user = await this.getUserFromText({ message, client, text: args.join(' ') });
         const target = user || new client.structures.ExtendedUser(message.author, client);
-        return message.channel.createMessage({
+        return message.channel.createMessage(`The avatar of **${target.username}**`, {
             embed: {
-                title: `Link to the avatar of ${target.username}`,
-                url: target.avatarURL || target.defaultCDNAvatar,
+                color: client.config.options.embedColor,
                 author: {
-                    name: target.tag,
-                    icon_url: target.avatarURL || target.defaultCDNAvatar
+                    name: `Requested by: ${message.author.tag}`,
+                    icon_url: message.author.avatarURL
                 },
+                title: `Link to the avatar`,
+                url: target.avatarURL || target.defaultCDNAvatar,
                 image: {
                     url: target.avatarURL || target.defaultCDNAvatar
                 },
                 timestamp: new Date(),
-                color: client.config.options.embedColor
+                footer: {
+                    text: client.bot.user.username,
+                    icon_url: client.bot.user.avatarURL
+                }
             }
         });
     }
