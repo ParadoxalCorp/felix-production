@@ -1,8 +1,20 @@
-const Command = require('../../structures/Command');
+const SettingsCommands = require('../../structures/CommandCategories/SettingsCommands');
 
-class SetGreetings extends Command {
-    constructor() {
-        super();
+class SetGreetings extends SettingsCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'setgreetings',
+                description: 'This command allows you to change the settings of the greetings system',
+                usage: '{prefix}setgreetings',
+                externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#greetings-and-farewell-system',
+            },
+            conf: {
+                aliases: ['greetings'],
+                requireDB: true,
+                guildOnly: true,
+            }
+        });
         this.extra = {
             possibleActions: [{
                 name: 'enable',
@@ -29,37 +41,6 @@ class SetGreetings extends Command {
                 func: this.seeSettings.bind(this),
                 interpretAs: '{value}',
                 expectedArgs: 0
-            }]
-        };
-        this.help = {
-            name: 'setgreetings',
-            category: 'settings',
-            description: 'This command allows you to change the settings of the greetings system',
-            usage: '{prefix}setgreetings',
-            externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#greetings-and-farewell-system'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['greetings'],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: [{
-                description: 'Please specify the action you want to do in the following possible actions: ' + this.extra.possibleActions.map(a => `\`${a.name}\``).join(', '),
-                possibleValues: this.extra.possibleActions
-            }, {
-                //Conditional set_message_target branch
-                condition: (client, message, args) => args.includes('set_message_target'),
-                description: 'Please specify the target of the greetings messages, specify `#<channel_name>` or `<channel_name>` to send them in a specific channel or `dm` to send them directly to the member who just joined',
-                possibleValues: [{
-                    name: '*',
-                    interpretAs: '{value}'
-                }]
-            }, {
-                //Conditional set_message branch
-                condition: (client, message, args) => args.includes('set_message'),
-                description: `Please specify the greetings message you want to be sent whenever a new user join the server, check <${this.help.externalDoc}> for more information and a list of tags you can use`
             }]
         };
     }

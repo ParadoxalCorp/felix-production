@@ -1,8 +1,20 @@
-const Command = require('../../structures/Command');
+const SettingsCommands = require('../../structures/CommandCategories/SettingsCommands');
 
-class Experience extends Command {
-    constructor() {
-        super();
+class Experience extends SettingsCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'experience',
+                description: 'This command allows you to change the settings of the activity system (enable it, add roles to be given at a specific level and such), the full syntax is like `{prefix}experience add_role <role> <level> <static|no>`',
+                usage: '{prefix}experience',
+                externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#activity-system'
+            },
+            conf: {
+                aliases: ['activity'],
+                requireDB: true,
+                guildOnly: true,
+            }
+        });
         this.extra = {
             possibleActions: [{
                 name: 'enable',
@@ -56,77 +68,8 @@ class Experience extends Command {
                 expectedArgs: 0
             }]
         };
-        this.help = {
-            name: 'experience',
-            category: 'settings',
-            description: 'This command allows you to change the settings of the activity system (enable it, add roles to be given at a specific level and such), the full syntax is like `{prefix}experience add_role <role> <level> <static|no>`',
-            usage: '{prefix}experience',
-            externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#activity-system'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['activity'],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: [{
-                description: 'Please specify the action you want to do in the following possible actions: ' + this.extra.possibleActions.map(a => `\`${a.name}\``).join(', '),
-                possibleValues: this.extra.possibleActions
-            }, {
-                //Conditional add_role branch
-                condition: (client, message, args) => args.includes('add_role'),
-                description: 'Please specify the name of the role to add'
-            }, {
-                //Skip if the given role name is invalid
-                condition: async(client, message, args) => {
-                    if (!args.includes('add_role')) {
-                        return false;
-                    }
-                    const role = await this.getRoleFromText({ message: message, client: client, text: args[1] });
-                    //Overwrite argument so the command handler will pass the resolved role to the command
-                    //That not only avoid a slower duplicate check, but also a duplicate query if multiple roles have first been resolved
-                    if (role) {
-                        args[1] = role;
-                    }
-                    return role;
-                },
-                description: 'Please specify at which level this role should be given (specify a number)'
-            }, {
-                //Skip if the given role name is invalid or if the specified level isn't a whole number
-                condition: (client, message, args) => {
-                    if (!args.includes('add_role') || !args[2] || !client.utils.isWholeNumber(args[2])) {
-                        return false;
-                    }
-                    return true;
-                },
-                description: `Please specify whether this role should be static, if not, the role will be removed from members who won it whenever they win another role at a higher level (check <${this.help.externalDoc}> for more information). Possible answers are \`yes\` or \`no\``,
-                possibleValues: [{
-                    name: 'yes',
-                    interpretAs: 'static'
-                }, {
-                    name: 'no',
-                    interpretAs: false
-                }]
-            }, {
-                //Conditional remove_role branch
-                condition: (client, message, args) => args.includes('remove_role'),
-                description: 'Please specify the name of the role set to be given at a certain level to remove'
-            }, {
-                //Conditional set_levelup_notifs_target branch
-                condition: (client, message, args) => args.includes('set_levelup_notifs_target'),
-                description: 'Please specify the target of the level up notifications, specify `#<channel_name>` or `<channel_name>` to send them in a specific channel, `this` to send them in the channel where the member sent their last message, or `dm` to send them directly to the member who just levelled up in their DMs',
-                possibleValues: [{
-                    name: '*',
-                    interpretAs: '{value}'
-                }]
-            }, {
-                //Conditional set_levelup_notifs_message branch
-                condition: (client, message, args) => args.includes('set_levelup_notifs_message'),
-                description: `Please specify the level up message you want to be sent whenever a member level up, check <${this.help.externalDoc}> for more information and a list of tags you can use`
-            }]
-        };
     }
+
 
     async run(client, message, args, guildEntry, userEntry) {
         const action = this.extra.possibleActions.find(a => a.name === args[0]);

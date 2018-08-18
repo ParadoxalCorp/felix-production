@@ -1,23 +1,18 @@
-const Command = require('../../structures/Command');
+const SettingsCommands = require('../../structures/CommandCategories/SettingsCommands');
 
-class SimulateFarewells extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'simulatefarewells',
-            category: 'settings',
-            description: 'Simulate the farewells with you as the leaving member',
-            usage: '{prefix}simulatefarewells'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class SimulateFarewells extends SettingsCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'simulatefarewells',
+                description: 'Simulate the farewells with you as the leaving member',
+                usage: '{prefix}simulatefarewells'
+            },
+            conf: {
+                requireDB: true,
+                guildOnly: true,
+            }
+        });
     }
 
     // eslint-disable-next-line no-unused-vars 

@@ -1,8 +1,19 @@
-const Command = require('../../structures/Command');
+const SettingsCommands = require('../../structures/CommandCategories/SettingsCommands');
 
-class OnJoinRoles extends Command {
-    constructor() {
-        super();
+class OnJoinRoles extends SettingsCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'onjoinroles',
+                description: 'This command allows you to set roles to give to each new member, each roles added will be given to the new members of the server right when they join',
+                usage: '{prefix}onjoinroles'
+            },
+            conf: {
+                aliases: ['defaultroles'],
+                requireDB: true,
+                guildOnly: true,
+            }
+        });
         this.extra = {
             possibleActions: [{
                 name: 'add_role',
@@ -19,32 +30,6 @@ class OnJoinRoles extends Command {
                 func: this.listRoles.bind(this),
                 interpretAs: '{value}',
                 expectedArgs: 0
-            }]
-        };
-        this.help = {
-            name: 'onjoinroles',
-            category: 'settings',
-            description: 'This command allows you to set roles to give to each new member, each roles added will be given to the new members of the server right when they join',
-            usage: '{prefix}onjoinroles'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['defaultroles'],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: [{
-                description: 'Please specify the action you want to do in the following possible actions: ' + this.extra.possibleActions.map(a => `\`${a.name}\``).join(', '),
-                possibleValues: this.extra.possibleActions
-            }, {
-                //Conditional add_role branch
-                condition: (client, message, args) => args.includes('add_role'),
-                description: 'Please specify the name of the role to add'
-            }, {
-                //Conditional remove_role branch
-                condition: (client, message, args) => args.includes('remove_role'),
-                description: 'Please specify the name of the role set to be given to new members to remove'
             }]
         };
     }

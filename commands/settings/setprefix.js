@@ -1,23 +1,19 @@
-const Command = require('../../structures/Command');
+const SettingsCommands = require('../../structures/CommandCategories/SettingsCommands');
 
-class SetPrefix extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'setprefix',
-            category: 'settings',
-            description: 'Set a custom prefix for commands, if you want the prefix to not contain a space between the prefix and the command, use `{prefix}setprefix <new_prefix> unspaced` so like `{prefix}setprefix ! unspaced` will make commands look like `!ping`',
-            usage: '{prefix}setprefix <new_prefix> <unspaced>'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ["prefix"],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class SetPrefix extends SettingsCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'setprefix',
+                description: 'Set a custom prefix for commands, if you want the prefix to not contain a space between the prefix and the command, use `{prefix}setprefix <new_prefix> unspaced` so like `{prefix}setprefix ! unspaced` will make commands look like `!ping`',
+                usage: '{prefix}setprefix <new_prefix> <unspaced>'
+            },
+            conf: {
+                aliases: ["prefix"],
+                requireDB: true,
+                guildOnly: true,
+            }
+        });
     }
 
     async run(client, message, args, guildEntry) {

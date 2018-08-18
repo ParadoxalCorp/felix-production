@@ -1,8 +1,19 @@
-const Command = require('../../structures/Command');
+const SettingsCommands = require('../../structures/CommandCategories/SettingsCommands');
 
-class Experience extends Command {
-    constructor() {
-        super();
+class Sar extends SettingsCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'sar',
+                description: 'This command allows you to manage self-assignable roles on this server\nTo update the list of roles with which a self-assignable role can\'t be stacked, just use the command like you are setting a new self-assignable role, it will update the roles according to what you specify',
+                usage: '{prefix}sar'
+            },
+            conf: {
+                aliases: ['activity'],
+                guildOnly: true,
+                requireDB: true,
+            }
+        });
         this.extra = {
             possibleActions: [{
                 name: 'add',
@@ -19,35 +30,6 @@ class Experience extends Command {
                 func: this.listRoles.bind(this),
                 interpretAs: '{value}',
                 expectedArgs: 0
-            }]
-        };
-        this.help = {
-            name: 'sar',
-            category: 'settings',
-            description: 'This command allows you to manage self-assignable roles on this server\nTo update the list of roles with which a self-assignable role can\'t be stacked, just use the command like you are setting a new self-assignable role, it will update the roles according to what you specify',
-            usage: '{prefix}sar'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['activity'],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: [{
-                description: 'Please specify the action you want to do in the following possible actions: ' + this.extra.possibleActions.map(a => `\`${a.name}\``).join(', '),
-                possibleValues: this.extra.possibleActions
-            }, {
-                //Conditional add branch
-                condition: (client, message, args) => args.includes('add'),
-                description: 'Please specify the name of the role to make self-assignable'
-            }, {
-                condition: (client, message, args) => args.includes('add'),
-                description: 'Can this role be stacked with all other roles? If not, answer with a list of roles separated by `;` with which this role can\'t be stacked with, otherwise just answer `yes`\nYou can learn more about this here <https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#incompatible-roles>' 
-            }, {
-                //Conditional remove branch
-                condition: (client, message, args) => args.includes('remove'),
-                description: 'Please specify the name of the self-assignable role to remove'
             }]
         };
     }
@@ -158,4 +140,4 @@ class Experience extends Command {
     }
 }
 
-module.exports = new Experience();
+module.exports = new Sar();
