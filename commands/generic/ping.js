@@ -16,7 +16,7 @@ class Ping extends GenericCommands {
     // eslint-disable-next-line no-unused-vars 
     async run(client, message, args, guildEntry, userEntry) {
         const startTime = Date.now();
-        const messageSent = await message.channel.createMessage(`Baguetting the hell outta Diskurd...`);
+        const messageSent = await message.channel.createMessage(`<a:loading:393726911596986368>`);
         return messageSent.edit(`~~Baguette~~ Pong | \`${Date.now() - startTime}\`ms`);
     }
 }

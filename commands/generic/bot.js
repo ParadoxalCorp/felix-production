@@ -137,13 +137,13 @@ class Bot extends GenericCommands {
         }
         embedFields.push({
             name: 'Database status',
-            value: `${client.handlers.DatabaseWrapper && client.handlers.DatabaseWrapper.healthy ? ':white_check_mark: Online' : ':x: Offline'}\n[More info](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#rethinkdb)`,
+            value: `${client.handlers.DatabaseWrapper && client.handlers.DatabaseWrapper.healthy ? 'Online <:online:480178991467200524>' : 'Offline <:offline:480178982579470336>'}\n[More info](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#rethinkdb)`,
             inline: true
         });
         if (client.handlers.RedisManager) {
             embedFields.push({
                 name: 'Redis status',
-                value: `${client.handlers.RedisManager.healthy ? ':white_check_mark: Online' : ':x: Offline'}\n[More info](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#redis)`,
+                value: `${client.handlers.RedisManager.healthy ? 'Online <:online:480178991467200524>' : 'Offline <:offline:480178982579470336>'}\n[More info](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#redis)`,
                 inline: true
             });
         }
@@ -153,7 +153,7 @@ class Bot extends GenericCommands {
                 value: (() => {
                     let nodesStatus = '';
                     for (const node of client.config.options.music.nodes) {
-                        nodesStatus += `${node.location}: ${client.bot.voiceConnections.nodes.get(node.host).connected ? ':white_check_mark: Online' : ':x: Offline'}\n\n`;
+                        nodesStatus += `${node.location}: ${client.bot.voiceConnections.nodes.get(node.host).connected ? 'Online <:online:480178991467200524>' : 'Offline <:offline:480178982579470336>'}\n\n`;
                     }
                     nodesStatus += `[More info](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#music-nodes)`;
                     return nodesStatus;
