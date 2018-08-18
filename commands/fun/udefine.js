@@ -1,26 +1,20 @@
 'use strict';
 
-const Command = require('../../structures/Command');
 const axios = require('axios');
+const FunCommands = require('../../structures/CommandCategories/FunCommands');
 
-class Udefine extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'udefine',
-            description: 'Search definitions through urbandictionary',
-            usage: 'udefine pizza',
-            category: 'fun'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: ["urdef", "define", "urban"],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Udefine extends FunCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'udefine',
+                description: 'Search definitions through urbandictionary',
+                usage: 'udefine pizza',
+            },
+            conf : {
+                aliases: ["urdef", "define", "urban"],
+            },
+        });
     }
 
     //eslint-disable-next-line no-unused-vars

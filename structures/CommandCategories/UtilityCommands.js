@@ -5,11 +5,11 @@
 * @typedef {import("../Command.js").PartialCommandOptions} PartialCommandOptions
 */
 
-const FunContext = require('../Contexts/FunContext');
+const UtilityContext = require('../Contexts/UtilityContext');
 
 const Command = require('../Command');
 
-class FunCommands extends Command {
+class UtilityCommands extends Command {
     /**
      * 
      * @param {Client} client - The client instance
@@ -19,7 +19,7 @@ class FunCommands extends Command {
      */
     constructor(client, commandOptions, options = {}) {
         super(client, { ...commandOptions, category: {
-            name: 'Fun',
+            name: 'Utility',
         }});
         this.options = options;
     }
@@ -31,10 +31,10 @@ class FunCommands extends Command {
         }
         return { 
             passed: true,
-            context: new FunContext(client, message, args, guildEntry, userEntry)
+            context: new UtilityContext(client, message, args, guildEntry, userEntry)
         };
     }
 
 }
 
-module.exports = FunCommands;
+module.exports = UtilityCommands;

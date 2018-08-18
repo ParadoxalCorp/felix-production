@@ -1,40 +1,31 @@
-'use strict';
+const ModerationCommands = require('../../structures/CommandCategories/ModerationCommands');
 
-const Command = require('../../structures/Command');
-
-//Written by ParadoxOrigins#5451 and Niputi#2490
-
-class Announce extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'announce',
-            category: 'moderation',
-            description: 'Announce something with a beautiful (or smth) embed',
-            usage: '{prefix}announce'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: [
-                {
-                    description: "What's the title of this announcement (max: 256 characters)?"
-                },
-                {
-                    description: "What's the color of this announcement? You can choose between the 3 predefined ones: `red`, `orange`, `lightblue` or use a custom HEX color in the format `#000000`"
-                },
-                {
-                    description: "What's the content of this announcement? You can use the usual markdown, and even masked links using `[masked link](https://google.com)`"
-                },
-                {
-                    description: "Finally, in which channel should I send the announcement?"
-                }
-            ]
-        };
+class Announce extends ModerationCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'announce',
+                description: 'Announce something with a beautiful (or smth) embed',
+                usage: '{prefix}announce',
+            },
+            conf : {
+                guildOnly: true,
+                expectedArgs: [
+                    {
+                        description: "What's the title of this announcement (max: 256 characters)?"
+                    },
+                    {
+                        description: "What's the color of this announcement? You can choose between the 3 predefined ones: `red`, `orange`, `lightblue` or use a custom HEX color in the format `#000000`"
+                    },
+                    {
+                        description: "What's the content of this announcement? You can use the usual markdown, and even masked links using `[masked link](https://google.com)`"
+                    },
+                    {
+                        description: "Finally, in which channel should I send the announcement?"
+                    }
+                ]
+            },
+        });
     }
 
     async run(client, message, args) {

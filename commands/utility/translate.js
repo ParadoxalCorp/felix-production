@@ -1,25 +1,14 @@
-'use strict';
+const UtilityCommands = require('../../structures/CommandCategories/UtilityCommands');
 
-const Command = require('../../structures/Command');
-
-class Translate extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'translate',
-            category: 'utility',
-            description: 'Translate the provided text to the specified language using google translate',
-            usage: '{prefix}translate \"hello\" en:fr'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Translate extends UtilityCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'translate',
+                description: 'Translate the provided text to the specified language using google translate',
+                usage: '{prefix}translate \"hello\" en:fr',
+            },
+        });
     }
 
     async run(client, message, args) {

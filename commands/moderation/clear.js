@@ -1,26 +1,19 @@
-'use strict';
-//@ts-check
+const ModerationCommands = require('../../structures/CommandCategories/ModerationCommands');
 
-const Command = require('../../structures/Command');
-
-class Clear extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'clear',
-            category: 'moderation',
-            description: 'Prune messages, the available filters are `-b`, (deletes only bot messages) `-c` (delete commands and their outputs) and `-u` (delete the specified user messages)\n\nSo for example `{prefix}clear 50 -bcu @Baguette` will clear all the bots messages, the commands and the messages from the user `Baguette` in the last 50 messages',
-            usage: '{prefix}clear <count> <filters>'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: ["clean", "prune"],
-            requirePerms: ["manageMessages"],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Clear extends ModerationCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'clear',
+                description: 'Prune messages, the available filters are `-b`, (deletes only bot messages) `-c` (delete commands and their outputs) and `-u` (delete the specified user messages)\n\nSo for example `{prefix}clear 50 -bcu @Baguette` will clear all the bots messages, the commands and the messages from the user `Baguette` in the last 50 messages',
+                usage: '{prefix}clear <count> <filters>'
+            },
+            conf : {
+                requirePerms: ["manageMessages"],
+                aliases: ["clean", "prune"],
+                guildOnly: true,
+            },
+        });
     }
 
     // eslint-disable-next-line no-unused-vars

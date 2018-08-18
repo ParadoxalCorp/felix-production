@@ -1,44 +1,39 @@
-'use strict';
+const ModerationCommands = require('../../structures/CommandCategories/ModerationCommands');
 
-const Command = require('../../structures/Command');
-
-class SetPermission extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'setpermission',
-            category: 'moderation',
-            description: 'Set a new command/category permission for the server, or a channel category/channel/role/user. As always, you can run the command like `{prefix}setpermission` to be guided through the process',
-            usage: '{prefix}setpermission <command_name|category_name*|*> | <true|false> | <global|category|channel|role|user> | <category_name|channel_name|role_name|username>',
-            externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#permissions-system'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['setperm', 'sp'],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: [{
-                description: 'What permission do you want to set, you can reply with a command name like `ping` to target this command, or the name of a command category followed by a `*` like `generic*` to target a whole category',
-                validate: (client, message, arg) => this.validatePermission(client, arg)
-            }, {
-                description: 'Do you want to restrict or allow this permission, reply with `true` to allow it and `false` to restrict it',
-                possibleValues: [{
-                    name: 'true',
-                    interpretAs: 'true'
+class SetPermission extends ModerationCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'setpermission',
+                description: 'Set a new command/category permission for the server, or a channel category/channel/role/user. As always, you can run the command like `{prefix}setpermission` to be guided through the process',
+                usage: '{prefix}setpermission <command_name|category_name*|*> | <true|false> | <global|category|channel|role|user> | <category_name|channel_name|role_name|username>',
+                externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#permissions-system'
+            },
+            conf : {
+                requireDB: true,
+                aliases: ['setperm', 'sp'],
+                guildOnly: true,
+                expectedArgs: [{
+                    description: 'What permission do you want to set, you can reply with a command name like `ping` to target this command, or the name of a command category followed by a `*` like `generic*` to target a whole category',
+                    validate: (client, message, arg) => this.validatePermission(client, arg)
                 }, {
-                    name: 'false',
-                    interpretAs: 'false'
+                    description: 'Do you want to restrict or allow this permission, reply with `true` to allow it and `false` to restrict it',
+                    possibleValues: [{
+                        name: 'true',
+                        interpretAs: 'true'
+                    }, {
+                        name: 'false',
+                        interpretAs: 'false'
+                    }]
+                }, {
+                    description: 'To what this permission should apply to, you can reply with `global` to target the entire server, `channel` to target a specific channel, `role` to target a specific role or `user` to target a specific user',
+                    validate: (client, message, arg) => this.validateTarget(arg)
+                }, {
+                    description: `Please reply with the name of the target (channel/role/user) you want to apply this permission on`,
+                    condition: (client, message, args) => args[2].toLowerCase() !== 'global'
                 }]
-            }, {
-                description: 'To what this permission should apply to, you can reply with `global` to target the entire server, `channel` to target a specific channel, `role` to target a specific role or `user` to target a specific user',
-                validate: (client, message, arg) => this.validateTarget(arg)
-            }, {
-                description: `Please reply with the name of the target (channel/role/user) you want to apply this permission on`,
-                condition: (client, message, args) => args[2].toLowerCase() !== 'global'
-            }]
-        };
+            },
+        });
     }
 
     // eslint-disable-next-line no-unused-vars 

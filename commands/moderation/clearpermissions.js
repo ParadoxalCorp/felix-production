@@ -1,27 +1,20 @@
-'use strict';
+const ModerationCommands = require('../../structures/CommandCategories/ModerationCommands');
 
-const Command = require('../../structures/Command');
-
-class ClearPermissions extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'clearpermissions',
-            category: 'moderation',
-            description: 'Clear all the permissions set until now, global, channels, roles and users permissions included',
-            usage: '{prefix}clearpermissions',
-            externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#permissions-system'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['clearperms', 'nukeperms', 'cp'],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            guildOwnerOnly: true,
-            expectedArgs: []
-        };
+class ClearPermissions extends ModerationCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'clearpermissions',
+                description: 'Clear all the permissions set until now, global, channels, roles and users permissions included',
+                usage: '{prefix}clearpermissions',
+                externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#permissions-system'
+            },
+            conf : {
+                aliases: ['clearperms', 'nukeperms', 'cp'],
+                requireDB: true,
+                guildOnly: true,
+            },
+        });
     }
 
     // eslint-disable-next-line no-unused-vars 

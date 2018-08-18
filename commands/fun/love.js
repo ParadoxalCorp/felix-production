@@ -1,26 +1,23 @@
 'use strict';
 
-const Command = require('../../structures/Command');
+const FunCommands = require('../../structures/CommandCategories/FunCommands');
 
-class Love extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'love',
-            description: 'Love someone, bring some love to this world !',
-            usage: '{prefix}love <count> <user_resolvable>',
-            category: 'fun'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['luv'],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Love extends FunCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'love',
+                description: 'Love someone, bring some love to this world !',
+                usage: '{prefix}love <count> <user_resolvable>',
+            },
+            conf : {
+                requireDB: true,
+                aliases: ['luv'],
+                guildOnly: true,
+            },
+        });
     }
+
 
     async run(client, message, args, guildEntry, userEntry) {
         let lp = client.utils.isWholeNumber(args[0]) && args[1] ? parseInt(args[0]) : 1;

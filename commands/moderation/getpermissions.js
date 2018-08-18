@@ -1,26 +1,20 @@
-'use strict';
+const ModerationCommands = require('../../structures/CommandCategories/ModerationCommands');
 
-const Command = require('../../structures/Command');
-
-class GetPermissions extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'getpermissions',
-            category: 'moderation',
-            description: 'Get the permissions set for the server, or for a channel/role/user',
-            usage: '{prefix}getpermissions <global|channel|role|user> | <channel_name|role_name|username>',
-            externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#permissions-system'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['getperms', 'gp', 'getpermission'],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class GetPermissions extends ModerationCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'getpermissions',
+                description: 'Get the permissions set for the server, or for a channel/role/user',
+                usage: '{prefix}getpermissions <global|channel|role|user> | <channel_name|role_name|username>',
+                externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#permissions-system',
+            },
+            conf : {
+                aliases: ['getperms', 'gp', 'getpermission'],
+                requireDB: true,
+                guildOnly: true,
+            },
+        });
     }
 
     // eslint-disable-next-line no-unused-vars 

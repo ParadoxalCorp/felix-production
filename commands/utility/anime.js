@@ -1,25 +1,17 @@
-const Command = require('../../structures/Command');
+const UtilityCommands = require('../../structures/CommandCategories/UtilityCommands');
 
-class Anime extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'anime',
-            description: 'Search for the specified anime through MyAnimeList',
-            usage: 'anime <anime_name>',
-            category: 'utility'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            guildOwnerOnly: false,
-            expectedArgs: [],
-            require: ['mal-scraper']
-        };
+class Anime extends UtilityCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'anime',
+                description: 'Search for the specified anime through MyAnimeList',
+                usage: 'anime <anime_name>',
+            },
+            conf : {
+                require: ['mal-scraper']
+            },
+        });
     }
 
     //eslint-disable-next-line no-unused-vars

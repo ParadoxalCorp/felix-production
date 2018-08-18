@@ -1,25 +1,16 @@
 'use strict';
 
-const Command = require('../../structures/Command');
+const FunCommands = require('../../structures/CommandCategories/FunCommands');
 
-class Choose extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'choose',
-            category: 'fun',
-            description: 'Make felix choose between some stuff',
-            usage: '{prefix}choose <choice> ; <choice_2> ; <and_another_one>'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Choose extends FunCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'choose',
+                description: 'Make felix choose between some stuff',
+                usage: '{prefix}choose <choice> ; <choice_2> ; <and_another_one>',
+            },
+        });
     }
 
     async run(client, message, args) {

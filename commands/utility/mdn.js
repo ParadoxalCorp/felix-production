@@ -1,26 +1,15 @@
-'use strict';
-
-const Command = require('../../structures/Command');
 const axios = require('axios');
+const UtilityCommands = require('../../structures/CommandCategories/UtilityCommands');
 
-class MDN extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'mdn',
-            category: 'utility',
-            description: 'Search something through the Mozilla Developer Network',
-            usage: '{prefix}mdn arrays'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class MDN extends UtilityCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'utility',
+                description: 'Search something through the Mozilla Developer Network',
+                usage: '{prefix}mdn arrays',
+            },
+        });
     }
 
     async run(client, message) {

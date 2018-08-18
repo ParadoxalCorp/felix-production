@@ -1,33 +1,31 @@
 'use strict';
 
-const Command = require('../../structures/Command');
 const axios = require('axios').default;
 const querystring = require('querystring');
 const sharp = require('sharp');
+const UtilityCommands = require('../../structures/CommandCategories/UtilityCommands');
 
-class WhatAnime extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'whatanime',
-            category: 'utility',
-            description: 'Search through whatanime.ga to find from what anime is the given picture\n\nTo use this command, you have to upload the image along with the command. If no image is uploaded, Felix will try to search for an image in the latest 10 messages and use it if there is any',
-            usage: '{prefix}whatanime'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: ['what'],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
-        this.extra = {
-            imageExtensions: ['gif', 'png', 'jpg', 'jpeg', 'webp']
-        };
+class WhatAnime extends UtilityCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'whatanime',
+                description: 'Search through whatanime.ga to find from what anime is the given picture\n\nTo use this command, you have to upload the image along with the command. If no image is uploaded, Felix will try to search for an image in the latest 10 messages and use it if there is any',
+                usage: '{prefix}whatanime',
+            },
+            conf : {
+                aliases: ['what'],
+            },
+        });
     }
 
+
+    extra()  {
+        imageExtensions: ['gif', 'png', 'jpg', 'jpeg', 'webp'];
+    }
+
+
+    
     //eslint-disable-next-line no-unused-vars
     async run(client, message, args, guildEntry, userEntry) {
         let image = message.attachments[0];
@@ -38,7 +36,7 @@ class WhatAnime extends Command {
                 .find(m => m.attachments[0] ? this.validateFile(m.attachments[0]) : false);      
         }
         if (!image) {
-            return message.channel.createMessage(`You didn't uploaded any image that can be used, if you uploaded an image, note that the image must: \n-Have one of the following extensions: ${this.extra.imageExtensions.map(e => '`.' + e + '`').join(', ')}\n-Be under 1MB`);
+            return message.channel.createMessage(`You didn't uploaded any image that can be used, if you uploaded an image, note that the image must: \n-Have one of the following extensions: ${this.extra().imageExtensions.map(e => '`.' + e + '`').join(', ')}\n-Be under 1MB`);
         }
         image = await this.downloadImage((image.attachments ? image.attachments[0] : false) || image);
         image = await this.processImage(image);
@@ -70,7 +68,7 @@ class WhatAnime extends Command {
 
     validateFile(attachment) {
         const fileExtension = attachment.filename.split('.')[attachment.filename.split('.').length - 1];
-        return this.extra.imageExtensions.includes(fileExtension);
+        return this.extra().imageExtensions.includes(fileExtension);
     }
 
     async downloadImage(attachment) {

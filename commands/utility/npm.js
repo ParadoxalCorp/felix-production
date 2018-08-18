@@ -1,27 +1,16 @@
-'use strict';
-
-const Command = require('../../structures/Command');
 const axios = require('axios');
 const moment = require('moment');
+const UtilityCommands = require('../../structures/CommandCategories/UtilityCommands');
 
-class Npm extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'npm',
-            category: 'utility',
-            description: 'Search something through NPM',
-            usage: '{prefix}npm hapi'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Npm extends UtilityCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'npm',
+                description: 'Search something through NPM',
+                usage: '{prefix}npm hapi',
+            },
+        });
     }
 
     async run(client, message, args) {

@@ -1,35 +1,30 @@
-'use strict';
+const ModerationCommands = require('../../structures/CommandCategories/ModerationCommands');
 
-const Command = require('../../structures/Command');
-
-class RemovePermission extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'removepermission',
-            category: 'moderation',
-            description: '**Remove** (not restrict) a set command/category permission from the server, or from a channel category/channel/role/user. As always, you can run the command like `{prefix}removepermission` to be guided through the process',
-            usage: '{prefix}removepermission <command_name|category_name*|*> | <global|category|channel|role|user> | <category_name|channel_name|role_name|username>',
-            externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#permissions-system'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['removeperm', 'rp'],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: [{
-                description: 'What permission do you want to remove, you can reply with a command name like `ping` to target this command, or the name of a command category followed by a `*` like `generic*` to target a whole category',
-                validate: (client, message, arg) => this.validatePermission(client, arg)
-            }, {
-                description: 'From what this permission should be removed? You can reply with `global` to target the entire server, `channel` to target a specific channel, `role` to target a specific role or `user` to target a specific user',
-                validate: (client, message, arg) => this.validateTarget(arg)
-            }, {
-                description: `Please reply with the name of the target (channel/role/user) you want to remove this permission from`,
-                condition: (client, message, args) => args[1].toLowerCase() !== 'global'
-            }]
-        };
+class RemovePermission extends ModerationCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'removepermission',
+                description: '**Remove** (not restrict) a set command/category permission from the server, or from a channel category/channel/role/user. As always, you can run the command like `{prefix}removepermission` to be guided through the process',
+                usage: '{prefix}removepermission <command_name|category_name*|*> | <global|category|channel|role|user> | <category_name|channel_name|role_name|username>',
+                externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#permissions-system'
+            },
+            conf : {
+                requireDB: true,
+                aliases: ['removeperm', 'rp'],
+                guildOnly: true,
+                expectedArgs: [{
+                    description: 'What permission do you want to remove, you can reply with a command name like `ping` to target this command, or the name of a command category followed by a `*` like `generic*` to target a whole category',
+                    validate: (client, message, arg) => this.validatePermission(client, arg)
+                }, {
+                    description: 'From what this permission should be removed? You can reply with `global` to target the entire server, `channel` to target a specific channel, `role` to target a specific role or `user` to target a specific user',
+                    validate: (client, message, arg) => this.validateTarget(arg)
+                }, {
+                    description: `Please reply with the name of the target (channel/role/user) you want to remove this permission from`,
+                    condition: (client, message, args) => args[1].toLowerCase() !== 'global'
+                }],
+            },
+        });
     }
 
     // eslint-disable-next-line no-unused-vars 
