@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @typedef {Function} traverse 
  * Traverse through a given object, calling the callback function with each key that is not an object

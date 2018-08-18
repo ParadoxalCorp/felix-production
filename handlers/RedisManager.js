@@ -1,5 +1,3 @@
-'use strict';
-
 /** @typedef {import("../main.js")} Client */
 
 const Redis = require('ioredis');

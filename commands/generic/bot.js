@@ -1,5 +1,3 @@
-'use strict';
-
 const TimeConverter = require(`../../utils/TimeConverter.js`);
 const moment = require("moment");
 const os = require('os');

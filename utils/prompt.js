@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @typedef {Function} prompt
  * Prompt the user through the terminal

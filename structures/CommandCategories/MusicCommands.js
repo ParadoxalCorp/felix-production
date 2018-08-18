@@ -1,5 +1,3 @@
-'use strict';
-
 /**   
 * @typedef {import("../../main.js").Client} Client
 * @typedef {import("../HandlersStructures/musicConnection").FelixTrack} FelixTrack

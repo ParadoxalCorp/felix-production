@@ -1,4 +1,3 @@
-'use strict';
 const axios = require("axios");
 const GenericCommands = require('../../structures/CommandCategories/ImageCommands');
 

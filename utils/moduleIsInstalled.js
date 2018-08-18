@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @typedef {Function} moduleIsInstalled
  * Check if a NPM module is installed

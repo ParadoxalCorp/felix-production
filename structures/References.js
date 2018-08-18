@@ -1,5 +1,3 @@
-'use strict';
-
 //Not sure why i would make that a class but ok
 
 /**

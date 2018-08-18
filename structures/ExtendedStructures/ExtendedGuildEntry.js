@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @typedef {import("../References.js").GuildEntry} GuildEntry
  * @typedef {import("../../main.js").Client} Client

@@ -1,5 +1,3 @@
-'use strict';
-
 const axios = require('axios').default;
 const querystring = require('querystring');
 const sharp = require('sharp');

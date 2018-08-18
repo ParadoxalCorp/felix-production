@@ -1,5 +1,3 @@
-'use strict';
-
 class GuildCreateHandler {
     constructor() {}
 

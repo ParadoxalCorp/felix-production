@@ -1,5 +1,3 @@
-'use strict';
-
 const MusicConnection = require('../structures/HandlersStructures/MusicConnection');
 
 /**

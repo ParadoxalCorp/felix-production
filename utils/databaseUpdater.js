@@ -1,5 +1,3 @@
-'use strict';
-
 const references = require('../structures/References');
 
 const databaseUpdater = (data, type, source) => {

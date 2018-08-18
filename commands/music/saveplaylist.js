@@ -1,5 +1,3 @@
-'use strict';
-
 const MusicCommands = require('../../structures/CommandCategories/MusicCommands');
 
 class SavePlaylist extends MusicCommands {
@@ -21,6 +19,15 @@ class SavePlaylist extends MusicCommands {
     /**
     * @param {import("../../structures/Contexts/MusicContext")} context The context
     */
+   
+
+   x = 3.14;       // This will not cause an error. 
+   myFunction();
+   
+   function myFunction() {
+      "use strict";
+       y = 3.14;   // This will cause an error
+   }
 
     async run(context) {
         const queue = await this.client.handlers.MusicManager.getQueueOf(context.message.channel.guild.id);

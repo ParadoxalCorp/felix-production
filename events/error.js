@@ -1,5 +1,3 @@
-'use strict';
-
 const { inspect } = require('util');
 
 class ErrorHandler {

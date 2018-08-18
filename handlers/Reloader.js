@@ -1,5 +1,3 @@
-'use strict';
-
 /** @typedef {import("../main.js").Client} Client */
 
 const fs = require('fs');

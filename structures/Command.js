@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @typedef {import("eris").Role} Role 
  * @typedef {import("eris").User} User

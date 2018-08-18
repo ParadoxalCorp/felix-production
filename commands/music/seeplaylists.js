@@ -1,5 +1,3 @@
-'use strict';
-
 const MusicCommands = require('../../structures/CommandCategories/MusicCommands');
 
 class SeePlaylists extends MusicCommands {

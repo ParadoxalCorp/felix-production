@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @typedef {Function} isWholeNumber
  * Check if the given number is a whole number

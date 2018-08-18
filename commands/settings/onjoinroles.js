@@ -1,5 +1,3 @@
-'use strict';
-
 const Command = require('../../structures/Command');
 
 class OnJoinRoles extends Command {

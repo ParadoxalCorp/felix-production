@@ -1,5 +1,3 @@
-'use strict';
-
 const TimeConverter = require(`../../utils/TimeConverter`);
 const GenericCommands = require('../../structures/CommandCategories/GenericCommands');
 

@@ -1,5 +1,3 @@
-'use strict';
-
 /** 
  * @typedef {import("eris").Guild} Guild 
  * @typedef {import("eris").Member} Member

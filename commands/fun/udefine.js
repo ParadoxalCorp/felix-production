@@ -1,5 +1,3 @@
-'use strict';
-
 const axios = require('axios');
 const FunCommands = require('../../structures/CommandCategories/FunCommands');
 

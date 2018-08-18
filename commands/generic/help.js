@@ -1,5 +1,3 @@
-'use strict';
-
 const GenericCommands = require('../../structures/CommandCategories/GenericCommands');
 
 class Help extends GenericCommands {

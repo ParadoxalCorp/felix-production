@@ -1,5 +1,3 @@
-'use strict';
-
 const Endpoints = require('../node_modules/eris/lib/rest/Endpoints');
 /** @typedef {import("../structures/ExtendedStructures/ExtendedUser.js")} ExtendedUser 
  * @typedef {import("../main.js")} Client   

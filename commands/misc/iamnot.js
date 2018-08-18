@@ -1,5 +1,3 @@
-'use strict';
-
 const FunCommands = require('../../structures/CommandCategories/MiscCommands');
 
 class IamNot extends FunCommands {

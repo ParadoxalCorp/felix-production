@@ -1,5 +1,3 @@
-'use strict';
-
 /**   
 * @typedef {import("../../main.js").Client} Client
 * @typedef {import("../Command.js").PartialCommandOptions} PartialCommandOptions

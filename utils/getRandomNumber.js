@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @typedef {Function} getRandomNumber
  * Get a random number in the specified interval

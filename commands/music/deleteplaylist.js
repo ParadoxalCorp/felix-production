@@ -1,5 +1,3 @@
-'use strict';
-
 const MusicCommands = require('../../structures/CommandCategories/MusicCommands');
 
 class DeletePlaylist extends MusicCommands {

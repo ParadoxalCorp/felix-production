@@ -1,5 +1,3 @@
-'use strict';
-
 const Command = new(require('../structures/Command'));
 
 class MessageHandler {

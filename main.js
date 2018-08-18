@@ -1,5 +1,3 @@
-'use strict';
-
 /** 
  * @typedef {import("eris").Client} ErisClient 
  * 

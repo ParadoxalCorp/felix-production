@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Provides some utility methods to parse time
  * @typedef {TimeConverter} TimeConverter

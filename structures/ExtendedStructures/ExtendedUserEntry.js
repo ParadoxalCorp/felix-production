@@ -1,5 +1,3 @@
-'use strict';
-
 /** @typedef {import("../References").UserEntry} UserEntry
  * @typedef {import("../references.js").TierLimits} TierLimits
 */
