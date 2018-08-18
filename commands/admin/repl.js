@@ -1,28 +1,18 @@
 //Stolen from Tweetcord (https://github.com/Aetheryx/tweetcord) the 20/03/18
-//Require Node 8.6.0 iirc (need support for ES2018 object spread properties)
 
 const { inspect } = require('util');
 const { createContext, runInContext } = require('vm');
-const Command = require('../../structures/Command');
+const AdminCommands = require('../../structures/CommandCategories/AdminCommands');
 
-class Repl extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'repl',
-            usage: '{prefix}repl',
-            description: 'Owner only, use `.exit` to exit, `.clear` to clear variables, `//` to ignore a message and `_` to get the last statement',
-            category: 'admin'
-        };
-        this.conf = {
-            ownerOnly: false,
-            requireDB: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: false,
-            disabled: false,
-            expectedArgs: []
-        };
+class Repl extends AdminCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'repl',
+                usage: '{prefix}repl',
+                description: 'Owner only, use `.exit` to exit, `.clear` to clear variables, `//` to ignore a message and `_` to get the last statement',
+            }
+        });
     }
 
     async run(client, message) {

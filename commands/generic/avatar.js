@@ -1,8 +1,3 @@
-'use strict';
-//@ts-check
-
-//Written by Ota#1354 the 26/06/2018
-
 const GenericCommands = require('../../structures/CommandCategories/GenericCommands');
 
 class Avatar extends GenericCommands {

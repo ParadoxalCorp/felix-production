@@ -1,25 +1,17 @@
-'use strict';
+const AdminCommands = require('../../structures/CommandCategories/AdminCommands');
 
-const Command = require('../../structures/Command');
-
-class ClientStats extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'clientstats',
-            category: 'admin',
-            description: 'Get detailed statistics about the bot',
-            usage: '{prefix}stats'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: ["cs", "botstats"],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class ClientStats extends AdminCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'clientstats',
+                description: 'Get detailed statistics about the bot',
+                usage: '{prefix}stats'
+            },
+            conf: {
+                aliases: ["cs", "botstats"],
+            }
+        });
     }
 
     async run(client, message) {

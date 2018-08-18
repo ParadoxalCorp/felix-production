@@ -1,25 +1,19 @@
-'use strict';
+const AdminCommands = require('../../structures/CommandCategories/AdminCommands');
 
-const Command = require('../../structures/Command');
-
-class RemoveDonator extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'removedonator',
-            category: 'admin',
-            description: 'Remove the premium status of a user',
-            usage: '{prefix}removedonator <user_id>'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['removedonor', 'removepatron'],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class RemoveDonator extends AdminCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'removedonator',
+                description: 'Remove the premium status of a user',
+                usage: '{prefix}removedonator <user_id>'
+            },
+            conf: {
+                aliases: ['removedonor', 'removepatron', "rmdonor", "rmpatron"],
+                requireDB: true,
+                guildOnly: true,
+            }
+        });
     }
 
     // eslint-disable-next-line no-unused-vars 

@@ -1,27 +1,18 @@
-'use strict';
-//@ts-check
-
-const Command = require('../../structures/Command');
 const axios = require('axios').default;
+const AdminCommands = require('../../structures/CommandCategories/AdminCommands');
 
-class BumpVersion extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'bumpversion',
-            category: 'admin',
-            description: 'Bump Felix\'s version and create a new release on Sentry',
-            usage: '{prefix}bumpversion <major|minor|patch|x.x.x> | <commit_id>'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: ["bump"],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class BumpVersion extends AdminCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'bumpversion',
+                description: 'Bump Felix\'s version and create a new release on Sentry',
+                usage: '{prefix}bumpversion <major|minor|patch|x.x.x> | <commit_id>'
+            },
+            conf: {
+                aliases: ["bump"],
+            }
+        });
     }
 
     // eslint-disable-next-line no-unused-vars

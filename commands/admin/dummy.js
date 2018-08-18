@@ -1,25 +1,14 @@
-'use strict';
+const AdminCommands = require('../../structures/CommandCategories/AdminCommands');
 
-const Command = require('../../structures/Command');
-
-class Dummy extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'dummy',
-            category: 'admin',
-            description: 'dummy',
-            usage: '{prefix}dummy'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: true,
-            expectedArgs: []
-        };
+class Dummy extends AdminCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'dummy',
+                description: 'dummy',
+                usage: '{prefix}dummy'
+            }
+        });
     }
 
     async run(client, message) {

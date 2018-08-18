@@ -1,26 +1,15 @@
-'use strict';
-
-const Command = require('../../structures/Command');
 const { inspect } = require('util');
+const AdminCommands = require('../../structures/CommandCategories/AdminCommands');
 
-class Eval extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'eval',
-            category: 'admin',
-            description: 'eval, i think it\'s fairly obvious at this point',
-            usage: '{prefix}eval'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Eval extends AdminCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'eval',
+                description: 'eval, i think it\'s fairly obvious at this point',
+                usage: '{prefix}eval'
+            }
+        });
     }
 
     //eslint-disable-next-line no-unused-vars

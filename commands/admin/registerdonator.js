@@ -1,25 +1,18 @@
-'use strict';
+const AdminCommands = require('../../structures/CommandCategories/AdminCommands');
 
-const Command = require('../../structures/Command');
-
-class RegisterDonator extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'registerdonator',
-            category: 'admin',
-            description: 'Register a new donator and give them premium status, omit the `<duration_in_milliseconds>` parameter to not set any expiration date',
-            usage: '{prefix}registerdonator <tier> | <user_id> | <duration_in_milliseconds>'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['registerdonor', 'registerpatron'],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class RegisterDonator extends AdminCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'registerdonator',
+                description: 'Register a new donator and give them premium status, omit the `<duration_in_milliseconds>` parameter to not set any expiration date',
+                usage: '{prefix}registerdonator <tier> | <user_id> | <duration_in_milliseconds>'
+            },
+            conf: {
+                aliases: ['registerdonor', 'registerpatron', "regpatron", "regdonor"],
+                requireDB: true,
+            }
+        });
     }
 
     // eslint-disable-next-line no-unused-vars 
