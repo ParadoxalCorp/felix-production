@@ -13,40 +13,40 @@ class Slots extends EconomyCommands {
                 cooldownWeight: 2
             },
             // @ts-ignore
-            extra : {
-                slotsOutputs: [{
-                    multiplier: 1,
-                    name: ":cherries:"
-                }, {
-                    multiplier: 1,
-                    name: ":french_bread:"
-                }, {
-                    multiplier: 1,
-                    name: ":beer:"
-                }, {
-                    multiplier: 1,
-                    name: ":coffee:"
-                }, {
-                    multiplier: 2,
-                    name: ":gem:"
-                }, {
-                    multiplier: -1,
-                    name: ":money_with_wings:"
-                }, {
-                    multiplier: -1,
-                    name: ":bomb:"
-                }, {
-                    multiplier: -1,
-                    name: ":space_invader:"
-                }, {
-                    multiplier: -1,
-                    name: ":gun:"
-                }, {
-                    multiplier: -1,
-                    name: ":coffin:"
-                }]
-            },
         });
+        this.extra = {
+            slotsOutputs: [{
+                multiplier: 1,
+                name: ":cherries:"
+            }, {
+                multiplier: 1,
+                name: ":french_bread:"
+            }, {
+                multiplier: 1,
+                name: ":beer:"
+            }, {
+                multiplier: 1,
+                name: ":coffee:"
+            }, {
+                multiplier: 2,
+                name: ":gem:"
+            }, {
+                multiplier: -1,
+                name: ":money_with_wings:"
+            }, {
+                multiplier: -1,
+                name: ":bomb:"
+            }, {
+                multiplier: -1,
+                name: ":space_invader:"
+            }, {
+                multiplier: -1,
+                name: ":gun:"
+            }, {
+                multiplier: -1,
+                name: ":coffin:"
+            }]
+        };
     }
 
 
