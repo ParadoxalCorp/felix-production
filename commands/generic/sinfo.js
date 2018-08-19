@@ -80,6 +80,6 @@ class Sinfo extends GenericCommands {
         }
       }
     });
-  };
+  }
 }
 module.exports = new Sinfo();

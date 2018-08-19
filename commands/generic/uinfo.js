@@ -105,6 +105,6 @@ class Uinfo extends GenericCommands {
       i++;
     }
     return text;
-  };
+  }
 }
 module.exports = new Uinfo();
