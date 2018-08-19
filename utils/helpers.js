@@ -8,7 +8,11 @@ const Endpoints = require('../node_modules/eris/lib/rest/Endpoints');
  * @typedef {import("eris").Message} Message
  * @typedef {import("eris").TextChannel} TextChannel
  * @typedef {import("eris").VoiceChannel} VoiceChannel
+ * @typedef {import("axios").AxiosResponse} AxiosResponse
+ * @typedef {import("axios").AxiosRequestConfig} AxiosRequestConfig
 */
+
+const axios = require('axios').default;
 
 class Helpers {
     /**
@@ -143,6 +147,18 @@ class Helpers {
             //Address issue #45(https://github.com/ParadoxalCorp/felix-production/issues/45)
             .filter(co => channel.guild.roles.has(co.id))
             .sort((a, b) => channel.guild.roles.get(b.id).position - channel.guild.roles.get(a.id).position)[0];
+    }
+
+    /**
+     * 
+     * @param {String} url - The URL of the content to fetch
+     * @param {AxiosRequestConfig} [options] - An optional object of options that will directly be passed to axios
+     * @returns {Promise<AxiosResponse>} The axios response
+     */
+    fetchFromUntrustedSource(url, options = {}) {
+        return axios.get(`http://${this.client.config.proxy.host}:${this.client.config.proxy.port}/?url=${url}`, Object.assign({
+            timeout: 15000
+        }, options));
     }
 }
 

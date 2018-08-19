@@ -36,6 +36,11 @@ module.exports = {
         host: 'localhost',
         port: '9850'
     },
+    proxy: {
+        enabled: false,
+        host: '127.0.0.1',
+        port: '8080'
+    },
     //Additional API keys that the bot use for commands for example
     apiKeys: {
         sentryDSN: "",
