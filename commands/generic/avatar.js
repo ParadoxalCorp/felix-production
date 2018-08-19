@@ -18,11 +18,12 @@ class Avatar extends GenericCommands {
     async run(client, message, args, guildEntry, userEntry) {
         const user = await this.getUserFromText({ message, client, text: args.join(' ') });
         const target = user || new client.structures.ExtendedUser(message.author, client);
-        return message.channel.createMessage(`The avatar of **${target.username}**`, {
+        return message.channel.createMessage({
+            content: `<:picture:480539891114049549> The avatar of **${target.username}**`,
             embed: {
-                color: client.config.options.embedColor,
+                color: client.config.embedColor.generic,
                 author: {
-                    name: `Requested by: ${message.author.tag}`,
+                    name: `Requested by: ${message.author.username}#${message.author.discriminator}`,
                     icon_url: message.author.avatarURL
                 },
                 title: `Link to the avatar`,
