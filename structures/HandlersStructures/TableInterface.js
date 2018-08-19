@@ -33,7 +33,7 @@ class TableInterface {
         this.initialCheck = params.initialCheck;
         /** @type {Function} */
         this.finalCheck = params.finalCheck;
-        this._cacheDuration = 18e5;
+        this._cacheDuration = 36e5;
         this._sweepInterval = setInterval(this._sweep.bind(this), this._cacheDuration);
     }
 
