@@ -16,6 +16,7 @@
   * @prop {String} name The name of the command 
   * @prop {String} description The description of the command
   * @prop {String} usage A quick example of how to use the command, every instance of {prefix} will be replaced by the actual prefix in the help command 
+  * @prop {String} externalDoc A direct URL to some external documentation
   */
 
  /** @typedef {Object} PossibleArgValue
@@ -140,68 +141,15 @@ class Command {
     /**
      * Check if the bot has the given permissions to work properly
      * This is a deep check and the channels wide permissions will be checked too
+     * @deprecated
      * @param {Message} message - The message that triggered the command
      * @param {Client} client  - The client instance
      * @param {array} permissions - An array of permissions to check for
      * @param {object} [channel=message.channel] - Optional, a specific channel to check perms for (to check if the bot can connect to a VC for example)
-     * @returns {boolean | array} - An array of permissions the bot miss, or true if the bot has all the permissions needed, sendMessages permission is also returned if missing
+     * @returns {Boolean | Array<String>} - An array of permissions the bot miss, or true if the bot has all the permissions needed, sendMessages permission is also returned if missing
      */
     clientHasPermissions(message, client, permissions, channel = message.channel) {
-        const missingPerms = [];
-        // @ts-ignore
-        const clientMember = message.channel.guild.members.get(client.bot.user.id);
-
-        function hasPerm(perm, Command) {
-            if (clientMember.permission.has("administrator")) {
-                return true;
-            }
-            const hasChannelOverwrite = Command.hasChannelOverwrite(channel, clientMember, perm);
-            if (!clientMember.permission.has(perm)) {
-                if (!hasChannelOverwrite) {
-                    return false;
-                } else {
-                    return hasChannelOverwrite.has(perm) ? true : false;
-                }
-            } else {
-                if (!hasChannelOverwrite) {
-                    return true;
-                } else {
-                    return hasChannelOverwrite.has(perm) ? true : false;
-                }
-            }
-        }
-
-        permissions.forEach(perm => {
-            if (!hasPerm(perm, this)) {
-                missingPerms.push(perm);
-            }
-        });
-        if (!permissions.includes('sendMessages') && !hasPerm('sendMessages', this)) {
-            missingPerms.push('sendMessages');
-        }
-        return missingPerms[0] ? missingPerms : true;
-    }
-
-    /**
-     * This method return the effective permission overwrite for a specific permission of a user
-     * It takes into account the roles of the member, their position and the member itself to return the overwrite which actually is effective
-     * @param {object} channel - The channel to check permissions overwrites in
-     * @param {Member} member - The member object to check permissions overwrites for
-     * @param {string} permission - The permission to search channel overwrites for
-     * @return {boolean | PermissionOverwrite} - The permission overwrite overwriting the specified permission, or false if none exist
-     */
-    hasChannelOverwrite(channel, member, permission) {
-        const channelOverwrites = Array.from(channel.permissionOverwrites.values()).filter(co => typeof co.json[permission] !== "undefined" &&
-            (co.id === member.id || member.roles.includes(co.id)));
-        if (!channelOverwrites[0]) {
-            return false;
-        } else if (channelOverwrites.find(co => co.type === "user")) {
-            return channelOverwrites.find(co => co.type === "user");
-        }
-        return channelOverwrites
-            //Address issue #45(https://github.com/ParadoxalCorp/felix-production/issues/45)
-            .filter(co => channel.guild.roles.has(co.id))
-            .sort((a, b) => channel.guild.roles.get(b.id).position - channel.guild.roles.get(a.id).position)[0];
+        return client.utils.helpers.hasPermissions(message, client.bot.user, permissions, channel);
     }
 
     /**
