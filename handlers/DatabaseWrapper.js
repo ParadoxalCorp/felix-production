@@ -2,15 +2,15 @@
 
 const { inspect } = require('util');
 const TableInterface = require('../structures/HandlersStructures/TableInterface');
-const ExtendedGuildEntry = require('../structures/ExtendedStructures/extendedGuildEntry');
-const ExtendedUserEntry = require('../structures/ExtendedStructures/extendedUserEntry');
+const ExtendedGuildEntry = require('../structures/ExtendedStructures/ExtendedGuildEntry');
+const ExtendedUserEntry = require('../structures/ExtendedStructures/ExtendedUserEntry');
 
 /**
  * @class DatabaseWrapper
  */
 class DatabaseWrapper {
     /**
-     * 
+     *
      * @param {Client} client - The client instance
      */
     constructor(client) {
@@ -93,14 +93,14 @@ class DatabaseWrapper {
     }
 
     /**
-     * 
+     *
      * @param {*} value - The value to insert, must contain a `id` property
      * @param {String} [type] - The type, or name of the table, can be omitted if the value is a Extended<...>Entry instance
      * @returns {Promise<*>} The value
      */
     set(value, type) {
         type = type ? type : (value instanceof ExtendedUserEntry ? 'users' : 'guilds');
-        //users + user and guilds + guild to ensure backward compatibility 
+        //users + user and guilds + guild to ensure backward compatibility
         if (type === 'users' || type === 'user') {
             return this.userData.set(value);
         } else if (type === 'guilds' || type === 'guild') {
@@ -114,7 +114,7 @@ class DatabaseWrapper {
             case true:
                 process.send({ name: 'info', msg: `The connection with the database at ${this.client.config.database.host}:${this.client.config.database.port} has been established` });
                 break;
-            case false: 
+            case false:
                 process.send({ name: 'warn', msg: 'The connection with the database has been closed, commands using the database will be disabled until a successful re-connection has been made' });
         }
         this.healthy = healthy;
