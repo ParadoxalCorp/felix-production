@@ -32,7 +32,7 @@ class Eval extends AdminCommands {
                     showHidden: true
                 });
             }
-            return message.channel.createMessage("**Input:**\n```js\n" + toEval + "```\n**Output:**\n```js\n" + client.utils.utils.redact(err) + "```");
+            return message.channel.createMessage("**Input:**\n```js\n" + toEval + "```\n**Output:**\n```js\n" + client.utils.helpers.redact(err) + "```");
         }
     }
 

@@ -21,7 +21,7 @@ class RemoveDonator extends AdminCommands {
         const donator = await client.handlers.DatabaseWrapper.getUser(args[0]);
         donator.premium = client.structures.References.userEntry(args[0]).premium;
         await client.handlers.DatabaseWrapper.set(donator);
-        const user = await client.utils.utils.fetchUser(args[0]);
+        const user = await client.utils.helpers.fetchUser(args[0]);
         return message.channel.createMessage(`:white_check_mark: Successfully disabled the premium status of the user **${user.tag}**`);
     }
 }

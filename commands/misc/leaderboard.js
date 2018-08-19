@@ -137,7 +137,7 @@ class Leaderboard extends FunCommands {
 
     async fetchUsers(client, leaderboard) {
         let resolvedUsers = new client.Collection();
-        await Promise.all(leaderboard.slice(0, 10).map(u => client.utils.utils.fetchUser(u.id)))
+        await Promise.all(leaderboard.slice(0, 10).map(u => client.utils.helpers.fetchUser(u.id)))
             .then(fetchedUsers => {
                 let i = 0;
                 for (let user of fetchedUsers) {

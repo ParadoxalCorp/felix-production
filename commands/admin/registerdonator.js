@@ -27,7 +27,7 @@ class RegisterDonator extends AdminCommands {
         newDonator.premium.tier = parseInt(args[0]);
         newDonator.premium.expire = args[2] ? Date.now() + parseInt(args[2]) : true;
         await client.handlers.DatabaseWrapper.set(newDonator);
-        const user = await client.utils.utils.fetchUser(args[1]);
+        const user = await client.utils.helpers.fetchUser(args[1]);
         let res = `:white_check_mark: Successfully given premium status to the user \`${user.tag}\` at tier \`${args[0]}\`\n\n`;
         if (args[2]) {
             res += `The premium status of this user will expire in **${client.utils.timeConverter.toElapsedTime(args[2], true)}** the **${client.utils.timeConverter.toHumanDate(newDonator.premium.expire, true)}**`;

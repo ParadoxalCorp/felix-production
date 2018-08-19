@@ -11,10 +11,11 @@ class Ping extends GenericCommands {
         });
     }
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(client, message, args, guildEntry, userEntry) {
+    /** @param {import("../../structures/Contexts/GenericContext")} context */
+
+    async run(context) {
         const startTime = Date.now();
-        const messageSent = await message.channel.createMessage(`<a:loading:393726911596986368>`);
+        const messageSent = await context.message.channel.createMessage(context.emote('ping'));
         return messageSent.edit(`~~Baguette~~ Pong | \`${Date.now() - startTime}\`ms`);
     }
 }

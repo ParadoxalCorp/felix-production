@@ -122,7 +122,7 @@ class Repl extends AdminCommands {
                 result = `ERROR:\n${typeof error === 'string' ? error : inspect(error, { depth: 1 })}`;
             }
 
-            message.channel.createMessage('```js\n' + client.utils.utils.redact(result) + '\n```');
+            message.channel.createMessage('```js\n' + client.utils.helpers.redact(result) + '\n```');
 
             runCommand();
         };
