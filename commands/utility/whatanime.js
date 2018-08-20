@@ -33,19 +33,19 @@ class WhatAnime extends UtilityCommands {
             return context.message.channel.createMessage(`You didn't uploaded any image that can be used, if you uploaded an image, note that the image must: \n-Have one of the following extensions: ${this.extra.imageExtensions.map(e => '`.' + e + '`').join(', ')}\n-Be under 1MB`);
         }
         if (image.content && !image.attachments[0]) {
-            image = await context.client.utils.helpers.fetchFromUntrustedSource(context.args[0].replace(/\<|\>/g, ''), {
-                responseType: 'arraybuffer'
-            }).catch(() => false).then(res => res.data);
+            image = await context.client.utils.helpers.fetchFromUntrustedSource(context.args[0].replace(/\<|\>/g, ''), true).catch(() => false).then(res => res.data);
             if (!image) {
                 return context.message.channel.createMessage(`aw :v, i couldn't download your image, double-check if your link is valid and if it is, try again later`);
             }
         } else {
             image = await this.downloadImage((image.attachments ? image.attachments[0] : false) || image);
         }
+
         image = await this.processImage(image);
         if (image.length > 1000000) {
             return context.message.channel.createMessage(`I tried to make it as small as i could, but seems like your image is too big. whatanime.ga doesn't accept anything bigger than 1MB`);
         }
+
         const formData = querystring.stringify({image});
         const request = await axios.post(`http://${context.client.config.requestHandler.host}:${context.client.config.requestHandler.port}/request`, {
             data: formData,
@@ -82,7 +82,6 @@ class WhatAnime extends UtilityCommands {
     }
 
     processImage(buffer) {
-        console.log(buffer instanceof Buffer);
         return new Promise((resolve, reject) => {
             return sharp(buffer)
                 .resize(320, 180)

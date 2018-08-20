@@ -124,8 +124,11 @@ class Reloader {
      * @returns {Boolean} Returns true if the reload was a success
      */
     reloadUtils() {
+        for (const util in this.client.utils) {
+            delete require.cache[require.resolve(`../utils/${util}.js`)];
+        }
         delete require.cache[require.resolve("../utils/index.js")];
-        this.client.handlers.utils = require("../utils/index.js")(this.client);
+        this.client.utils = require("../utils/index.js")(this.client);
         return true;
     }
 

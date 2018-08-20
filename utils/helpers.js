@@ -12,6 +12,12 @@ const Endpoints = require('../node_modules/eris/lib/rest/Endpoints');
  * @typedef {import("axios").AxiosRequestConfig} AxiosRequestConfig
 */
 
+/** @typedef {Object} FetchedContent
+ * @prop {Number} status The HTTP status code returned by the upstream server
+ * @prop {String} statusText The status text going with the status
+ * @prop {Buffer|String} data If toBuffer was set to true, a buffer, otherwise json data
+ */
+
 const axios = require('axios').default;
 
 class Helpers {
@@ -150,15 +156,27 @@ class Helpers {
     }
 
     /**
-     * 
+     * Relay the request to the proxy server and return the proxied response
      * @param {String} url - The URL of the content to fetch
-     * @param {AxiosRequestConfig} [options] - An optional object of options that will directly be passed to axios
-     * @returns {Promise<AxiosResponse>} The axios response
+     * @param {Boolean} [toBuffer=false] - A direct way to request a buffer 
+     * @param {AxiosRequestConfig} [options={}] - An optional object of options that will directly be passed to the proxy, additional `data` and `dataOnly` keys may be passed
+     * @param {AxiosRequestConfig} [axiosConfig={}] - An optional set of options to pass to axios
+     * @returns {Promise<FetchedContent>} The axios response
      */
-    fetchFromUntrustedSource(url, options = {}) {
-        return axios.get(`http://${this.client.config.proxy.host}:${this.client.config.proxy.port}/?url=${url}`, Object.assign({
-            timeout: 15000
-        }, options));
+    fetchFromUntrustedSource(url, toBuffer = false, options = { responseType: toBuffer ? 'arraybuffer' : undefined }, axiosConfig = {}) {
+        return axios.post(`http://${this.client.config.proxy.host}:${this.client.config.proxy.port}/`, {
+            ...options,
+            url
+        }, Object.assign({
+            timeout: 15000,
+            headers: { 'Content-Type': 'application/json', 'Authorization': this.client.config.proxy.auth}
+        }, axiosConfig, { responseType: 'json'})).then(res => {
+            return {
+                status: res.data.status,
+                statusText: res.data.statusText,
+                data: options.responseType === 'arraybuffer' ? Buffer.from(res.data.data.buffer, 'base64') : res.data.data
+            };
+        });
     }
 }
 
