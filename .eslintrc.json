@@ -22,6 +22,7 @@
         "valid-jsdoc": "warn",
         "no-extra-semi": "warn",
         "no-unused-vars": "warn",
-        "no-undef": "error"
+        "no-undef": "error",
+        "indent": "warn"
     }
 }

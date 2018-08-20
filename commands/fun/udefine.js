@@ -33,7 +33,7 @@ class Udefine extends FunCommands {
         const firstResult = result.data.list[0];
         return message.channel.createMessage({
             embed: {
-                color: client.config.options.embedColor,
+                color: client.config.options.embedColor.generic,
                 title: `Results`,
                 url: firstResult.permalink,
                 fields: [{

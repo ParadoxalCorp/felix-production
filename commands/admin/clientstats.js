@@ -59,7 +59,7 @@ class ClientStats extends AdminCommands {
                         })()
                     }
                 ],
-                color: client.config.options.embedColor
+                color: client.config.options.embedColor.generic
             }
         });
         const clustersShardsStats = await client.handlers.IPCHandler.fetchShardsStats();

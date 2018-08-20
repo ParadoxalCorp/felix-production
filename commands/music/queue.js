@@ -74,7 +74,7 @@ class Queue extends MusicCommands {
                 name: 'Estimated time until playing',
                 value: this.client.handlers.MusicManager.parseDuration(queued.timeUntilPlaying)
             }],
-            color: this.client.config.options.embedColor
+            color: this.client.config.options.embedColor.generic
         }});
     }
 

@@ -48,7 +48,7 @@ class Market extends EconomyCommands {
                     image: {
                         url: item.image
                     },
-                    color: client.config.options.embedColor
+                    color: client.config.options.embedColor.generic
 
                 },
                 item: item //Will be used by buyItem

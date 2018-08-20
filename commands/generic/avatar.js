@@ -13,18 +13,18 @@ class Avatar extends GenericCommands {
             }
         });
     }
+    /** @param {import("../../structures/Contexts/GenericContext")} context */
 
-    //eslint-disable-next-line no-unused-vars
-    async run(client, message, args, guildEntry, userEntry) {
-        const user = await this.getUserFromText({ message, client, text: args.join(' ') });
-        const target = user || new client.structures.ExtendedUser(message.author, client);
-        return message.channel.createMessage({
-            content: `<:picture:480539891114049549> The avatar of **${target.username}**`,
+    async run(context) {
+        const user = await this.getUserFromText({ message: context.message, client: context.client, text: context.args.join(' ') });
+        const target = user || context.message.author;
+        return context.message.channel.createMessage({
+            content: `${context.emote('picture')} The avatar of **${target.username}**`,
             embed: {
-                color: client.config.embedColor.generic,
+                color: context.client.config.options.embedColor.generic,
                 author: {
-                    name: `Requested by: ${message.author.username}#${message.author.discriminator}`,
-                    icon_url: message.author.avatarURL
+                    name: `Requested by: ${context.message.author.username}#${context.message.author.discriminator}`,
+                    icon_url: context.message.author.avatarURL
                 },
                 title: `Link to the avatar`,
                 url: target.avatarURL || target.defaultCDNAvatar,
@@ -33,12 +33,12 @@ class Avatar extends GenericCommands {
                 },
                 timestamp: new Date(),
                 footer: {
-                    text: client.bot.user.username,
-                    icon_url: client.bot.user.avatarURL
+                    text: context.client.bot.user.username,
+                    icon_url: context.client.bot.user.avatarURL
                 }
             }
         });
     }
 }
 
-module.exports = new Avatar();
+module.exports = Avatar;

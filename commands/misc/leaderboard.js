@@ -67,7 +67,7 @@ class Leaderboard extends FunCommands {
         return message.channel.createMessage({
             embed: {
                 title: `${global ? 'Global' : 'Local'} love leaderboard`,
-                color: client.config.options.embedColor,
+                color: client.config.options.embedColor.generic,
                 description: leaderboard.slice(0, 10).map(u => `#${this.getPosition(u.id, leaderboard)} - **${users.get(u.id).tag}**\nLove points: ${u.love.amount}`).join("\n\n"),
                 footer: {
                     text: `Your position: #${leaderboard.findIndex(element => element.id === message.author.id) + 1}/${leaderboard.length}`
@@ -90,7 +90,7 @@ class Leaderboard extends FunCommands {
         return message.channel.createMessage({
             embed: {
                 title: `${global ? 'Global' : 'Local'} coins leaderboard`,
-                color: client.config.options.embedColor,
+                color: client.config.options.embedColor.generic,
                 description: leaderboard.slice(0, 10).map(u => `#${this.getPosition(u.id, leaderboard)} - **${users.get(u.id).tag}**\nCoins: ${u.economy.coins}`).join("\n\n"),
                 footer: {
                     text: `Your position: #${leaderboard.findIndex(element => element.id === message.author.id) + 1}/${leaderboard.length}`
@@ -123,7 +123,7 @@ class Leaderboard extends FunCommands {
         return message.channel.createMessage({
             embed: {
                 title: `${global ? 'Global' : 'Local'} experience leaderboard`,
-                color: client.config.options.embedColor,
+                color: client.config.options.embedColor.generic,
                 description: leaderboard.slice(0, 10).map(u => `#${this.getPosition(u.id, leaderboard)} - **${users.get(u.id).tag}**\nLevel: ${u.levelDetails.level} | ${global ? 'Global' : 'Local'} experience: ${global ? u.experience.amount : u.experience}`).join("\n\n"),
                 footer: leaderboard.find(u => u.id === message.author.id) ? {
                     text: `Your position: #${leaderboard.findIndex(element => element.id === message.author.id) + 1}/${leaderboard.length}`

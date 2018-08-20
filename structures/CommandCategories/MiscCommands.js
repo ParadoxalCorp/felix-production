@@ -17,7 +17,7 @@ class MiscCommands extends Command {
      */
     constructor(client, commandOptions, options = {}) {
         super(client, { ...commandOptions, category: {
-            name: 'fun',
+            name: 'Misc',
         }});
         this.options = options;
     }

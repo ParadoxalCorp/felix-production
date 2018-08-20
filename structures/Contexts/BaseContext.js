@@ -10,9 +10,9 @@
  * @typedef {import("eris").VoiceChannel} VoiceChannel
  */
 
- /** @typedef {Object} UserHasPermissions 
+/** @typedef {Object} UserHasPermissions 
   * @prop {Array<String>|Boolean} missingPerms An array of permissions the user miss, or `false` if the user has all the given permissions 
- */
+  */
 
 class BaseContext {
     /**
@@ -52,8 +52,12 @@ class BaseContext {
                 default: ':x:'
             },
             ping: {
-                custom: '<:loading:480681173949874187>',
+                custom: '<:loading:480681099115102208>',
                 default: ':ping_pong:'
+            },
+            picture: {
+                custom: '<:picture:481113522416386048>',
+                default: ':frame_photo:'
             }
         };
     }

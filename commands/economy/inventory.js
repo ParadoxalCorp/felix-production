@@ -48,7 +48,7 @@ class Inventory extends EconomyCommands {
 
                     return familiesOwned;
                 })(),
-                color: client.config.options.embedColor
+                color: client.config.options.embedColor.generic
 
             }
         };

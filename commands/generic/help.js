@@ -45,37 +45,37 @@ class Help extends GenericCommands {
     }
 
     getOverallHelp(client, message, guildEntry) {
-            const categories = [];
+        const categories = [];
 
-            client.commands.forEach(c => {
-                if (!categories.includes(c.help.category || c.category.name) && (client.config.admins.includes(message.author.id) || (c.help.category || c.category.name) !== "admin")) {
-                    categories.push(c.help.category || c.category.name);
-                }
-            });
+        client.commands.forEach(c => {
+            if (!categories.includes(c.help.category || c.category.name) && (client.config.admins.includes(message.author.id) || (c.help.category || c.category.name) !== "admin")) {
+                categories.push(c.help.category || c.category.name);
+            }
+        });
 
-            return {
-                embedMessage: {
-                    embed: {
-                        title: ":book: Available commands",
-                        description: `Here is the list of all available commands and their categories, you can use commands like \`${this.getPrefix(client, guildEntry)}<command>\`\n\n${this.extra(client)}`,
-                        fields: categories.map(c => {
-                            const firstCommandInCategory = client.commands.find(cmd => (cmd.help.category || cmd.category.name) === c);
-                            const subCategories = this.getSubCategories(client, c);
-                            const value = subCategories[0] 
+        return {
+            embedMessage: {
+                embed: {
+                    title: ":book: Available commands",
+                    description: `Here is the list of all available commands and their categories, you can use commands like \`${this.getPrefix(client, guildEntry)}<command>\`\n\n${this.extra(client)}`,
+                    fields: categories.map(c => {
+                        const firstCommandInCategory = client.commands.find(cmd => (cmd.help.category || cmd.category.name) === c);
+                        const subCategories = this.getSubCategories(client, c);
+                        const value = subCategories[0] 
                             ? subCategories.map(sc => `**${sc}**: ${client.commands.filter(command => command.help.subCategory === sc).map(command => '`' + command.help.name + '`').join(" ")}`).join('\n\n')
                             : client.commands.filter(command => (command.help.category || command.category.name) === c).map(command => `\`${command.help.name}\``).join(" ");
-                            return {
-                                name: `${c} ${firstCommandInCategory.category ? firstCommandInCategory.category.emote : ''}`,
-                                value: value
-                            };
-                        }),
-                        footer: {
-                            text: `For a total of ${client.commands.size} commands`
-                        },
-                        color: client.config.options.embedColor
-                    }
-                },
-                normalMessage: `Here is the list of all available commands and their categories, you can use commands like \`${this.getPrefix(client, guildEntry)}<command>\`\n\n${categories.map(c => '**' + c + '** =>' + client.commands.filter(command => (command.help.category || command.category.name) === c).map(command => '\`' + command.help.name + '\`').join(', ')).join('\n\n')}`
+                        return {
+                            name: `${c} ${firstCommandInCategory.category ? firstCommandInCategory.category.emote : ''}`,
+                            value: value
+                        };
+                    }),
+                    footer: {
+                        text: `For a total of ${client.commands.size} commands`
+                    },
+                    color: client.config.options.embedColor.generic
+                }
+            },
+            normalMessage: `Here is the list of all available commands and their categories, you can use commands like \`${this.getPrefix(client, guildEntry)}<command>\`\n\n${categories.map(c => '**' + c + '** =>' + client.commands.filter(command => (command.help.category || command.category.name) === c).map(command => '\`' + command.help.name + '\`').join(', ')).join('\n\n')}`
         };
     }
 
@@ -162,7 +162,7 @@ class Help extends GenericCommands {
                 title: `:book: Help for the ${command.help.name} command`,
                 description: command.help.description.replace(/{prefix}/gim, this.getPrefix(client, guildEntry)),
                 fields: embedFields,
-                color: client.config.options.embedColor,
+                color: client.config.options.embedColor.generic,
                 image: command.help.preview ? {
                     url: command.help.preview
                 } : undefined

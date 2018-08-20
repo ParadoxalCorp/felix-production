@@ -48,7 +48,7 @@ class Navalbase extends EconomyCommands {
 
                     return typesOwned;
                 })(),
-                color: client.config.options.embedColor
+                color: client.config.options.embedColor.generic
             }
         };
     }

@@ -66,7 +66,7 @@ class GetPermissions extends ModerationCommands {
     formatPermissions(client, message, guildEntry, args, targetPerms) {
         return {
             title: `${args.targetType === 'global' ? 'Global' : ''} Permissions ${args.targetType !== 'global' ? ('for the ' + args.targetType + ' ' + (args.target.name || new client.structures.ExtendedUser(args.target).tag), client) : ''}`,
-            color: client.config.options.embedColor,
+            color: client.config.options.embedColor.generic,
             fields: (() => {
                 if (args.targetType === 'global') {
                     targetPerms.allowedCommands = targetPerms.allowedCommands.concat(client.structures.References.defaultPermissions.allowedCommands.map(perm => `${perm} (default)`));

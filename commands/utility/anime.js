@@ -31,7 +31,7 @@ class Anime extends UtilityCommands {
             const query = await message.channel.createMessage({
                 embed: {
                     description: "owo, i found multiple animes corresponding to your search, please select one with its number ```\n" + res.map(a => `[${i++}] ${a.name}`).join('\n') + "```",
-                    color: client.config.options.embedColor
+                    color: client.config.options.embedColor.generic
                 }
             });
             const reply = await client.handlers.MessageCollector.awaitMessage(message.channel.id, message.author.id);
@@ -135,7 +135,7 @@ class Anime extends UtilityCommands {
                     text: (anime.scoreStats ? anime.scoreStats.charAt(0).toUpperCase() + anime.scoreStats.substr(1) : "") +
                         " | Popularity: " + (anime.popularity || 'None') + " | Members: " + (anime.members || 'None') + " | Ranking: " + (anime.ranked || 'None') + " | Rating: " + (anime.rating || 'None')
                 },
-                color: client.config.options.embedColor
+                color: client.config.options.embedColor.generic
             }
         });
     }

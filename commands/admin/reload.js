@@ -14,7 +14,12 @@ class Reload extends AdminCommands {
 
     async run(client, message, args) {
         if (['utils', 'handlers', 'commands', 'structures'].includes(args[0].toLowerCase())) {
-            return message.channel.createMessage(`:white_check_mark: Successfully reloaded all ${args[0].toLowerCase()}`);
+            const reload = await client.handlers.IPCHandler.broadcastReload(args[0].toLowerCase()).then(() => 'success').catch(err => err);
+            if (reload === 'success') {
+                return message.channel.createMessage(`:white_check_mark: Successfully reloaded all ${args[0].toLowerCase()}`);
+            } else {
+                return message.channel.createMessage('```js\n' + inspect(reload, {depth: 2}) + '```');
+            }
         }
         const isPath = new RegExp(/\/|\\/gim).test(args[0]);
         const command = client.commands.get(args[0]) || client.commands.get(client.aliases.get(args[0]));

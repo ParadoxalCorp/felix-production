@@ -10,7 +10,6 @@ class Ping extends GenericCommands {
             }
         });
     }
-
     /** @param {import("../../structures/Contexts/GenericContext")} context */
 
     async run(context) {
@@ -20,4 +19,4 @@ class Ping extends GenericCommands {
     }
 }
 
-module.exports = new Ping();
+module.exports = Ping;

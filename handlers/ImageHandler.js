@@ -83,7 +83,7 @@ class ImageHandler {
                                 footer: {
                                     text: 'Powered by weeb.sh and the Taihou wrapper'
                                 },
-                                color: client.config.options.embedColor
+                                color: client.config.options.embedColor.generic
                         }});
                     }
                     const users = await (async() => {
@@ -108,7 +108,7 @@ class ImageHandler {
                             footer: {
                                 text: 'Powered by weeb.sh and the Taihou wrapper'
                             },
-                            color: client.config.options.embedColor
+                            color: client.config.options.embedColor.generic
                         }
                     });
                 }

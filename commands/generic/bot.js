@@ -27,7 +27,7 @@ class Bot extends GenericCommands {
                 thumbnail: {
                     url: context.client.bot.user.avatarURL
                 },
-                color: context.client.config.options.embedColor,
+                color: context.client.config.options.embedColor.generic,
                 author: {
                     name: `Requested by: ${context.message.author.tag}`,
                     icon_url: context.message.author.avatarURL

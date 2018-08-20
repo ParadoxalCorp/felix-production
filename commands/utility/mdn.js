@@ -5,7 +5,7 @@ class MDN extends UtilityCommands {
     constructor(client) {
         super(client, {
             help: {
-                name: 'utility',
+                name: 'mdn',
                 description: 'Search something through the Mozilla Developer Network',
                 usage: '{prefix}mdn arrays',
             },
@@ -27,7 +27,7 @@ class MDN extends UtilityCommands {
         let firstResult = result.documents[0];
         return message.channel.createMessage({
             embed: {
-                color: client.config.options.embedColor,
+                color: client.config.options.embedColor.generic,
                 title: "MDN",
                 url: "https://developer.mozilla.org/en/",
                 thumbnail: {

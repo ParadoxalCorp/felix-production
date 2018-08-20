@@ -310,7 +310,7 @@ class Experience extends SettingsCommands {
                     name: 'Permissions',
                     value: this._checkPermissions(context)
                 }],
-                color: context.client.config.options.embedColor
+                color: context.client.config.options.embedColor.generic
             }
         });
     }

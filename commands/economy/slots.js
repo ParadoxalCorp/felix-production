@@ -111,7 +111,7 @@ class Slots extends EconomyCommands {
                 embed: {
                     title: ":slot_machine: Slots",
                     description: slotsResults.replace(/undefined/gim, ''),
-                    color: client.config.options.embedColor
+                    color: client.config.options.embedColor.generic
                 }
             });
         } else {
@@ -119,7 +119,7 @@ class Slots extends EconomyCommands {
                 embed: {
                     title: ":slot_machine: Slots",
                     description: slotsResults.replace(/undefined/gim, ''),
-                    color: client.config.options.embedColor
+                    color: client.config.options.embedColor.generic
                 }
             });
         }
@@ -138,7 +138,7 @@ class Slots extends EconomyCommands {
                 embed: {
                     title: ":slot_machine: Slots",
                     description: slotsResults.replace(/undefined/gim, ''),
-                    color: client.config.options.embedColor
+                    color: client.config.options.embedColor.generic
                 }
             });
             setTimeout(() => {

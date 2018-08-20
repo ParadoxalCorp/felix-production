@@ -116,7 +116,7 @@ class SetFarewells extends SettingsCommands {
                     name: 'Permissions',
                     value: this._checkPermissions(client, message, guildEntry)
                 }],
-                color: client.config.options.embedColor
+                color: client.config.options.embedColor.generic
             }
         });
     }

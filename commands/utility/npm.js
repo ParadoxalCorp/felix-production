@@ -73,7 +73,7 @@ class Npm extends UtilityCommands {
         }
         return message.channel.createMessage({
             embed: {
-                color: client.config.options.embedColor,
+                color: client.config.options.embedColor.generic,
                 title: 'NPM',
                 url: `https://www.npmjs.com/search?q=${encodeURIComponent(args.join('+'))}`,
                 thumbnail: {
