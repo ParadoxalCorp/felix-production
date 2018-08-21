@@ -85,7 +85,7 @@ class IamNot extends FunCommands {
         if (!member.roles.includes(guildRole.id)) {
             return context.message.channel.createMessage(':x: You do not have this role, therefore I can\'t remove it');
         }
-        if (this.getHighestRole(context.client.bot.user.id, context.message.channel.guild) && (guildRole.position > this.getHighestRole(context.client.bot.user.id, message.channel.guild).position)) {
+        if (this.getHighestRole(context.client.bot.user.id, context.message.channel.guild) && (guildRole.position > this.getHighestRole(context.client.bot.user.id, context.message.channel.guild).position)) {
             return context.message.channel.createMessage(`:x: The role \`${guildRole.name}\` is higher than my highest role, therefore, I can't give/remove it from you :c`);
         }
         await member.removeRole(guildRole.id);
