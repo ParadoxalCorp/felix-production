@@ -16,7 +16,7 @@
   * @prop {String} name The name of the command 
   * @prop {String} description The description of the command
   * @prop {String} usage A quick example of how to use the command, every instance of {prefix} will be replaced by the actual prefix in the help command 
-  * @prop {String} externalDoc A direct URL to some external documentation
+  * @prop {String} [externalDoc] A direct URL to some external documentation
   */
 
 /** @typedef {Object} PossibleArgValue
