@@ -68,7 +68,7 @@ class Npm extends UtilityCommands {
         if (results[0].date) {
             embedFields.push({
                 name: 'Latest release',
-                value: `${client.utils.TimeConverter.toHumanDate(new Date(results[0].date).getTime())} (${moment().to(new Date(results[0].date).getTime())})`
+                value: `${client.utils.timeConverter.toHumanDate(new Date(results[0].date).getTime())} (${moment().to(new Date(results[0].date).getTime())})`
             });
         }
         return message.channel.createMessage({
