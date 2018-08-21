@@ -63,8 +63,9 @@ class TableInterface {
      */
     async set(data) {
         return this._rethink.table(this.tableName).get(data.id).replace(data.toDatabaseEntry ? data.toDatabaseEntry() : data, {returnChanges: 'always'}).run()
-            .then(() => {
+            .then(res => {
                 this.cache.set(data.id, data);
+                return res.changes[0].new_val;
             });
     }
 
