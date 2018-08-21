@@ -18,6 +18,7 @@ class FunCommands extends Command {
     constructor(client, commandOptions, options = {}) {
         super(client, { ...commandOptions, category: {
             name: 'Fun',
+            emote: 'tada'
         }});
         this.options = options;
     }

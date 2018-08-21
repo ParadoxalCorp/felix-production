@@ -20,7 +20,8 @@ class ModerationCommands extends Command {
             name: 'Moderation',
             conf: {
                 guildOnly: true
-            }
+            },
+            emote: 'hammerPick'
         }});
         this.options = options;
     }

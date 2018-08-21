@@ -21,7 +21,8 @@ class MiscCommands extends Command {
             conf: {
                 guildOnly: true,
                 requireDB: true
-            }
+            },
+            emote: 'bookmark'
         }});
         this.options = options;
     }

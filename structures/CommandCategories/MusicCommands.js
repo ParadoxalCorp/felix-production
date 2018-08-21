@@ -18,7 +18,7 @@ class MusicCommands extends Command {
     constructor(client, commandOptions, options = {}) {
         super(client, { ...commandOptions, category: {
             name: 'Music',
-            emote: ':musical_note: :new:',
+            emote: 'musicalNote new',
             conf: {
                 guildOnly: true,
                 requirePerms: ['voiceConnect', 'voiceSpeak']

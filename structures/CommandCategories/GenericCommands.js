@@ -20,6 +20,7 @@ class GenericCommands extends Command {
     constructor(client, commandOptions, options = {}) {
         super(client, { ...commandOptions, category: {
             name: 'Generic',
+            emote: 'barChart'
         }});
         this.options = options;
     }

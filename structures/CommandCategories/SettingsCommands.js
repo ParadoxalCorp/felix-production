@@ -18,6 +18,7 @@ class SettingsCommands extends Command {
     constructor(client, commandOptions, options = {}) {
         super(client, { ...commandOptions, category: {
             name: 'Settings',
+            emote: 'gear'
         }});
         this.options = options;
     }

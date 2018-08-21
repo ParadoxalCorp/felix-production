@@ -9,6 +9,7 @@
  * @typedef {import("eris").Message} Message
  * @typedef {import("eris").TextChannel} TextChannel
  * @typedef {import("eris").VoiceChannel} VoiceChannel
+ * @typedef {import("eris").Message} Message 
  */
 
 /** @typedef {Object} UserHasPermissions 
@@ -59,7 +60,47 @@ class BaseContext {
             picture: {
                 custom: '<:picture:481113522416386048>',
                 default: ':frame_photo:'
-            }
+            },
+            hammerPick: {
+                custom: ':hammer_pick:',
+                default: ':hammer_pick:'
+            },
+            gear: {
+                custom: ':gear:',
+                default: ':gear:'
+            },
+            musicalNote: {
+                custom: ':musical_note:',
+                default: ':musical_note:'                
+            },
+            new: {
+                custom: ':new:',
+                default: ':new:'                
+            },
+            tools: {
+                custom: ':tools:',
+                default: ':tools:'                
+            },
+            moneybag: {
+                custom: ':moneybag:',
+                default: ':moneybag:'                
+            },
+            tada: {
+                custom: ':tada:',
+                default: ':tada:'                
+            },
+            bookmark: {
+                custom: ':bookmark:',
+                default: ':bookmark:'                
+            },
+            heart: {
+                custom: '<:nekoheart:481418928464199700>',
+                default: ':heart:'
+            },
+            barChart: {
+                custom: ':bar_chart:',
+                default: ':bar_chart:'
+            }                
         };
     }
     

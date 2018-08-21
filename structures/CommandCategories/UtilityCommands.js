@@ -18,6 +18,7 @@ class UtilityCommands extends Command {
     constructor(client, commandOptions, options = {}) {
         super(client, { ...commandOptions, category: {
             name: 'Utility',
+            emote: 'tools'
         }});
         this.options = options;
     }

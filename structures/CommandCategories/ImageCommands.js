@@ -18,6 +18,11 @@ class ImageCommands extends Command {
     constructor(client, commandOptions, options = {}) {
         super(client, { ...commandOptions, category: {
             name: 'Image',
+            conf: {
+                require: ['weebSH', 'taihou'],
+                requirePerms: ['embedLinks'],
+            },
+            emote: 'picture'
         }});
         this.options = options;
     }
