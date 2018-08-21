@@ -11,17 +11,19 @@ class Choose extends FunCommands {
         });
     }
 
-    async run(client, message, args) {
-        if (!args[0]) {
-            return message.channel.createMessage(`:x: Well, I need some stuff to choose from, I can't choose from nothing sadly :v`);
+    /** @param {import("../../structures/Contexts/GenericContext")} context */
+    
+    async run(context) {
+        if (!context.args[0]) {
+            return context.message.channel.createMessage(`:x: Well, I need some stuff to choose from, I can't choose from nothing sadly :v`);
         }
-        let choices = args.join(' ').split(/;/g).filter(c => c && c !== ' '); //Filter empty choices :^)
+        let choices = context.args.join(' ').split(/;/g).filter(c => c && c !== ' '); //Filter empty choices :^)
         if (choices.length < 2) {
-            return message.channel.createMessage(`:x: Welp I need to choose from at least two things, I mean what's the point in choosing between only one thing?`);
+            return context.message.channel.createMessage(`:x: Welp I need to choose from at least two things, I mean what's the point in choosing between only one thing?`);
         }
         let choice = choices[Math.floor(Math.random() * choices.length)].trim();
-        message.channel.createMessage(`I choose \`${choice}\`!`);
+        context.message.channel.createMessage(`I choose \`${choice}\`!`);
     }
 }
 
-module.exports = new Choose();
+module.exports = Choose;

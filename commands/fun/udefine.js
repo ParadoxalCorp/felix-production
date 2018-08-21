@@ -15,25 +15,26 @@ class Udefine extends FunCommands {
         });
     }
 
-    //eslint-disable-next-line no-unused-vars
-    async run(client, message, args, guildEntry, userEntry) {
-        if (!args[0]) {
-            return message.channel.createMessage(":x: No search term specified");
+    /** @param {import("../../structures/Contexts/GenericContext")} context */
+
+    async run(context) {
+        if (!context.args[0]) {
+            return context.message.channel.createMessage(":x: No search term specified");
         }
-        if (!message.channel.nsfw) {
-            return message.channel.createMessage(":x: This command can only be used in a channel set as NSFW");
+        if (!context.message.channel.nsfw) {
+            return context.message.channel.createMessage(":x: This command can only be used in a channel set as NSFW");
         }
-        const result = await axios.default.get(`https://api.urbandictionary.com/v0/define?term=${encodeURIComponent(args.join(' '))}`);
+        const result = await axios.default.get(`https://api.urbandictionary.com/v0/define?term=${encodeURIComponent(context.args.join(' '))}`);
         if (!result.data) {
-            return message.channel.createMessage(":x: an error occurred");
+            return context.message.channel.createMessage(":x: an error occurred");
         }
         if (!result.data.list[0]) {
-            return message.channel.createMessage(":x: I couldn't find any results :c");
+            return context.message.channel.createMessage(":x: I couldn't find any results :c");
         }
         const firstResult = result.data.list[0];
-        return message.channel.createMessage({
+        return context.message.channel.createMessage({
             embed: {
-                color: client.config.options.embedColor.generic,
+                color: context.client.config.options.embedColor.generic,
                 title: `Results`,
                 url: firstResult.permalink,
                 fields: [{
@@ -55,4 +56,4 @@ class Udefine extends FunCommands {
     }
 }
 
-module.exports = new Udefine();
+module.exports = Udefine;
