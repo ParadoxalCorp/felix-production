@@ -7,8 +7,7 @@
     "contributors": [
         {
             "name": "Niputi"
-        },
-        {
+        }, {
             "name": "Otaku17"
         }
     ],
@@ -16,7 +15,7 @@
     "license": "GPL-3.0",
     "scripts": {
         "start": "node index.js",
-        "eslint-check" : "eslint .",
+        "eslint-check": "eslint .",
         "test": "nyc mocha"
     },
     "dependencies": {
