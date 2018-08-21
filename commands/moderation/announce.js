@@ -67,7 +67,7 @@ class Announce extends ModerationCommands {
         if (!context.args[3]) {
             return context.message.channel.createMessage(':x: You did not specify where I should send this announcement');
         }
-        const channel = await this.getChannelFromText({client: context.client, message: context.message, text: context.args[3]});
+        const channel = await this.getChannelFromText({client: this.client, message: context.message, text: context.args[3]});
         if (!channel) {
             return context.message.channel.createMessage(':x: I couldn\'t find the channel you specified :v');
         }

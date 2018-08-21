@@ -17,17 +17,18 @@ class ClearPermissions extends ModerationCommands {
         });
     }
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(client, message, args, guildEntry, userEntry) {
-        await message.channel.createMessage('Are you sure you want to do that? Reply with `yes` to confirm or anything else to abort');
-        const confirmation = await client.handlers.MessageCollector.awaitMessage(message.channel.id, message.author.id);
+    /** @param {import("../../structures/Contexts/ModerationContext")} context */
+
+    async run(context) {
+        await context.message.channel.createMessage('Are you sure you want to do that? Reply with `yes` to confirm or anything else to abort');
+        const confirmation = await context.client.handlers.MessageCollector.awaitMessage(context.message.channel.id, context.message.author.id);
         if (!confirmation || confirmation.content.toLowerCase().trim() !== 'yes') {
-            return message.channel.createMessage(':x: Command aborted');
+            return context.message.channel.createMessage(':x: Command aborted');
         }
-        guildEntry.permissions = client.structures.References.guildEntry('1').permissions;
-        await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
-        return message.channel.createMessage(':white_check_mark: Successfully cleared all permissions');
+        context.guildEntry.permissions = context.client.structures.References.guildEntry('1').permissions;
+        await context.client.handlers.DatabaseWrapper.set(context.guildEntry, 'guild');
+        return context.message.channel.createMessage(':white_check_mark: Successfully cleared all permissions');
     }
 }
 
-module.exports = new ClearPermissions();
+module.exports = ClearPermissions;
