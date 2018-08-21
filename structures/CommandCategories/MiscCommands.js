@@ -18,6 +18,10 @@ class MiscCommands extends Command {
     constructor(client, commandOptions, options = {}) {
         super(client, { ...commandOptions, category: {
             name: 'Misc',
+            conf: {
+                guildOnly: true,
+                requireDB: true
+            }
         }});
         this.options = options;
     }

@@ -55,14 +55,14 @@ class SkipTo extends MusicCommands {
 
     async handleVoteEnd(context, song, reason) {
         switch (reason) {
-            case 'timeout': 
-                context.connection.resetVote();
-                return context.message.channel.createMessage(`:x: The vote to the song **${song.info.title}** ended because not enough users voted`);
-                break;
-            case 'deleted':
-                return context.message.channel.createMessage(`:x: The vote to skip to the song **${song.info.title}** ended because the song was removed from the queue`);
-            case 'started': 
-                return context.message.channel.createMessage(`:x: The vote to skip to the song **${song.info.title}** ended because the song just started`);
+        case 'timeout': 
+            context.connection.resetVote();
+            return context.message.channel.createMessage(`:x: The vote to the song **${song.info.title}** ended because not enough users voted`);
+            break;
+        case 'deleted':
+            return context.message.channel.createMessage(`:x: The vote to skip to the song **${song.info.title}** ended because the song was removed from the queue`);
+        case 'started': 
+            return context.message.channel.createMessage(`:x: The vote to skip to the song **${song.info.title}** ended because the song just started`);
         }
     }
 }

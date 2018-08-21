@@ -46,13 +46,13 @@ class Skip extends MusicCommands {
 
     async handleVoteEnd(context, reason) {
         switch (reason) {
-            case 'timeout': 
-                context.connection.resetVote();
-                return context.message.channel.createMessage(':x: The vote to skip the current song ended, not enough users voted');
-                break;
-            case 'ended':
-                return context.message.channel.createMessage(':x: The vote to skip the current song has been cancelled because the song just ended');
-                break;
+        case 'timeout': 
+            context.connection.resetVote();
+            return context.message.channel.createMessage(':x: The vote to skip the current song ended, not enough users voted');
+            break;
+        case 'ended':
+            return context.message.channel.createMessage(':x: The vote to skip the current song has been cancelled because the song just ended');
+            break;
         }
     }
 }

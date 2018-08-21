@@ -118,23 +118,23 @@ class TableInterface {
     _sweep() {
         let clearedEntries = 0;
         switch (this.tableName) {
-            case 'users':
-                for (let [key, value] of this.cache) {
-                    if (!value._lastRequestedAt || (value._lastRequestedAt < (Date.now() - this._cacheDuration))) {
-                        this.cache.delete(key);
-                        clearedEntries++;
-                    }
+        case 'users':
+            for (let [key, value] of this.cache) {
+                if (!value._lastRequestedAt || (value._lastRequestedAt < (Date.now() - this._cacheDuration))) {
+                    this.cache.delete(key);
+                    clearedEntries++;
                 }
-                break;
-            case 'guilds':
-                for (let [key] of this.cache) {
-                    //Remove from the cache guilds that aren't in this cluster
-                    if (!this.client.bot.guilds.has(key)) {
-                        this.cache.delete(key);
-                        clearedEntries++;
-                    }
+            }
+            break;
+        case 'guilds':
+            for (let [key] of this.cache) {
+                //Remove from the cache guilds that aren't in this cluster
+                if (!this.client.bot.guilds.has(key)) {
+                    this.cache.delete(key);
+                    clearedEntries++;
                 }
-                break;
+            }
+            break;
         }
         process.send({name: 'info', msg: `[TableInterface:${this.tableName}] Cache sweep done, cleared ${clearedEntries} ${this.tableName}`});
     }

@@ -41,19 +41,19 @@ class Helpers {
             return (cachedUser ? (cachedUser instanceof this.client.structures.ExtendedUser) : false) ? cachedUser : new this.client.structures.ExtendedUser(cachedUser, this.client);
         } else {
             return this.client.bot.requestHandler.request('GET', Endpoints.USER(id), true)
-              .catch(e => {
-                if (e.message.includes('Unknown User')) {
-                  return null;
-                }
-              }).then(u => {
-                  if (!u) {
-                      return u;
-                  }
-                  const newUser = new this.client.structures.ExtendedUser(u, this.client);
-                  this.client.bot.users.set(id, newUser);
-                  return newUser;
-              });
-          }
+                .catch(e => {
+                    if (e.message.includes('Unknown User')) {
+                        return null;
+                    }
+                }).then(u => {
+                    if (!u) {
+                        return u;
+                    }
+                    const newUser = new this.client.structures.ExtendedUser(u, this.client);
+                    this.client.bot.users.set(id, newUser);
+                    return newUser;
+                });
+        }
     }
 
     /**

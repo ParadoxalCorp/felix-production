@@ -16,14 +16,14 @@
  * @property {Number} date The UNIX timestamp of when the transfer happened 
  */
 
- /**
+/**
  * @typedef {Object} ExperienceNotifications
  * @property {String} channel The ID of the channel where to send the level-up notifications, or "dm" if set to dms
  * @property {String} message A custom level-up message, empty if none is set
  * @property {Boolean} enabled Whether level-up notifications are enabled
  */
 
- /**
+/**
  * @typedef {Object} ActivityGuildRole
  * @property {String} id The ID of the role set to be given at some activity threshold  
  * @property {Boolean} static Whether the role should stay when the member wins a higher one
@@ -43,13 +43,13 @@
  * @property {String} channel The ID of the channel where to send the greetings/farewells message, if greetings, can also be "dm". Empty if none is set
  */
 
- /**
+/**
  * @typedef {Object} SelfAssignableRole This object represent both the greetings and farewells settings as they have the same structure, note that they are still independent
  * @property {String} id The ID of the self-assignable role
  * @property {Array<String>} incompatibleRoles An array of roles with which this role is incompatible
  */
 
- /**
+/**
  * @typedef {Object} GuildEntry  
  * @property {String} id The ID of the guild
  * @property {String} prefix The prefix of the guild, empty if none is set
@@ -63,13 +63,13 @@
  * @property {GreetingsAndFarewells} farewells The farewells settings
  */
 
- /**
+/**
  * @typedef {Object} OwnedItem 
  * @property {Number} count The amount of copy of this item the user has
  * @property {Number} id The ID of the item
  */
 
- /**
+/**
  * @typedef {Object} UserEconomy 
  * @property {Number} coins The amount of holy coins this user has
  * @property {Array<TransactionData>} transactions The custom greetings/farewells message set on this guild, empty if none is set
@@ -89,12 +89,12 @@
  * @property {Array<import("../structures/HandlersStructures/MusicConnection").PartialLavalinkTrack>} tracks An array of partial lavalink tracks
  */
 
- /**
+/**
  * @typedef {Object} UserExperience
  * @property {Number} amount The amount of experience this user has gained
  */
 
- /**
+/**
  * @typedef {Object} Cooldown
  * @property {Number} max The maximum amount of cooldowns that can be stacked
  * @property {Array<Number>} cooldowns An array of UNIX timestamps representing when each cooldown expire
@@ -112,7 +112,7 @@
  * @property {Number|Boolean} expire If a number, the UNIX timestamp when the user's premium status expires. If "true", that means the user pledges monthly so there is no determined date of when their premium ends
  */
 
- /**
+/**
  * @typedef {Object} TierLimits
  * @property {Number} profileBgSize The maximum size of the background set for the rank command
  * @property {Number} playlistLoadLimit The maximum size of a playlist that can be loaded at once
@@ -197,12 +197,12 @@ class References {
      * @param {String} id - The ID of the role
      * @param {Array<String>} [incompatibleRoles=[]] - An array of roles ID with which this role is incompatible
      * @returns {SelfAssignableRole} Role ID and incompatibleRoles array */
-     selfAssignableRole(id, incompatibleRoles) {
+    selfAssignableRole(id, incompatibleRoles) {
         return {
             id,
             incompatibleRoles: incompatibleRoles || []
-       };
-     }
+        };
+    }
 
     /**
      * Entry for guildEntry.experience.members

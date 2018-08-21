@@ -61,7 +61,7 @@ class DatabaseWrapper {
                 //Requires to change the structure from an array containing strings (role ids) to objects (role ids + incompatible roles)
                 data.selfAssignableRoles = data.selfAssignableRoles.map(selfAssignableRoles => {
                     if (typeof selfAssignableRoles === "string") {
-                      return this.client.structures.References.selfAssignableRole(selfAssignableRoles);
+                        return this.client.structures.References.selfAssignableRole(selfAssignableRoles);
                     }
                     return selfAssignableRoles;
                 });
@@ -111,11 +111,11 @@ class DatabaseWrapper {
 
     _onHealthy(healthy) {
         switch (healthy) {
-            case true:
-                process.send({ name: 'info', msg: `The connection with the database at ${this.client.config.database.host}:${this.client.config.database.port} has been established` });
-                break;
-            case false:
-                process.send({ name: 'warn', msg: 'The connection with the database has been closed, commands using the database will be disabled until a successful re-connection has been made' });
+        case true:
+            process.send({ name: 'info', msg: `The connection with the database at ${this.client.config.database.host}:${this.client.config.database.port} has been established` });
+            break;
+        case false:
+            process.send({ name: 'warn', msg: 'The connection with the database has been closed, commands using the database will be disabled until a successful re-connection has been made' });
         }
         this.healthy = healthy;
     }

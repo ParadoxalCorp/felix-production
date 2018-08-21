@@ -18,6 +18,9 @@ class ModerationCommands extends Command {
     constructor(client, commandOptions, options = {}) {
         super(client, { ...commandOptions, category: {
             name: 'Moderation',
+            conf: {
+                guildOnly: true
+            }
         }});
         this.options = options;
     }

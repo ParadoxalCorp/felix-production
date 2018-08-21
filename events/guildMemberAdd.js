@@ -40,10 +40,10 @@ class GuildMemberAddHandler {
 
     replaceGreetingsTags(guild, user, message) {
         return message.replace(/\%USER\%/gim, `<@!${user.id}>`)
-        .replace(/\%USERNAME\%/gim, `${user.username}`)
-        .replace(/\%USERTAG%/gim, `${user.tag}`)
-        .replace(/\%GUILD\%/gim, `${guild.name}`)
-        .replace(/\%MEMBERCOUNT%/gim, guild.memberCount);
+            .replace(/\%USERNAME\%/gim, `${user.username}`)
+            .replace(/\%USERTAG%/gim, `${user.tag}`)
+            .replace(/\%GUILD\%/gim, `${guild.name}`)
+            .replace(/\%MEMBERCOUNT%/gim, guild.memberCount);
     }
 }
 

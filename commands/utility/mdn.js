@@ -19,7 +19,7 @@ class MDN extends UtilityCommands {
             return message.channel.createMessage(":x: You must specify something to search");
         }
         let result = await axios.default.get(
-                `https://developer.mozilla.org/en-US/search.json?locale=en-US&q=${encodeURIComponent(args.join())}`, { headers: { 'Content-Type': 'application/json' } })
+            `https://developer.mozilla.org/en-US/search.json?locale=en-US&q=${encodeURIComponent(args.join())}`, { headers: { 'Content-Type': 'application/json' } })
             .then(r => r.data);
         if (!result.documents || !result.documents.length) {
             return message.channel.createMessage(":x: Your search did not returned any result");

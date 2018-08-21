@@ -18,7 +18,7 @@
  * @property {String} uri The URL to the track 
  */
 
- /**
+/**
  * @typedef {Object} PartialLavalinkTrackInfo
  * @property {String} identifier The unique identifier of the track, as defined by the provider (youtube, soundcloud..)
  * @property {String} author The name of the author of the track
@@ -27,7 +27,7 @@
  * @property {String} uri The URL to the track 
  */
 
- /**
+/**
  * @typedef {Object} LavalinkTrack  
  * @property {String} track The encoded title of the track
  * @property {LavalinkTrackInfo} info An object of info about the track
@@ -39,7 +39,7 @@
  * @property {PartialLavalinkTrackInfo} info An object of info about the track
  */
 
- /** @typedef {Object} ExtendedTrackInfo
+/** @typedef {Object} ExtendedTrackInfo
   * @prop {String} requestedBy The ID of the user who requested this track
   * @prop {Number} _id The generated ID for this track, for internal purposes
   */
@@ -50,11 +50,11 @@
  * @property {ExtendedTrackInfo} info Info about the track
  */
 
- /**
+/**
  * @typedef {LavalinkTrack & ExtendedTrack} FelixTrack  
  */
 
- /**
+/**
  * @typedef {Object} AddedTrack  
  * @property {Number} position The position of the track in the queue
  * @property {Number} timeUntilPlaying Estimated time in milliseconds before the track will be played

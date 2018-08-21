@@ -4,7 +4,7 @@
  * @typedef {import("../main.js").Client} Client
  */
 
- /** @typedef {Object} CollectedEmoji
+/** @typedef {Object} CollectedEmoji
   * @prop {String} name The name of the emoji
   * @prop {String} id The ID of the emoji
   * @prop {Boolean} animated Whether the emoji is animated

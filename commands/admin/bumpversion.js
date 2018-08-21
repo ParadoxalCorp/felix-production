@@ -24,15 +24,15 @@ class BumpVersion extends AdminCommands {
         if (['major', 'minor', 'patch'].includes(args[0])) {
             const versions = client.package.version.split('.');
             switch (args[0]) {
-                case 'major':
-                    versions[0] = `${parseInt(versions[0]) + 1}`;
-                    break;
-                case 'minor':
-                    versions[1] = `${parseInt(versions[1]) + 1}`;
-                    break;
-                case 'patch':
-                    versions[2] = `${parseInt(versions[2]) + 1}`;
-                    break;
+            case 'major':
+                versions[0] = `${parseInt(versions[0]) + 1}`;
+                break;
+            case 'minor':
+                versions[1] = `${parseInt(versions[1]) + 1}`;
+                break;
+            case 'patch':
+                versions[2] = `${parseInt(versions[2]) + 1}`;
+                break;
             }
             newRelease = versions.join('.');
         }

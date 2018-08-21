@@ -44,9 +44,9 @@ class GuildMemberRemoveHandler {
 
     replaceFarewellTags(guild, user, message) {
         return message.replace(/\%USERNAME\%/gim, `${user.username}`)
-        .replace(/\%USERTAG%/gim, `${user.tag}`)
-        .replace(/\%GUILD\%/gim, `${guild.name}`)
-        .replace(/\%MEMBERCOUNT%/gim, guild.memberCount);
+            .replace(/\%USERTAG%/gim, `${user.tag}`)
+            .replace(/\%GUILD\%/gim, `${guild.name}`)
+            .replace(/\%MEMBERCOUNT%/gim, guild.memberCount);
     }
 }
 

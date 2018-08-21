@@ -55,31 +55,31 @@ class Rank extends GenericCommands {
         //Declaration of Canvas and creating a template (Length 300 and Width 300)
         // @ts-ignore
         const GetRank = new Canvas(300, 300)
-        //Background (Changeable in the future logically)
+            //Background (Changeable in the future logically)
             .addImage(await fsn.readFile(`${resources}back0.jpg`), 0, 0, 300, 300) //We will look for the image "Background" in the folder "imgs" (x=0, y=0, Length=300, Width=300)
-        //Layer one
+            //Layer one
             .addImage(await fsn.readFile(`${resources}card-back0.png`), 0, 0, 300, 300) //We will look for the image "Layer" in the folder "imgs" (x=0, y=0, Length=300, Width=300)
-        //Select color White for the circle
+            //Select color White for the circle
             .setColor('#ffffff') //Hex Color (#ffffff = White)
-        //Circle White (The one behind the avatar)
+            //Circle White (The one behind the avatar)
             .addCircle(150, 73, 59) //Creating circle White (x=150, y=73, radius=59)
-        //Select color progress bars blue
+            //Select color progress bars blue
             .setColor('#8DA0E1') //Hex Color (#8DA0E1 = Blue Discord)
-        //Picture progress bar Global
+            //Picture progress bar Global
             .addRect(
                 13,
                 197,
                 Math.round(progressBar*((targetEntry.experience.amount - globalLevelDetails.thisLevelExp)/(globalLevelDetails.nextLevelExp - globalLevelDetails.thisLevelExp))),
                 17
             ) //Creating picture progress bar Global (x=13, y=197, Length=XP current, Width=17)
-        //Picture progress bar Local
+            //Picture progress bar Local
             .addRect(
                 156,
                 197,
                 Math.round(progressBar*((userExp - localLevelDetails.thisLevelExp)/(localLevelDetails.nextLevelExp - localLevelDetails.thisLevelExp))),
                 17
             ) //Creating picture progress bar Local (x=156, y=197, Length=XP current, Width=17)
-        //Push avatar user
+            //Push avatar user
             .addImage(await axios.default.get(member.avatarURL, {
                 responseType: 'arraybuffer'
             }).then((res) =>
@@ -89,40 +89,40 @@ class Rank extends GenericCommands {
                 radius: 54
             }) //Get avatar user via axios (x=96, y=19, Length=108, Width=108, type=round, radius=54(To have the radius of an image without taking the head one deviates its size by two))
             .restore()
-        //Username
+            //Username
             .setColor('#ffffff')
             .setTextAlign('center')
             .setTextFont('20px rank')
             .addResponsiveText(`${member.username.substring(0,24)}`, 150, 160, 282, 282)
-        //Value rank
+            //Value rank
             .setColor('#8DA0E1')
             .setTextAlign('center')
             .addResponsiveText(`#${leaderboardG.findIndex(element => element.id === member.id) + 1}`, 93, 188, 70, 300)
             .addResponsiveText(`#${leaderboardL.findIndex(element => element.id === member.id) + 1}`, 240, 188, 70, 300)
-        //Text Global and local
+            //Text Global and local
             .setColor('#6E6E6E')
             .setTextAlign('center')
             .setTextFont('18px rank')
             .addText(`Global`, 35, 188, 300, 300)
             .addText(`Local`, 174, 188, 300, 300)
-        //Text XP bars
+            //Text XP bars
             .addResponsiveText(`${(targetEntry.experience.amount - globalLevelDetails.thisLevelExp)}/${(globalLevelDetails.nextLevelExp - globalLevelDetails.thisLevelExp)}`, 77, 211, 129, 129)
             .addResponsiveText(`${(userExp - localLevelDetails.thisLevelExp)}/${(localLevelDetails.nextLevelExp - localLevelDetails.thisLevelExp)}`, 225, 211, 129, 129)
-        //Text Global
+            //Text Global
             .setTextFont('15px rank')
             .addText(`Level :`, 35, 231, 300, 300)
             .addText(`XP     :`, 35, 252, 300, 300)
             .addText(`Level progress`, 77, 272, 300, 300)
-        //Text Local
+            //Text Local
             .addText(`Level :`, 178, 231, 300, 300)
             .addText(`XP     :`, 178, 252, 300, 300)
             .addText(`Level progress`, 221, 272, 300, 300)
-        //Value Global
+            //Value Global
             .setColor('#8DA0E1')
             .addResponsiveText(globalLevelDetails.level, 95, 231, 84, 300)
             .addResponsiveText(targetEntry.experience.amount, 95, 252, 84, 300)
             .addResponsiveText(`${(((targetEntry.experience.amount - globalLevelDetails.thisLevelExp)/(globalLevelDetails.nextLevelExp - globalLevelDetails.thisLevelExp))*100).toFixed(2)}%`, 77, 289, 135, 135)
-        //Value Local
+            //Value Local
             .addResponsiveText(localLevelDetails.level, 238, 231, 84, 300)
             .addResponsiveText(userExp, 238, 252, 84, 300)
             .addResponsiveText(`${(((userExp - localLevelDetails.thisLevelExp)/(localLevelDetails.nextLevelExp - localLevelDetails.thisLevelExp))*100).toFixed(2)}%`, 221, 289, 135, 135)
@@ -134,4 +134,4 @@ class Rank extends GenericCommands {
     }
 }
 
-module.exports = new Rank();
+module.exports = Rank;

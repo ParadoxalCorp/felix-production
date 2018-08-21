@@ -6,11 +6,11 @@
  * @typedef {import("../References").GuildMember} GuildMember
  * */
 
- /** @typedef {Function} ToMember
+/** @typedef {Function} ToMember
   * @param {String} id The ID of the member to add experience to
  */
 
- /** @typedef {Object} AddExperienceInterface
+/** @typedef {Object} AddExperienceInterface
   * @prop {ToMember} to Defines to who the amount of experience should be added
   */
 

@@ -158,21 +158,21 @@ class ExtendedUserEntry {
     get tierLimits() {
         const perks = (profileBgSize, playlistLoadLimit, playlistSaveLimit, maxSavedPlaylists) => { return { profileBgSize, playlistLoadLimit, playlistSaveLimit, maxSavedPlaylists }; };
         switch (this.premium.tier) {
-            case 0:
-                return perks(1e6, 100, 100, 3);
-                break;
-            case 1:
-                return perks(2e6, 200, 200, 4);
-                break;
-            case 2:
-                return perks(4e6, 400, 400, 5);
-                break;
-            case 3:
-                return perks(10e6, 500, 500, 8);
-                break;
-            case 4:
-                return perks(50e6, 600, 1000, 10);
-                break;
+        case 0:
+            return perks(1e6, 100, 100, 3);
+            break;
+        case 1:
+            return perks(2e6, 200, 200, 4);
+            break;
+        case 2:
+            return perks(4e6, 400, 400, 5);
+            break;
+        case 3:
+            return perks(10e6, 500, 500, 8);
+            break;
+        case 4:
+            return perks(50e6, 600, 1000, 10);
+            break;
         }
     }
 

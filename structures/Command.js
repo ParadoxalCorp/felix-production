@@ -11,7 +11,7 @@
  * @typedef {import("./ExtendedStructures/ExtendedGuildEntry.js") & import("./references").GuildEntry} GuildEntry
  */
 
- /** @typedef {Object} CommandHelp
+/** @typedef {Object} CommandHelp
   * @prop {string} [category] The category of the command. This option should only be set in structures/CommandCategories
   * @prop {String} name The name of the command 
   * @prop {String} description The description of the command
@@ -19,18 +19,18 @@
   * @prop {String} externalDoc A direct URL to some external documentation
   */
 
- /** @typedef {Object} PossibleArgValue
+/** @typedef {Object} PossibleArgValue
   * @prop {String} name The value, if the arg does not match this, the user will be queried again. You can use `*` to make it match everything
   * @prop {String} [interpretAs] This is especially helpful when the syntax of the command isn't how you would humanly prompt a user, this define what exactly will be pushed in the `args` array, note that `{value}` will be replaced by value. If `false`, it won't be pushed into the `args` array
   */
 
- /** @typedef {Object} ExpectedArg
+/** @typedef {Object} ExpectedArg
   * @prop {String} description A string describing what is the expected argument, this will be displayed in the query
   * @prop {Function} [condition] A function that will be called with the client, message and args parameters. If the function resolves to a falsy value, this argument won't be queried
   * @prop {Array<PossibleArgValue>} [possibleValues] An array representing the possible values for this arg, if not specified, anything passes. Otherwise, if the argument doesn't match the specified possible values, the arg will be re-queried
   */
 
- /** @typedef {Object} CommandConf
+/** @typedef {Object} CommandConf
   * @prop {Boolean} [requireDB=false] Whether the command requires the database or not, if true, the command won't be called when the connection with the database has been lost 
   * @prop {Boolean|String} [disabled=false] Whether the command is temporarily disabled, if true, this should be a string explaining why the command is disabled
   * @prop {Array<String>} [aliases=[]] An array of aliases for this command
@@ -43,19 +43,19 @@
   * @prop {Boolean} [guildOwnerOnly=false] Whether this command should be restricted to the guild's owner (if true, must be combined with guildOnly)
   */
 
- /** @typedef {Object} CommandCategory
+/** @typedef {Object} CommandCategory
   * @prop {String} name The name of the category
   * @prop {String} emote Emotes representing the category to display on the help command
   * @prop {String} [conf={}] A conf object that will override the default conf, but still get overwritten by the command conf
   */
 
- /** @typedef {Object} CommandOptions
+/** @typedef {Object} CommandOptions
   * @prop {CommandHelp} help An object detailing the command
   * @prop {CommandConf} conf The configuration of the command
   * @prop {CommandCategory} category An object describing the category; this should be passed by the command's category class and not the command itself
   */
 
-  /** @typedef {Object} PartialCommandOptions
+/** @typedef {Object} PartialCommandOptions
   * @prop {CommandHelp} help An object detailing the command
   * @prop {CommandConf} [conf] The configuration of the command
   */

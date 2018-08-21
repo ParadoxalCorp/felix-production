@@ -119,7 +119,7 @@ class ExperienceHandler {
         if (higherRoles[0]) {
             for (const role of higherRoles) {
                 await member.removeRole(role.id, `This role is set to be given at the level ${role.at} but this member is only level ${levelDetails.nextLevel}`)
-                .catch(() => {});
+                    .catch(() => {});
             }
         }
         return higherRoles;

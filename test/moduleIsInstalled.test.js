@@ -8,4 +8,4 @@ describe('moduleIsInstalled()', function() {
         assert.equal(moduleIsInstalled("baguette"), false);
         assert.equal(moduleIsInstalled("mocha"), true);
     });
-  });
+});

@@ -48,7 +48,7 @@ class ImageHandler {
     }
 
     async generateSubCommands() {
-        const imageTypes = await this.client.weebSH.toph.getImageTypes({preview: true});
+        const imageTypes = await this.context.client.weebSH.toph.getImageTypes({preview: true});
         const ImageCommands = require('../structures/CommandCategories/ImageCommands');
         let generated = 0;
         const imageHandler = this;
@@ -56,26 +56,28 @@ class ImageHandler {
             const preview = imageTypes.preview.find(p => p.type === type);
             class SubCommand extends ImageCommands {
                 constructor(client) {
-                super(client , {
-                    help : {
-                        name: type,
-                        subCategory: imageHandler.interactions[type] ? 'interactions' : 'images',
-                        preview: preview.url,
-                        description: `Return a ${type} image`,
-                        usage: imageHandler.interactions[type] ? imageHandler.interactions[type].usage : `${type}`
-                    },
-                    conf : {
-                        guildOnly: imageHandler.interactions[type] ? true : false,
-                        require: ['weebSH', 'taihou'],
-                        requirePerms: ['embedLinks'],
-                        subCommand: true
-                    },
-                });
-            }
-                async run(client, message, args) {
-                    const image = await client.weebSH.toph.getRandomImage(type);
+                    super(client, {
+                        help : {
+                            name: type,
+                            subCategory: imageHandler.interactions[type] ? 'interactions' : 'images',
+                            preview: preview.url,
+                            description: `Return a ${type} image`,
+                            usage: imageHandler.interactions[type] ? imageHandler.interactions[type].usage : `${type}`
+                        },
+                        conf : {
+                            guildOnly: imageHandler.interactions[type] ? true : false,
+                            require: ['weebSH', 'taihou'],
+                            requirePerms: ['embedLinks'],
+                            subCommand: true
+                        },
+                    });
+                }
+                /** @param {import("../structures/Contexts/ImageContext")} context */
+
+                async run(context) {
+                    const image = await context.client.weebSH.toph.getRandomImage(type);
                     if (!imageHandler.interactions[type]) {
-                        return message.channel.createMessage({
+                        return context.message.channel.createMessage({
                             embed: {
                                 image: {
                                     url: image.url,
@@ -83,37 +85,37 @@ class ImageHandler {
                                 footer: {
                                     text: 'Powered by weeb.sh and the Taihou wrapper'
                                 },
-                                color: client.config.options.embedColor.generic
-                        }});
+                                color: context.client.config.options.embedColor.generic
+                            }});
                     }
                     const users = await (async() => {
                         let resolvedUsers = [];
-                        for (const arg of args) {
-                            const resolved = await this.getUserFromText({client: client, message: message, text: arg});
+                        for (const arg of context.args) {
+                            const resolved = await this.getUserFromText({client: context.client, message: context.message, text: arg});
                             // @ts-ignore
-                            if (resolved && !resolvedUsers.find(u =>  u.id === resolved.id) && (resolved.id !== message.author.id)) {
+                            if (resolved && !resolvedUsers.find(u =>  u.id === resolved.id) && (resolved.id !== context.message.author.id)) {
                                 resolvedUsers.push(resolved);
                             }
                         }
                         // @ts-ignore
-                        return resolvedUsers.filter(u => u.id !== message.author.id);
+                        return resolvedUsers.filter(u => u.id !== context.message.author.id);
                     })();
-                    return message.channel.createMessage({
+                    return context.message.channel.createMessage({
                         embed: {
                             // @ts-ignore
-                            description: users[0] ? `Hey ${users.map(u => u.mention).join(', ')}, ${imageHandler.interactions[type].interaction} ${message.author.mention} !` : `Trying to ${type} yourself eh? That's cute`,
+                            description: users[0] ? `Hey ${users.map(u => u.mention).join(', ')}, ${imageHandler.interactions[type].interaction} ${context.message.author.mention} !` : `Trying to ${type} yourself eh? That's cute`,
                             image: {
                                 url: image.url
                             },
                             footer: {
                                 text: 'Powered by weeb.sh and the Taihou wrapper'
                             },
-                            color: client.config.options.embedColor.generic
+                            color: context.client.config.options.embedColor.generic
                         }
                     });
                 }
             }
-            imageHandler.client.commands.set(type, new SubCommand());
+            imageHandler.context.client.commands.set(type, new SubCommand());
             generated++;
         }
         return generated;

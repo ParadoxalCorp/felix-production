@@ -2,7 +2,7 @@
  * @typedef {import("../main.js")} Client
  */
 
- /**
+/**
  * @typedef Utils
  * @property {import("./log.js").Log} log Custom logger module 
  * @property {import("./timeConverter.js").TimeConverter} timeConverter Provides methods to parse UNIX timestamps

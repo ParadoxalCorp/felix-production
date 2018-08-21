@@ -13,7 +13,7 @@ class ForceSkipTo extends MusicCommands {
                 expectedArgs: [{
                     description: 'Please specify the position in the queue of the song you want to skip to'
                 }]
-             }
+            }
         }, { userInVC: true, playing: true });
     }
     /** @param {import("../../structures/Contexts/MusicContext.js")} context */
