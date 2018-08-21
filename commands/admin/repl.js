@@ -14,8 +14,9 @@ class Repl extends AdminCommands {
             }
         });
     }
+    /** @param {import("../../structures/Contexts/AdminContext")} context */
 
-    async run(client, message) {
+    async run(context) {
         const builtinLibs = (() => {
             const libs = {};
             const { _builtinLibs } = require('repl');
@@ -29,7 +30,7 @@ class Repl extends AdminCommands {
 
         const getContext = () => {
             const ctx = {
-                ...client,
+                ...this.client,
                 ...builtinLibs,
                 require,
                 Buffer,
@@ -49,11 +50,11 @@ class Repl extends AdminCommands {
         let openingBrackets = 0;
         let closingBrackets = 0;
 
-        message.channel.createMessage('REPL started. Available commands:\n```\n.exit\n.clear\n_\n```');
+        context.message.channel.createMessage('REPL started. Available commands:\n```\n.exit\n.clear\n_\n```');
         const runCommand = async() => {
-            const commandMsg = await client.handlers.MessageCollector.awaitMessage(message.channel.id, message.author.id, 240e3);
+            const commandMsg = await context.client.handlers.MessageCollector.awaitMessage(context.message.channel.id, context.message.author.id, 240e3);
             if (!commandMsg) {
-                return message.channel.createMessage('Timed out, automatically exiting REPL...');
+                return context.message.channel.createMessage('Timed out, automatically exiting REPL...');
             }
 
             let { content } = commandMsg;
@@ -62,12 +63,12 @@ class Repl extends AdminCommands {
                 return runCommand();
             }
             if (content === '.exit') {
-                return message.channel.createMessage('Successfully exited.');
+                return context.message.channel.createMessage('Successfully exited.');
             }
             if (content === '.clear') {
                 ctx = getContext;
                 statementQueue = [];
-                message.channel.createMessage('Successfully cleared variables.');
+                context.message.channel.createMessage('Successfully cleared variables.');
                 return runCommand();
             }
 
@@ -85,7 +86,7 @@ class Repl extends AdminCommands {
                     openingBrackets = 0;
                 } else {
                     statementQueue.push(content);
-                    message.channel.createMessage(`\`\`\`js\n${statementQueue.join('\n')}\n  ...\n\`\`\``);
+                    context.message.channel.createMessage(`\`\`\`js\n${statementQueue.join('\n')}\n  ...\n\`\`\``);
                     return runCommand();
                 }
             } else if (content.endsWith('{') || statementQueue[0]) {
@@ -99,7 +100,7 @@ class Repl extends AdminCommands {
                 statementQueue.push(content.endsWith('{') ?
                     content :
                     '  ' + content); // Indentation for appended statements
-                message.channel.createMessage(`\`\`\`js\n${statementQueue.join('\n')}\n  ...\n\`\`\``);
+                context.message.channel.createMessage(`\`\`\`js\n${statementQueue.join('\n')}\n  ...\n\`\`\``);
                 return runCommand();
             }
 
@@ -122,7 +123,7 @@ class Repl extends AdminCommands {
                 result = `ERROR:\n${typeof error === 'string' ? error : inspect(error, { depth: 1 })}`;
             }
 
-            message.channel.createMessage('```js\n' + client.utils.helpers.redact(result) + '\n```');
+            context.message.channel.createMessage('```js\n' + context.client.utils.helpers.redact(result) + '\n```');
 
             runCommand();
         };
@@ -131,4 +132,4 @@ class Repl extends AdminCommands {
     }
 }
 
-module.exports = new Repl();
+module.exports = Repl;

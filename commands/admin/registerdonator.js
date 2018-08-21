@@ -14,26 +14,26 @@ class RegisterDonator extends AdminCommands {
             }
         });
     }
+    /** @param {import("../../structures/Contexts/AdminContext")} context */
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(client, message, args, guildEntry, userEntry) {
-        if (!args[0] || !args[1]) {
-            return message.channel.createMessage(`:x: Missing args`);
+    async run(context) {
+        if (!context.args[0] || !context.args[1]) {
+            return context.message.channel.createMessage(`:x: Missing context.args`);
         }
-        if (!client.utils.isWholeNumber(args[0])) {
-            return message.channel.createMessage('The specified tier is not a whole number :angery:');
+        if (!context.client.utils.isWholeNumber(context.args[0])) {
+            return context.message.channel.createMessage('The specified tier is not a whole number :angery:');
         }
-        const newDonator = await client.handlers.DatabaseWrapper.getUser(args[1]);
-        newDonator.premium.tier = parseInt(args[0]);
-        newDonator.premium.expire = args[2] ? Date.now() + parseInt(args[2]) : true;
-        await client.handlers.DatabaseWrapper.set(newDonator);
-        const user = await client.utils.helpers.fetchUser(args[1]);
-        let res = `:white_check_mark: Successfully given premium status to the user \`${user.tag}\` at tier \`${args[0]}\`\n\n`;
-        if (args[2]) {
-            res += `The premium status of this user will expire in **${client.utils.timeConverter.toElapsedTime(args[2], true)}** the **${client.utils.timeConverter.toHumanDate(newDonator.premium.expire, true)}**`;
+        const newDonator = await context.client.handlers.DatabaseWrapper.getUser(context.args[1]);
+        newDonator.premium.tier = parseInt(context.args[0]);
+        newDonator.premium.expire = context.args[2] ? Date.now() + parseInt(context.args[2]) : true;
+        await context.client.handlers.DatabaseWrapper.set(newDonator);
+        const user = await context.client.utils.helpers.fetchUser(context.args[1]);
+        let res = `:white_check_mark: Successfully given premium status to the user \`${user.tag}\` at tier \`${context.args[0]}\`\n\n`;
+        if (context.args[2]) {
+            res += `The premium status of this user will expire in **${context.client.utils.timeConverter.toElapsedTime(context.args[2], true)}** the **${context.client.utils.timeConverter.toHumanDate(newDonator.premium.expire, true)}**`;
         }
-        return message.channel.createMessage(res);
+        return context.message.channel.createMessage(res);
     }
 }
 
-module.exports = new RegisterDonator();
+module.exports = RegisterDonator;

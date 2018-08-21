@@ -10,20 +10,19 @@ class RemoveDonator extends AdminCommands {
             },
             conf: {
                 aliases: ['removedonor', 'removepatron', "rmdonor", "rmpatron"],
-                requireDB: true,
-                guildOnly: true,
+                requireDB: true
             }
         });
     }
+    /** @param {import("../../structures/Contexts/AdminContext")} context */
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(client, message, args, guildEntry, userEntry) {
-        const donator = await client.handlers.DatabaseWrapper.getUser(args[0]);
-        donator.premium = client.structures.References.userEntry(args[0]).premium;
-        await client.handlers.DatabaseWrapper.set(donator);
-        const user = await client.utils.helpers.fetchUser(args[0]);
-        return message.channel.createMessage(`:white_check_mark: Successfully disabled the premium status of the user **${user.tag}**`);
+    async run(context) {
+        const donator = await context.client.handlers.DatabaseWrapper.getUser(context.args[0]);
+        donator.premium = context.client.structures.References.userEntry(context.args[0]).premium;
+        await context.client.handlers.DatabaseWrapper.set(donator);
+        const user = await context.client.utils.helpers.fetchUser(context.args[0]);
+        return context.message.channel.createMessage(`:white_check_mark: Successfully disabled the premium status of the user **${user.tag}**`);
     }
 }
 
-module.exports = new RemoveDonator();
+module.exports = RemoveDonator;

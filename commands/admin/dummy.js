@@ -10,10 +10,11 @@ class Dummy extends AdminCommands {
             }
         });
     }
+    /** @param {import("../../structures/Contexts/AdminContext")} context */
 
-    async run(client, message) {
-        return message.channel.createMessage('wew');
+    async run(context) {
+        return context.message.channel.createMessage('not used atm');
     }
 }
 
-module.exports = new Dummy();
+module.exports = Dummy;
