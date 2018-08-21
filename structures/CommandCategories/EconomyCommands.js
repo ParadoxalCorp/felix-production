@@ -18,7 +18,10 @@ class GenericCommands extends Command {
     constructor(client, commandOptions, options = {}) {
         super(client, { ...commandOptions, category: {
             name: 'Economy',
-            emote: 'moneybag'
+            emote: 'moneybag',
+            conf: {
+                requireDB: true
+            }
         }});
         this.options = options;
     }
