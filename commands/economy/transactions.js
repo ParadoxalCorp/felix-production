@@ -8,51 +8,54 @@ class Transactions extends EconomyCommands {
                 description: 'See the 10 latest transactions of your account',
                 usage: '{prefix}transactions'
             },
-            conf : {
+            conf: {
                 requireDB: true,
-            },
+            }
         });
     }
+    /** @param {import("../../structures/Contexts/EconomyContext")} context */
 
-    async run(client, message, args, guildEntry, userEntry) {
-        if (!userEntry.economy.transactions[0]) {
-            return message.channel.createMessage(':x: It seems you did not transfer or receive holy coins yet, so there\'s no transactions to display :v');
+    async run(context) {
+        if (!context.userEntry.economy.transactions[0]) {
+            return context.message.channel.createMessage(':x: It seems you did not transfer or receive holy coins yet, so there\'s no transactions to display :v');
         }
-        const splicedTransactions = this.mapSplicedTransactions(client, client.utils.paginate(userEntry.economy.transactions, 4));
+        const splicedTransactions = await this.mapSplicedTransactions(context, context.client.utils.paginate(context.userEntry.economy.transactions, 4));
         if (splicedTransactions.length < 2) {
-            return message.channel.createMessage(splicedTransactions[0]);
+            return context.message.channel.createMessage(splicedTransactions[0]);
         } else {
-            return client.handlers.InteractiveList.createPaginatedMessage({
-                channel: message.channel,
+            return context.client.handlers.InteractiveList.createPaginatedMessage({
+                channel: context.message.channel,
                 messages: splicedTransactions,
-                userID: message.author.id
+                userID: context.message.author.id
             });
         }
     }
 
-    mapSplicedTransactions(client, splicedTransactions) {
-        return splicedTransactions.map(transactionGroup => {
-            return {
+    async mapSplicedTransactions(context, splicedTransactions) {
+        let i = 0;
+        for (let transactionGroup of splicedTransactions) {
+            const fields = [];
+            for (const transaction of transactionGroup) {
+                const transactionUsers = await Promise.all([context.client.utils.helpers.fetchUser(transaction.from).then(u => u.tag), context.client.utils.helpers.fetchUser(transaction.to).then(u => u.tag)]);
+                fields.push({
+                    name: context.client.utils.timeConverter.toHumanDate(transaction.date),
+                    value: '```diff\n' + `From: ${transactionUsers[0]}\nTo: ${transactionUsers[1]}\nCoins: ${transaction.amount < 0 ? transaction.amount : '+' + transaction.amount}` + '```',
+                });
+            }
+            splicedTransactions[i] = {
                 embed: {
                     title: 'Recent transactions',
-                    fields: (() => {
-                        const fields = [];
-                        for (const transaction of transactionGroup) {
-                            fields.push({
-                                name: client.utils.timeConverter.toHumanDate(transaction.date),
-                                value: '```diff\n' + `From: ${this.resolveUser(client, transaction.from).tag}\nTo: ${this.resolveUser(client, transaction.to).tag}\nCoins: ${transaction.amount < 0 ? transaction.amount : '+' + transaction.amount}` + '```',
-                            });
-                        }
-                        return fields;
-                    })(),
+                    fields,
                     footer: {
                         text: `Showing page ${!splicedTransactions[1] ? '1/1' : '{index}/' + splicedTransactions.length }`
                     },
-                    color: client.config.options.embedColor.generic
+                    color: context.client.config.options.embedColor.generic
                 }
             };
-        });
+            i++;
+        }
+        return splicedTransactions;
     }
 }
 
-module.exports = new Transactions();
+module.exports = Transactions;

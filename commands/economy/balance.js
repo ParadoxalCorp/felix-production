@@ -8,16 +8,16 @@ class Balance extends EconomyCommands {
                 description: 'Check your balance',
                 usage: '{prefix}balance'
             },
-            conf : {
-                aliases: ['coins'],
-                requireDB: true,
+            conf: {
+                aliases: ['coins']
             },
         });
     }
+    /** @param {import("../../structures/Contexts/EconomyContext")} context */
 
-    async run(client, message, args, guildEntry, userEntry) {
-        return message.channel.createMessage(`Hai ! You currently have \`${userEntry.economy.coins}\` holy coins`);
+    async run(context) {
+        return context.message.channel.createMessage(`Hai ! You currently have \`${context.userEntry.economy.coins}\` holy coins`);
     }
 }
 
-module.exports = new Balance();
+module.exports = Balance;

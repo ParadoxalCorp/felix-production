@@ -7,52 +7,46 @@ class Inventory extends EconomyCommands {
                 name: 'inventory',
                 description: 'Check the items you possess',
                 usage: '{prefix}inventory'
-            },
-            conf : {
-                requireDB: true,
-            },
+            }
         });
     }
+    /** @param {import("../../structures/Contexts/EconomyContext")} context */
 
-    async run(client, message, args, guildEntry, userEntry) {
-        if (!userEntry.economy.items[0]) {
-            return message.channel.createMessage(`:x: Sorry, but it seems like you don't own any item yet :c`);
+    async run(context) {
+        if (!context.userEntry.economy.items[0]) {
+            return context.message.channel.createMessage(`:x: Sorry, but it seems like you don't own any item yet :c`);
         }
-        return message.channel.createMessage(this.mapItems(client, userEntry));
-    }
-
-    mapItems(client, userEntry) {
         let ownedItemsWorth = 0;
-        for (const item of client.handlers.EconomyManager.marketItems) {
-            if (userEntry.hasItem(item.id)) {
+        for (const item of context.client.handlers.EconomyManager.marketItems) {
+            if (context.userEntry.hasItem(item.id)) {
                 ownedItemsWorth = ownedItemsWorth + item.price;
             }
         }
-        return {
+        return context.message.channel.createMessage({
             embed: {
                 title: ':package: Inventory',
                 description: `Your owned items are worth a total of \`${ownedItemsWorth}\` holy coins (including ships).\n\nIf you are looking for your ships, you should check your naval base with the \`navalbase\` command instead`,
                 fields: (() => {
                     let familiesOwned = [];
-                    for (const item of userEntry.economy.items) {
-                        if (!familiesOwned.includes(client.handlers.EconomyManager.getItem(item.id).family) && client.handlers.EconomyManager.getItem(item.id).family !== 'Ships') {
-                            familiesOwned.push(client.handlers.EconomyManager.getItem(item.id).family);
+                    for (const item of context.userEntry.economy.items) {
+                        if (!familiesOwned.includes(context.client.handlers.EconomyManager.getItem(item.id).family) && context.client.handlers.EconomyManager.getItem(item.id).family !== 'Ships') {
+                            familiesOwned.push(context.client.handlers.EconomyManager.getItem(item.id).family);
                         }
                     }
                     familiesOwned = familiesOwned.map(f => {
                         return {
-                            name: `${client.handlers.EconomyManager.marketItems.filter(i => i.family === f)[0].emote} ${f}`,
-                            value: client.handlers.EconomyManager.marketItems.filter(i => i.family === f && userEntry.hasItem(i.id)).map(i => `${i.emote} ${i.name} (x${userEntry.economy.items.find(item => item.id === i.id).count})`).join(', ')
+                            name: `${context.client.handlers.EconomyManager.marketItems.filter(i => i.family === f)[0].emote} ${f}`,
+                            value: context.client.handlers.EconomyManager.marketItems.filter(i => i.family === f && context.userEntry.hasItem(i.id)).map(i => `${i.emote} ${i.name} (x${context.userEntry.economy.items.find(item => item.id === i.id).count})`).join(', ')
                         };
                     });
 
                     return familiesOwned;
                 })(),
-                color: client.config.options.embedColor.generic
+                color: context.client.config.options.embedColor.generic
 
             }
-        };
+        });
     }
 }
 
-module.exports = new Inventory();
+module.exports = Inventory;
