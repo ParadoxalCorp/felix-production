@@ -12,22 +12,24 @@ class MDN extends UtilityCommands {
         });
     }
 
-    async run(client, message) {
-        let args = message.content.split(/\s+/);
+    /** @param {import("../../structures/Contexts/UtilityContext")} context */
+
+    async run(context) {
+        let args = context.message.content.split(/\s+/);
         args.shift();
         if (!args[0]) {
-            return message.channel.createMessage(":x: You must specify something to search");
+            return context.message.channel.createMessage(":x: You must specify something to search");
         }
         let result = await axios.default.get(
             `https://developer.mozilla.org/en-US/search.json?locale=en-US&q=${encodeURIComponent(args.join())}`, { headers: { 'Content-Type': 'application/json' } })
             .then(r => r.data);
         if (!result.documents || !result.documents.length) {
-            return message.channel.createMessage(":x: Your search did not returned any result");
+            return context.message.channel.createMessage(":x: Your search did not returned any result");
         }
         let firstResult = result.documents[0];
-        return message.channel.createMessage({
+        return context.message.channel.createMessage({
             embed: {
-                color: client.config.options.embedColor.generic,
+                color: context.client.config.options.embedColor.generic,
                 title: "MDN",
                 url: "https://developer.mozilla.org/en/",
                 thumbnail: {
@@ -35,15 +37,15 @@ class MDN extends UtilityCommands {
                 },
                 fields: [{
                     name: "Search results",
-                    value: `Here's the results for [${args.join(" ")}]` + `(
-                                        https://developer.mozilla.org/en-US/search?locale=en-US&q=${encodeURIComponent(args.join())})`
+                    value: `Here's the results for [${context.args.join(" ")}]` + `(
+                                        https://developer.mozilla.org/en-US/search?locale=en-US&q=${encodeURIComponent(context.args.join())})`
                 }, {
                     name: "**" + firstResult.title + "**",
                     value: firstResult.excerpt
                 }],
                 timestamp: new Date(),
                 footer: {
-                    icon_url: client.bot.user.avatarURL,
+                    icon_url: context.client.bot.user.avatarURL,
                     text: "MDN search"
                 }
             }
@@ -51,4 +53,4 @@ class MDN extends UtilityCommands {
     }
 }
 
-module.exports = new MDN();
+module.exports = MDN;
