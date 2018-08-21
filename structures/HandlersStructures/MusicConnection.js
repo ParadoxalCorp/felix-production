@@ -117,7 +117,7 @@ class MusicConnection extends EventEmitter {
 
     /**
      * Add a track to the queue
-     * @param {LavalinkTrack} track - The track object returned by Lavalink 
+     * @param {LavalinkTrack | FelixTrack} track - The track object returned by Lavalink 
      * @param {String} requestedBy - The ID of the user who requested this track
      * @param {Boolean} [unshift=false] - Whether the track should be pushed at the start of the queue or not, default to false
      * @returns {AddedTrack} An object containing the position at which the song has been queued and the estimated time in ms before it will be played 
@@ -151,7 +151,7 @@ class MusicConnection extends EventEmitter {
 
     /**
      * Add multiple tracks to the queue
-     * @param {Array<LavalinkTrack>} tracks - An array of Lavalink tracks to add to the queue
+     * @param {Array<LavalinkTrack | FelixTrack>} tracks - An array of Lavalink tracks to add to the queue
      * @param {String} [requestedBy] - The ID of the user who requested these tracks, can be omitted if already specified
      * @param {Boolean} [unshift=false] - Whether to add these tracks at the beginning of the queue or at the end, defaults to false
      * @returns {Number} The new length of the queue
@@ -185,7 +185,7 @@ class MusicConnection extends EventEmitter {
     }
     /**
      * A direct way to modify the queue while still sending the updated queue to Redis
-     * @param {array} newQueue - The new queue to replace the old one with
+     * @param {Array<FelixTrack>} newQueue - The new queue to replace the old one with
      * @returns {number} The new length of the queue
      */
     editQueue(newQueue) {
@@ -228,7 +228,7 @@ class MusicConnection extends EventEmitter {
 
     /**
      * Play a given song
-     * @param {LavalinkTrack} song - The Lavalink track to play 
+     * @param {LavalinkTrack | FelixTrack} song - The Lavalink track to play 
      * @param {String} [requestedBy] - The ID of the user who requested this track
      * @param {object} [options] - An object of options to pass to Lavalink
      * @returns {FelixTrack} The given song
