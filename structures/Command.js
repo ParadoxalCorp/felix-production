@@ -12,11 +12,12 @@
  */
 
 /** @typedef {Object} CommandHelp
-  * @prop {string} [category] The category of the command. This option should only be set in structures/CommandCategories
+  * @prop {string} [category] DEPRECATED. The category of the command
   * @prop {String} name The name of the command 
   * @prop {String} description The description of the command
   * @prop {String} usage A quick example of how to use the command, every instance of {prefix} will be replaced by the actual prefix in the help command 
   * @prop {String} [externalDoc] A direct URL to some external documentation
+  * @prop {String} [preview] A direct URL to a preview image
   */
 
 /** @typedef {Object} PossibleArgValue
@@ -41,6 +42,7 @@
   * @prop {Number} [cooldownWeight=5] The "weight" of the command, roughly representing how big the output is, to determine how much the command should impact the user's cooldown
   * @prop {Array<string>} [require=[]] An array of API Keys name (must be the same than set in the config) the command needs, if they are missing from the config, the command will be disabled
   * @prop {Boolean} [guildOwnerOnly=false] Whether this command should be restricted to the guild's owner (if true, must be combined with guildOnly)
+  * @prop {Boolean} [hidden=false] Whether this command should be hidden from everyone except the admins set in the config
   */
 
 /** @typedef {Object} CommandCategory
@@ -122,8 +124,8 @@ class Command {
      * @param {Message} message message
      * @param {Client} client client
      * @param {GuildEntry} guildEntry guildEntry
-     * @param {Array} args args
-     * @returns {Object} unspaced command
+     * @param {Array<String>} args args
+     * @returns {{prefix: String, command: String}} unspaced command
      * @memberof Command
      */
     _parseUnspacedCommand(message, client, guildEntry, args) {
@@ -463,7 +465,8 @@ class Command {
             expectedArgs: [],
             cooldownWeight: 5,
             require: [],
-            guildOwnerOnly: false
+            guildOwnerOnly: false,
+            hidden: false
         }, categoryConf, commandConf);
     }
 
