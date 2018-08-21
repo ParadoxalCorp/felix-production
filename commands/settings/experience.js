@@ -125,6 +125,7 @@ class Experience extends SettingsCommands {
         }];
     }
 
+    /** @param {import("../../structures/Contexts/ModerationContext")} context */
 
     async run(context) {
         const action = this.extra.possibleActions.find(a => a.name === context.args[0]);
