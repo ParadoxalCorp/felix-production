@@ -9,7 +9,7 @@ class RemovePermission extends ModerationCommands {
                 usage: '{prefix}removepermission <command_name|category_name*|*> | <global|category|channel|role|user> | <category_name|channel_name|role_name|username>',
                 externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#permissions-system'
             },
-            conf : {
+            conf: {
                 requireDB: true,
                 aliases: ['removeperm', 'rp'],
                 guildOnly: true,

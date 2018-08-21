@@ -9,7 +9,7 @@ class SetPermission extends ModerationCommands {
                 usage: '{prefix}setpermission <command_name|category_name*|*> | <true|false> | <global|category|channel|role|user> | <category_name|channel_name|role_name|username>',
                 externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#permissions-system'
             },
-            conf : {
+            conf: {
                 requireDB: true,
                 aliases: ['setperm', 'sp'],
                 guildOnly: true,

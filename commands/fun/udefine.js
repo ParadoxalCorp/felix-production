@@ -9,7 +9,7 @@ class Udefine extends FunCommands {
                 description: 'Search definitions through urbandictionary',
                 usage: 'udefine pizza',
             },
-            conf : {
+            conf: {
                 aliases: ["urdef", "define", "urban"],
             },
         });

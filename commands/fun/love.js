@@ -8,7 +8,7 @@ class Love extends FunCommands {
                 description: 'Love someone, bring some love to this world !',
                 usage: '{prefix}love <count> <user_resolvable>',
             },
-            conf : {
+            conf: {
                 requireDB: true,
                 aliases: ['luv'],
                 guildOnly: true,

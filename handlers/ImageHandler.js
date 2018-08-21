@@ -67,7 +67,7 @@ class ImageHandler {
                             description: `Return a ${type} image`,
                             usage: imageHandler.interactions[type] ? imageHandler.interactions[type].usage : `${type}`
                         },
-                        conf : {
+                        conf: {
                             guildOnly: imageHandler.interactions[type] ? true : false,
                             subCommand: true,
                             aliases: imageHandler.interactions[type] ? imageHandler.interactions[type].aliases : undefined

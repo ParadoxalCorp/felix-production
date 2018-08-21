@@ -9,7 +9,7 @@ class ClearPermissions extends ModerationCommands {
                 usage: '{prefix}clearpermissions',
                 externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#permissions-system'
             },
-            conf : {
+            conf: {
                 aliases: ['clearperms', 'nukeperms', 'cp'],
                 requireDB: true,
                 guildOnly: true,

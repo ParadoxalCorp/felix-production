@@ -9,7 +9,7 @@ class GetPermissions extends ModerationCommands {
                 usage: '{prefix}getpermissions <global|channel|role|user> | <channel_name|role_name|username>',
                 externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#permissions-system',
             },
-            conf : {
+            conf: {
                 aliases: ['getperms', 'gp', 'getpermission'],
                 requireDB: true,
                 guildOnly: true,
