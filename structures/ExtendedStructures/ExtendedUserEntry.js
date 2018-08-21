@@ -1,5 +1,6 @@
 /** @typedef {import("../References").UserEntry} UserEntry
  * @typedef {import("../references.js").TierLimits} TierLimits
+ * @typedef {import("../../main.js").Client} Client
 */
 
 const references = require('../References');
@@ -9,9 +10,12 @@ class ExtendedUserEntry {
     /**
      * 
      * @param {UserEntry} userEntry - The user entry
+     * @param {Client} client - The client instance
      */
-    constructor(userEntry) {
+    constructor(userEntry, client) {
         Object.assign(this, userEntry);
+        /** @type {Client} The client instance */
+        this.client = client;
     }
 
     /**
@@ -179,19 +183,27 @@ class ExtendedUserEntry {
     /**
      * Return this without the additional methods, essentially returns a proper database entry, ready to be saved into the database
      * Note that this shouldn't be called before saving it into the database, as the database wrapper already does it
-     * @returns {*} - This, as a proper database entry object (without the additional methods)
+     * @returns {UserEntry} - This, as a proper database entry object (without the additional methods)
      */
     toDatabaseEntry() {
         const cleanObject = (() => {
             const newObject = {};
             for (const key in this) {
-                if (typeof this[key] !== 'function') {
+                if (typeof this[key] !== 'function' && key !== "client") {
                     newObject[key] = this[key];
                 }
             }
             return newObject;
         })();
         return cleanObject;
+    }
+
+    /**
+     * Save this user entry in the database
+     * @returns {Promise<UserEntry>} - The saved entry
+     */
+    save() {
+        return this.client.handlers.DatabaseWrapper.set(this, 'users');
     }
 }
 

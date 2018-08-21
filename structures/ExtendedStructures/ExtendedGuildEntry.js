@@ -23,6 +23,7 @@ class ExtendedGuildEntry {
      */
     constructor(guildEntry, client) {
         Object.assign(this, guildEntry);
+        /** @type {Client} The client instance */
         this.client = client;
     }
 
@@ -61,7 +62,7 @@ class ExtendedGuildEntry {
         if (member.permission.has("administrator")) {
             allowed = true;
         }
-        if (command.help.category === "admin") {
+        if (command.conf.hidden) {
             if (this.client.config.admins.includes(member.id)) {
                 allowed = command.conf.ownerOnly && this.client.config.ownerID !== member.id ? false : true;
             } else {
@@ -103,12 +104,11 @@ class ExtendedGuildEntry {
             return undefined;
         }
         //Give priority to commands over categories by checking them after the categories
-        let priorityOrder = ['*', `${command.help.category}*`, command.help.name];
+        let priorityOrder = ['*', `${(command.help.category || command.category.name.toLowerCase())}*`, command.help.name];
         for (const permission of priorityOrder) {
             if (targetPos.allowedCommands.includes(permission)) {
                 isAllowed = true;
-            }
-            if (targetPos.restrictedCommands.includes(permission)) {
+            } else if (targetPos.restrictedCommands.includes(permission)) {
                 isAllowed = false;
             }
         }
@@ -207,6 +207,14 @@ class ExtendedGuildEntry {
             return newObject;
         })();
         return cleanObject;
+    }
+
+    /**
+     * Save this guild entry in the database
+     * @returns {Promise<GuildEntry>} - The saved entry
+     */
+    save() {
+        return this.client.handlers.DatabaseWrapper.set(this, 'guilds');
     }
 }
 
