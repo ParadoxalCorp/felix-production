@@ -2,12 +2,33 @@
 /** @typedef {import("../../handlers/economyManager.js")} EconomyManager */
 /** @typedef {import("../ExtendedStructures/extendedUserEntry.js")} UserEntry */
 
+/** @typedef {Object} ConditionalVariantContext
+ * @prop {String} success The description of the variant when it succeed
+ * @prop {String} fail The description of the variant when it failed
+ * @prop {Number} successRate The percentage of chances this variant can succeed
+ */
+
+/** @typedef {Object} ConditionalVariant
+ * @prop {Function} condition The condition for this event to happen, this should be called like `.condition(<ExtendedUserEntry>)` with the extended instance of the user's database entry
+ * @prop {String} [success] The description of the variant when it succeed. This won't be present if `context` is present
+ * @prop {String} [fail] The description of the variant when it failed. This won't be present if `context` is present
+ * @prop {Number} [successRate] The percentage of chances this variant can succeed. This won't be present if `context` is present
+ * @prop {ConditionalVariantContext} [context] A function to call like `.context(<UserEntry>)` with the user's database entry that will return the `success`, `fail` and `successRate` properties
+ */
+
+/** @typedef {Object} DailyEvent
+ * @prop {Number} id The ID of the event
+ * @prop {String} message The description of the event
+ * @prop {Array<Number>} changeRate An array containing two numbers, the two representing the percentage range this event can affect the gains
+ * @prop {String} case A string that can be either `lost` or `won`, representing in what case this event may happen
+ * @prop {Array<ConditionalVariant>} conditionalVariants An array of conditional variants this event has
+ */
 
 /**
  * 
  * @param {Client} client client
  * @param {EconomyManager} economyManager economyManager
- * @returns {Array<Object>} daily events
+ * @returns {Array<DailyEvent>} daily events
  */
 const dailyEvents = (client, economyManager) => {
     return [{
@@ -47,7 +68,7 @@ const dailyEvents = (client, economyManager) => {
             condition: (userEntry) => userEntry.economy.items.find(i => economyManager.getItem(i.id).data && economyManager.getItem(i.id).data.type === 'Destroyer'),
             /** 
              * @param {UserEntry} userEntry userEntry
-             * @returns {Object} object
+             * @returns {ConditionalVariantContext} object
             */
             context: (userEntry) => {
                 return {
@@ -65,7 +86,7 @@ const dailyEvents = (client, economyManager) => {
             condition: (userEntry) => userEntry.economy.items.find(i => economyManager.getItem(i.id).data && economyManager.getItem(i.id).data.type === 'Battleship'),
             /** 
              * @param {UserEntry} userEntry userEntry
-             * @returns {Object} object
+             * @returns {ConditionalVariantContext} object
              */
             context: (userEntry) => {
                 return {

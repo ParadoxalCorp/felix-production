@@ -33,9 +33,9 @@ class Helpers {
     /**
      * 
      * @param {String} id - The ID of the user to fetch
-     * @returns {ExtendedUser} The user, or null if none was resolved
+     * @returns {Promise<ExtendedUser>} The user, or null if none was resolved
      */
-    fetchUser(id) {
+    async fetchUser(id) {
         const cachedUser = this.client.bot.users.get(id);
         if (cachedUser) {
             return (cachedUser ? (cachedUser instanceof this.client.structures.ExtendedUser) : false) ? cachedUser : new this.client.structures.ExtendedUser(cachedUser, this.client);

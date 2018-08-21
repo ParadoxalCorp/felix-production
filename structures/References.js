@@ -10,8 +10,8 @@
 /**
  * @typedef {Object} TransactionData
  * @property {Number} amount The change in the user's holy coins amount
- * @property {String} from Username#Discriminator of the user from who the coins once belonged
- * @property {String} to Username#Discriminator of who received the coins
+ * @property {String} from The ID of the user from who the coins once belonged
+ * @property {String} to The ID of who received the coins
  * @property {String} reason The reason of the transfer
  * @property {Number} date The UNIX timestamp of when the transfer happened 
  */
@@ -283,8 +283,8 @@ class References {
      *
      * @param {object} data An object of data
      * @param {Number} data.amount The amount of coins that has been debited/credited(negative if debited, positive if credited)
-     * @param {String} data.from  Username#Discriminator of the user from who the coins once belonged
-     * @param {String} data.to Username#Discriminator of who received the coins
+     * @param {String} data.from  The ID of the user from who the coins once belonged
+     * @param {String} data.to The ID of who received the coins
      * @param {String} data.reason The reason of the transfer (automatic, intended..)
      * @return {TransactionData} The transaction data object
      */
