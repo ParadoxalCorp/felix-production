@@ -6,6 +6,7 @@
  * @typedef {import("../References.js").UserEntry & import("../ExtendedStructures/ExtendedUserEntry.js")} UserEntry
  * @typedef {import("eris").Member} Member
  * @typedef {import("eris").Guild} Guild
+ * @typedef {import("eris").Message} Message
  * @typedef {import("eris").TextChannel} TextChannel
  * @typedef {import("eris").VoiceChannel} VoiceChannel
  */
@@ -18,7 +19,7 @@ class BaseContext {
     /**
      * 
      * @param {Client} client - The client instance
-     * @param {ExtendedMessage} message - The message
+     * @param {Message} message - The message
      * @param {Array<String>} args - The parsed args
      * @param {GuildEntry} guildEntry - The guild database entry, if any
      * @param {UserEntry} userEntry - The user database entry
