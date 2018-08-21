@@ -2,6 +2,24 @@
 /** @typedef {import("../../handlers/economyManager.js")} EconomyManager */
 /** @typedef {import("../ExtendedStructures/extendedUserEntry.js")} UserEntry */
 /** @typedef {import("../ExtendedStructures/extendedGuildEntry.js").GuildEntry} GuildEntry */
+ 
+/** @typedef {Object} ShipData
+ * @prop {String} type The type of the ship, can be `Destroyer` or `Battleship` at the moment
+ * @prop {Boolean} flagship Whether the ship can be a flagship
+ */
+
+/** @typedef {Object} MarketItem
+ * @prop {Number} id The ID of the item
+ * @prop {String} name The name of the item
+ * @prop {String} description The description of the item
+ * @prop {Boolean} buyableOnce Whether this item can only be bought once 
+ * @prop {String} family The family, or category, of this item
+ * @prop {Number|Function} price The price of the item, if a function, it should be called like `.price(<Context>)` with an instance of the context
+ * @prop {String} emote The corresponding emote for this item
+ * @prop {String} [image] The URL to a fitting image, if any
+ * @prop {Function} [run] If the item has just been purchased and this function exist, this should be ran like `.run(<Context>)` with an instance of the context
+ * @prop {ShipData} [data] If a ship, the corresponding data
+ */
 
 
 const marketItems = [{
@@ -57,18 +75,10 @@ const marketItems = [{
     description: 'Gives an extra love point to use',
     buyableOnce: false,
     family: 'Perks',
-    //Note that guildEntry may be undefined if the message was sent in DM, and anyway won't be saved if modified, it's for read-only purposes
-    price: (client, guildEntry, userEntry) => 1e7 * userEntry.cooldowns.loveCooldown.max,
-    emote: ':heart:',
-    
-    /**
-     * @param {Client} client client
-     * @param {GuildEntry} guildEntry Note that guildEntry may be undefined if the message was sent in DM, and anyway won't be saved if modified, it's for read-only purposes
-     * @param {UserEntry} userEntry userEntry
-     * @returns {any} something
-    */    
+    price: (context) => 1e7 * context.userEntry.cooldowns.loveCooldown.max,
+    emote: ':heart:',    
     // @ts-ignore
-    run: (client, guildEntry, userEntry) => userEntry.cooldowns.loveCooldown.max++
+    run: (context) => context.userEntry.cooldowns.loveCooldown.max++
 }];
 
 module.exports = marketItems;

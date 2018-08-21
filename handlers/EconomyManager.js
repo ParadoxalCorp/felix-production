@@ -1,5 +1,8 @@
 /**
- * @typedef {import("../main.js")} Client
+ * @typedef {import("../main.js").Client} Client
+ * @typedef {import("../structures/HandlersStructures/marketItems").MarketItem} MarketItem
+ * @typedef {import("../structures/HandlersStructures/slotsEvents").SlotsEvent} SlotsEvent
+ * @typedef {import("../structures/HandlersStructures/dailyEvents").DailyEvent} DailyEvent
 */
 
 
@@ -7,13 +10,15 @@ class EconomyManager {
     /**
      * Provides methods related to the economy, such as crediting, debiting or transferring coins
      * @param {Client} client - The client instance
-     * @prop {array<object>} marketItems The market items
-     * @prop {array<object>} slotsEvents An array of slots events
      */
     constructor(client) {
+        /** @type {Client} The client instance */
         this.client = client;
+        /** @type {Array<MarketItem>} The market items */ 
         this.marketItems = require('../structures/HandlersStructures/marketItems');
+        /** @type {Array<SlotsEvent>} The slots events */
         this.slotsEvents = require('../structures/HandlersStructures/slotsEvents')(client, this);
+        /** @type {Array<DailyEvent>} The slots events */
         this.dailyEvents = require('../structures/HandlersStructures/dailyEvents')(client, this);
     }
 
