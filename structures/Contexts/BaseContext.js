@@ -18,7 +18,7 @@ class BaseContext {
     /**
      * 
      * @param {Client} client - The client instance
-     * @param {Message} message - The message
+     * @param {ExtendedMessage} message - The message
      * @param {Array<String>} args - The parsed args
      * @param {GuildEntry} guildEntry - The guild database entry, if any
      * @param {UserEntry} userEntry - The user database entry
