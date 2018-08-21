@@ -44,11 +44,14 @@ class ImageHandler {
                 usage: '{prefix}poke <user_resolvable>',
                 interaction: 'you\'ve just been poked by'
             },
+            handholding: {
+                aliases: ['handhold']
+            }
         };
     }
 
     async generateSubCommands() {
-        const imageTypes = await this.context.client.weebSH.toph.getImageTypes({preview: true});
+        const imageTypes = await this.client.weebSH.toph.getImageTypes({preview: true});
         const ImageCommands = require('../structures/CommandCategories/ImageCommands');
         let generated = 0;
         const imageHandler = this;
@@ -66,9 +69,8 @@ class ImageHandler {
                         },
                         conf : {
                             guildOnly: imageHandler.interactions[type] ? true : false,
-                            require: ['weebSH', 'taihou'],
-                            requirePerms: ['embedLinks'],
-                            subCommand: true
+                            subCommand: true,
+                            aliases: imageHandler.interactions[type] ? imageHandler.interactions[type].aliases : undefined
                         },
                     });
                 }
@@ -115,7 +117,7 @@ class ImageHandler {
                     });
                 }
             }
-            imageHandler.context.client.commands.set(type, new SubCommand());
+            imageHandler.client.commands.set(type, new SubCommand());
             generated++;
         }
         return generated;
