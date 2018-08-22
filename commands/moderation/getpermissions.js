@@ -5,8 +5,8 @@ class GetPermissions extends ModerationCommands {
         super(client, {
             help: {
                 name: 'getpermissions',
-                description: 'Get the permissions set for the server, or for a channel/role/user',
-                usage: '{prefix}getpermissions <global|channel|role|user> | <channel_name|role_name|username>',
+                description: 'Get the permissions set for the server, or for a channel category/channel/role/user',
+                usage: '{prefix}getpermissions <global|category|channel|role|user> | <category_name|channel_name|role_name|username>',
                 externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#permissions-system',
             },
             conf: {
@@ -16,61 +16,48 @@ class GetPermissions extends ModerationCommands {
             },
         });
     }
+    /** @param {import("../../structures/Contexts/ModerationContext")} context */
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(client, message, args, guildEntry, userEntry) {
-        const getPrefix = client.commands.get('help').getPrefix;
-        if (!this.validateTarget(args[0])) {
-            if (typeof args[0] === 'undefined') {
-                args[0] = 'global';
+    async run(context) {
+        if (!this.validatePermissionTarget(context.args[0])) {
+            if (typeof context.args[0] === 'undefined') {
+                context.args[0] = 'global';
             } else {
-                return message.channel.createMessage(':x: You must specify to what this permission should apply to with either `global`, `category`, `channel`, `role` or `user`. If you are lost, simply run this command like `' + getPrefix(client, guildEntry) + this.help.name + '`');
+                return context.message.channel.createMessage(':x: You must specify to what this permission should apply to with either `global`, `category`, `channel`, `role` or `user`. If you are lost, simply run this command like `' + context.prefix + this.help.name + '`');
             }
         }
-        let target = args[0].toLowerCase() === 'global' ? 'global' : null;
-        let targetType = args[0].toLowerCase();
-        if (['category', 'channel'].includes(targetType)) {
-            target = await this.getChannelFromText({client, message, text: args.slice(1).join(' '), type: targetType === 'channel' ? 'text' : 'category'});
-        } else if (targetType === 'role') {
-            target = await this.getRoleFromText({client, message, text: args.slice(1).join(' ')});
-        } else if (targetType === 'user') {
-            target = await this.getUserFromText({client, message, text: args.slice(1).join(' ')});
-        }
+        const target = await this.getPermissionTarget(context);
         if (!target) {
-            return message.channel.createMessage(`:x: I couldn't find this ${targetType}`);
+            return context.message.channel.createMessage(`:x: I couldn't find this ${context.args[0].toLowerCase()}`);
         }
-        return this.getPermissions(client, message, guildEntry, {targetType, target});
+        return this.getPermissions(context, {targetType: context.args[0].toLowerCase(), target});
     }
 
-    validateTarget(arg) {
-        return arg ? ['global', 'category', 'channel', 'role', 'user'].includes(arg.toLowerCase()) : false;
-    }
-
-    async getPermissions(client, message, guildEntry, args) {
+    async getPermissions(context, args) {
         let specialTargetCases = {
             global: 'global',
             category: 'categories'
         };
-        let targetPerms = guildEntry.permissions[specialTargetCases[args.targetType] || `${args.targetType}s`];
+        let targetPerms = context.guildEntry.permissions[specialTargetCases[args.targetType] || `${args.targetType}s`];
         if (Array.isArray(targetPerms)) {
             targetPerms = targetPerms.find(perms => perms.id === args.target.id);
         }
         if (!targetPerms) {
-            return message.channel.createMessage(`:x: There is not any permissions set for the ${args.targetType} **${(args.target.name || new client.structures.ExtendedUser(args.target).tag, client)}**`);
+            return context.message.channel.createMessage(`:x: There is not any permissions set for the ${args.targetType} **${(args.target.name || args.target.tag)}**`);
         }
-        const embed = this.formatPermissions(client, message, guildEntry, args, targetPerms);
+        const embed = this.formatPermissions(context, args, targetPerms);
         const withinLimits = embed.fields[0].value.length < 1024 && embed.fields[1].value.length < 1024;
-        return message.channel.createMessage(withinLimits ? {embed} : '', !withinLimits ? this.formatToFile(client, message, embed, args) : null);
+        return context.message.channel.createMessage(withinLimits ? {embed} : '', !withinLimits ? this.formatToFile(context, embed, args) : null);
     }
 
-    formatPermissions(client, message, guildEntry, args, targetPerms) {
+    formatPermissions(context, args, targetPerms) {
         return {
-            title: `${args.targetType === 'global' ? 'Global' : ''} Permissions ${args.targetType !== 'global' ? ('for the ' + args.targetType + ' ' + (args.target.name || new client.structures.ExtendedUser(args.target).tag), client) : ''}`,
-            color: client.config.options.embedColor.generic,
+            title: `${args.targetType === 'global' ? 'Global' : ''} Permissions ${args.targetType !== 'global' ? ('for the ' + args.targetType + ' ' + (args.target.name || args.target.tag)) : ''}`,
+            color: context.client.config.options.embedColor.generic,
             fields: (() => {
                 if (args.targetType === 'global') {
-                    targetPerms.allowedCommands = targetPerms.allowedCommands.concat(client.structures.References.defaultPermissions.allowedCommands.map(perm => `${perm} (default)`));
-                    targetPerms.restrictedCommands = targetPerms.restrictedCommands.concat(client.structures.References.defaultPermissions.restrictedCommands.map(perm => `${perm} (default)`));
+                    targetPerms.allowedCommands = targetPerms.allowedCommands.concat(context.client.structures.References.defaultPermissions.allowedCommands.map(perm => `${perm} (default)`));
+                    targetPerms.restrictedCommands = targetPerms.restrictedCommands.concat(context.client.structures.References.defaultPermissions.restrictedCommands.map(perm => `${perm} (default)`));
                 }
                 return [{
                     name: 'Allowed permissions',
@@ -83,7 +70,7 @@ class GetPermissions extends ModerationCommands {
         };
     }
 
-    formatToFile(client, message, embed, args) {
+    formatToFile(context, embed, args) {
         let content = 'Allowed permissions:\n';
         content += embed.fields[0].value.replace(/\`\`\`diff/g, '').replace(/\+/g, '').replace(/\`\`\`/g, '');
         content += '\nRestricted permissions:\n';
@@ -95,4 +82,4 @@ class GetPermissions extends ModerationCommands {
     }
 }
 
-module.exports = new GetPermissions();
+module.exports = GetPermissions;

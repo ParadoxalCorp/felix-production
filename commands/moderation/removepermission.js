@@ -26,64 +26,36 @@ class RemovePermission extends ModerationCommands {
             },
         });
     }
+    /** @param {import("../../structures/Contexts/ModerationContext")} context */
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(client, message, args, guildEntry, userEntry) {
-        const getPrefix = client.commands.get('help').getPrefix;
-        if (args.length < 2) {
-            return message.channel.createMessage(`:x: You didn't specified enough arguments, if you are lost, just run \`${getPrefix(client, guildEntry)}${this.help.name}\``);
+    async run(context) {
+        if (context.args.length < 2) {
+            return context.message.channel.createMessage(`:x: You didn't specified enough arguments, if you are lost, just run \`${context.prefix}${this.help.name}\``);
         }
-        if (!this.validatePermission(client, args[0])) {
-            return message.channel.createMessage(':x: The permission must be a command name, like `ping`, or the name of a command category followed by a `*` like `generic*` to target a whole category. If you are lost, simply run this command like `' + getPrefix(client, guildEntry) + this.help.name + '`');
-        } else if (!this.validateTarget(args[1])) {
-            return message.channel.createMessage(':x: You must specify from what this permission should be removed with either `global`, `category`, `channel`, `role` or `user`. If you are lost, simply run this command like `' + getPrefix(client, guildEntry) + this.help.name + '`');
+        if (!this.validatePermission(context.args[0])) {
+            return context.message.channel.createMessage(':x: The permission must be a command name, like `ping`, or the name of a command category followed by a `*` like `generic*` to target a whole category. If you are lost, simply run this command like `' + context.prefix + this.help.name + '`');
+        } else if (!this.validatePermissionTarget(context.args[1])) {
+            return context.message.channel.createMessage(':x: You must specify from what this permission should be removed with either `global`, `category`, `channel`, `role` or `user`. If you are lost, simply run this command like `' + context.prefix + this.help.name + '`');
         }
-        let target = args[1].toLowerCase() === 'global' ? 'global' : null;
-        if (['channel', 'category'].includes(args[1].toLowerCase())) {
-            target = await this.getChannelFromText({client, message, text: args.slice(2).join(' '), type: args[1].toLowerCase() === 'channel' ? 'text' : 'category'});
-        } else if (args[1].toLowerCase() === 'role') {
-            target = await this.getRoleFromText({client, message, text: args.slice(2).join(' ')});
-        } else if (args[1].toLowerCase() === 'user') {
-            target = await this.getUserFromText({client, message, text: args.slice(2).join(' ')});
-        }
+        const target = await this.getPermissionTarget(context, 1);
         if (!target) {
-            return message.channel.createMessage(`:x: I couldn't find this ${args[1].toLowerCase()}`);
+            return context.message.channel.createMessage(`:x: I couldn't find this ${context.args[1].toLowerCase()}`);
         }
-        let permission = client.aliases.has(args[0].toLowerCase()) ? client.aliases.get(args[0].toLowerCase()) : args[0].toLowerCase();
-        return this.removePermission(client, message, guildEntry, {permission, targetType: args[1].toLowerCase(), target});
+        let permission = context.client.aliases.has(context.args[0].toLowerCase()) ? context.client.aliases.get(context.args[0].toLowerCase()) : context.args[0].toLowerCase();
+        return this.removePermission(context, {permission, targetType: context.args[1].toLowerCase(), target});
     }
 
-    validatePermission(client, arg) {
-        let categories = [];
-        arg = arg ? arg.toLowerCase() : '';
-        //eslint-disable-next-line no-unused-vars
-        for (const [key, command] of client.commands) {
-            if (!categories.includes(command.help.category) && command.help.category !== 'admin') {
-                categories.push(`${command.help.category}*`);
-            } 
-        }
-        let command = client.commands.get(arg) || client.commands.get(client.aliases.get(arg));
-        if (command && command.help.category === 'admin') {
-            return false;
-        }
-        return (!command && !categories.includes(arg) && arg !== '*') ? false : true;
-    }
-
-    validateTarget(arg) {
-        return arg ? ['global', 'category', 'channel', 'role', 'user'].includes(arg.toLowerCase()) : false;
-    }
-
-    async removePermission(client, message, guildEntry, args) {
+    async removePermission(context, args) {
         let specialTargetCases = {
             global: 'global',
             category: 'categories'
         };
-        let targetPerms = guildEntry.permissions[specialTargetCases[args.targetType] || `${args.targetType}s`];
+        let targetPerms = context.guildEntry.permissions[specialTargetCases[args.targetType] || `${args.targetType}s`];
         if (Array.isArray(targetPerms)) {
             targetPerms = targetPerms.find(perms => perms.id === args.target.id);
         }
         if (!targetPerms || (!targetPerms.allowedCommands.includes(args.permission) && !targetPerms.restrictedCommands.includes(args.permission))) {
-            return message.channel.createMessage(`:x: The permission \`${args.permission}\` is neither restricted nor allowed on this ${args.targetType === 'global' ? 'server' : args.targetType}`);
+            return context.message.channel.createMessage(`:x: The permission \`${args.permission}\` is neither restricted nor allowed on this ${args.targetType === 'global' ? 'server' : args.targetType}`);
         }
         let restricted;
         if (targetPerms.allowedCommands.includes(args.permission)) {
@@ -94,12 +66,12 @@ class RemovePermission extends ModerationCommands {
         }
         //Delete the permission group if empty
         if (args.targetType !== 'global' && !targetPerms.allowedCommands[0] && !targetPerms.restrictedCommands[0]) {
-            let group = guildEntry.permissions[specialTargetCases[args.targetType] || `${args.targetType}s`];
+            let group = context.guildEntry.permissions[specialTargetCases[args.targetType] || `${args.targetType}s`];
             group.splice(group.findIndex(perms => perms.id === args.target.id));
         }
-        await client.handlers.DatabaseWrapper.set(guildEntry, 'guild');
-        return message.channel.createMessage(`:white_check_mark: Successfully removed the permission \`${args.permission}\` which was ${restricted ? 'restricted' : 'allowed'} on the ${args.targetType === 'global' ? 'server' : args.targetType} ${args.target.name || args.target.username ? ('**' + (args.target.name || new client.structures.ExtendedUser(args.target).tag, client) + '**') : ''}`);
+        await context.guildEntry.save();
+        return context.message.channel.createMessage(`:white_check_mark: Successfully removed the permission \`${args.permission}\` which was ${restricted ? 'restricted' : 'allowed'} on the ${args.targetType === 'global' ? 'server' : args.targetType} ${args.target.name || args.target.username ? ('**' + (args.target.name || args.target.tag) + '**') : ''}`);
     }
 }
 
-module.exports = new RemovePermission();
+module.exports = RemovePermission;
