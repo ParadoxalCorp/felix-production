@@ -66,7 +66,10 @@ class Helpers {
         const secondaryCredentials = [
             this.client.config.apiKeys.sentryDSN, 
             this.client.config.database.password, 
-            this.client.config.apiKeys.weebSH
+            this.client.config.apiKeys.weebSH,
+            this.client.config.proxy.auth,
+            this.client.config.proxy.host,
+            this.client.config.requestHandler.host
         ];
         for (const node of this.client.config.options.music.nodes) {
             secondaryCredentials.push(node.password, node.host);
