@@ -7,11 +7,6 @@ class SetPrefix extends SettingsCommands {
                 name: "setprefix",
                 description: "Set a custom prefix for commands, if you want the prefix to not contain a space between the prefix and the command, use `{prefix}setprefix <new_prefix> unspaced` so like `{prefix}setprefix ! unspaced` will make commands look like `!ping`",
                 usage: "{prefix}setprefix <new_prefix> <unspaced>"
-            },
-            conf: {
-                aliases: ["prefix"],
-                requireDB: true,
-                guildOnly: true
             }
         });
     }
@@ -29,7 +24,7 @@ class SetPrefix extends SettingsCommands {
             return context.message.channel.createMessage(`The current prefix on this server is \`${context.guildEntry.getPrefix}\``);
         }
         if (context.args[0] === `<@${context.client.bot.user.id}>` || context.args[0] === `<@!${context.client.bot.user.id}>`) {
-            return context.message.channel.createMessage(`:x: Ahhh yes but no im sorry this prefix cannot be chosen`);
+            return context.message.channel.createMessage(`:x: Ahhh yes but no im sorry this prefix cannot be chosen as it is a default prefix`);
         }
         context.guildEntry.prefix = context.args[0] === context.client.config.prefix && spaced
             ? ""
