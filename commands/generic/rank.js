@@ -54,7 +54,7 @@ class Rank extends GenericCommands {
         });
         //Declaration of Canvas and creating a template (Length 300 and Width 300)
         // @ts-ignore
-        const background = await context.client.handlers.DatabaseWrapper.rethink.table("user_profiles").get(context.message.author.id).run().then(data => data ? Buffer.from(data.image, 'base64') : false) || await fsn.readFile(`${resources}back0.jpg`);  
+        const background = await context.client.handlers.DatabaseWrapper.rethink.table("user_profiles").get(target.id).run().then(data => data ? Buffer.from(data.image, 'base64') : false) || await fsn.readFile(`${resources}back0.jpg`);  
         const GetRank = new Canvas(300, 300)
             //Background (Changeable in the future logically)
             .addImage(background, 0, 0, 300, 300) //We will look for the image "Background" in the folder "imgs" (x=0, y=0, Length=300, Width=300)
