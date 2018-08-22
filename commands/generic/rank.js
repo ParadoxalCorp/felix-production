@@ -26,6 +26,7 @@ class Rank extends GenericCommands {
     async run(context) {
         const { Canvas } = require('canvas-constructor');
         const fsn = require('fs-nextra');
+        const rethink = context.client.handlers.DatabaseWrapper.rethink;
       
         const user = await this.getUserFromText({ message: context.message, client: context.client, text: context.args.join(' ') });
         const target = user || context.message.author;
@@ -34,16 +35,8 @@ class Rank extends GenericCommands {
         const globalLevelDetails = context.client.handlers.ExperienceHandler.getLevelDetails(targetEntry.getLevel());
         const userExp = context.guildEntry.experience.members.find(u => u.id === target.id) ? context.guildEntry.experience.members.find(u => u.id === target.id).experience : 0;
         const member = context.message.channel.guild.members.get(target.id);
-        let leaderboardG = context.client.handlers.DatabaseWrapper.userData.cache.map(u => u);
-        leaderboardG = leaderboardG.map(e => databaseUpdater(e, 'user')).sort((a, b) => b.experience.amount - a.experience.amount).map(u => {
-            u.levelDetails = context.client.handlers.ExperienceHandler.getLevelDetails(context.client.handlers.ExperienceHandler.getLevelDetails(u.id));
-            return u;
-        });
-        let leaderboardL = context.guildEntry.experience.members;
-        leaderboardL = leaderboardL.sort((a, b) => b.experience - a.experience).map(m => {
-            m.levelDetails = context.client.handlers.ExperienceHandler.getLevelDetails(context.guildEntry.getLevelOf(m.id));
-            return m;
-        });
+        let leaderboardG = await rethink.table("users").orderBy(rethink.desc(rethink.row("experience")("amount"))).run({arrayLimit: 2e5});
+        let leaderboardL = context.guildEntry.experience.members.sort((a, b) => b.experience - a.experience);
         //Shortcut to the resource folder imgs
         let resources = './resources/imgs/';
         //Length progress bars
