@@ -55,7 +55,7 @@ class Leaderboard extends FunCommands {
 
     
     async getLoveLeaderboard(context) {
-        let leaderboard = await context.rethink.table("users").orderBy(context.rethink.desc(context.rethink.row("love")("amount")));
+        let leaderboard = await context.rethink.table("users").orderBy(context.rethink.desc(context.rethink.row("love")("amount"))).then(l => l.map(u => databaseUpdater(u, 'user')));
         if (!leaderboard.length) {
             return context.message.channel.createMessage(':x: Seems like there is nobody to show on the leaderboard yet');
         }
@@ -76,7 +76,7 @@ class Leaderboard extends FunCommands {
     }
 
     async getCoinsLeaderboard(context) {    
-        let leaderboard = await context.rethink.table("users").orderBy(context.rethink.desc(context.rethink.row("economy")("coins")));
+        let leaderboard = await context.rethink.table("users").orderBy(context.rethink.desc(context.rethink.row("economy")("coins"))).then(l => l.map(u => databaseUpdater(u, 'user')));
         if (!leaderboard.length) {
             return context.message.channel.createMessage(':x: Seems like there is nobody to show on the leaderboard yet');
         }
@@ -97,14 +97,14 @@ class Leaderboard extends FunCommands {
     }
 
     async getExperienceLeaderboard(context) {
-        let leaderboard = context.global ? context.client.handlers.DatabaseWrapper.userData.cache.map(u => u) : context.guildEntry.experience.members;
+        let leaderboard = context.guildEntry.experience.members;
         if (context.global) {
             leaderboard = await context.rethink.table("users").orderBy(context.rethink.desc(context.rethink.row("experience")("amount"))).run({arrayLimit: 2e5}).then(l => {
-                l.map(u => {
+                return l.map(u => {
+                    u = databaseUpdater(u, 'user');
                     u.levelDetails = context.client.handlers.ExperienceHandler.getLevelDetails(new context.client.structures.ExtendedUserEntry(u, context.client).getLevel());
                     return u;
                 });
-                return l;
             });
         } else {
             leaderboard = leaderboard.sort((a, b) => b.experience - a.experience).map(m => {
@@ -133,7 +133,7 @@ class Leaderboard extends FunCommands {
 
     async fetchUsers(leaderboard) {
         let resolvedUsers = new this.client.Collection();
-        await Promise.all(leaderboard.slice(0, 10).map(u => this.client.utils.helpers.fetchUser(u.id)))
+        await Promise.all([...leaderboard].slice(0, 10).map(u => this.client.utils.helpers.fetchUser(u.id)))
             .then(fetchedUsers => {
                 let i = 0;
                 for (let user of fetchedUsers) {

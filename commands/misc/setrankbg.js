@@ -1,8 +1,8 @@
-const GenericCommands = require('../../structures/CommandCategories/GenericCommands');
+const MiscCommands = require('../../structures/CommandCategories/MiscCommands');
 const axios = require('axios').default;
 const sharp = require('sharp');
 
-class SetRankBackground extends GenericCommands {
+class SetRankBackground extends MiscCommands {
     constructor(client) {
         super(client, {
             help: {
@@ -16,7 +16,7 @@ class SetRankBackground extends GenericCommands {
             }
         });
     }
-    /** @param {import("../../structures/Contexts/GenericContext")} context */
+    /** @param {import("../../structures/Contexts/MiscContext")} context */
 
     async run(context) {
         if (context.args[0] === "reset") {

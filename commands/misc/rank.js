@@ -1,10 +1,10 @@
 //Written by Ota#1354 the 26/06/2018
 
 const axios = require("axios");
+const MiscCommands = require('../../structures/CommandCategories/MiscCommands');
 const databaseUpdater = require('../../utils/databaseUpdater');
-const GenericCommands = require('../../structures/CommandCategories/GenericCommands');
 
-class Rank extends GenericCommands {
+class Rank extends MiscCommands {
     constructor(client) {
         super(client, {
             help: {
@@ -21,7 +21,7 @@ class Rank extends GenericCommands {
             }
         });
     }
-    /** @param {import("../../structures/Contexts/GenericContext")} context */
+    /** @param {import("../../structures/Contexts/MiscContext")} context */
 
     async run(context) {
         const { Canvas } = require('canvas-constructor');
@@ -35,7 +35,7 @@ class Rank extends GenericCommands {
         const globalLevelDetails = context.client.handlers.ExperienceHandler.getLevelDetails(targetEntry.getLevel());
         const userExp = context.guildEntry.experience.members.find(u => u.id === target.id) ? context.guildEntry.experience.members.find(u => u.id === target.id).experience : 0;
         const member = context.message.channel.guild.members.get(target.id);
-        let leaderboardG = await rethink.table("users").orderBy(rethink.desc(rethink.row("experience")("amount"))).run({arrayLimit: 2e5});
+        let leaderboardG = await rethink.table("users").orderBy(rethink.desc(rethink.row("experience")("amount"))).run({arrayLimit: 2e5}).then(l => l.map(u => databaseUpdater(u, 'user')));
         let leaderboardL = context.guildEntry.experience.members.sort((a, b) => b.experience - a.experience);
         //Shortcut to the resource folder imgs
         let resources = './resources/imgs/';
