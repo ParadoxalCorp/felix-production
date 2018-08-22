@@ -5,7 +5,7 @@ class Slots extends EconomyCommands {
         super(client, {
             help: {
                 name: 'slots',
-                description: 'Gamble your holy coins on your luck, and if you dont have any luck, well, good luck.\n\nYou can use the `--noEmbed` option to send the slots results without an embed, like `{prefix}slots 200 --noEmbed` and the `--noRoll` option to disable roll animations (if any). Note that these options is case-insensitive',
+                description: 'Gamble your holy coins on your luck, and if you dont have any luck, well, good luck.\n\nYou can use the `--noEmbed` option to send the slots results without an embed, like `{prefix}slots 200 --noEmbed`. Note that this is case-insensitive',
                 usage: '{prefix}slots <coins>',
             },
             conf: {
