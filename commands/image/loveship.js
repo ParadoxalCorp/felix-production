@@ -15,45 +15,31 @@ class LoveShip extends GenericCommands {
                 guildOnly: true,
                 require: ['weebSH', 'taihou']
             },
-        });
+        }, { noArgs: ':x: You need to specify at least one user to ship' });
     }
+    /** @param {import("../../structures/Contexts/ImageContext")} context */
 
-    //eslint-disable-next-line no-unused-vars
-    async run(client, message, args, guildEntry, userEntry) {
-        if (!args[0]) {
-            return message.channel.createMessage(':x: You need to specify at least one user to ship');
-        }
-        const firstUser = await this.getUserFromText({client: client, message: message, text: args[0]});
-        const secondUser = args[1] ? await this.getUserFromText({client: client, message: message, text: args.splice(1).join(' ')}).then(u => u ? u : new client.structures.ExtendedUser(message.author, client)) : (new client.structures.ExtendedUser(message.author, client));
-        if (!firstUser && secondUser.id === message.author.id) {
-            return message.channel.createMessage(':x: I\'m sorry but I couldn\'t find the users you specified :c');
+    async run(context) {
+        const firstUser = await this.getUserFromText({client: context.client, message: context.message, text: context.args[0]});
+        const secondUser = context.args[1] ? await this.getUserFromText({client: context.client, message: context.message, text: context.args.splice(1).join(' ')}) : context.message.author;
+        if (!firstUser && secondUser.id === context.message.author.id) {
+            return context.message.channel.createMessage(':x: I\'m sorry but I couldn\'t find the users you specified :c');
         } else if (firstUser.id === secondUser.id) {
-            return message.channel.createMessage(`:x: You can't match a user with themselves, like, why?`);
+            return context.message.channel.createMessage(`:x: You can't match a user with themselves, like, why?`);
         }
         let typing = false;
         //If the queue contains 2 items or more, expect that this request will take some seconds and send typing to let the user know
-        if (client.weebSH.korra.requestHandler.queue.length >= 2) {
-            client.bot.sendChannelTyping(message.channel.id);
+        if (context.client.weebSH.korra.requestHandler.queue.length >= 2) {
+            context.client.bot.sendChannelTyping(context.message.channel.id);
             typing = true;
         }
-        const generatedShip = await client.weebSH.korra.generateLoveShip(this.useWebpFormat(firstUser), this.useWebpFormat(secondUser)).catch(this.handleError.bind(this, client, message, typing));
+        const generatedShip = await context.client.weebSH.korra.generateLoveShip(this.useWebpFormat(firstUser), this.useWebpFormat(secondUser)).catch(this.handleError.bind(this, context, typing));
         const match = (() => {
-            let msg = typing ? `<@!${message.author.id}> ` : '';
+            let msg = typing ? `<@!${context.message.author.id}> ` : '';
             msg += `I, Felix von Trap, by the powers bestowed upon me, declare this a **${this.calculateMatch(firstUser.id, secondUser.id)}** match`;
             return msg;
         })();
-        return message.channel.createMessage(match, {file: generatedShip, name: `${Date.now()}-${message.author.id}.png`});
-    }
-
-    handleError(client, message, typing, error) {
-        if (typing) {
-            client.bot.sendChannelTyping(message.channel.id);
-        }
-        throw error;
-    }
-
-    useWebpFormat(user) {
-        return user.avatarURL ? user.avatarURL.replace(/.jpeg|.jpg|.png|.gif/g, '.webp') : user.defaultCDNAvatar;
+        return context.message.channel.createMessage(match, {file: generatedShip, name: `${Date.now()}-${context.message.author.id}.png`});
     }
 
     calculateMatch(firstID, secondID) {
@@ -63,4 +49,4 @@ class LoveShip extends GenericCommands {
     }
 }
 
-module.exports = new LoveShip();
+module.exports = LoveShip;

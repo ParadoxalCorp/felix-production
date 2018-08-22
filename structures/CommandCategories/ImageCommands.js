@@ -1,6 +1,7 @@
 /**   
 * @typedef {import("../../main.js").Client} Client
 * @typedef {import("../Command.js").PartialCommandOptions} PartialCommandOptions
+* @typedef {import("../ExtendedStructures/ExtendedUser")} ExtendedUser
 */
 
 const ImageContext = require('../Contexts/ImageContext');
@@ -36,6 +37,29 @@ class ImageCommands extends Command {
             passed: true,
             context: new ImageContext(client, message, args, guildEntry, userEntry)
         };
+    }
+
+    /**
+     * 
+     * @param {ImageContext} context - The context
+     * @param {Boolean} typing - Whether the bot is typing right now 
+     * @param {*} error - The error
+     * @returns {void}
+     */
+    handleError(context, typing, error) {
+        if (typing) {
+            context.client.bot.sendChannelTyping(context.message.channel.id);
+        }
+        throw error;
+    }
+
+    /**
+     * If possible, get the user's avatar URL in `.webp` format
+     * @param {ExtendedUser} user - The user
+     * @returns {String} The user's avatar URL  
+     */
+    useWebpFormat(user) {
+        return user.avatarURL ? user.avatarURL.replace(/.jpeg|.jpg|.png|.gif/g, '.webp') : user.defaultCDNAvatar;
     }
 
 }

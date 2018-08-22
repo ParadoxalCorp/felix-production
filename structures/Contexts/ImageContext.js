@@ -6,7 +6,7 @@
 
 const BaseContext = require('./BaseContext');
 
-class GenericContext extends BaseContext {
+class ImageContext extends BaseContext {
     /**
      * 
      * @param {Client} client - The client instance
@@ -20,5 +20,5 @@ class GenericContext extends BaseContext {
     }    
 }
 
-module.exports = GenericContext;
+module.exports = ImageContext;
 

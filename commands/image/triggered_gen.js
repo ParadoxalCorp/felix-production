@@ -18,17 +18,17 @@ class TriggeredGen extends GenericCommands {
             },
         });
     }
+    /** @param {import("../../structures/Contexts/ImageContext")} context */
 
-    //eslint-disable-next-line no-unused-vars
-    async run(client, message, args, guildEntry, userEntry) {
-        const user = await this.getUserFromText({ message, client, text: args.join(' ') });
-        const target = user || new client.structures.ExtendedUser(message.author, client);
+    async run(context) {
+        const user = await this.getUserFromText({ message: context.message, client: context.client, text: context.args.join(' ') });
+        const target = user || context.message.author;
         const image = await axios.get(`https://cute-api.tk/v1/generate/triggered?url=${target.avatarURL || target.defaultCDNAvatar}`, {responseType: 'arraybuffer'});
-        return message.channel.createMessage(``, {
+        return context.message.channel.createMessage(``, {
             file: image.data,
-            name: `${Date.now()}-${message.author.id}.gif`
+            name: `${Date.now()}-${context.message.author.id}.gif`
         });
     }
 }
 
-module.exports = new TriggeredGen();
+module.exports = TriggeredGen;
