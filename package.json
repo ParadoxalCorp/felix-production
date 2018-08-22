@@ -29,7 +29,7 @@
         "rethinkdbdash": "^2.3.31"
     },
     "optionalDependencies": {
-        "canvas": "^2.0.0-alpha.12",
+        "canvas": "2.0.0-alpha.12",
         "canvas-constructor": "^1.0.1",
         "eris-lavalink": "^1.0.2",
         "eventemitter3": "^3.1.0",
