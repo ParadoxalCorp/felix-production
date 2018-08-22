@@ -30,17 +30,6 @@ class ModerationCommands extends Command {
         this.options = options;
     }
 
-    //eslint-disable-next-line no-unused-vars
-    async initialCheck(client, message, args, guildEntry, userEntry) {
-        if (this.options.noArgs && !args[0]) {
-            return message.channel.createMessage(this.options.noArgs);
-        }
-        return { 
-            passed: true,
-            context: new ModerationContext(client, message, args, guildEntry, userEntry)
-        };
-    }
-
     /**
      * Get a permission's target object
      * @param {ModerationContext} context - The context

@@ -7,7 +7,7 @@ const AdminContext = require('../Contexts/AdminContext');
 const { inspect } = require('util');
 const Command = require('../Command');
 
-class GenericCommands extends Command {
+class AdminCommands extends Command {
     /**
      * 
      * @param {Client} client - The client instance
@@ -24,17 +24,6 @@ class GenericCommands extends Command {
             emote: 'heart'
         }});
         this.options = options;
-    }
-
-    //eslint-disable-next-line no-unused-vars
-    async initialCheck(client, message, args, guildEntry, userEntry) {
-        if (this.options.noArgs && !args[0]) {
-            return message.channel.createMessage(this.options.noArgs);
-        }
-        return { 
-            passed: true,
-            context: new AdminContext(client, message, args, guildEntry, userEntry)
-        };
     }
 
     /**
@@ -72,4 +61,4 @@ class GenericCommands extends Command {
     }
 }
 
-module.exports = GenericCommands;
+module.exports = AdminCommands;

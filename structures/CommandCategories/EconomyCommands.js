@@ -7,7 +7,7 @@ const EconomyContext = require('../Contexts/EconomyContext');
 
 const Command = require('../Command');
 
-class GenericCommands extends Command {
+class EconomyCommands extends Command {
     /**
      * 
      * @param {Client} client - The client instance
@@ -25,18 +25,6 @@ class GenericCommands extends Command {
         }});
         this.options = options;
     }
-
-    //eslint-disable-next-line no-unused-vars
-    async initialCheck(client, message, args, guildEntry, userEntry) {
-        if (this.options.noArgs && !args[0]) {
-            return message.channel.createMessage(this.options.noArgs);
-        }
-        return { 
-            passed: true,
-            context: new EconomyContext(client, message, args, guildEntry, userEntry)
-        };
-    }
-
 }
 
-module.exports = GenericCommands;
+module.exports = EconomyCommands;

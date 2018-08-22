@@ -22,18 +22,6 @@ class UtilityCommands extends Command {
         }});
         this.options = options;
     }
-
-    //eslint-disable-next-line no-unused-vars
-    async initialCheck(client, message, args, guildEntry, userEntry) {
-        if (this.options.noArgs && !args[0]) {
-            return message.channel.createMessage(this.options.noArgs);
-        }
-        return { 
-            passed: true,
-            context: new UtilityContext(client, message, args, guildEntry, userEntry)
-        };
-    }
-
 }
 
 module.exports = UtilityCommands;

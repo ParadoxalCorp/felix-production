@@ -7,8 +7,9 @@
  * @typedef {import("eris").PermissionOverwrite} PermissionOverwrite
  * @typedef {import("./ExtendedStructures/ExtendedUser")} ExtendedUser
  * @typedef {import("eris").Message} Message
- * @typedef {import("../main.js")} Client
- * @typedef {import("./ExtendedStructures/ExtendedGuildEntry.js") & import("./references").GuildEntry} GuildEntry
+ * @typedef {import("../main.js").Client} Client
+ * @typedef {import("./ExtendedStructures/ExtendedGuildEntry.js") & import("./References").GuildEntry} GuildEntry
+ * @typedef {import("./ExtendedStructures/ExtendedUserEntry") & import("./References").UserEntry} UserEntry
  */
 
 /** @typedef {Object} CommandHelp
@@ -480,6 +481,25 @@ class Command {
         client = client.bot ? client : this.client;
         guildEntry = guildEntry || client;
         return guildEntry && guildEntry.prefix ? (guildEntry.prefix + (guildEntry.spacedPrefix ? ' ' : '')) : `${client.config.prefix} `;
+    }
+
+    /**
+     * 
+     * @param {Client} client - The client instance
+     * @param {Message} message - The message
+     * @param {Array<String>} args - An array of parsed arguments
+     * @param {GuildEntry} guildEntry - The guild's database entry
+     * @param {UserEntry} userEntry - The user's database entry
+     * @returns {Object} The generic initial check's return value
+     */
+    async initialCheck(client, message, args, guildEntry, userEntry) {
+        if (this.options.noArgs && !args[0]) {
+            return message.channel.createMessage(this.options.noArgs);
+        }
+        return { 
+            passed: true,
+            context: new(require(`./Contexts/${this.category.name}Context`))(client, message, args, guildEntry, userEntry)
+        };
     }
 }
 
