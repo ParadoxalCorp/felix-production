@@ -100,6 +100,12 @@
  * @property {Array<Number>} cooldowns An array of UNIX timestamps representing when each cooldown expire
  */
 
+ /**
+ * @typedef {Object} UserRankBackground
+ * @property {String} id The ID of the user
+ * @property {String} image The base64 encoded image 
+ */
+
 /**
  * @typedef {Object} UserCooldowns
  * @property {Number} dailyCooldown A UNIX timestamp representing when the daily cooldown expires
@@ -339,6 +345,12 @@ class References {
         };
     }
 
+    userRankBackground(id, image) {
+        return {
+            id,
+            image
+        };
+    }
 }
 
 module.exports = new References();
