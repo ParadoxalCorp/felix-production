@@ -16,7 +16,7 @@ class Love extends FunCommands {
         });
     }
 
-    /** @param {import("../../structures/Contexts/GenericContext")} context */
+    /** @param {import("../../structures/Contexts/FunContext")} context */
 
     async run(context) {
         let lp = context.client.utils.isWholeNumber(context.args[0]) && context.args[1] ? parseInt(context.args[0]) : 1;
