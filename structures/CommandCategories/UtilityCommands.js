@@ -3,8 +3,6 @@
 * @typedef {import("../Command.js").PartialCommandOptions} PartialCommandOptions
 */
 
-const UtilityContext = require('../Contexts/UtilityContext');
-
 const Command = require('../Command');
 
 class UtilityCommands extends Command {

@@ -3,8 +3,6 @@
 * @typedef {import("../Command.js").PartialCommandOptions} PartialCommandOptions
 */
 
-const SettingsContext = require('../Contexts/SettingsContext');
-
 const Command = require('../Command');
 
 class SettingsCommands extends Command {

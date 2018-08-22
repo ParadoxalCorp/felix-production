@@ -3,7 +3,6 @@
 * @typedef {import("../Command.js").PartialCommandOptions} PartialCommandOptions
 */
 
-const AdminContext = require('../Contexts/AdminContext');
 const { inspect } = require('util');
 const Command = require('../Command');
 

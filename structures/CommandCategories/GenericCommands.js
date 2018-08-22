@@ -5,8 +5,6 @@
 * @typedef {import("../Command.js").PartialCommandOptions} PartialCommandOptions
 */
 
-const GenericContext = require('../Contexts/GenericContext');
-
 const Command = require('../Command');
 
 class GenericCommands extends Command {

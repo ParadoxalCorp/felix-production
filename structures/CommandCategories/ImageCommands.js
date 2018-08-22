@@ -4,8 +4,6 @@
 * @typedef {import("../ExtendedStructures/ExtendedUser")} ExtendedUser
 */
 
-const ImageContext = require('../Contexts/ImageContext');
-
 const Command = require('../Command');
 
 class ImageCommands extends Command {

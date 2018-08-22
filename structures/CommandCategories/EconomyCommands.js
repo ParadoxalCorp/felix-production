@@ -3,8 +3,6 @@
 * @typedef {import("../Command.js").PartialCommandOptions} PartialCommandOptions
 */
 
-const EconomyContext = require('../Contexts/EconomyContext');
-
 const Command = require('../Command');
 
 class EconomyCommands extends Command {

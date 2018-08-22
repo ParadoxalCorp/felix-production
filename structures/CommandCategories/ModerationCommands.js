@@ -7,8 +7,6 @@
 * @typedef {import("eris").CategoryChannel} CategoryChannel
 */
 
-const ModerationContext = require('../Contexts/ModerationContext');
-
 const Command = require('../Command');
 
 class ModerationCommands extends Command {
