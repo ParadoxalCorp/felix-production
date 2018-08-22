@@ -29,7 +29,7 @@ class MusicCommands extends Command {
 
     //eslint-disable-next-line no-unused-vars
     async initialCheck(client, message, args, guildEntry, userEntry) {
-        if (!(message.channel.guild.id % 5 === 0 || message.channel.guild.id % 3 === 0 || message.channel.guild.id === "235118465071972352")) {
+        if (!(message.channel.guild.id % 5 === 0 || message.channel.guild.id % 3 === 0 || message.channel.guild.id === "235118465071972352" || userEntry.hasPremiumStatus())) {
             return message.channel.createMessage(':x: Ahh i am very sorry but the music feature isn\'t available to everyone yet :v');
         }
         const member = message.channel.guild.members.get(message.author.id);
