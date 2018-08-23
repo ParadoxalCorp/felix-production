@@ -17,7 +17,14 @@ class NowPlaying extends MusicCommands {
     */
 
     async run(context) {
-        return context.message.channel.createMessage({embed: await this.genericEmbed(context.currentTrack, context.connection, 'Now playing')});
+        const genericEmbed = await this.genericEmbed(context.currentTrack, context.connection, 'Now playing');
+        const node = context.client.config.options.music.nodes.find(n => n.host === context.connection.player.node.host);
+        genericEmbed.fields.push({
+            name: 'Node',
+            value: `${node.countryEmote} ${node.location}`,
+            inline: true
+        });
+        return context.message.channel.createMessage({ embed: genericEmbed });
     }
 }
 

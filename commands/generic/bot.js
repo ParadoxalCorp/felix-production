@@ -149,7 +149,7 @@ class Bot extends GenericCommands {
                 value: (() => {
                     let nodesStatus = '';
                     for (const node of context.client.config.options.music.nodes) {
-                        nodesStatus += `${node.location}: ${context.client.bot.voiceConnections.nodes.get(node.host).connected ? ('Online ' + context.emote('online')) : ('Offline ' + context.emote('offline'))}\n`;
+                        nodesStatus += `${node.countryEmote} ${node.location}: ${context.client.bot.voiceConnections.nodes.get(node.host).connected ? ('Online ' + context.emote('online')) : ('Offline ' + context.emote('offline'))}\n`;
                     }
                     nodesStatus += `[More info](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#music-nodes)`;
                     return nodesStatus;
