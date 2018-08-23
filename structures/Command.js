@@ -63,6 +63,12 @@
   * @prop {CommandConf} [conf] The configuration of the command
   */
 
+/** @typedef {Object} EmbedField
+  * @prop {String} name The name of the field
+  * @prop {string} value The value of the field
+  * @prop {Boolean} inline whether the field should be inline
+  */
+
 /**
  * Provide some utility methods to parse the args of a message, check the required permissions...
  * @class Command
@@ -499,6 +505,18 @@ class Command {
         return { 
             passed: true,
             context: new(require(`./Contexts/${this.category.name}Context`))(client, message, args, guildEntry, userEntry)
+        };
+    }
+
+    /**
+     * Returns a blank embed field
+     * @returns {EmbedField} The blank field
+     */
+    get blankField() {
+        return {
+            name: '\u200B',
+            value: '\u200B',
+            inline: true
         };
     }
 }
