@@ -72,6 +72,10 @@ class RedisManager extends Redis {
     }
 
     _reload() {
+        const listeners = ['end', 'ready', 'reconnecting', 'close', 'error', 'connect'];
+        for (const listener of listeners) {
+            this.removeAllListeners(listener);
+        }
         this.disconnect();
         delete require.cache[module.filename];
         return new(require(module.filename))(this.felix);

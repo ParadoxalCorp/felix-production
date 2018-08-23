@@ -14,7 +14,7 @@ class Reload extends AdminCommands {
     /** @param {import("../../structures/Contexts/AdminContext")} context */
 
     async run(context) {
-        if (['utils', 'handlers', 'commands', 'structures'].includes(context.args[0].toLowerCase())) {
+        if (['utils', 'handlers', 'commands', 'structures', 'events'].includes(context.args[0].toLowerCase())) {
             const reload = await context.client.handlers.IPCHandler.broadcastReload(context.args[0].toLowerCase()).then(() => 'success').catch(err => err);
             if (reload === 'success') {
                 return context.message.channel.createMessage(`:white_check_mark: Successfully reloaded all ${context.args[0].toLowerCase()}`);

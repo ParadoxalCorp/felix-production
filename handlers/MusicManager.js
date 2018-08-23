@@ -35,7 +35,7 @@ class MusicManager {
             eu: ['eu-central', 'amsterdam', 'frankfurt', 'russia', 'hongkong', 'singapore', 'sydney', 'eu-west'],
             us: ['us-central', 'us-east', 'us-west', 'us-south', 'brazil'],
         };
-        if (options.reload) {
+        if (options.reload || client.config.options.music.enabled) {
             this.init(options);
         }
         this.constants = {
@@ -47,9 +47,6 @@ class MusicManager {
                 failed: 'LOAD_FAILED'
             }
         };
-        if (client.config.options.music.enabled) {
-            this.init(options);
-        }
     }
 
     init(options = {}) {
@@ -190,22 +187,22 @@ class MusicManager {
 
     /**
      * Destroy the WS connection with Lavalink
-     * @returns {void | Boolean} return false or destroy connection
+     * @returns {Boolean} Whether the voice connection has been destroyed successfully, false is returned if there is no connection to begin with
      */
     disconnect() {
         if (!this.client.bot.voiceConnections.nodes) {
             return false;
         }
-        this.client.bot.voiceConnections.nodes.forEach(node => node.destroy());
+        for (const [host] of this.client.bot.voiceConnections.nodes) {
+            this.client.bot.voiceConnections.nodes.get(host).destroy();
+        }
+        return true;
     }
 
     _reload() {
         this.disconnect();
         delete require.cache[module.filename];
         delete require.cache[require.resolve('../structures/HandlersStructures/MusicConnection')];
-        this.client.handlers.MusicManager = undefined;
-        this.connections = undefined;
-        this.client.bot.voiceConnections = undefined;
         return new(require(module.filename))(this.client, {reload: true});
     }
 

@@ -36,7 +36,8 @@ class IPCHandler {
         /** @type {Collection} A collection of the current ongoing requests */
         this.requests = options.requests || new client.Collection();
         this.client = client;
-        process.on("message", this._handleIncomingMessage.bind(this));
+        this._handleIncomingMessage = this._handleIncomingMessage.bind(this);
+        process.on("message", this._handleIncomingMessage);
     }
 
     /**
@@ -170,6 +171,8 @@ class IPCHandler {
                     this.client.handlers.Reloader.reloadStructures();
                 } else if (message.data.type === "handlers") {
                     this.client.handlers.Reloader.reloadHandlers();
+                } else if (message.data.type === "events") {
+                    this.client.handlers.Reloader.reloadEventListener('all');
                 }
             } catch (err) {
                 success = false;
@@ -260,6 +263,7 @@ class IPCHandler {
     }
 
     _reload() {
+        const wew = process.removeListener('message', this._handleIncomingMessage);
         delete require.cache[module.filename];
         return new(require(module.filename))(this.client, {requests: this.requests});
     }

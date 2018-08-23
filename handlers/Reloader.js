@@ -66,7 +66,7 @@ class Reloader {
                     const eventName = event.split(/\/|\\/gm)[path.split(/\/|\\/gm).length - 1].split('.')[0];
                     const eventPath = join(process.cwd(), 'events', event);
                     delete require.cache[eventPath];
-                    this.client.bot.removeAllListeners(eventName);
+                    this.client.bot.removeListener(eventName, this.client._boundEvents[eventName]);
                     this.client.bot.on(eventName, require(eventPath).handle.bind(require(eventPath), this.client));
                 }
             });
@@ -74,7 +74,7 @@ class Reloader {
         }
         const eventName = path.split(/\/|\\/gm)[path.split(/\/|\\/gm).length - 1].split('.')[0];
         delete require.cache[path];
-        this.client.bot.removeAllListeners(eventName);
+        this.client.bot.removeListener(eventName, this.client._boundEvents[eventName]);
         this.client.bot.on(eventName, require(path).handle.bind(require(path), this.client));
         return eventName;
     }
@@ -146,9 +146,9 @@ class Reloader {
         function reloadFiles (filesToReload, path) {
             for (const file of filesToReload) {
                 if (!folders.includes(file)) {
-                    delete require.cache[path || require.resolve(`../structures/${file}`)];
+                    delete require.cache[path ? join(path, file) : require.resolve(`../structures/${file}`)];
                 } else {
-                    let folderPath = join(process.cwd(), 'structures', file);
+                    const folderPath = join(process.cwd(), 'structures', file);
                     reloadFiles(fs.readdirSync(folderPath), folderPath);
                 }
             }

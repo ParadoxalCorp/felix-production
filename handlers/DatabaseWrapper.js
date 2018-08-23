@@ -121,6 +121,9 @@ class DatabaseWrapper {
     }
 
     _handleFailedInit(err) {
+        if (err.isOperational) {
+            return this._initAttempts = 0;
+        }
         const retryTimeout = (15000 * this._initAttempts) > 120000 ? 120000 : 15000 * this._initAttempts;
         process.send({ name: 'error', msg: `Database initialization failed: ${inspect(err)}\nRetrying in ${retryTimeout}ms`});
         setTimeout(() => {
@@ -131,12 +134,15 @@ class DatabaseWrapper {
 
     _reload() {
         this.healthy = false;
+        this.rethink.getPoolMaster().removeAllListeners('healthy');
         this.rethink.getPoolMaster().drain();
         delete require.cache[module.filename];
         delete require.cache[require.resolve('../structures/HandlersStructures/TableInterface')];
         delete require.cache[require.resolve('../utils/databaseUpdater')];
-        this.userData = undefined;
-        this.guildData = undefined;
+        for (const table of [this.userData, this.guildData]) {
+            table.changesStream.removeAllListeners('data');
+            table.changesStream.removeAllListeners('error');
+        }
         const updatedDatabaseWrapper = require(module.filename);
         return new updatedDatabaseWrapper(this.client);
     }
