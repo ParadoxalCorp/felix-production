@@ -263,7 +263,7 @@ class IPCHandler {
     }
 
     _reload() {
-        const wew = process.removeListener('message', this._handleIncomingMessage);
+        process.removeListener('message', this._handleIncomingMessage);
         delete require.cache[module.filename];
         return new(require(module.filename))(this.client, {requests: this.requests});
     }
