@@ -86,14 +86,18 @@ class MusicCommands extends Command {
             // @ts-ignore
             fields.push({
                 name: 'Requested by',
-                value: user.tag
+                value: user.tag,
+                inline: true
             });
         }
         return {
             title: `:musical_note: ${title}`,
             description: `[${track.info.title}](${track.info.uri})`,
             fields: fields,
-            color: this.client.config.options.embedColor.generic
+            color: this.client.config.options.embedColor.generic,
+            thumbnail: {
+                url: track.info.requestedBy ? this.client.bot.user.avatarURL : undefined
+            }
         };
     }
 
