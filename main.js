@@ -54,6 +54,7 @@ class Felix extends Base {
         /** @type {Object} */
         this.packages = {};
         this.launchedOnce = false;
+        this._boundEvents = {};
     }
 
     launch() {
@@ -116,7 +117,8 @@ class Felix extends Base {
                 const eventName = e.split(".")[0];
                 const event = require(join(__dirname, 'events', e));
                 loadedEvents++;
-                this.bot.on(eventName, event.handle.bind(event, this));
+                this._boundEvents[eventName] = event.handle.bind(event, this);
+                this.bot.on(eventName, this._boundEvents[eventName]);
                 delete require.cache[require.resolve(join(__dirname, 'events', e))];
             } catch (err) {
                 this.utils.log.error(`Failed to load event ${e}: ${err.stack || err}`);
@@ -220,7 +222,7 @@ class Felix extends Base {
         }
         if (this.handlers.MusicManager) {
             let lavalinkExit = this.handlers.MusicManager.disconnect();
-            if (lavalinkExit !== false) {
+            if (lavalinkExit) {
                 process.send({ name: 'info', msg: `Sent exit code to the Lavalink server` });
             }
         }
