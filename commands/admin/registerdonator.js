@@ -26,6 +26,9 @@ class RegisterDonator extends AdminCommands {
         const newDonator = await context.client.handlers.DatabaseWrapper.getUser(context.args[1]);
         newDonator.premium.tier = parseInt(context.args[0]);
         newDonator.premium.expire = context.args[2] ? Date.now() + parseInt(context.args[2]) : true;
+        if (newDonator.premium.tier >= 3) {
+            newDonator.cooldowns.loveCooldown.max++;
+        }
         await context.client.handlers.DatabaseWrapper.set(newDonator);
         const user = await context.client.utils.helpers.fetchUser(context.args[1]);
         let res = `:white_check_mark: Successfully given premium status to the user \`${user.tag}\` at tier \`${context.args[0]}\`\n\n`;
