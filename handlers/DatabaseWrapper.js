@@ -1,4 +1,7 @@
-/** @typedef {import("../main.js").Client} Client */
+/** @typedef {import("../main.js").Client} Client 
+ * @typedef {import("../structures/References").GuildEntry} GuildEntry
+ * @typedef {import("../structures/References").UserEntry} UserEntry
+*/
 
 const { inspect } = require('util');
 const TableInterface = require('../structures/HandlersStructures/TableInterface');
@@ -77,8 +80,9 @@ class DatabaseWrapper {
     /**
      * Get a stored user from their ID
      * @param {String} id - The ID of the user to get
-     * @returns {Promise<ExtendedUserEntry>} The stored user entry, or a new one
+     * @returns {Promise<ExtendedUserEntry & UserEntry>} The stored user entry, or a new one
      */
+
     getUser(id) {
         return this.userData.get(id);
     }
@@ -86,8 +90,9 @@ class DatabaseWrapper {
     /**
      * Get a stored guild from its ID
      * @param {String} id - The ID of the guild to get
-     * @returns {Promise<ExtendedGuildEntry>} The stored guild entry, or a new one
+     * @returns {Promise<ExtendedGuildEntry & GuildEntry>} The stored guild entry, or a new one
      */
+
     getGuild(id) {
         return this.guildData.get(id);
     }
@@ -142,6 +147,7 @@ class DatabaseWrapper {
         for (const table of [this.userData, this.guildData]) {
             table.changesStream.removeAllListeners('data');
             table.changesStream.removeAllListeners('error');
+            clearInterval(table._sweepInterval);
         }
         const updatedDatabaseWrapper = require(module.filename);
         return new updatedDatabaseWrapper(this.client);

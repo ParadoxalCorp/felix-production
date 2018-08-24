@@ -1,4 +1,13 @@
-/** @typedef {import("../main.js")} Client */
+/** @typedef {import("../main.js")} Client 
+ * @typedef {import("eris").MessageContent} MessageContent
+ * @typedef {import("eris").TextChannel} TextChannel
+ * @typedef {import("eris").Message} Message
+*/
+
+/** @typedef {Object} CustomReaction
+ * @prop {String} unicode The unicode this reaction take
+ * @prop {Function<Message, MessageContent, String>} callback A callback that will be called with the `message, messageContent, reaction` parameters, each respectively representing the created interactive message, the current page's content and the reaction
+ */
 
 
 class InteractiveList {
@@ -14,12 +23,12 @@ class InteractiveList {
     /**
      * Create a paginated message
      * @param {object} params - An object of parameters
-     * @param {object} params.channel - The channel where to create the message
-     * @param {array} params.messages - An array of messages (string or objects), each will represent a page (every {index} instance in strings will be replaced by the current page)
-     * @param {string} params.userID - The ID of the user to wait reactions from
-     * @param {function} [params.filter] - An optional filter function that will be passed to the reaction collector
-     * @param {number} [params.timeout=60000] - Time of inactivity in milliseconds before this should be aborted, default is 60000
-     * @param {array} [params.reactions] - Additional array of {unicode: reaction, callback: callback()} objects
+     * @param {TextChannel} params.channel - The channel where to create the message
+     * @param {Array<MessageContent>} params.messages - An array of messages (string or objects), each will represent a page (every {index} instance in strings will be replaced by the current page)
+     * @param {String} params.userID - The ID of the user to wait reactions from
+     * @param {Function} [params.filter] - An optional filter function that will be passed to the reaction collector
+     * @param {Number} [params.timeout=60000] - Time of inactivity in milliseconds before this should be aborted, default is 60000
+     * @param {Array<CustomReaction>} [params.reactions] - Additional array of {unicode: reaction, callback: callback()} objects
      * @returns {Promise<void>} - Returns a promise with no particular value
      */
     async createPaginatedMessage(params) {
@@ -44,12 +53,18 @@ class InteractiveList {
 
     /**
      * 
-     * @param {array} messages - An array of messages to replace the page tags from
-     * @returns {array} - The messages with their page tags replaced
+     * @param {Array<MessageContent>} messages - An array of messages to replace the page tags from
+     * @returns {Array<MessageContent>} - The messages with their page tags replaced
      */
     _replacePageTags(messages) {
-        const index = new RegExp(/{index}/gim);
         let page = 1;
+        const tags = [[new RegExp(/{index}/gim), page], [new RegExp(/{length}/gim), messages.length], [new RegExp(/undefined/gim), '']];
+        const replaceTags = (text) => {
+            for (const tag of tags) {
+                text = text.replace(tag[0], tag[1]);
+            }
+            return text;
+        };
         messages = messages.map(message => {
             if (typeof message === "object") {
                 message = this.client.utils.traverse(message, (value) => {
@@ -58,20 +73,20 @@ class InteractiveList {
                             if (typeof field.value === "number") {
                                 field.value = `${field.value}`;
                             }
-                            field.name = field.name.replace(index, page);
-                            field.value = field.value.replace(index, page);
+                            field.name = replaceTags(field.name);
+                            field.value = replaceTags(field.value);
                             return field;
                         });
                     } else {
                         if (typeof value === 'string') {
                             // @ts-ignore
-                            value = value.replace(index, page);
+                            value = replaceTags(value);
                         }
                     }
                     return value;
                 }, ["item"]);
             } else {
-                message = message.replace(index, page);
+                message = replaceTags(message);
             }
             page++;
             return message;

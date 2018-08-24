@@ -1,7 +1,9 @@
-/** @typedef {import("../../main.js")} Client */
-/** @typedef {import("../../handlers/economyManager.js")} EconomyManager */
-/** @typedef {import("../ExtendedStructures/extendedUserEntry.js")} UserEntry */
-/** @typedef {import("../ExtendedStructures/extendedGuildEntry.js").GuildEntry} GuildEntry */
+/** @typedef {import("../../main.js")} Client 
+ * @typedef {import("../../handlers/economyManager.js")} EconomyManager 
+ * @typedef {import("../ExtendedStructures/extendedUserEntry.js")} UserEntry 
+ * @typedef {import("../ExtendedStructures/extendedGuildEntry.js").GuildEntry} GuildEntry
+ * @typedef {import("../Contexts/BaseContext")} BaseContext
+ */
  
 /** @typedef {Object} ShipData
  * @prop {String} type The type of the ship, can be `Destroyer` or `Battleship` at the moment
@@ -14,10 +16,10 @@
  * @prop {String} description The description of the item
  * @prop {Boolean} buyableOnce Whether this item can only be bought once 
  * @prop {String} family The family, or category, of this item
- * @prop {Number|Function} price The price of the item, if a function, it should be called like `.price(<Context>)` with an instance of the context
+ * @prop {Number|Function<BaseContext>} price The price of the item, if a function, it should be called like `.price(<Context>)` with an instance of the context
  * @prop {String} emote The corresponding emote for this item
  * @prop {String} [image] The URL to a fitting image, if any
- * @prop {Function} [run] If the item has just been purchased and this function exist, this should be ran like `.run(<Context>)` with an instance of the context
+ * @prop {Function<BaseContext>} [run] If the item has just been purchased and this function exist, this should be ran like `.run(<Context>)` with an instance of the context
  * @prop {ShipData} [data] If a ship, the corresponding data
  */
 
