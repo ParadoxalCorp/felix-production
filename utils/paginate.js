@@ -1,5 +1,4 @@
 /**
- * @typedef {Function} paginate
  * Split the provided array into multiple arrays of the specified size
  * @param {Array} array The array to split 
  * @param {Number} size The required size for a new array to be created
