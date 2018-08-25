@@ -302,7 +302,7 @@ class MusicConnection extends EventEmitter {
 
     /**
      * Leave the voice channel and tell the MusicManager that this connection can be dropped
-     * @returns {Promise<void>} hi
+     * @returns {Promise<void>} *
      */
     async leave() {
         await this.client.bot.leaveVoiceChannel(this.player.channelId);
@@ -328,7 +328,7 @@ class MusicConnection extends EventEmitter {
      */
     _saveQueue() {
         if (this.client.handlers.RedisManager && this.client.handlers.RedisManager.healthy) {
-            this.client.handlers.RedisManager.set(`${this.player.guildId}-queue`, JSON.stringify(this.queue))
+            this.client.handlers.RedisManager.set(`${this.player.guildId}-queue`, JSON.stringify(this.queue), 'EX', 604800) //expire after 7 days
                 .catch(err => this.client.bot.emit("error", err));
         }
     }
@@ -341,11 +341,12 @@ class MusicConnection extends EventEmitter {
     }
 
     _handleError(err) {
-        if (err.type === 'TrackExceptionEvent') {
-            return this._resume();
+        try {
+            this._resume();
+        } catch (error) {
+            this.client.bot.emit('error', err);
+            this.leave();
         }
-        this.client.bot.emit('error', err);
-        this.leave();
     }
 
     _handleStuck(msg) {
