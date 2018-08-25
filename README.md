@@ -28,3 +28,27 @@ Felix's versioning works like semantic versioning, in the `major.minor.patch` fo
 Bug fixes increments `patch` and new features/enhancements increments `minor`
 
 Major rewrites of the back-end/interface increments `major`, each `major` increment comes with a reset of `minor` and `patch`
+
+## Credits
+
+* Niputi#2490 (162325985079984129)
+
+- * Awesome person
+- * Various contributions to the code & active co-dev
+- * Has covered by himself Felix's servers cost until now
+- * Very cute 
+
+* Aetheryx#2222 (284122164582416385)
+
+- * Original author of a few modules Felix still actively use
+- * Awesome person too
+
+* Ota#1354 (285837115206402049)
+
+- * Various contributions to the code & active co-dev
+
+* Emy#0001 (285057692354215936)
+
+- * Very cute & Felix's first donator
+
+* All of the donators ❤
