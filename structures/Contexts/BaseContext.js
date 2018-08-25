@@ -54,7 +54,7 @@ class BaseContext {
                 default: ':x:'
             },
             ping: {
-                custom: '<:loading:480681099115102208>',
+                custom: '<a:loading:480681099115102208>',
                 default: ':ping_pong:'
             },
             picture: {
@@ -100,6 +100,10 @@ class BaseContext {
             barChart: {
                 custom: ':bar_chart:',
                 default: ':bar_chart:'
+            },
+            headphones: {
+                custom: ':headphones:',
+                default: ':headphones:'
             }                
         };
     }
