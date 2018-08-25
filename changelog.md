@@ -14,15 +14,18 @@ This update contains a lot of necessary back-end changes which is why it took so
 - * Added the `seeplaylists` command which allows you to see your personal playlists
 - * Added a way to load personal playlists into the current queue with the `addplaylist` command
 - * Added the donator-only `setvolume` command, this command will probably stay donator-only as it make the music servers re-encode the song
+- * Added pagination to the `queue` command to be able to see the whole queue
 
 * Changes within the `utility` category
 
 - * The `whatanime` command now resize and convert the given image if necessary, and you can now input direct links to image instead of only uploading
+- * Updated the `mdn` command to make it display all results in the first page
 
 * Changes within the `misc` category 
 
 - * The `rank` command has been moved from the `fun` category to the `misc` category
 - * Added the `setrankbg` command, allowing you to set a custom background for the `rank` command
+- * Sadly the `local` option in the `leaderboard` command for the `coins` and `love` leaderboards was removed due to the fact that the users database is not entirely cached anymore
 
 * Changes within the `fun` category
 
