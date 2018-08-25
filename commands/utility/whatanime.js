@@ -41,7 +41,10 @@ class WhatAnime extends UtilityCommands {
             image = await this.downloadImage((image.attachments ? image.attachments[0] : false) || image);
         }
 
-        image = await this.processImage(image);
+        image = await this.processImage(image).catch(() => false);
+        if (!image) {
+            return context.message.channel.createMessage(`It seems like the link you provided isn't a direct link to a valid image :v`);
+        }
         if (image.length > 1000000) {
             return context.message.channel.createMessage(`I tried to make it as small as i could, but seems like your image is too big. whatanime.ga doesn't accept anything bigger than 1MB`);
         }
