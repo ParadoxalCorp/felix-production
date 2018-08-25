@@ -58,8 +58,8 @@ class InteractiveList {
      */
     _replacePageTags(messages) {
         let page = 1;
-        const tags = [[new RegExp(/{index}/gim), page], [new RegExp(/{length}/gim), messages.length], [new RegExp(/undefined/gim), '']];
         const replaceTags = (text) => {
+            const tags = [[new RegExp(/{index}/gim), page], [new RegExp(/{length}/gim), messages.length], [new RegExp(/undefined/gim), '']];
             for (const tag of tags) {
                 text = text.replace(tag[0], tag[1]);
             }
