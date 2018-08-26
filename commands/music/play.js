@@ -1,97 +1,52 @@
-'use strict';
+const MusicCommands = require('../../structures/CommandCategories/MusicCommands.js');
 
-const Command = require('../../util/helpers/modules/Command');
-
-class Play extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'play',
-            category: 'music',
-            description: 'Play a song, you can input: A `YouTube` URL (including livestreams), a `Soundcloud` URL, a `Twitch` channel URL (the channel must be live);\n\nOr a search term to search through `YouTube` or `Soundcloud`, by default the search is done on `YouTube`, to search through `Soundcloud`, you must specify it like `{prefix}play soundcloud <search_term>`',
-            usage: '{prefix}play <song_url|search_term>'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: [],
-            requirePerms: ['voiceConnect', 'voiceSpeak'],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Play extends MusicCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'play',
+                description: 'Play a song, you can input: A `YouTube` URL (including livestreams), a `Soundcloud` URL, a `Twitch` channel URL (the channel must be live);\n\nOr a search term to search through `YouTube` or `Soundcloud`, by default the search is done on `YouTube`, to search through `Soundcloud`, you must specify it like `{prefix}play soundcloud <search_term>`',
+                usage: '{prefix}play <song_url|search_term>'
+            },
+        }, { userInVC: true, autoJoin: true });
     }
+    /**
+    * @param {import("../../structures/Contexts/MusicContext.js")} context The context
+    */
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(client, message, args, guildEntry, userEntry) {
-        if (!guildEntry.hasPremiumStatus()) {
-            return message.channel.createMessage(':x: Sorry but as they are resources-whores, music commands are only available to our patreon donators. Check the `bot` command for more info');
-        }
-        const member = message.channel.guild.members.get(message.author.id);
-        const clientMember = message.channel.guild.members.get(client.bot.user.id);
-        if (!member.voiceState.channelID) {
-            return message.channel.createMessage(':x: You are not connected to any voice channel');
-        }
-        if (!clientMember.voiceState.channelID) {
-            if (Array.isArray(this.clientHasPermissions(message, client, ['voiceConnect', 'voiceSpeak'], message.channel.guild.channels.get(member.voiceState.channelID)))) {
-                return message.channel.createMessage(':x: It seems like I lack the permission to connect or to speak in the voice channel you are in :c');
-            }
-        }
-        const connection = await client.musicManager.getPlayer(message.channel.guild.channels.get(member.voiceState.channelID));
+    async run(context) {
         let track;
-        if (!args[0]) {
-            await connection.defer;
-            if (connection.queue[0]) {
-                track = connection.queue[0];
-                if (connection.player.paused) {
-                    connection.player.setPause(false);
+        if (!context.args[0]) {
+            if (context.connection.queue[0]) {
+                track = context.connection.queue[0];
+                if (context.connection.player.paused) {
+                    context.connection.player.setPause(false);
+                } else if (context.connection.nowPlaying) {
+                    return context.message.channel.createMessage(':x: You should specify something to play');
                 } else {
-                    connection.queue.shift();
+                    context.connection.queue.shift();
                 }
             } else {
-                return message.channel.createMessage(':x: You didn\'t specified any songs to play and there is nothing in the queue');
+                return context.message.channel.createMessage(':x: You didn\'t specified any songs to play and there is nothing in the queue');
             }
         }
-        let tracks = track ? [] : await client.musicManager.resolveTracks(connection.player.node, args.join(' '));
-        track = track ? track : tracks[0];
+        let tracks = track ? [] : await this.client.handlers.MusicManager.resolveTracks(context.connection.player.node, context.args.join(' '));
+        if (tracks.loadType === this.client.handlers.MusicManager.constants.loadTypes.playlist) {
+            return context.message.channel.createMessage(':x: Oops, this looks like a playlist to me, please use the `addplaylist` command instead');
+        }
+        track = track ? track : tracks.tracks[0];
         if (!track) {
-            return message.channel.createMessage(`:x: I could not find any song :c, please make sure to:\n- Follow the syntax (check \`${client.commands.get('help').getPrefix(client, guildEntry)}help ${this.help.name}\`)\n- Use HTTPS links, unsecured HTTP links aren't supported\n- If a YouTube video, I can't play it if it is age-restricted\n - If a YouTube video, it might be blocked in the country my servers are`);
+            return context.message.channel.createMessage(`:x: I could not find any song :c, please make sure to:\n- Follow the syntax (check \`${this.getPrefix(context.guildEntry)}help ${this.help.name}\`)\n- Use HTTPS links, unsecured HTTP links aren't supported\n- If a YouTube video, I can't play it if it is age-restricted\n - If a YouTube video, it might be blocked in the country my servers are`);
         }
         if (tracks.length > 1) {
-            track = await this.selectTrack(client, message, tracks);
+            track = await this.selectTrack(context, tracks);
             if (!track) {
                 return;
             }
         }
-        connection.play(track, message.author.id);
-        const output = await client.musicManager.genericEmbed(track, connection, 'Now playing');
-        return message.channel.createMessage({embed: output});
-    }
-
-    async selectTrack(client, message, tracks) {
-        tracks = tracks.splice(0, 15);
-        let searchResults = `Your search has returned multiple results, please select one by replying their corresponding number\n\n`;
-        let i = 1;
-        for (const song of tracks) {
-            searchResults += `\`${i++}\` - **${song.info.title}** by **${song.info.author}** (${client.musicManager.parseDuration(song)})\n`;
-        }
-        await message.channel.createMessage(searchResults);
-        const reply = await client.messageCollector.awaitMessage(message.channel.id, message.author.id);
-        if (!reply) {
-            message.channel.createMessage(':x: Timeout, command aborted').catch(() => {});
-            return false;
-        } else if (!client.isWholeNumber(reply.content)) {
-            message.channel.createMessage(':x: You must reply with a whole number').catch(() => {});
-            return false;
-        }
-        if (reply.content >= tracks.length) {
-            return tracks[tracks.length - 1];
-        } else if (reply.content <= 1) {
-            return tracks[0];
-        } else {
-            return tracks[reply.content - 1];
-        }
+        context.connection.play(track, context.message.author.id);
+        return context.message.channel.createMessage({embed: await this.genericEmbed(track, context.connection, 'Now playing', true)});
     }
 }
 
-module.exports = new Play();
+module.exports = Play;

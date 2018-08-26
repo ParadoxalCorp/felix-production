@@ -1,47 +1,36 @@
-'use strict';
-
-const Command = require('../../util/helpers/modules/Command');
 const { inspect } = require('util');
+const AdminCommands = require('../../structures/CommandCategories/AdminCommands');
+const { exec } = require('child_process');
 
-class Execute extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'execute',
-            category: 'admin',
-            description: 'execute, i think it\'s fairly obvious at this point',
-            usage: '{prefix}execute'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: ['exec', 'shell'],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Execute extends AdminCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'execute',
+                description: 'execute, i think it\'s fairly obvious at this point',
+                usage: '{prefix}execute'
+            },
+            conf: {
+                aliases: ['exec', 'shell'],
+            }
+        }, { noArgs: 'baguette tbh' });
     }
+    /** @param {import("../../structures/Contexts/AdminContext")} context */
 
-    //eslint-disable-next-line no-unused-vars
-    async run(client, message, args, guildEntry, userEntry) {
-        if (!args[0]) {
-            return message.channel.createMessage('baguette tbh');
-        }
-        const { exec } = require('child_process');
-        exec(args.join(' '), (error, stdout) => {
+    async run(context) {
+        exec(context.args.join(' '), (error, stdout) => {
             const outputType = error || stdout;
             let output = outputType;
             if (typeof outputType === 'object') {
                 output = inspect(outputType, {
-                    depth: client.commands.get('eval').getMaxDepth(outputType, args.join(' '))
+                    depth: this.getMaxDepth(outputType, context.args.join(' '))
                 });
             }
-            output = client.redact(output.length > 1980 ? output.substr(0, 1977) + '...' : output);
-            return message.channel.createMessage('```js\n' + output + '```');
+            output = context.client.utils.helpers.redact(output.length > 1980 ? output.substr(0, 1977) + '...' : output);
+            return context.message.channel.createMessage('```\n' + output + '```');
             exec.kill();
         });
     }
 }
 
-module.exports = new Execute();
+module.exports = Execute;

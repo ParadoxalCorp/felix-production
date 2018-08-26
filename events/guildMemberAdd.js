@@ -1,15 +1,16 @@
-'use strict';
-
 class GuildMemberAddHandler {
     constructor() {}
 
     async handle(client, guild, member) {
-        if (member.user.bot || !client.database || !client.database.healthy) {
+        if (member.user.bot) {
             return;
         }
-        const guildEntry = await client.database.getGuild(guild.id);
+        const guildEntry = await client.handlers.DatabaseWrapper.getGuild(guild.id);
+        if (!guildEntry) {
+            return;
+        }
         const clientMember = guild.members.get(client.bot.user.id);
-        const user = client.extendedUser(member.user);
+        const user = new client.structures.ExtendedUser(member.user, client );
         //On join role
         if (guildEntry.onJoinRoles[0] && clientMember.permission.has('manageRoles')) {
             this.addRoles(guild, member, guildEntry).catch(() => {});
@@ -39,10 +40,10 @@ class GuildMemberAddHandler {
 
     replaceGreetingsTags(guild, user, message) {
         return message.replace(/\%USER\%/gim, `<@!${user.id}>`)
-        .replace(/\%USERNAME\%/gim, `${user.username}`)
-        .replace(/\%USERTAG%/gim, `${user.tag}`)
-        .replace(/\%GUILD\%/gim, `${guild.name}`)
-        .replace(/\%MEMBERCOUNT%/gim, guild.memberCount);
+            .replace(/\%USERNAME\%/gim, `${user.username}`)
+            .replace(/\%USERTAG%/gim, `${user.tag}`)
+            .replace(/\%GUILD\%/gim, `${guild.name}`)
+            .replace(/\%MEMBERCOUNT%/gim, guild.memberCount);
     }
 }
 

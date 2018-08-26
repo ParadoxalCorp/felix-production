@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-const moduleIsInstalled = require('../util/modules/moduleIsInstalled');
+const moduleIsInstalled = require('../utils/moduleIsInstalled');
 const assert = require('assert').strict;
 
 describe('moduleIsInstalled()', function() {
@@ -8,4 +8,4 @@ describe('moduleIsInstalled()', function() {
         assert.equal(moduleIsInstalled("baguette"), false);
         assert.equal(moduleIsInstalled("mocha"), true);
     });
-  });
+});

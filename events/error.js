@@ -1,5 +1,3 @@
-'use strict';
-
 const { inspect } = require('util');
 
 class ErrorHandler {
@@ -73,7 +71,7 @@ class ErrorHandler {
     }
 
     initSentry(client) {
-        let raven = client.moduleIsInstalled('raven') ? require('raven') : false;
+        let raven = client.utils.moduleIsInstalled('raven') ? require('raven') : false;
         if (!raven) {
             return this.sentry = false;
         }

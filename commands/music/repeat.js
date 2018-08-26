@@ -1,37 +1,26 @@
-'use strict';
+const MusicCommands = require('../../structures/CommandCategories/MusicCommands');
 
-const Command = require('../../util/helpers/modules/Command');
-
-class Repeat extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'repeat',
-            category: 'music',
-            description: 'Set the repeat to repeat the queue, the current song or turn it off',
-            usage: '{prefix}repeat <song|queue|off>'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: [],
-            requirePerms: ['voiceConnect', 'voiceSpeak'],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: [{
-                description: 'Please choose what repeat mode to toggle, can be either `queue` to repeat the queue, `song` to repeat the current song or `off` to disable the repeat',
-                possibleValues: [{
-                    name: 'queue',
-                    interpretAs: '{value}'
-                }, {
-                    name: 'song',
-                    interpretAs: '{value}'
-                }, {
-                    name: 'off',
-                    interpretAs: '{value}'
-                }]            
-            }]
-        };
+class Repeat extends MusicCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'repeat',
+                description: 'Set the repeat to repeat the queue, the current song or turn it off',
+                usage: '{prefix}repeat <song|queue|off>'
+            },
+            conf: {
+                expectedArgs: [{
+                    description: 'Please choose what repeat mode to toggle, can be either `queue` to repeat the queue, `song` to repeat the current song or `off` to disable the repeat',
+                    possibleValues: [{
+                        name: 'queue'
+                    }, {
+                        name: 'song'
+                    }, {
+                        name: 'off'
+                    }]            
+                }]
+            }
+        }, { userInVC: true, playing: true });
         this.extra = {
             off: {
                 sentence: 'turned off the repeat',
@@ -47,27 +36,22 @@ class Repeat extends Command {
             }
         };
     }
+    /**
+    * @param {import("../../structures/Contexts/MusicContext")} context The context
+    */
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(client, message, args, guildEntry, userEntry) {
-        if (!guildEntry.hasPremiumStatus()) {
-            return message.channel.createMessage(':x: Sorry but as they are resources-whores, music commands are only available to our patreon donators. Check the `bot` command for more info');
+    async run(context) {
+        if (!context.args[0] || !['off', 'queue', 'song'].includes(context.args[0].toLowerCase())) {
+            return context.message.channel.createMessage(':x: Please specify the repeat mode to toggle, can be either `queue` to repeat the queue, `song` to repeat the current song or `off` to disable the repeat');
         }
-        const connection = client.musicManager.connections.get(message.channel.guild.id);
-        if (!connection || !connection.nowPlaying) {
-            return message.channel.createMessage(':x: I am not playing anything');
-        }
-        if (!['off', 'queue', 'song'].includes(args[0].toLowerCase())) {
-            return message.channel.createMessage(':x: Please specify the repeat mode to toggle, can be either `queue` to repeat the queue, `song` to repeat the current song or `off` to disable the repeat');
-        }
-        connection.repeat = args[0].toLowerCase();
-        if (connection.repeat === "queue") {
-            if (connection.nowPlaying) {
-                connection.addTrack(connection.nowPlaying);
+        context.connection.repeat = context.args[0].toLowerCase();
+        if (context.connection.repeat === "queue") {
+            if (context.connection.nowPlaying) {
+                context.connection.addTrack(context.connection.nowPlaying);
             }
         }
-        return message.channel.createMessage(`${this.extra[connection.repeat].emote} Successfully ${this.extra[connection.repeat].sentence}`);       
+        return context.message.channel.createMessage(`${this.extra[context.connection.repeat].emote} Successfully ${this.extra[context.connection.repeat].sentence}`);       
     }
 }
 
-module.exports = new Repeat();
+module.exports = Repeat;

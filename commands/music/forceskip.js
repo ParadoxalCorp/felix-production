@@ -1,39 +1,24 @@
-'use strict';
+const MusicCommands = require('../../structures/CommandCategories/MusicCommands');
 
-const Command = require('../../util/helpers/modules/Command');
-
-class ForceSkip extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'forceskip',
-            category: 'music',
-            description: 'Force skip the currently playing song',
-            usage: '{prefix}forceskip'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['fskip'],
-            requirePerms: ['voiceConnect', 'voiceSpeak'],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class ForceSkip extends MusicCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'forceskip',
+                description: 'Force skip the currently playing song',
+                usage: '{prefix}forceskip'
+            },
+            conf: { aliases: ['fskip'] }
+        }, { userInVC: true, playing: true });
     }
+    /**
+    * @param {import("../../structures/Contexts/MusicContext")} context The context
+    */
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(client, message, args, guildEntry, userEntry) {
-        if (!guildEntry.hasPremiumStatus()) {
-            return message.channel.createMessage(':x: Sorry but as they are resources-whores, music commands are only available to our patreon donators. Check the `bot` command for more info');
-        }
-        const connection = client.musicManager.connections.get(message.channel.guild.id);
-        if (!connection || !connection.nowPlaying) {
-            return message.channel.createMessage(':x: I am not playing anything');
-        }
-        const skippedSong = connection.skipTrack();
-        return message.channel.createMessage(`:white_check_mark: Skipped **${skippedSong.info.title}**`);       
+    async run(context) {
+        const skippedSong = context.connection.skipTrack();
+        return context.message.channel.createMessage(`:white_check_mark: Skipped \`${skippedSong.info.title}\` by \`${skippedSong.info.author}\``);       
     }
 }
 
-module.exports = new ForceSkip();
+module.exports = ForceSkip;

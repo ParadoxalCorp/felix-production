@@ -1,3 +1,46 @@
+# Update 4.4.14 Changelog
+
+This update contains a lot of necessary back-end changes which is why it took so long, but also contains quite a few new features
+
+### New commands/features
+
+* Changes within the `music` category
+
+> The music feature is now available to ~half of the servers Felix is on and to all donators as a public beta to see how much load it puts on the servers
+
+- * Added the `removesong` command, allowing you to remove the specified song from the queue
+- * Added the `forceskipto` command which allows you to bypass the votes of the `skipto` command
+- * Added the `saveplaylist` command, using it saves the current queue into your personal playlists so you can load them back later
+- * Added the `seeplaylists` command which allows you to see your personal playlists
+- * Added a way to load personal playlists into the current queue with the `addplaylist` command
+- * Added the donator-only `setvolume` command, this command will probably stay donator-only as it make the music servers re-encode the song
+- * Added pagination to the `queue` command to be able to see the whole queue
+
+* Changes within the `utility` category
+
+- * The `whatanime` command now resize and convert the given image if necessary, and you can now input direct links to image instead of only uploading
+- * Updated the `mdn` command to make it display all results in the first page
+
+* Changes within the `misc` category 
+
+- * The `rank` command has been moved from the `fun` category to the `misc` category
+- * Added the `setrankbg` command, allowing you to set a custom background for the `rank` command
+- * Sadly the `local` option in the `leaderboard` command for the `coins` and `love` leaderboards was removed due to the fact that the users database is not entirely cached anymore
+
+* Changes within the `fun` category
+
+- * The `rank` command has been moved from the `fun` category to the `misc` category
+
+* Changes within the `generic` category
+
+- * The `sinfo`, `avatar`, `uinfo` and `invite` commands now have a new look
+
+As we're trying to make commands look better, some commands now use custom emotes, this is still very experimental ~~because i have no clue how to make it look good~~ but i hope you all appreciate the changes 
+
+By the way, my vacations will soon be over so i won't be able to spend as much time as before, though i'll still try to do my best <3
+
+While this update contains a lot of back-end changes in preparation of the future, next update should mainly contain new commands and features, please look forward to it ^
+
 # Patch 4.3.14 Changelog
 
 ### Bugs fixes
@@ -609,7 +652,7 @@ Returns: {Object} - An object containing detailled data regarding the level and 
 Call example:
 
 ```js
-client.getLevelDetails(1, 57);
+client.handlers.ExperienceHandler.getLevelDetails(1, 57);
 ```
 
 Response structure:

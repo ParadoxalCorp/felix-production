@@ -1,39 +1,23 @@
-'use strict';
+const MusicCommands = require('../../structures/CommandCategories/MusicCommands');
 
-const Command = require('../../util/helpers/modules/Command');
-
-class Pause extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'pause',
-            category: 'music',
-            description: 'Pause or resume the playback',
-            usage: '{prefix}pause'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: [],
-            requirePerms: ['voiceConnect', 'voiceSpeak'],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Pause extends MusicCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'pause',
+                description: 'Pause or resume the playback',
+                usage: '{prefix}pause'
+            }
+        }, { userInVC: true, playing: true });
     }
+    /**
+    * @param {import("../../structures/Contexts/MusicContext")} context The context
+    */
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(client, message, args, guildEntry, userEntry) {
-        if (!guildEntry.hasPremiumStatus()) {
-            return message.channel.createMessage(':x: Sorry but as they are resources-whores, music commands are only available to our patreon donators. Check the `bot` command for more info');
-        }
-        const connection = client.musicManager.connections.get(message.channel.guild.id);
-        if (!connection || !connection.nowPlaying) {
-            return message.channel.createMessage(':x: I am not playing anything');
-        }
-        await connection.player.setPause(connection.player.paused ? false : true);
-        return message.channel.createMessage(`:white_check_mark: Successfully ${connection.player.paused ? 'paused' : 'resumed'} the playback`);       
+    async run(context) {
+        context.connection.player.setPause(context.connection.player.paused ? false : true);
+        return context.message.channel.createMessage(`:white_check_mark: Successfully ${context.connection.player.paused ? 'paused' : 'resumed'} the playback`);       
     }
 }
 
-module.exports = new Pause();
+module.exports = Pause;

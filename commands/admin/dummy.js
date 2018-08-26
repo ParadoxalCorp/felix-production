@@ -1,30 +1,20 @@
-'use strict';
+const AdminCommands = require('../../structures/CommandCategories/AdminCommands');
 
-const Command = require('../../util/helpers/modules/Command');
-
-class Dummy extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'dummy',
-            category: 'admin',
-            description: 'dummy',
-            usage: '{prefix}dummy'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: true,
-            expectedArgs: []
-        };
+class Dummy extends AdminCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'dummy',
+                description: 'dummy',
+                usage: '{prefix}dummy'
+            }
+        });
     }
+    /** @param {import("../../structures/Contexts/AdminContext")} context */
 
-    async run(client, message) {
-        return message.channel.createMessage('wew');
+    async run(context) {
+        return context.message.channel.createMessage('not used atm');
     }
 }
 
-module.exports = new Dummy();
+module.exports = Dummy;

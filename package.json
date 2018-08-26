@@ -1,14 +1,13 @@
 {
     "name": "felix",
-    "version": "4.3.14",
+    "version": "4.4.14",
     "description": "felix-production",
     "main": "index.js",
     "author": "ParadoxOrigins",
     "contributors": [
         {
             "name": "Niputi"
-        },
-        {
+        }, {
             "name": "Otaku17"
         }
     ],
@@ -16,7 +15,8 @@
     "license": "GPL-3.0",
     "scripts": {
         "start": "node index.js",
-        "test": "mocha"
+        "eslint-check": "eslint .",
+        "test": "nyc mocha"
     },
     "dependencies": {
         "axios": "^0.18.0",
@@ -29,7 +29,7 @@
         "rethinkdbdash": "^2.3.31"
     },
     "optionalDependencies": {
-        "canvas": "^2.0.0-alpha.12",
+        "canvas": "2.0.0-alpha.12",
         "canvas-constructor": "^1.0.1",
         "eris-lavalink": "^1.0.2",
         "eventemitter3": "^3.1.0",
@@ -37,13 +37,18 @@
         "google-translate-api": "^2.3.0",
         "ioredis": "^3.2.2",
         "mocha": "^5.2.0",
+        "mock-stdin": "^0.3.1",
+        "nyc": "^12.0.2",
         "mal-scraper": "^2.4.2",
         "raven": "^2.6.0",
-        "taihou": "^1.0.2"
+        "taihou": "^2.0.2",
+        "sharp": "^0.20.5"
     },
     "devDependencies": {
         "@types/ioredis": "^3.2.11",
+        "@types/mocha": "^5.2.5",
         "@types/node": "^10.0.0",
+        "@types/sharp": "^0.17.9",
         "eslint": "^5.0.0"
     }
 }

@@ -1,60 +1,52 @@
-'use strict';
-
-const Command = require('../../util/helpers/modules/Command');
-const TimeConverter = require(`../../util/modules/timeConverter.js`);
+const TimeConverter = require(`../../utils/TimeConverter.js`);
 const moment = require("moment");
 const os = require('os');
 
-class Bot extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'bot',
-            category: 'generic',
-            description: 'Display some ~~useless~~ info about Felix',
-            usage: '{prefix}bot'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: ["sys", "info", "stats"],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+const GenericCommands = require('../../structures/CommandCategories/GenericCommands');
+
+class Bot extends GenericCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'bot',
+                description: 'Display some ~~useless~~ info about Felix',
+                usage: '{prefix}bot',
+            },
+            conf: {
+                aliases: ["sys", "info", "stats", "boat"],
+                guildOnly: true
+            }
+        });
     }
 
-    async run(client, message) {
-        return this.sendStats(client, message);
-    }
+    /** @param {import("../../structures/Contexts/GenericContext")} context */
 
-    sendStats(client, message) {
-        return message.channel.createMessage({
+    async run(context) {
+        return context.message.channel.createMessage({
             embed: {
                 thumbnail: {
-                    url: client.bot.user.avatarURL
+                    url: context.client.bot.user.avatarURL
                 },
-                color: client.config.options.embedColor,
+                color: context.client.config.options.embedColor.generic,
                 author: {
-                    name: "Requested by: " + message.author.username + "#" + message.author.discriminator,
-                    icon_url: message.author.avatarURL
+                    name: `Requested by: ${context.message.author.tag}`,
+                    icon_url: context.message.author.avatarURL
                 },
-                fields: this.buildEmbedFields(client, message),
+                fields: this.buildEmbedFields(context),
                 timestamp: new Date(),
                 footer: {
-                    icon_url: client.bot.user.avatarURL,
-                    text: message.channel.guild.name
+                    icon_url: context.client.bot.user.avatarURL,
+                    text: context.message.channel.guild.name
                 }
             }
         });
     }
 
-    buildEmbedFields(client, message) {
+    buildEmbedFields(context) {
         let embedFields = [];
         embedFields.push({
             name: "Servers/Guilds",
-            value: client.bot.guilds.size,
+            value: context.client.bot.guilds.size,
             inline: true
         });
         embedFields.push({
@@ -64,13 +56,13 @@ class Bot extends Command {
         });
         embedFields.push({
             name: "RAM usage",
-            value: client.stats ? `${client.stats.totalRam.toFixed(2)}MB` : `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB`,
+            value: context.client.stats ? `${context.client.stats.totalRam.toFixed(2)}MB` : `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB`,
             inline: true
         });
-        let averageCpuLoad = `${os.loadavg()[0].toFixed(2).split('.')[1]}%`;
+        let averageCpuLoad = `${(os.loadavg()[1] * 100).toFixed(2)}%`;
         embedFields.push({
             name: 'Average CPU load',
-            value: averageCpuLoad.charAt(0) === "0" ? averageCpuLoad.substr(1) : averageCpuLoad,
+            value: averageCpuLoad,
             inline: true
         });
         embedFields.push({
@@ -81,15 +73,15 @@ class Bot extends Command {
         });
         embedFields.push({
             name: "Version",
-            value: client.package.version,
+            value: context.client.package.version,
             inline: true
         });
         embedFields.push({
             name: "Cached users",
-            value: client.bot.users.size,
+            value: context.client.bot.users.size,
             inline: true
         });
-        let uptime = TimeConverter.toElapsedTime(client.bot.uptime);
+        let uptime = TimeConverter.toElapsedTime(context.client.bot.uptime);
         embedFields.push({
             name: "Uptime",
             // @ts-ignore
@@ -102,12 +94,12 @@ class Bot extends Command {
         });
         embedFields.push({
             name: "Created the",
-            value: `${TimeConverter.toHumanDate(client.bot.user.createdAt)} (${moment().to(client.bot.user.createdAt)})`,
+            value: `${TimeConverter.toHumanDate(context.client.bot.user.createdAt)} (${moment().to(context.client.bot.user.createdAt)})`,
             inline: true
         });
         embedFields.push({
             name: "Joined this server the",
-            value: `${TimeConverter.toHumanDate(message.channel.guild.joinedAt)} (${moment().to(message.channel.guild.joinedAt)})`,
+            value: `${TimeConverter.toHumanDate(context.message.channel.guild.joinedAt)} (${moment().to(context.message.channel.guild.joinedAt)})`,
             inline: true
         });
         embedFields.push({
@@ -116,7 +108,7 @@ class Bot extends Command {
         });
         embedFields.push({
             name: "Invite Felix to your server",
-            value: `[Felix's invite link](https://discordapp.com/oauth2/authorize?&client_id=${client.bot.user.id}&scope=bot&permissions=2146950271)`
+            value: `[Felix's invite link](https://discordapp.com/oauth2/authorize?&client_id=${context.client.bot.user.id}&scope=bot&permissions=2146950271)`
         });
         embedFields.push({
             name: 'Source',
@@ -126,33 +118,46 @@ class Bot extends Command {
             name: 'Support us and become a donator !',
             value: '[Patreon](https://www.patreon.com/paradoxorigins)'
         });
-        if (client.stats) {
+        if (context.client.stats) {
             embedFields.push({
                 name: `Shard`,
                 value: (() => {
                     let shardCount = 0;
-                    for (const cluster of client.stats.clusters) {
+                    for (const cluster of context.client.stats.clusters) {
                         shardCount = shardCount + cluster.shards;
                     }
-                    return `${message.channel.guild.shard.id}/${shardCount}`;
+                    return `${context.message.channel.guild.shard.id}/${shardCount}`;
                 })(),
-                inline: client.redis ? false : true
+                inline: context.client.handlers.RedisManager ? false : true
             });
         }
         embedFields.push({
             name: 'Database status',
-            value: `${client.database && client.database.healthy ? ':white_check_mark: Online' : ':x: Offline'}\n[More info](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#rethinkdb)`,
+            value: `${context.client.handlers.DatabaseWrapper && context.client.handlers.DatabaseWrapper.healthy ? ('Online ' + context.emote('online')) : ('Offline ' + context.emote('offline'))}\n[More info](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#rethinkdb)`,
             inline: true
         });
-        if (client.redis) {
+        if (context.client.handlers.RedisManager) {
             embedFields.push({
                 name: 'Redis status',
-                value: `${client.redis.healthy ? ':white_check_mark: Online' : ':x: Offline'}\n[More info](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#redis)`,
+                value: `${context.client.handlers.RedisManager.healthy ? ('Online ' + context.emote('online')) : ('Offline ' + context.emote('offline'))}\n[More info](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#redis)`,
                 inline: true
+            });
+        }
+        if (context.client.config.options.music.enabled && context.client.config.options.music.nodes[0]) {
+            embedFields.push({
+                name: 'Music nodes',
+                value: (() => {
+                    let nodesStatus = '';
+                    for (const node of context.client.config.options.music.nodes) {
+                        nodesStatus += `${node.countryEmote} ${node.location}: ${context.client.bot.voiceConnections.nodes.get(node.host).connected ? ('Online ' + context.emote('online')) : ('Offline ' + context.emote('offline'))}\n`;
+                    }
+                    nodesStatus += `[More info](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#music-nodes)`;
+                    return nodesStatus;
+                })()
             });
         }
         return embedFields;
     }
 }
 
-module.exports = new Bot();
+module.exports = Bot;

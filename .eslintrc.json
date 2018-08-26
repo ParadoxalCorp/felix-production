@@ -3,6 +3,7 @@
         "ecmaVersion": 9,
         "sourceType": "module",
         "ecmaFeatures": {
+            "impliedStrict": true,
             "jsx": true
         }
     },
@@ -21,6 +22,7 @@
         "valid-jsdoc": "warn",
         "no-extra-semi": "warn",
         "no-unused-vars": "warn",
-        "no-undef": "error"
+        "no-undef": "error",
+        "indent": "warn"
     }
 }

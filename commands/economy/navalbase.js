@@ -1,64 +1,47 @@
-'use strict';
+const EconomyCommands = require('../../structures/CommandCategories/EconomyCommands');
 
-const Command = require('../../util/helpers/modules/Command');
-
-class Navalbase extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'navalbase',
-            category: 'economy',
-            description: 'Check your fleet',
-            usage: '{prefix}navalbase'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['fleet', 'port', 'nb', 'base'],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class NavalBase extends EconomyCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'navalbase',
+                description: 'Check your fleet',
+                usage: '{prefix}navalbase'
+            },
+            conf: {
+                aliases: ['fleet', 'port', 'nb', 'base']
+            },
+        });
     }
+    /** @param {import("../../structures/Contexts/EconomyContext")} context */
 
-    async run(client, message, args, guildEntry, userEntry) {
-        if (!userEntry.economy.items.filter(i => client.economyManager.getItem(i.id).family === "Ships")[0]) {
-            return message.channel.createMessage(`:x: Sorry, but it seems like you don't own any ship yet :c`);
+    async run(context) {
+        if (!context.userEntry.economy.items.filter(i => context.client.handlers.EconomyManager.getItem(i.id).family === "Ships")[0]) {
+            return context.message.channel.createMessage(`:x: Sorry, but it seems like you don't own any ship yet :c`);
         }
-        return message.channel.createMessage(this.mapItems(client, userEntry));
-    }
-
-    mapItems(client, userEntry) {
-        let ownedItemsWorth = 0;
-        for (const item of client.economyManager.marketItems) {
-            if (userEntry.hasItem(item.id)) {
-                ownedItemsWorth = ownedItemsWorth + item.price;
-            }
-        }
-        return {
+        return context.message.channel.createMessage({
             embed: {
                 title: ':ship: Naval Base - Fleet overview',
                 fields: (() => {
                     let typesOwned = [];
-                    for (const item of userEntry.economy.items) {
-                        if (client.economyManager.getItem(item.id).data && !typesOwned.includes(client.economyManager.getItem(item.id).data.type) && client.economyManager.getItem(item.id).family === 'Ships') {
-                            typesOwned.push(client.economyManager.getItem(item.id).data.type);
+                    for (const item of context.userEntry.economy.items) {
+                        if (context.client.handlers.EconomyManager.getItem(item.id).data && !typesOwned.includes(context.client.handlers.EconomyManager.getItem(item.id).data.type) && context.client.handlers.EconomyManager.getItem(item.id).family === 'Ships') {
+                            typesOwned.push(context.client.handlers.EconomyManager.getItem(item.id).data.type);
                         }
                     }
                     typesOwned = typesOwned.map(t => {
                         return {
                             name: `${t}(s)`,
-                            value: client.economyManager.marketItems.filter(i => i.data && i.data.type === t && userEntry.hasItem(i.id)).map(i => i.name).join(', ')
+                            value: context.client.handlers.EconomyManager.marketItems.filter(i => i.data && i.data.type === t && context.userEntry.hasItem(i.id)).map(i => i.name).join(', ')
                         };
                     });
 
                     return typesOwned;
                 })(),
-                color: client.config.options.embedColor
+                color: context.client.config.options.embedColor.generic
             }
-        };
+        });
     }
 }
 
-module.exports = new Navalbase();
+module.exports = NavalBase;

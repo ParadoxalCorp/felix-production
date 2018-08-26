@@ -1,40 +1,44 @@
-'use strict';
+const SettingsCommands = require("../../structures/CommandCategories/SettingsCommands");
 
-const Command = require('../../util/helpers/modules/Command');
-
-class SetPrefix extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'setprefix',
-            category: 'settings',
-            description: 'Set a custom prefix for commands, if you want the prefix to not contain a space between the prefix and the command, use `{prefix}setprefix <new_prefix> unspaced` so like `{prefix}setprefix ! unspaced` will make commands look like `!ping`',
-            usage: '{prefix}setprefix <new_prefix> <unspaced>'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ["prefix"],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class SetPrefix extends SettingsCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: "setprefix",
+                description: "Set a custom prefix for commands, if you want the prefix to not contain a space between the prefix and the command, use `{prefix}setprefix <new_prefix> unspaced` so like `{prefix}setprefix ! unspaced` will make commands look like `!ping`",
+                usage: "{prefix}setprefix <new_prefix> <unspaced>"
+            }
+        });
     }
 
-    async run(client, message, args, guildEntry) {
-        const spaced = (args[1] ? args[1].toLowerCase() : args[1]) === 'unspaced' ? false : true;
-        if (!args[0]) {
-            return message.channel.createMessage(`The current prefix on this server is \`${guildEntry.getPrefix}\``);
+    /** @param {import("../../structures/Contexts/SettingsContext")} context */
+
+    async run(context) {
+        const spaced = (
+            context.args[1]
+                ? context.args[1].toLowerCase()
+                : context.args[1]) === "unspaced"
+            ? false
+            : true;
+        if (!context.args[0]) {
+            return context.message.channel.createMessage(`The current prefix on this server is \`${context.guildEntry.getPrefix}\``);
         }
-        if (args[0] === `<@${client.bot.user.id}>` || args[0] === `<@!${client.bot.user.id}>`) {
-            return message.channel.createMessage(`:x: Ahhh yes but no im sorry this prefix cannot be chosen`);
+        if (context.args[0] === `<@${context.client.bot.user.id}>` || context.args[0] === `<@!${context.client.bot.user.id}>`) {
+            return context.message.channel.createMessage(`:x: Ahhh yes but no im sorry this prefix cannot be chosen as it is a default prefix`);
         }
-        guildEntry.prefix = (args[0] === client.config.prefix) && spaced ? '' : args[0];
-        guildEntry.spacedPrefix = spaced;
-        await client.database.set(guildEntry, "guild");
-        return message.channel.createMessage(`:white_check_mark: Alright, the prefix has successfully been set as a ${spaced ? 'spaced' : 'unspaced'} prefix to \`${args[0]}\`, commands will now look like \`${args[0] + (spaced ? ' ' : '')}ping\``);
+        context.guildEntry.prefix = context.args[0] === context.client.config.prefix && spaced
+            ? ""
+            : context.args[0];
+        context.guildEntry.spacedPrefix = spaced;
+        await context.client.handlers.DatabaseWrapper.set(context.guildEntry, "guild");
+        return context.message.channel.createMessage(
+            `:white_check_mark: Alright, the prefix has successfully been set as a ${spaced
+                ? "spaced"
+                : "unspaced"} prefix to \`${context.args[0]}\`, commands will now look like \`${context.args[0] + (
+                spaced
+                    ? " "
+                    : "")}ping\``);
     }
 }
 
-module.exports = new SetPrefix();
+module.exports = SetPrefix;

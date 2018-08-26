@@ -1,42 +1,32 @@
-'use strict';
+const EconomyCommands = require('../../structures/CommandCategories/EconomyCommands');
 
-const Command = require('../../util/helpers/modules/Command');
-
-class Market extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'market',
-            category: 'economy',
-            description: 'The place to see and purchase available items with holy coins',
-            usage: '{prefix}market'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Market extends EconomyCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'market',
+                description: 'The place to see and purchase available items with holy coins',
+                usage: '{prefix}market'
+            }
+        });
     }
+    /** @param {import("../../structures/Contexts/EconomyContext")} context */
 
-    async run(client, message, args, guildEntry, userEntry) {
-        return client.interactiveList.createPaginatedMessage({
-            channel: message.channel,
-            userID: message.author.id,
+    async run(context) {
+        return context.client.handlers.InteractiveList.createPaginatedMessage({
+            channel: context.message.channel,
+            userID: context.message.author.id,
             reactions: [{
                 unicode: '🛒',
-                callback: this.buyItem.bind(null, client, guildEntry, userEntry)
+                callback: this.buyItem.bind(null, context)
             }],
-            messages: this.mapItems(client, message, guildEntry, userEntry)
+            messages: this.mapItems(context)
         });
     }
 
-    mapItems(client, message, guildEntry, userEntry) {
-        return client.economyManager.marketItems.map(item => {
-            const price = typeof item.price === 'function' ? item.price(client, guildEntry, userEntry) : item.price;
+    mapItems(context) {
+        return context.client.handlers.EconomyManager.marketItems.map(item => {
+            const price = typeof item.price === 'function' ? item.price(context) : item.price;
             return {
                 embed: {
                     title: `Market | ${item.name} ${item.emote ? item.emote : ''}`,
@@ -51,36 +41,36 @@ class Market extends Command {
                         inline: true
                     }],
                     footer: {
-                        text: `Showing page {index}/${client.economyManager.marketItems.length} ${client.config.admins.includes(message.author.id) ? '| Item ID: ' + item.id : ''}`
+                        text: `Showing page {index}/${context.client.handlers.EconomyManager.marketItems.length} ${context.client.config.admins.includes(context.message.author.id) ? '| Item ID: ' + item.id : ''}`
                     },
                     image: {
                         url: item.image
                     },
-                    color: client.config.options.embedColor
+                    color: context.client.config.options.embedColor.generic
 
                 },
-                item: item //Will be used by buyItem
+                item //Will be used by buyItem
             };
         });
     }
 
-    async buyItem(client, guildEntry, userEntry, message, marketPage) {
+    async buyItem(context, message, marketPage) {
         const item = marketPage.item;
-        const price = typeof item.price === 'function' ? item.price(client, guildEntry, userEntry) : item.price;
-        if (item.buyableOnce && userEntry.hasItem(item.id)) {
-            return message.channel.createMessage(':x: Sorry but this item is a unique possession and you already own one :v');
-        } else if (price > userEntry.economy.coins) {
-            return message.channel.createMessage(`:x: You need **${price - userEntry.economy.coins}** more holy coins to purchase that`);
+        const price = typeof item.price === 'function' ? item.price(context) : item.price;
+        if (item.buyableOnce && context.userEntry.hasItem(item.id)) {
+            return context.message.channel.createMessage(':x: Sorry but this item is a unique possession and you already own one :v');
+        } else if (price > context.userEntry.economy.coins) {
+            return context.message.channel.createMessage(`:x: You need **${price - context.userEntry.economy.coins}** more holy coins to purchase that`);
         }
-        userEntry.subtractCoins(price);
-        userEntry.addItem(item);
+        context.userEntry.subtractCoins(price);
+        context.userEntry.addItem(item);
         if (item.run) {
-            item.run(client, guildEntry, userEntry);
+            item.run(context);
         }
-        await client.database.set(userEntry, 'user');
+        await context.userEntry.save();
         message.exit();
-        return message.channel.createMessage(`:white_check_mark: The \`${item.name}\` has been added to your belongings, you now have \`${userEntry.economy.coins}\` holy coins`);
+        return context.message.channel.createMessage(`:white_check_mark: The \`${item.name}\` has been added to your belongings, you now have \`${context.userEntry.economy.coins}\` holy coins`);
     }
 }
 
-module.exports = new Market();
+module.exports = Market;

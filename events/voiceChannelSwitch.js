@@ -1,10 +1,8 @@
-'use strict';
-
 class VoiceChannelSwitch {
     constructor() {}
 
     async handle(client, member, newChannel, oldChannel) {
-        const musicConnection = client.musicManager.connections.get(oldChannel.guild.id);
+        const musicConnection = client.handlers.MusicManager.connections.get(oldChannel.guild.id);
         if (!musicConnection || (member.id !== client.bot.user.id && musicConnection.player.channelId !== oldChannel.id)) {
             return;
         }

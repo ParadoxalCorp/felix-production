@@ -1,56 +1,73 @@
-'use strict';
+const AdminCommands = require('../../structures/CommandCategories/AdminCommands');
 
-const Command = require('../../util/helpers/modules/Command');
-
-class ClientStats extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'clientstats',
-            category: 'admin',
-            description: 'Get detailed statistics about the bot',
-            usage: '{prefix}stats'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: ["cs", "botstats"],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class ClientStats extends AdminCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'clientstats',
+                description: 'Get detailed statistics about the bot',
+                usage: '{prefix}stats'
+            },
+            conf: {
+                aliases: ["cs", "botstats"],
+            }
+        });
     }
+    /** @param {import("../../structures/Contexts/AdminContext")} context */
 
-    async run(client, message) {
-        if (client.bot.uptime < 60000) {
-            return message.channel.createMessage(`:x: Please wait another ${60000 - client.bot.uptime}ms`);
+    async run(context) {
+        if (context.client.bot.uptime < 60000) {
+            return context.message.channel.createMessage(`:x: Please wait another ${60000 - context.client.bot.uptime}ms`);
         }
-        await message.channel.createMessage({
+        const normalizeMemory = (memory) => `${(memory / 1024 / 1024).toFixed(2)}MB`;
+        const normalizeLoad = (load) => `${(load * 100).toFixed(2)}%`;
+        await context.message.channel.createMessage({
             embed: {
                 title: ':gear: Client stats',
                 fields: [{
-                        name: 'Clusters',
-                        value: `Total: ${client.stats.clusters.length}\nActive: ${client.stats.clusters.length - client.stats.clusters.filter(c => c.guilds < 1).length}`,
-                        inline: true
-                    },
-                    {
-                        name: 'RAM usage',
-                        value: `${client.stats.totalRam.toFixed(2)}MB`,
-                        inline: true
-                    },
-                    {
-                        name: 'General stats',
-                        value: `Guilds: ${client.stats.guilds} | Cached users: ${client.stats.users} | Large guilds: ${client.stats.largeGuilds}`
-                    }
+                    name: 'Clusters',
+                    value: `Total: ${context.client.stats.clusters.length}\nActive: ${context.client.stats.clusters.length - context.client.stats.clusters.filter(c => c.guilds < 1).length}`,
+                    inline: true
+                },
+                {
+                    name: 'RAM usage',
+                    value: `${context.client.stats.totalRam.toFixed(2)}MB`,
+                    inline: true
+                },
+                {
+                    name: 'General stats',
+                    value: `Guilds: ${context.client.stats.guilds} | Cached users: ${context.client.stats.users} | Large guilds: ${context.client.stats.largeGuilds}`
+                },
+                {
+                    name: 'Lavalink nodes',
+                    value: (() => {
+                        let nodesStatus = '```ini\n';
+                        for (const node of context.client.config.options.music.nodes) {
+                            const lavalinkNode = context.client.bot.voiceConnections.nodes.get(node.host);
+                            nodesStatus += `[${node.location}]: ${lavalinkNode.connected ? '[Online]' : '[Offline]'}\n`;
+                            nodesStatus += `=> Used memory: [${normalizeMemory(lavalinkNode.stats.memory.used)}]\n`;
+                            nodesStatus += `=> Allocated memory: [${normalizeMemory(lavalinkNode.stats.memory.allocated)}]\n`;
+                            nodesStatus += `=> Free memory: [${normalizeMemory(lavalinkNode.stats.memory.free)}]\n`;
+                            nodesStatus += `=> Reservable memory: [${normalizeMemory(lavalinkNode.stats.memory.reservable)}]\n`;
+                            nodesStatus += `=> Cores: [${lavalinkNode.stats.cpu.cores}]\n`;
+                            nodesStatus += `=> System load: [${normalizeLoad(lavalinkNode.stats.cpu.systemLoad)}]\n`;
+                            nodesStatus += `=> Node load: [${normalizeLoad(lavalinkNode.stats.cpu.lavalinkLoad)}]\n`;
+                            nodesStatus += `=> Uptime: [${context.client.utils.timeConverter.toElapsedTime(lavalinkNode.stats.uptime, true)}]\n`;
+                            nodesStatus += `=> Players: [${lavalinkNode.stats.players}]\n`;
+                            nodesStatus += `=> Paused players: [${lavalinkNode.stats.players - lavalinkNode.stats.playingPlayers}]\n`;
+                        }
+                        return nodesStatus + '```';
+                    })()
+                }
                 ],
-                color: client.config.options.embedColor
+                color: context.client.config.options.embedColor.generic
             }
         });
-        const clustersShardsStats = await client.IPCHandler.fetchShardsStats();
-        return message.channel.createMessage('```ini\n' + client.stats.clusters.map(c => {
-            let clusterStats = `Cluster [${c.cluster}]: [${c.shards}] shard(s) | [${c.guilds}] guild(s) | [${c.ram.toFixed(2)}]MB RAM used | Up for [${client.timeConverter.toElapsedTime(c.uptime, true)}]\n`;
-            for (const shard of clustersShardsStats.find(cluster => cluster.clusterID === c.cluster).data) {
+        const clustersShardsStats = await context.client.handlers.IPCHandler.fetchShardsStats();
+        return context.message.channel.createMessage('```ini\n' + context.client.stats.clusters.map(c => {
+            const cluster = clustersShardsStats.find(cl => cl.clusterID === c.cluster);
+            let clusterStats = `Cluster [${c.cluster}]: [${c.shards}] shard(s) | [${c.guilds}] guild(s) | [${c.ram.toFixed(2)}]MB RAM used | Up for [${context.client.utils.timeConverter.toElapsedTime(c.uptime, true)}] | Music connections: [${cluster.data[0].musicConnections}]\n`;
+            for (const shard of cluster.data) {
                 clusterStats += `=> Shard [${shard.id}]: [${shard.guilds}] guild(s) | [${shard.status}] | ~[${shard.latency}]ms\n`;
             }
             return clusterStats;
@@ -58,4 +75,4 @@ class ClientStats extends Command {
     }
 }
 
-module.exports = new ClientStats();
+module.exports = ClientStats;

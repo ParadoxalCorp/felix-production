@@ -1,33 +1,22 @@
-'use strict';
+const GenericCommands = require('../../structures/CommandCategories/GenericCommands');
 
-const Command = require('../../util/helpers/modules/Command');
-
-class Ping extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'ping',
-            category: 'generic',
-            description: 'pong',
-            usage: '{prefix}ping'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Ping extends GenericCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'ping',
+                description: 'pong',
+                usage: '{prefix}ping',
+            }
+        });
     }
+    /** @param {import("../../structures/Contexts/GenericContext")} context */
 
-    // eslint-disable-next-line no-unused-vars 
-    async run(client, message, args, guildEntry, userEntry) {
+    async run(context) {
         const startTime = Date.now();
-        const messageSent = await message.channel.createMessage(`Baguetting the hell outta Diskurd...`);
+        const messageSent = await context.message.channel.createMessage(context.emote('ping'));
         return messageSent.edit(`~~Baguette~~ Pong | \`${Date.now() - startTime}\`ms`);
     }
 }
 
-module.exports = new Ping();
+module.exports = Ping;

@@ -1,114 +1,107 @@
-'use strict';
+const GenericCommands = require('../../structures/CommandCategories/GenericCommands');
 
-const Command = require('../../util/helpers/modules/Command');
-
-class Help extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'help',
-            category: 'generic',
-            description: 'Display the list of available commands or get more details on a specific command.\n\nYou can use the `--noEmbed` and `--dm` options to respectively send the help without embed and send it in your direct messages. Like `{prefix}help --noEmbed`, note that those options are case-insensitive and can be combined',
-            usage: '{prefix}help'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: ['halp'],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
-        this.extra = {
-            additionalInfo: (client) => {
-                let info = `Hey ! Update ${client.package.version} is out ! Check out the [changelog](https://github.com/ParadoxalCorp/felix-production/blob/master/changelog.md)\n`;
-                info += `Have a few minutes to fill a survey ? If so, how about [filling this survey](https://goo.gl/forms/bl9pk7qLAl5WDJ2y2)?\n`;
-                info += `You can find a detailed documentation [here](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md)`;
-                return info;
-            }
-        };
+class Help extends GenericCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'help',
+                description: 'Display the list of available commands or get more details on a specific command.\n\nYou can use the `--noEmbed` and `--dm` options to respectively send the help without embed and send it in your direct messages. Like `{prefix}help --noEmbed`, note that those options are case-insensitive and can be combined',
+                usage: '{prefix}help',
+            },
+            conf: {
+                aliases: ["halp"]
+            },
+        });
     }
 
-    async run(client, message, args, guildEntry) {
-        const noEmbed = new RegExp(/--noEmbed/gim).test(args.join(" "));
-        const dm = new RegExp(/--dm/gim).test(args.join(" "));
+    get additionalInfo() {
+        let info = `Hey ! Update ${this.client.package.version} is out ! Check out the [changelog](https://github.com/ParadoxalCorp/felix-production/blob/master/changelog.md)\n`;
+        info += `Have a few minutes to fill a survey ? If so, how about [filling this survey](https://goo.gl/forms/bl9pk7qLAl5WDJ2y2)?\n`;
+        info += `You can find a detailed documentation [here](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md)`;
+        return info;
+    }
+
+    /** @param {import("../../structures/Contexts/GenericContext")} context */
+
+    async run(context) {
+        const noEmbed = new RegExp(/--noEmbed/gim).test(context.args.join(" "));
+        const dm = new RegExp(/--dm/gim).test(context.args.join(" "));
         //If a command name is specified (ignore arguments), get this command help, otherwise get the general help
         /** @type {any} */
-        let helpMessage = !args.filter(a => !a.startsWith('--'))[0] ? this.getOverallHelp(client, message, guildEntry) : this.getCommandHelp(client, message, args, guildEntry);
+        let helpMessage = !context.args.filter(a => !a.startsWith('--'))[0] ? this.getOverallHelp(context) : this.getCommandHelp(context);
 
         if (!helpMessage) {
             return;
         }
 
         if (dm) {
-            message.author.getDMChannel().then(channel => {
+            context.message.author.getDMChannel().then(channel => {
                 channel.createMessage(noEmbed ? helpMessage.normalMessage : helpMessage.embedMessage)
                     .catch(() => {
-                        return message.channel.createMessage(`:x: I couldn't send you a direct message, you might have your DMs disabled. You should in this case enable them if you want me to send you a direct message.`);
+                        return context.message.channel.createMessage(`:x: I couldn't send you a direct message, you might have your DMs disabled. You should in this case enable them if you want me to send you a direct context.message.`);
                     });
             });
         } else {
-            return message.channel.createMessage(noEmbed ? helpMessage.normalMessage : helpMessage.embedMessage);
+            return context.message.channel.createMessage(noEmbed ? helpMessage.normalMessage : helpMessage.embedMessage);
         }
     }
 
-    getOverallHelp(client, message, guildEntry) {
-            const categories = [];
+    getOverallHelp(context) {
+        const categories = [];
 
-            client.commands.forEach(c => {
-                if (!categories.includes(c.help.category) && (client.config.admins.includes(message.author.id) || c.help.category !== "admin")) {
-                    categories.push(c.help.category);
+        context.client.commands.forEach(c => {
+            if (!categories.includes(c.help.category || c.category.name) && (context.client.config.admins.includes(context.message.author.id) || !c.conf.hidden)) {
+                categories.push(c.help.category || c.category.name);
+            }
+        });
+
+        return {
+            embedMessage: {
+                embed: {
+                    title: ":book: Available commands",
+                    description: `Here is the list of all available commands and their categories, you can use commands like \`${context.prefix}<command>\`\n\n${this.additionalInfo}`,
+                    fields: categories.map(c => {
+                        const firstCommandInCategory = context.client.commands.find(cmd => (cmd.help.category || cmd.category.name) === c);
+                        const subCategories = this.getSubCategories(c);
+                        const value = subCategories[0] 
+                            ? subCategories.map(sc => `**${sc}**: ${context.client.commands.filter(command => command.help.subCategory === sc).map(command => '`' + command.help.name + '`').join(" ")}`).join('\n\n')
+                            : context.client.commands.filter(command => (command.help.category || command.category.name) === c).map(command => `\`${command.help.name}\``).join(" ");
+                        return {
+                            name: `${c} ${firstCommandInCategory.category ? this.parseCategoryEmotes(context, firstCommandInCategory.category.emote) : ''}`,
+                            value: value
+                        };
+                    }),
+                    footer: {
+                        text: `For a total of ${context.client.commands.size} commands`
+                    },
+                    color: context.client.config.options.embedColor.generic
                 }
-            });
-
-            return {
-                embedMessage: {
-                    embed: {
-                        title: ":book: Available commands",
-                        description: `Here is the list of all available commands and their categories, you can use commands like \`${this.getPrefix(client, guildEntry)}<command>\`\n\n${this.extra.additionalInfo(client)}`,
-                        fields: categories.map(c => {
-                            const subCategories = this.getSubCategories(client, c);
-                            const value = subCategories[0] 
-                            ? subCategories.map(sc => `**${sc}**: ${client.commands.filter(command => command.help.subCategory === sc).map(command => '`' + command.help.name + '`').join(" ")}`).join('\n\n')
-                            : client.commands.filter(command => command.help.category === c).map(command => `\`${command.help.name}\``).join(" ");
-                            return {
-                                name: c,
-                                value: value
-                            };
-                        }),
-                        footer: {
-                            text: `For a total of ${client.commands.size} commands`
-                        },
-                        color: client.config.options.embedColor
-                    }
-                },
-                normalMessage: `Here is the list of all available commands and their categories, you can use commands like \`${this.getPrefix(client, guildEntry)}<command>\`\n\n${categories.map(c => '**' + c + '** =>' + client.commands.filter(command => command.help.category === c).map(command => '\`' + command.help.name + '\`').join(', ')).join('\n\n')}`
+            },
+            normalMessage: `Here is the list of all available commands and their categories, you can use commands like \`${context.prefix}<command>\`\n\n${categories.map(c => '**' + c + '** =>' + context.client.commands.filter(command => (command.help.category || command.category.name) === c).map(command => '\`' + command.help.name + '\`').join(', ')).join('\n\n')}`
         };
     }
 
-    getCommandHelp(client, message, args, guildEntry) {
-        const commandName = args.filter(a => !a.startsWith('--'))[0];
-        const command = client.commands.get(commandName) || client.commands.get(client.aliases.get(commandName));
+    getCommandHelp(context) {
+        const commandName = context.args.filter(a => !a.startsWith('--'))[0];
+        const command = context.client.commands.get(commandName) || context.client.commands.get(context.client.aliases.get(commandName));
         if (!command) {
             return false;
         }
         
         return {
-            embedMessage: this.getEmbedCommandHelp(client, message, args, command, guildEntry),
-            normalMessage: this.getNormalCommandHelp(client, message, args, command, guildEntry)
+            embedMessage: this.getEmbedCommandHelp(context, command),
+            normalMessage: this.getNormalCommandHelp(context, command)
         };
     }
 
-    getEmbedCommandHelp(client, message, args, command, guildEntry) {
-        
+    getEmbedCommandHelp(context, command) {      
         const embedFields = [{
             name: 'Category',
-            value: command.help.category,
+            value: command.help.category || command.category.name,
             inline: true
         }, {
             name: 'Usage',
-            value: '`' + command.help.usage.replace(/{prefix}/gim, this.getPrefix(client, guildEntry)) + '`',
+            value: '`' + command.help.usage.replace(/{prefix}/gim, context.prefix) + '`',
             inline: true
         }];
         if (command.help.params) {
@@ -168,9 +161,9 @@ class Help extends Command {
         return {
             embed: {
                 title: `:book: Help for the ${command.help.name} command`,
-                description: command.help.description.replace(/{prefix}/gim, this.getPrefix(client, guildEntry)),
+                description: command.help.description.replace(/{prefix}/gim, context.prefix),
                 fields: embedFields,
-                color: client.config.options.embedColor,
+                color: context.client.config.options.embedColor.generic,
                 image: command.help.preview ? {
                     url: command.help.preview
                 } : undefined
@@ -178,11 +171,11 @@ class Help extends Command {
         };
     }
 
-    getNormalCommandHelp(client, message, args, command, guildEntry) {
+    getNormalCommandHelp(context, command) {
         //Focusing highly on readability here, one-lining this would look like hell
-        let normalHelp = `**Description**: ${command.help.description.replace(/{prefix}/gim, this.getPrefix(client, guildEntry))}\n`;
-        normalHelp += `**Category**: ${command.help.category}\n`;
-        normalHelp += `**Usage**: \`${command.help.usage.replace(/{prefix}/gim, this.getPrefix(client, guildEntry))}\`\n`;
+        let normalHelp = `**Description**: ${command.help.description.replace(/{prefix}/gim, context.prefix)}\n`;
+        normalHelp += `**Category**: ${command.help.category || command.category.name}\n`;
+        normalHelp += `**Usage**: \`${command.help.usage.replace(/{prefix}/gim, context.prefix)}\`\n`;
         if (command.conf.aliases[0]) {
             normalHelp += `**Aliases**: ${command.conf.aliases.map(a => '\`' + a + '\`').join(', ')}\n`;
         }
@@ -215,11 +208,11 @@ class Help extends Command {
         return normalHelp;
     }
 
-    getSubCategories(client, category) {
+    getSubCategories(category) {
         let subCategories = [];
-        for (const value of client.commands) {
+        for (const value of this.client.commands) {
             const cmd = value[1];
-            if (cmd.help.category === category) {
+            if ((cmd.help.category || cmd.category.name) === category) {
                 if (cmd.help.subCategory && !subCategories.includes(cmd.help.subCategory)) {
                     subCategories.push(cmd.help.subCategory);
                 }
@@ -228,9 +221,14 @@ class Help extends Command {
         return subCategories;
     }
 
-    getPrefix(client, guildEntry) {
-        return guildEntry && guildEntry.prefix ? (guildEntry.prefix + (guildEntry.spacedPrefix ? ' ' : '')) : `${client.config.prefix} `;
+    parseCategoryEmotes(context, emotes) {
+        const emotesList = emotes.split(/\s+/g);
+        let parsedEmotes = '';
+        for (const emote of emotesList) {
+            parsedEmotes += `${context.emote(emote)} `;
+        }
+        return parsedEmotes;
     }
 }
 
-module.exports = new Help();
+module.exports = Help;

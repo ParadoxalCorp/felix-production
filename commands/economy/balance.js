@@ -1,30 +1,23 @@
-'use strict';
+const EconomyCommands = require('../../structures/CommandCategories/EconomyCommands');
 
-const Command = require('../../util/helpers/modules/Command');
-
-class Balance extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'balance',
-            category: 'economy',
-            description: 'Check your balance',
-            usage: '{prefix}balance'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['coins'],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Balance extends EconomyCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'balance',
+                description: 'Check your balance',
+                usage: '{prefix}balance'
+            },
+            conf: {
+                aliases: ['coins']
+            },
+        });
     }
+    /** @param {import("../../structures/Contexts/EconomyContext")} context */
 
-    async run(client, message, args, guildEntry, userEntry) {
-        return message.channel.createMessage(`Hai ! You currently have \`${userEntry.economy.coins}\` holy coins`);
+    async run(context) {
+        return context.message.channel.createMessage(`Hai ! You currently have \`${context.userEntry.economy.coins}\` holy coins`);
     }
 }
 
-module.exports = new Balance();
+module.exports = Balance;

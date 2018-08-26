@@ -1,47 +1,40 @@
-'use strict';
-
-const Command = require('../../util/helpers/modules/Command');
 const axios = require('axios');
+const FunCommands = require('../../structures/CommandCategories/FunCommands');
 
-class Udefine extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'udefine',
-            description: 'Search definitions through urbandictionary',
-            usage: 'udefine pizza',
-            category: 'fun'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: ["urdef", "define", "urban"],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Udefine extends FunCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'udefine',
+                description: 'Search definitions through urbandictionary',
+                usage: 'udefine pizza',
+            },
+            conf: {
+                aliases: ["urdef", "define", "urban"],
+            },
+        });
     }
 
-    //eslint-disable-next-line no-unused-vars
-    async run(client, message, args, guildEntry, userEntry) {
-        if (!args[0]) {
-            return message.channel.createMessage(":x: No search term specified");
+    /** @param {import("../../structures/Contexts/GenericContext")} context */
+
+    async run(context) {
+        if (!context.args[0]) {
+            return context.message.channel.createMessage(":x: No search term specified");
         }
-        if (!message.channel.nsfw) {
-            return message.channel.createMessage(":x: This command can only be used in a channel set as NSFW");
+        if (!context.message.channel.nsfw) {
+            return context.message.channel.createMessage(":x: This command can only be used in a channel set as NSFW");
         }
-        const result = await axios.default.get(`https://api.urbandictionary.com/v0/define?term=${encodeURIComponent(args.join(' '))}`);
+        const result = await axios.default.get(`https://api.urbandictionary.com/v0/define?term=${encodeURIComponent(context.args.join(' '))}`);
         if (!result.data) {
-            return message.channel.createMessage(":x: an error occurred");
+            return context.message.channel.createMessage(":x: an error occurred");
         }
         if (!result.data.list[0]) {
-            return message.channel.createMessage(":x: I couldn't find any results :c");
+            return context.message.channel.createMessage(":x: I couldn't find any results :c");
         }
         const firstResult = result.data.list[0];
-        return message.channel.createMessage({
+        return context.message.channel.createMessage({
             embed: {
-                color: client.config.options.embedColor,
+                color: context.client.config.options.embedColor.generic,
                 title: `Results`,
                 url: firstResult.permalink,
                 fields: [{
@@ -63,4 +56,4 @@ class Udefine extends Command {
     }
 }
 
-module.exports = new Udefine();
+module.exports = Udefine;

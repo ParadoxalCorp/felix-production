@@ -1,17 +1,12 @@
-'use strict';
-
 const config = require('./config');
 const { Master: Sharder } = require('eris-sharder');
-const axios = require('axios');
-const log = require('./util/modules/log');
+const axios = require('axios').default;
+const log = require('./utils/log');
 const r = process.argv.includes('--no-db') ? false : require('rethinkdbdash')({
     servers: [
         { host: config.database.host, port: config.database.port }
     ],
-    silent: true,
-    log: (message) => {
-        log.info(message);
-    }
+    silent: true
 });
 
 process.on('beforeExit', () => {
@@ -59,11 +54,18 @@ if (require('cluster').isMaster) {
 
             for (const botList in config.botLists) {
                 if (config.botLists[botList].token) {
-                    axios.default({
-                        method: 'post',
-                        url: config.botLists[botList].url,
-                        data: { server_count: guilds },
-                        headers: { 'Authorization': config.botLists[botList].token, 'Content-Type': 'application/json' },
+                    axios({
+                        method: 'POST',
+                        url: `http://${config.proxy.host}:${config.proxy.port}/`,
+                        data: { 
+                            data: {
+                                server_count: guilds
+                            },
+                            url: config.botLists[botList].url,
+                            headers: { 'Authorization': config.botLists[botList].token, 'Content-Type': 'application/json' }, 
+                            method: 'POST'
+                        },
+                        headers: { 'Authorization': config.proxy.auth, 'Content-Type': 'application/json' },
                         timeout: 15000
                     }).then(() => {
                         log.info(`Successfully posted guild stats to ${botList}`);

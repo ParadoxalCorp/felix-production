@@ -1,5 +1,3 @@
-'use strict';
-
 /** 
  * @typedef {import("eris").Guild} Guild 
  * @typedef {import("eris").Member} Member
@@ -22,11 +20,14 @@ class GuildMemberRemoveHandler {
      * @memberof GuildMemberRemoveHandler
      */
     async handle(client, guild, member) {
-        if (member.user.bot || !client.database || !client.database.healthy) {
+        if (member.user.bot) {
             return;
         }
-        const user = client.extendedUser(member.user);
-        const guildEntry = await client.database.getGuild(guild.id);
+        const guildEntry = await client.handlers.DatabaseWrapper.getGuild(guild.id);
+        if (!guildEntry) {
+            return;
+        }
+        const user = new client.structures.ExtendedUser(member.user, client);
         //Farewells
         if (!guildEntry.farewells.channel || !guildEntry.farewells.enabled || !guildEntry.farewells.message) {
             return;
@@ -43,9 +44,9 @@ class GuildMemberRemoveHandler {
 
     replaceFarewellTags(guild, user, message) {
         return message.replace(/\%USERNAME\%/gim, `${user.username}`)
-        .replace(/\%USERTAG%/gim, `${user.tag}`)
-        .replace(/\%GUILD\%/gim, `${guild.name}`)
-        .replace(/\%MEMBERCOUNT%/gim, guild.memberCount);
+            .replace(/\%USERTAG%/gim, `${user.tag}`)
+            .replace(/\%GUILD\%/gim, `${guild.name}`)
+            .replace(/\%MEMBERCOUNT%/gim, guild.memberCount);
     }
 }
 

@@ -1,10 +1,8 @@
-'use strict';
-
 class VoiceChannelLeave {
     constructor() {}
 
     async handle(client, member, channel) {
-        const musicConnection = client.musicManager.connections.get(channel.guild.id);
+        const musicConnection = client.handlers.MusicManager.connections.get(channel.guild.id);
         if (!musicConnection || musicConnection.player.channelId !== channel.id) {
             return;
         }

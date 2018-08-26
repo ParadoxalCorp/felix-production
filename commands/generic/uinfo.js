@@ -1,111 +1,96 @@
-'use strict';
-//@ts-check
+const GenericCommands = require('../../structures/CommandCategories/GenericCommands');
 
-const Command = require('../../util/helpers/modules/Command');
-
-class Uinfo extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'uinfo',
-            category: 'generic',
-            description: 'Display some ~~useless~~ info about the user',
-            usage: '{prefix}uinfo'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: ['userinfo', 'profile'],
-            requirePerms: [],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Uinfo extends GenericCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'uinfo',
+                description: 'Display some ~~useless~~ info about the user',
+                usage: '{prefix}uinfo'
+            },
+            conf: {
+                aliases: ['userinfo', 'profile'],
+                requireDB: true,
+                guildOnly: true
+            }
+        });
     }
+    /** @param {import("../../structures/Contexts/GenericContext")} context */
 
-    async run(client, message, args, guildEntry, userEntry) {
-        const user = await this.getUserFromText({ message, client, text: args[0] });
-        const target = user ? client.extendedUser(user) : client.extendedUser(message.author);
-        const targetEntry = target.id !== message.author.id ? await client.database.getUser(target.id) : userEntry;
-        const localLevelDetails = client.getLevelDetails(guildEntry.getLevelOf(target.id));
-        const globalLevelDetails = client.getLevelDetails(targetEntry.getLevel());
-        const userExp = guildEntry.experience.members.find(u => u.id === target.id) ? guildEntry.experience.members.find(u => u.id === target.id).experience : 0;
-        const member = message.channel.guild.members.get(target.id);
+    async run(context) {
+        const user = await this.getUserFromText({ message: context.message, client: context.client, text: context.args[0] });
+        const target = user || context.message.author;
+        const targetEntry = target.id !== context.message.author.id ? await context.client.handlers.DatabaseWrapper.getUser(target.id) : context.userEntry;
+        const localLevelDetails = context.client.handlers.ExperienceHandler.getLevelDetails(context.guildEntry.getLevelOf(target.id));
+        const globalLevelDetails = context.client.handlers.ExperienceHandler.getLevelDetails(targetEntry.getLevel());
+        const userExp = context.guildEntry.experience.members.find(u => u.id === target.id) ? context.guildEntry.experience.members.find(u => u.id === target.id).experience : 0;
+        const member = context.message.channel.guild.members.get(target.id);
 
-        let embedFields = [];
-
-        if (member.nick) {
-            embedFields.push({
-                name: ":busts_in_silhouette: Nickname",
-                value: member.nick,
-                inline: true
-            });
-        }
-
-        const highestRole = this.getHighestRole(target.id, message.channel.guild);
-
-        embedFields.push({
-            name: ":arrow_up_small: Highest Role",
-            value: highestRole ? `<@&${highestRole.id}>` : `<@&${message.channel.guild.id}>`,
+        const embedFields = [{
+            name: 'Name/Tag',
+            value: `${member.username}#${member.discriminator}`,
             inline: true
-        });
-
-        embedFields.push({
-            name: ":notepad_spiral: Roles",
-            value: this.sliceRoles(member.roles.sort((a, b) => member.guild.roles.get(b).position - member.guild.roles.get(a).position).map(r => `<@&${message.channel.guild.roles.get(r).id}>`)) + ` (${member.roles.length})`,
-        });
-
-        embedFields.push({
-            name: ":date: Created",
-            value: client.timeConverter.toHumanDate(member.createdAt),
+        },{
+            name: 'Nickname',
+            value: member.nick ? member.nick : 'None',
             inline: true
-        });
-
-        embedFields.push({
-            name: ":date: Joined",
-            value: client.timeConverter.toHumanDate(member.joinedAt),
+        },{
+            name: 'Status',
+            value: member.status,
             inline: true
-        });
-
-        embedFields.push({
-            name: ":star: Local experience",
-            value: "Level: " + localLevelDetails.level + "\n" +
-                "Exp: " + userExp + "\n" +
-                "Level progress: " + (userExp - localLevelDetails.thisLevelExp) + " / " + (localLevelDetails.nextLevelExp - localLevelDetails.thisLevelExp) + ` (${(((userExp - localLevelDetails.thisLevelExp)/(localLevelDetails.nextLevelExp - localLevelDetails.thisLevelExp))*100).toFixed(2)}%)`,
-        });
-
-        embedFields.push({
-            name: ':star: Global experience',
-            value: "Level: " + globalLevelDetails.level + "\n" +
-                "Exp: " + targetEntry.experience.amount + "\n" +
-                "Level progress: " + (targetEntry.experience.amount - globalLevelDetails.thisLevelExp) + " / " + (globalLevelDetails.nextLevelExp - globalLevelDetails.thisLevelExp) + ` (${(((targetEntry.experience.amount - globalLevelDetails.thisLevelExp)/(globalLevelDetails.nextLevelExp - globalLevelDetails.thisLevelExp))*100).toFixed(2)}%)`
-        });
-
-        embedFields.push({
-            name: ":moneybag: Coins",
-            value: `${targetEntry.economy.coins}`,
+        },{
+            name: 'Game',
+            value: member.game ? member.game.name : 'None',
             inline: true
-        });
-
-        embedFields.push({
-            name: ':heart: Love points',
+        },{
+            name: "Created",
+            value: context.client.utils.timeConverter.toHumanDate(member.createdAt),
+            inline: true
+        },{
+            name: "Joined",
+            value: context.client.utils.timeConverter.toHumanDate(member.joinedAt),
+            inline: true
+        },{
+            name: 'Love points',
             value: `${targetEntry.love.amount}`,
             inline: true
-        });
-
-        return message.channel.createMessage({
+        },{
+            name: "Coins",
+            value: `${targetEntry.economy.coins}`,
+            inline: true
+        },{
+            name: "Local experience",
+            value: `Level: ${localLevelDetails.level}
+      Exp: ${userExp}
+      Level progress: ${(userExp - localLevelDetails.thisLevelExp)} / ${(localLevelDetails.nextLevelExp - localLevelDetails.thisLevelExp)}`,
+            inline: true
+        },{
+            name: 'Global experience',
+            value: `Level: ${globalLevelDetails.level}
+      Exp: ${targetEntry.experience.amount}
+      Level progress: ${(targetEntry.experience.amount - globalLevelDetails.thisLevelExp)} / ${(globalLevelDetails.nextLevelExp - globalLevelDetails.thisLevelExp)}`,
+            inline: true
+        },{
+            name: `Roles: (${member.roles.length})`,
+            value: member.roles.length === 0 ? 'No role' : this.sliceRoles(member.roles.sort((a,b) => member.guild.roles.get(b).position - member.guild.roles.get(a).position).map(r => `<@&${r}>`))
+        }];
+        context.message.channel.createMessage({
+            content: `${member.username}'s info`,
             embed: {
-                title: `:bust_in_silhouette: User info`,
+                color: context.client.config.options.embedColor.generic,
                 author: {
-                    name: target.tag,
-                    icon_url: target.avatarURL
+                    name: `Requested by: ${context.message.author.username}#${context.message.author.discriminator}`,
+                    icon_url: context.message.author.avatarURL
                 },
-                fields: embedFields,
-                image: {
+                thumbnail: {
                     url: target.avatarURL
                 },
+                fields: embedFields,
                 timestamp: new Date(),
-                color: client.config.options.embedColor
+                footer: {
+                    text: context.client.bot.user.username,
+                    icon_url: context.client.bot.user.avatarURL
+                }
             }
         });
     }
@@ -124,5 +109,4 @@ class Uinfo extends Command {
         return text;
     }
 }
-
-module.exports = new Uinfo();
+module.exports = Uinfo;

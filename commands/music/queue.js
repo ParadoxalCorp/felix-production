@@ -1,74 +1,62 @@
-'use strict';
+const MusicCommands = require('../../structures/CommandCategories/MusicCommands');
 
-const Command = require('../../util/helpers/modules/Command');
-
-class Queue extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'queue',
-            category: 'music',
-            description: 'Queue a song or check the queue, to check the queue, just run `{prefix}queue`. You can input: A `YouTube` URL (including livestreams), a `Soundcloud` URL, a `Twitch` channel URL (the channel must be live);\n\nOr a search term to search through `YouTube` or `Soundcloud`, by default the search is done on `YouTube`, to search through `Soundcloud`, you must specify it like `{prefix}queue soundcloud <search_term>`',
-            usage: '{prefix}queue <song_url|search_term>'
-        };
-        this.conf = {
-            requireDB: true,
-            disabled: false,
-            aliases: [],
-            requirePerms: ['voiceConnect', 'voiceSpeak'],
-            guildOnly: true,
-            ownerOnly: false,
-            expectedArgs: []
-        };
-    }
-
-    // eslint-disable-next-line no-unused-vars 
-    async run(client, message, args, guildEntry, userEntry) {
-        if (!guildEntry.hasPremiumStatus()) {
-            return message.channel.createMessage(':x: Sorry but as they are resources-whores, music commands are only available to our patreon donators. Check the `bot` command for more info');
-        }
-        const member = message.channel.guild.members.get(message.author.id);
-        const clientMember = message.channel.guild.members.get(client.bot.user.id);
-        let connection = client.musicManager.connections.get(message.channel.guild.id);
-        if (!args[0]) {
-            let queue = connection ? connection.queue : await client.musicManager.getQueueOf(message.channel.guild.id);
-            if (!queue[0]) {
-                return message.channel.createMessage(`:x: There is nothing in the queue`);
+class Queue extends MusicCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'queue',
+                description: 'Queue a song or check the queue, to check the queue, just run `{prefix}queue`. You can input: A `YouTube` URL (including livestreams), a `Soundcloud` URL, a `Twitch` channel URL (the channel must be live);\n\nOr a search term to search through `YouTube` or `Soundcloud`, by default the search is done on `YouTube`, to search through `Soundcloud`, you must specify it like `{prefix}queue soundcloud <search_term>`',
+                usage: '{prefix}queue <song_url|search_term>'
             }
-            return message.channel.createMessage(this.formatQueue(client, queue, connection));
+        });
+    }
+    /** @param {import("../../structures/Contexts/MusicContext")} context The context */
+
+    async run(context) {
+        const member = context.message.channel.guild.members.get(context.message.author.id);
+        const clientMember = context.message.channel.guild.members.get(this.client.bot.user.id);
+        if (!context.args[0]) {
+            let queue = context.connection ? context.connection.queue : await this.client.handlers.MusicManager.getQueueOf(context.message.channel.guild.id);
+            if (!queue[0]) {
+                return context.message.channel.createMessage(`:x: There is nothing in the queue`);
+            }
+            return this.formatQueue(context, queue);
         }
         if (!member.voiceState.channelID) {
-            return message.channel.createMessage(':x: You are not connected to any voice channel');
+            return context.message.channel.createMessage(':x: You are not connected to any voice channel');
         }
         if (!clientMember.voiceState.channelID) {
-            if (Array.isArray(this.clientHasPermissions(message, client, ['voiceConnect', 'voiceSpeak'], message.channel.guild.channels.get(member.voiceState.channelID)))) {
-                return message.channel.createMessage(':x: It seems like I lack the permission to connect or to speak in the voice channel you are in :c');
+            if (Array.isArray(this.this.clientHasPermissions(context.message, this.client, ['voiceConnect', 'voiceSpeak'], context.message.channel.guild.channels.get(member.voiceState.channelID)))) {
+                return context.message.channel.createMessage(':x: It seems like I lack the permission to connect or to speak in the voice channel you are in :c');
             }
         }
-        if (!connection) {
-            connection = await client.musicManager.getPlayer(message.channel.guild.channels.get(member.voiceState.channelID));
+        if (!context.connection) {
+            context.connection = await this.client.handlers.MusicManager.getPlayer(context.message.channel.guild.channels.get(member.voiceState.channelID));
         }
-        let tracks = await client.musicManager.resolveTracks(connection.player.node, args.join(' '));
+        const resolvedTracks = await this.client.handlers.MusicManager.resolveTracks(context.connection.player.node, context.args.join(' '));
+        if (resolvedTracks.loadType === this.client.handlers.MusicManager.constants.loadTypes.playlist) {
+            return context.message.channel.createMessage(':x: Oops, this looks like a playlist to me, please use the `addplaylist` command instead');
+        }
         let queued;
-        let track = tracks[0];
+        let track = resolvedTracks.tracks[0];
         if (!track) {
-            return message.channel.createMessage(`:x: I could not find any song :c, please make sure to:\n- Follow the syntax (check \`${client.commands.get('help').getPrefix(client, guildEntry)}help ${this.help.name}\`)\n- Use HTTPS links, unsecured HTTP links aren't supported\n- If a YouTube video, I can't play it if it is age-restricted\n - If a YouTube video, it might be blocked in the country my servers are`);
+            return context.message.channel.createMessage(`:x: I could not find any song :c, please make sure to:\n- Follow the syntax (check \`${context.prefix}help ${this.help.name}\`)\n- Use HTTPS links, unsecured HTTP links aren't supported\n- If a YouTube video, I can't play it if it is age-restricted\n - If a YouTube video, it might be blocked in the country my servers are`);
         }
-        if (tracks.length > 1) {
-            track = await client.commands.get('play').selectTrack(client, message, tracks);
+        if (resolvedTracks.tracks.length > 1) {
+            track = await this.selectTrack(context, resolvedTracks.tracks);
             if (!track) {
                 return;
             }
         }
         if (track.info.isStream) {
-            return message.channel.createMessage(':x: I am sorry but you cannot add live streams to the queue, you can only play them immediately');
+            return context.message.channel.createMessage(':x: I am sorry but you cannot add live streams to the queue, you can only play them immediately');
         }
-        if (!connection.player.playing && !connection.player.paused) {
-            connection.play(track, message.author.id);
+        if (!context.connection.player.playing && !context.connection.player.paused) {
+            context.connection.play(track, context.message.author.id);
         } else {
-            queued = connection.addTrack(track, message.author.id);
+            queued = context.connection.addTrack(track, context.message.author.id);
         }
-        return message.channel.createMessage({embed: {
+        return context.message.channel.createMessage({embed: {
             title: `:musical_note: ${queued ? 'Successfully enqueued' : 'Now playing'}`,
             description: `[${track.info.title}](${track.info.uri})`,
             fields: [{
@@ -77,36 +65,69 @@ class Queue extends Command {
                 inline: true
             }, {
                 name: 'Duration',
-                value: client.musicManager.parseDuration(track),
+                value: this.client.handlers.MusicManager.parseDuration(track),
                 inline: true
             }, {
                 name: 'Estimated time until playing',
-                value: client.musicManager.parseDuration(queued.timeUntilPlaying)
+                value: this.client.handlers.MusicManager.parseDuration(queued.timeUntilPlaying)
             }],
-            color: client.config.options.embedColor
+            color: this.client.config.options.embedColor.generic
         }});
     }
 
-    formatQueue(client, connectionQueue, connection) {
-        let formattedQueue = '';
-        if (connection) {
-            formattedQueue += `:musical_note: Now playing: **${connection.nowPlaying.info.title}** `;
-            formattedQueue += `(${client.musicManager.parseDuration(connection.player.state.position)}/${client.musicManager.parseDuration(connection.nowPlaying)})\n`;
-            formattedQueue += `Repeat: ${client.commands.get('repeat').extra[connection.repeat].emote}\n\n`;
+    formatQueue(context, connectionQueue) {
+        let formattedQueue = [this.queuePage(context)];
+        if (context.connection) {
+            formattedQueue[0].embed.description = `${context.emote("headphones")} Now playing: [${this.shorten(context.connection.nowPlaying.info.title)}](${context.connection.nowPlaying.info.uri}) `;
+            formattedQueue[0].embed.description += `(${this.client.handlers.MusicManager.parseDuration(context.connection.player.state.position)}/${this.client.handlers.MusicManager.parseDuration(context.connection.nowPlaying)})\n`;
+            formattedQueue[0].embed.description += `Repeat: ${this.client.commands.get('repeat').extra[context.connection.repeat].emote}\n\n`;
         }
+        let page = 0;
         let i = 1;
         let queue = [...connectionQueue];
         for (const track of queue) {
-            if (formattedQueue.length >= 1870) {
-                return formattedQueue += `\n\nAnd **${queue.length - i}** more... ${connection ? ("**Total queue estimated duration**: `" + client.musicManager.parseDuration(connection.queueDuration) + "`") : ''}`;
+            if (formattedQueue[page].embed.description.length >= 1800) {
+                formattedQueue.push(this.queuePage(context));
+                page++;
+            } else {
+                formattedQueue[page].embed.description += `\`${i++}\` - [${this.shorten(track.info.title)}](${track.info.uri}) (\`${this.client.handlers.MusicManager.parseDuration(track)}\`) `;
+                formattedQueue[page].embed.description += track.info.requestedBy ? `<@!${track.info.requestedBy}>\n` : '\n';
             }
-            formattedQueue += `\`${i++}\` - **${track.info.title}** (\`${client.musicManager.parseDuration(track)}\`)\n`;
         }
-        if (connection) {
-            formattedQueue += `\n**Total queue estimated duration**: \`${client.musicManager.parseDuration(connection.queueDuration)}\``;
+        for (i = 0; i < formattedQueue.length; i++) {
+            let textToAdd = '\n\n';
+            if (formattedQueue.length > 1) {
+                textToAdd += 'Showing page {index}/{length}';
+            } 
+            if (context.connection) {
+                textToAdd += (formattedQueue.length > 1 ? ' | ' : '') + `Total queue estimated duration: ${this.client.handlers.MusicManager.parseDuration(context.connection.queueDuration)}`;
+            }
+            formattedQueue[i].embed.footer = {
+                text: textToAdd
+            };
         }
-        return formattedQueue;
+        return formattedQueue.length > 1 
+            ? context.client.handlers.InteractiveList.createPaginatedMessage({channel: context.message.channel, messages: formattedQueue, userID: context.message.author.id}) 
+            : context.message.channel.createMessage(formattedQueue[0].embed.description.replace(/undefined/gim, ''));
+    }
+
+    queuePage(context) {
+        return {
+            embed: {
+                description: '',
+                title: `${context.emote('musicalNote')} ${context.message.channel.guild.name}'s queue`,
+                fields: [],
+                color: context.client.config.options.embedColor.generic,
+            }
+        };
+    }
+
+    shorten(string) {
+        if (string.length > 45) {
+            return (string.substr(0, 43) + '..').replace(/\[/gm, '(').replace(/\]/gm, ')');
+        }
+        return string.replace(/\[/gm, '(').replace(/\]/gm, ')');
     }
 }
 
-module.exports = new Queue();
+module.exports = Queue;

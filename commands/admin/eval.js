@@ -1,35 +1,24 @@
-'use strict';
-
-const Command = require('../../util/helpers/modules/Command');
 const { inspect } = require('util');
+const AdminCommands = require('../../structures/CommandCategories/AdminCommands');
 
-class Eval extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'eval',
-            category: 'admin',
-            description: 'eval, i think it\'s fairly obvious at this point',
-            usage: '{prefix}eval'
-        };
-        this.conf = {
-            requireDB: false,
-            disabled: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: false,
-            ownerOnly: false,
-            expectedArgs: []
-        };
+class Eval extends AdminCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'eval',
+                description: 'eval, i think it\'s fairly obvious at this point',
+                usage: '{prefix}eval'
+            }
+        });
     }
+    /** @param {import("../../structures/Contexts/AdminContext")} context */
 
-    //eslint-disable-next-line no-unused-vars
-    async run(client, message, args, guildEntry, userEntry) {
-        if (!args[0]) {
-            return message.channel.createMessage('baguette tbh');
+    async run(context) {
+        if (!context.args[0]) {
+            return context.message.channel.createMessage('baguette tbh');
         }
-        let toEval = args.join(' ').replace(/;\s+/g, ';\n').trim();
-        const parsedArgs = client.commands.get('reload').parseArguments(args);
+        let toEval = context.args.join(' ').replace(/;\s+/g, ';\n').trim();
+        const parsedArgs = this.parseArguments(context.args);
         for (const arg in parsedArgs) {
             toEval = toEval.replace(`--${arg + (typeof parsedArgs[arg] !== 'boolean' ? '=' + parsedArgs[arg] : '')}`, '');
         }
@@ -43,21 +32,9 @@ class Eval extends Command {
                     showHidden: true
                 });
             }
-            return message.channel.createMessage("**Input:**\n```js\n" + toEval + "```\n**Output:**\n```js\n" + client.redact(err) + "```");
+            return context.message.channel.createMessage("**Input:**\n```js\n" + toEval + "```\n**Output:**\n```js\n" + context.client.utils.helpers.redact(err) + "```");
         }
-    }
-
-    getMaxDepth(toInspect, toEval) {
-        let maxDepth = 0;
-        for (let i = 0; i < 10; i++) {
-            if (inspect(toInspect, { depth: i }).length > (1980 - toEval.length)) {
-                return i - 1;
-            } else {
-                maxDepth++;
-            }
-        }
-        return maxDepth;
     }
 }
 
-module.exports = new Eval();
+module.exports = Eval;

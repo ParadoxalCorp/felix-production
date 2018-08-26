@@ -1,31 +1,22 @@
 //Stolen from Tweetcord (https://github.com/Aetheryx/tweetcord) the 20/03/18
-//Require Node 8.6.0 iirc (need support for ES2018 object spread properties)
 
 const { inspect } = require('util');
 const { createContext, runInContext } = require('vm');
-const Command = require('../../util/helpers/modules/Command');
+const AdminCommands = require('../../structures/CommandCategories/AdminCommands');
 
-class Repl extends Command {
-    constructor() {
-        super();
-        this.help = {
-            name: 'repl',
-            usage: '{prefix}repl',
-            description: 'Owner only, use `.exit` to exit, `.clear` to clear variables, `//` to ignore a message and `_` to get the last statement',
-            category: 'admin'
-        };
-        this.conf = {
-            ownerOnly: false,
-            requireDB: false,
-            aliases: [],
-            requirePerms: [],
-            guildOnly: false,
-            disabled: false,
-            expectedArgs: []
-        };
+class Repl extends AdminCommands {
+    constructor(client) {
+        super(client, {
+            help: {
+                name: 'repl',
+                usage: '{prefix}repl',
+                description: 'Owner only, use `.exit` to exit, `.clear` to clear variables, `//` to ignore a message and `_` to get the last statement',
+            }
+        });
     }
+    /** @param {import("../../structures/Contexts/AdminContext")} context */
 
-    async run(client, message) {
+    async run(context) {
         const builtinLibs = (() => {
             const libs = {};
             const { _builtinLibs } = require('repl');
@@ -39,7 +30,7 @@ class Repl extends Command {
 
         const getContext = () => {
             const ctx = {
-                ...client,
+                ...this.client,
                 ...builtinLibs,
                 require,
                 Buffer,
@@ -59,11 +50,11 @@ class Repl extends Command {
         let openingBrackets = 0;
         let closingBrackets = 0;
 
-        message.channel.createMessage('REPL started. Available commands:\n```\n.exit\n.clear\n_\n```');
+        context.message.channel.createMessage('REPL started. Available commands:\n```\n.exit\n.clear\n_\n```');
         const runCommand = async() => {
-            const commandMsg = await client.messageCollector.awaitMessage(message.channel.id, message.author.id, 240e3);
+            const commandMsg = await context.client.handlers.MessageCollector.awaitMessage(context.message.channel.id, context.message.author.id, 240e3);
             if (!commandMsg) {
-                return message.channel.createMessage('Timed out, automatically exiting REPL...');
+                return context.message.channel.createMessage('Timed out, automatically exiting REPL...');
             }
 
             let { content } = commandMsg;
@@ -72,12 +63,12 @@ class Repl extends Command {
                 return runCommand();
             }
             if (content === '.exit') {
-                return message.channel.createMessage('Successfully exited.');
+                return context.message.channel.createMessage('Successfully exited.');
             }
             if (content === '.clear') {
                 ctx = getContext;
                 statementQueue = [];
-                message.channel.createMessage('Successfully cleared variables.');
+                context.message.channel.createMessage('Successfully cleared variables.');
                 return runCommand();
             }
 
@@ -95,7 +86,7 @@ class Repl extends Command {
                     openingBrackets = 0;
                 } else {
                     statementQueue.push(content);
-                    message.channel.createMessage(`\`\`\`js\n${statementQueue.join('\n')}\n  ...\n\`\`\``);
+                    context.message.channel.createMessage(`\`\`\`js\n${statementQueue.join('\n')}\n  ...\n\`\`\``);
                     return runCommand();
                 }
             } else if (content.endsWith('{') || statementQueue[0]) {
@@ -109,7 +100,7 @@ class Repl extends Command {
                 statementQueue.push(content.endsWith('{') ?
                     content :
                     '  ' + content); // Indentation for appended statements
-                message.channel.createMessage(`\`\`\`js\n${statementQueue.join('\n')}\n  ...\n\`\`\``);
+                context.message.channel.createMessage(`\`\`\`js\n${statementQueue.join('\n')}\n  ...\n\`\`\``);
                 return runCommand();
             }
 
@@ -132,7 +123,7 @@ class Repl extends Command {
                 result = `ERROR:\n${typeof error === 'string' ? error : inspect(error, { depth: 1 })}`;
             }
 
-            message.channel.createMessage('```js\n' + client.redact(result) + '\n```');
+            context.message.channel.createMessage('```js\n' + context.client.utils.helpers.redact(result) + '\n```');
 
             runCommand();
         };
@@ -141,4 +132,4 @@ class Repl extends Command {
     }
 }
 
-module.exports = new Repl();
+module.exports = Repl;

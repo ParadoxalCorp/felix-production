@@ -1,6 +1,4 @@
-'use strict';
-
-const Command = new(require('../util/helpers/modules/Command'));
+const Command = new(require('../structures/Command'));
 
 class MessageHandler {
     constructor() {}
@@ -14,7 +12,7 @@ class MessageHandler {
             return;
         }
         if (databaseEntries.guild && databaseEntries.guild.experience.enabled) {
-            client.experienceHandler.handle(message, databaseEntries.guild, databaseEntries.user);
+            client.handlers.ExperienceHandler.handle(message, databaseEntries.guild, databaseEntries.user);
         }
         const command = await Command.parseCommand(message, client);
         if (!command) {
@@ -54,18 +52,18 @@ class MessageHandler {
         const handleRejection = (err) => {
             client.bot.emit('error', err, message, false);
         };
-        if (!client.database || !client.database.healthy) {
+        if (!client.handlers.DatabaseWrapper || !client.handlers.DatabaseWrapper.healthy) {
             return databaseEntries;
         }
         if (message.channel.guild) {
-            await Promise.all([client.database.getUser(message.author.id), client.database.getGuild(message.channel.guild.id)])
+            await Promise.all([client.handlers.DatabaseWrapper.getUser(message.author.id), client.handlers.DatabaseWrapper.getGuild(message.channel.guild.id)])
                 .then(entries => {
                     databaseEntries.user = entries[0].id === message.author.id ? entries[0] : entries[1];
                     databaseEntries.guild = entries[0].id === message.channel.guild.id ? entries[0] : entries[1];
                 })
                 .catch(handleRejection);
         } else {
-            await client.database.getUser(message.author.id)
+            await client.handlers.DatabaseWrapper.getUser(message.author.id)
                 .then(user => databaseEntries.user = user)
                 .catch(handleRejection);
         }
@@ -88,16 +86,16 @@ class MessageHandler {
     _checkDefaultPermissions(client, message, command) {
         let allowed;
 
-        if (client.refs.defaultPermissions.allowedCommands.includes(`${command.help.category}*`)) {
+        if (client.structures.References.defaultPermissions.allowedCommands.includes(`${command.help.category}*`)) {
             allowed = true;
         }
-        if (client.refs.defaultPermissions.restrictedCommands.includes(`${command.help.category}*`)) {
+        if (client.structures.References.defaultPermissions.restrictedCommands.includes(`${command.help.category}*`)) {
             allowed = false;
         }
-        if (client.refs.defaultPermissions.allowedCommands.includes(command.help.name)) {
+        if (client.structures.References.defaultPermissions.allowedCommands.includes(command.help.name)) {
             allowed = true;
         }
-        if (client.refs.defaultPermissions.restrictedCommands.includes(command.help.name)) {
+        if (client.structures.References.defaultPermissions.restrictedCommands.includes(command.help.name)) {
             allowed = false;
         }
 
@@ -138,11 +136,16 @@ class MessageHandler {
         if (!queryMissingArgs && !args[0] && command.conf.expectedArgs[0]) {
             return;
         }
-
-        command.run(client, message, queryMissingArgs || args, databaseEntries.guild, databaseEntries.user)
-            .catch(err => {
-                client.bot.emit('error', err, message);
-            });
+        //Temporary code to make both the new and old commands structure cohabit 
+        if (command.client) {
+            const initialCheck = await command.initialCheck(client, message, queryMissingArgs || args, databaseEntries.guild, databaseEntries.user).catch(err => client.bot.emit('error', err, message));
+            if (!initialCheck.passed) {
+                return;
+            }
+            command.run(initialCheck.context).catch(err => client.bot.emit('error', err, message));
+        } else {
+            command.run(client, message, queryMissingArgs || args, databaseEntries.guild, databaseEntries.user).catch(err => client.bot.emit('error', err, message));
+        }
         const commandCooldownWeight = typeof command.conf.cooldownWeight === 'undefined' ? client.config.options.defaultCooldownWeight : command.conf.cooldownWeight;
         client.ratelimited.set(message.author.id, client.ratelimited.get(message.author.id) ?
             (client.ratelimited.get(message.author.id) + commandCooldownWeight) : commandCooldownWeight);
