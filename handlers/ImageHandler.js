@@ -70,7 +70,7 @@ class ImageHandler {
                         conf: {
                             guildOnly: imageHandler.interactions[type] ? true : false,
                             subCommand: true,
-                            aliases: imageHandler.interactions[type] ? imageHandler.interactions[type].aliases : undefined
+                            aliases: imageHandler.interactions[type] ? imageHandler.interactions[type].aliases : []
                         },
                     });
                 }
@@ -117,7 +117,7 @@ class ImageHandler {
                     });
                 }
             }
-            imageHandler.client.commands.set(type, new SubCommand());
+            imageHandler.client.commands.set(type, new SubCommand(this.client));
             generated++;
         }
         return generated;

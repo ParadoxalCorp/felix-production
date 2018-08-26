@@ -41,7 +41,7 @@ class Daily extends EconomyCommands {
         if (conditionalVariant) {
             resultText += conditionalVariantSuccess ? conditionalVariant.success.replace(/{value}/gim, eventCoinsChange) : conditionalVariant.fail.replace(/{value}/gim, eventCoinsChange);
         } else {
-            resultText += dailyEvent.context.message.replace(/{value}/gim, eventCoinsChange);
+            resultText += dailyEvent.message.replace(/{value}/gim, eventCoinsChange);
         }
         const coinsChange = conditionalVariantSuccess ? context.client.config.options.dailyCoins : eventCoinsChangeRate > 0 ? context.client.config.options.dailyCoins + eventCoinsChange : context.client.config.options.dailyCoins - eventCoinsChange;
         resultText += `\n\n\`${Math.ceil(Math.abs(coinsChange))}\` holy coins have been ${coinsChange > 0 ? 'credited to' : 'debited from'} your account, you now have \`${context.userEntry.economy.coins + Math.ceil(coinsChange)}\` holy coins`;

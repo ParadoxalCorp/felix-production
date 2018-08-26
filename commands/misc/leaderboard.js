@@ -55,10 +55,21 @@ class Leaderboard extends FunCommands {
 
     
     async getLoveLeaderboard(context) {
-        let leaderboard = await context.rethink.table("users").orderBy(context.rethink.desc(context.rethink.row("love")("amount"))).then(l => l.map(u => databaseUpdater(u, 'user')));
+        let leaderboard = context.client.cache.loveLeaderboard && Date.now() < context.client.cache.loveLeaderboard.date ? context.client.cache.loveLeaderboard.value : false;
+        leaderboard = leaderboard 
+            ? leaderboard 
+            : await context.rethink.table("users").orderBy(context.rethink.desc(context.rethink.row("love")("amount"))).run({arrayLimit: 2e5}).then(l => {
+                l = l.map(u => databaseUpdater(u, 'user'));
+                context.client.cache.loveLeaderboard = {
+                    date: Date.now() + 432e5, //12 hour 
+                    value: l
+                };
+                return l;
+            });
         if (!leaderboard.length) {
             return context.message.channel.createMessage(':x: Seems like there is nobody to show on the leaderboard yet');
         }
+        432e5;
         const users = await this.fetchUsers(leaderboard);
         return context.message.channel.createMessage({
             embed: {
@@ -75,8 +86,18 @@ class Leaderboard extends FunCommands {
         });
     }
 
-    async getCoinsLeaderboard(context) {    
-        let leaderboard = await context.rethink.table("users").orderBy(context.rethink.desc(context.rethink.row("economy")("coins"))).then(l => l.map(u => databaseUpdater(u, 'user')));
+    async getCoinsLeaderboard(context) {
+        let leaderboard = context.client.cache.coinsLeaderboard && Date.now() < context.client.cache.coinsLeaderboard.date ? context.client.cache.coinsLeaderboard.value : false;
+        leaderboard = leaderboard 
+            ? leaderboard 
+            : await context.rethink.table("users").orderBy(context.rethink.desc(context.rethink.row("economy")("coins"))).run({arrayLimit: 2e5}).then(l => {
+                l = l.map(u => databaseUpdater(u, 'user'));
+                context.client.cache.coinsLeaderboard = {
+                    date: Date.now() + 432e5, //12 hour 
+                    value: l
+                };
+                return l;
+            });    
         if (!leaderboard.length) {
             return context.message.channel.createMessage(':x: Seems like there is nobody to show on the leaderboard yet');
         }
@@ -97,17 +118,25 @@ class Leaderboard extends FunCommands {
     }
 
     async getExperienceLeaderboard(context) {
-        let leaderboard = context.guildEntry.experience.members;
+        let leaderboard;
         if (context.global) {
-            leaderboard = await context.rethink.table("users").orderBy(context.rethink.desc(context.rethink.row("experience")("amount"))).run({arrayLimit: 2e5}).then(l => {
-                return l.map(u => {
-                    u = databaseUpdater(u, 'user');
-                    u.levelDetails = context.client.handlers.ExperienceHandler.getLevelDetails(new context.client.structures.ExtendedUserEntry(u, context.client).getLevel());
-                    return u;
+            leaderboard = context.client.cache.experienceLeaderboard && Date.now() < context.client.cache.experienceLeaderboard.date ? context.client.cache.experienceLeaderboard.value : false;
+            leaderboard = leaderboard 
+                ? leaderboard 
+                : await context.rethink.table("users").orderBy(context.rethink.desc(context.rethink.row("experience")("amount"))).run({arrayLimit: 2e5}).then(l => {
+                    l = l.map(u => {
+                        u = databaseUpdater(u, 'user');
+                        u.levelDetails = context.client.handlers.ExperienceHandler.getLevelDetails(new context.client.structures.ExtendedUserEntry(u, context.client).getLevel());
+                        return u;
+                    });
+                    context.client.cache.experienceLeaderboard = {
+                        date: Date.now() + 432e5, //12 hour 
+                        value: l
+                    };
+                    return l;
                 });
-            });
         } else {
-            leaderboard = leaderboard.sort((a, b) => b.experience - a.experience).map(m => {
+            leaderboard = context.guildEntry.experience.members.leaderboard.sort((a, b) => b.experience - a.experience).map(m => {
                 m.levelDetails = context.client.handlers.ExperienceHandler.getLevelDetails(context.guildEntry.getLevelOf(m.id));
                 return m;
             });
