@@ -22,6 +22,7 @@ const config = require('./config');
  * @prop {Object} packages A name:package set, the point of this is very limited, kek.
  * @prop {Boolean} launchedOnce Whether the bot has already been launched
  * @prop {ErisClient} bot The eris client instance
+ * @prop {Object} cache A cache object for various stuff
  */
 
 /**
@@ -55,6 +56,8 @@ class Felix extends Base {
         this.packages = {};
         this.launchedOnce = false;
         this._boundEvents = {};
+        /** @type {Object} */
+        this.cache = {};
     }
 
     launch() {

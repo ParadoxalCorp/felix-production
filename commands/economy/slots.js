@@ -192,7 +192,7 @@ class Slots extends EconomyCommands {
         if (conditionalVariant) {
             resultText += conditionalVariantSuccess ? conditionalVariant.success.replace(/{value}/gim, eventCoinsChange) : conditionalVariant.fail.replace(/{value}/gim, eventCoinsChange);
         } else {
-            resultText += slotsEvent.context.message.replace(/{value}/gim, eventCoinsChange);
+            resultText += slotsEvent.message.replace(/{value}/gim, eventCoinsChange);
         }
         return targetFunc(context, slots, conditionalVariantSuccess ? coinsChange : (eventCoinsChangeRate > 0 ? coinsChange + eventCoinsChange : coinsChange - eventCoinsChange), resultText, animatedSlots);
     }
