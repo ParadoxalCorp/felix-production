@@ -22,7 +22,7 @@ class LoveShip extends GenericCommands {
     async run(context) {
         const firstUser = await this.getUserFromText({client: context.client, message: context.message, text: context.args[0]});
         const secondUser = context.args[1] ? await this.getUserFromText({client: context.client, message: context.message, text: context.args.splice(1).join(' ')}) : context.message.author;
-        if (!firstUser && secondUser.id === context.message.author.id) {
+        if ((!firstUser && secondUser.id === context.message.author.id) || (!secondUser && firstUser)) {
             return context.message.channel.createMessage(':x: I\'m sorry but I couldn\'t find the users you specified :c');
         } else if (firstUser.id === secondUser.id) {
             return context.message.channel.createMessage(`:x: You can't match a user with themselves, like, why?`);
@@ -33,6 +33,8 @@ class LoveShip extends GenericCommands {
             context.client.bot.sendChannelTyping(context.message.channel.id);
             typing = true;
         }
+        console.log(require("util").inspect(firstUser));
+        console.log(require("util").inspect(secondUser));
         const generatedShip = await context.client.weebSH.korra.generateLoveShip(this.useWebpFormat(firstUser), this.useWebpFormat(secondUser)).catch(this.handleError.bind(this, context, typing));
         const match = (() => {
             let msg = typing ? `<@!${context.message.author.id}> ` : '';
