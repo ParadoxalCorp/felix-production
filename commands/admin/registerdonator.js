@@ -26,8 +26,12 @@ class RegisterDonator extends AdminCommands {
         const newDonator = await context.client.handlers.DatabaseWrapper.getUser(context.args[1]);
         newDonator.premium.tier = parseInt(context.args[0]);
         newDonator.premium.expire = context.args[2] ? Date.now() + parseInt(context.args[2]) : true;
-        if (newDonator.premium.tier >= 3) {
-            newDonator.cooldowns.loveCooldown.max++;
+        if (newDonator.premium.tier >= 4) {
+            newDonator.cooldowns.loveCooldown.max = newDonator.cooldowns.loveCooldown.max + (newDonator.premium.tier - 3);
+            newDonator.addCoins(5e7);
+            if (newDonator.premium.tier >= 5) {
+                newDonator.addCoins(1e9);
+            }
         }
         await context.client.handlers.DatabaseWrapper.set(newDonator);
         const user = await context.client.utils.helpers.fetchUser(context.args[1]);

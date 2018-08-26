@@ -169,13 +169,16 @@ class ExtendedUserEntry {
             return perks(2e6, 200, 200, 4);
             break;
         case 2:
-            return perks(4e6, 400, 400, 5);
+            return perks(4e6, 300, 400, 5);
             break;
         case 3:
-            return perks(10e6, 500, 500, 8);
+            return perks(5e6, 400, 500, 8);
             break;
         case 4:
-            return perks(50e6, 600, 1000, 10);
+            return perks(10e6, 500, 750, 10);
+            break;
+        case 5:
+            return perks(50e6, 600, 1000, 15);
             break;
         }
     }
