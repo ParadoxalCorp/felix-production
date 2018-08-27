@@ -33,7 +33,7 @@ class ErrorHandler {
         }
         const error = this.identifyError(err);
         process.send({ name: 'error', msg: `Error: ${err}\nStacktrace: ${err.stack}\nMessage: ${message ? message.content : 'None'}` });
-        if (message && sendMessage) {
+        if (message && sendMessage && message.author) {
             if (client.config.admins.includes(message.author.id)) {
                 message.channel.createMessage({
                     embed: {

@@ -27,7 +27,7 @@ const master = new Sharder(config.token, '/main.js', {
         disableEvents: {
             TYPING_START: true
         },
-        messageLimit: 25,
+        messageLimit: 0,
         defaultImageSize: 1024,
     },
     guildsPerShards: config.process.guildsPerShards,
