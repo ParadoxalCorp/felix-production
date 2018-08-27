@@ -22,7 +22,7 @@ class WhatAnime extends UtilityCommands {
     /** @param {import("../../structures/Contexts/UtilityContext")} context */
 
     async run(context) {
-        let image = context.message.attachments[0] || (context.args[0].toLowerCase().includes('http://') || context.args[0].toLowerCase().includes('https://')) ? context.message : false;
+        let image = context.message.attachments[0] || (context.args[0] && (context.args[0].toLowerCase().includes('http://') || context.args[0].toLowerCase().includes('https://'))) ? context.message : false;
         if (!image) {
             image = Array.from(context.message.channel.messages.values())
                 .sort((a, b) => b.timestamp - a.timestamp)

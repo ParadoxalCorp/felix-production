@@ -33,8 +33,6 @@ class LoveShip extends GenericCommands {
             context.client.bot.sendChannelTyping(context.message.channel.id);
             typing = true;
         }
-        console.log(require("util").inspect(firstUser));
-        console.log(require("util").inspect(secondUser));
         const generatedShip = await context.client.weebSH.korra.generateLoveShip(this.useWebpFormat(firstUser), this.useWebpFormat(secondUser)).catch(this.handleError.bind(this, context, typing));
         const match = (() => {
             let msg = typing ? `<@!${context.message.author.id}> ` : '';
