@@ -40,7 +40,7 @@ class IamNot extends FunCommands {
                     messages.push({
                         embed: {
                             title: "Self-assignable roles list",
-                            description: "Here's the list of the self-assignable roles, you can assign one to yourself with `" + context.guildEntry.getPrefix + " iamnot <role_name>`\n",
+                            description: "Here's the list of the self-assignable roles, you can assign one to yourself with `" + context.prefix + "iamnot <role_name>`\n",
                             footer: {
                                 text: `Showing page {index}/${context.guildEntry.selfAssignableRoles.length} | Time limit: 60 seconds`
                             },
