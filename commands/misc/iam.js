@@ -30,7 +30,7 @@ class Iam extends FunCommands {
         if (!context.guildEntry.selfAssignableRoles[0]) {
             return context.message.channel.createMessage(":x: There is no self-assignable role set on this server");
         }
-        return context.client.interactiveList.createPaginatedMessage({
+        return context.client.handlers.InteractiveList.createPaginatedMessage({
             channel: context.message.channel,
             userID: context.message.author.id,
             messages: (() => {
