@@ -30,7 +30,7 @@ class IamNot extends FunCommands {
         if (!context.guildEntry.selfAssignableRoles[0]) {
             return context.message.channel.createMessage(":x: There is no self-assignable role set on this server");
         }
-        return context.client.interactiveList.createPaginatedMessage({
+        return context.client.handlers.InteractiveList.createPaginatedMessage({
             channel: context.message.channel,
             userID: context.message.author.id,
             messages: (() => {
@@ -40,7 +40,7 @@ class IamNot extends FunCommands {
                     messages.push({
                         embed: {
                             title: "Self-assignable roles list",
-                            description: "Here's the list of the self-assignable roles, you can assign one to yourself with `" + context.guildEntry.getPrefix + "iam <role_name>`\n",
+                            description: "Here's the list of the self-assignable roles, you can assign one to yourself with `" + context.prefix + "iamnot <role_name>`\n",
                             footer: {
                                 text: `Showing page {index}/${context.guildEntry.selfAssignableRoles.length} | Time limit: 60 seconds`
                             },
