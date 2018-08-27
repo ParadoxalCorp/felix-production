@@ -91,8 +91,8 @@ class Rank extends MiscCommands {
             //Value rank
             .setColor('#8DA0E1')
             .setTextAlign('center')
-            .addResponsiveText(leaderboardG.userIndex + 1 ? `#${leaderboardG.userIndex + 1}` : 'Not yet ranked', 93, 188, 70, 300)
-            .addResponsiveText(leaderboardL.findIndex(element => element.id === member.id) + 1 ? `#${leaderboardL.findIndex(element => element.id === member.id) + 1}` : 'Not yet ranked', 240, 188, 70, 300)
+            .addResponsiveText(leaderboardG.userIndex + 1 ? `#${leaderboardG.userIndex + 1}` : '#?', 93, 188, 70, 300)
+            .addResponsiveText(leaderboardL.findIndex(element => element.id === member.id) + 1 ? `#${leaderboardL.findIndex(element => element.id === member.id) + 1}` : '#?', 240, 188, 70, 300)
             //Text Global and local
             .setColor('#6E6E6E')
             .setTextAlign('center')
