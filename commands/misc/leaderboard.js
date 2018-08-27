@@ -1,5 +1,4 @@
 const FunCommands = require('../../structures/CommandCategories/MiscCommands');
-const databaseUpdater = require('../../utils/databaseUpdater');
 
 class Leaderboard extends FunCommands {
     constructor(client) {

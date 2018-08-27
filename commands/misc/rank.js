@@ -2,7 +2,6 @@
 
 const axios = require("axios");
 const MiscCommands = require('../../structures/CommandCategories/MiscCommands');
-const databaseUpdater = require('../../utils/databaseUpdater');
 
 class Rank extends MiscCommands {
     constructor(client) {
@@ -26,7 +25,6 @@ class Rank extends MiscCommands {
     async run(context) {
         const { Canvas } = require('canvas-constructor');
         const fsn = require('fs-nextra');
-        const rethink = context.client.handlers.DatabaseWrapper.rethink;
       
         const user = await this.getUserFromText({ message: context.message, client: context.client, text: context.args.join(' ') });
         const target = user || context.message.author;
