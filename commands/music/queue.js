@@ -89,10 +89,9 @@ class Queue extends MusicCommands {
             if (formattedQueue[page].embed.description.length >= 1800) {
                 formattedQueue.push(this.queuePage(context));
                 page++;
-            } else {
-                formattedQueue[page].embed.description += `\`${i++}\` - [${this.shorten(track.info.title)}](${track.info.uri}) (\`${this.client.handlers.MusicManager.parseDuration(track)}\`) `;
-                formattedQueue[page].embed.description += track.info.requestedBy ? `<@!${track.info.requestedBy}>\n` : '\n';
-            }
+            } 
+            formattedQueue[page].embed.description += `\`${i++}\` - [${this.shorten(track.info.title)}](${track.info.uri}) (\`${this.client.handlers.MusicManager.parseDuration(track)}\`) `;
+            formattedQueue[page].embed.description += track.info.requestedBy ? `<@!${track.info.requestedBy}>\n` : '\n';
         }
         for (i = 0; i < formattedQueue.length; i++) {
             let textToAdd = '\n\n';
