@@ -44,40 +44,28 @@ class Leaderboard extends FunCommands {
         const leaderboard = context.args[0].toLowerCase();
         context.global = context.args[1] && context.args[1].toLowerCase() === 'local' ? false : true;
         context.rethink = context.client.handlers.DatabaseWrapper.rethink;
-        if (leaderboard === 'love') {
-            return this.getLoveLeaderboard(context);
-        } else if (leaderboard === 'coins') {
-            return this.getCoinsLeaderboard(context);
-        } else if (leaderboard === 'experience') {
-            return this.getExperienceLeaderboard(context);
-        }
-    }
-
-    
-    async getLoveLeaderboard(context) {
-        let leaderboard = context.client.cache.loveLeaderboard && Date.now() < context.client.cache.loveLeaderboard.date ? context.client.cache.loveLeaderboard.value : false;
-        leaderboard = leaderboard 
-            ? leaderboard 
-            : await context.rethink.table("users").orderBy(context.rethink.desc(context.rethink.row("love")("amount"))).run({arrayLimit: 2e5}).then(l => {
-                l = l.map(u => databaseUpdater(u, 'user'));
-                context.client.cache.loveLeaderboard = {
-                    date: Date.now() + 432e5, //12 hour 
-                    value: l
-                };
-                return l;
-            });
-        if (!leaderboard.length) {
+        const leaderboardData = await this.getLeaderboard(leaderboard, context.message.author);
+        if (!leaderboardData.leaderboard[0] && (leaderboard === 'love' || leaderboard === 'coins' || (leaderboard === 'experience' && context.global))) {
             return context.message.channel.createMessage(':x: Seems like there is nobody to show on the leaderboard yet');
         }
-        432e5;
-        const users = await this.fetchUsers(leaderboard);
+        const users = await this.fetchUsers(leaderboardData.leaderboard);
+        if (leaderboard === 'love') {
+            return this.getLoveLeaderboard(context, leaderboardData, users);
+        } else if (leaderboard === 'coins') {
+            return this.getCoinsLeaderboard(context, leaderboardData, users);
+        } else if (leaderboard === 'experience') {
+            return this.getExperienceLeaderboard(context, leaderboardData, users);
+        }
+    }
+    
+    async getLoveLeaderboard(context, leaderboardData, users) {
         return context.message.channel.createMessage({
             embed: {
                 title: 'Global love leaderboard',
                 color: context.client.config.options.embedColor.generic,
-                description: leaderboard.slice(0, 10).map(u => `#${this.getPosition(u.id, leaderboard)} - **${users.get(u.id).tag}**\nLove points: ${u.love.amount}`).join("\n\n"),
+                description: leaderboardData.leaderboard.map(u => `#${this.getPosition(u.id, leaderboardData.leaderboard)} - **${users.get(u.id).tag}**\nLove points: ${u.amount}`).join("\n\n"),
                 footer: {
-                    text: `Your position: #${leaderboard.findIndex(element => element.id === context.message.author.id) + 1}/${leaderboard.length}`
+                    text: 'Your position: ' + ((leaderboardData.userIndex + 1) ? `#${leaderboardData.userIndex + 1}/${leaderboardData.size}` : 'Not yet ranked')
                 },
                 thumbnail: {
                     url: context.client.bot.user.avatarURL
@@ -86,29 +74,14 @@ class Leaderboard extends FunCommands {
         });
     }
 
-    async getCoinsLeaderboard(context) {
-        let leaderboard = context.client.cache.coinsLeaderboard && Date.now() < context.client.cache.coinsLeaderboard.date ? context.client.cache.coinsLeaderboard.value : false;
-        leaderboard = leaderboard 
-            ? leaderboard 
-            : await context.rethink.table("users").orderBy(context.rethink.desc(context.rethink.row("economy")("coins"))).run({arrayLimit: 2e5}).then(l => {
-                l = l.map(u => databaseUpdater(u, 'user'));
-                context.client.cache.coinsLeaderboard = {
-                    date: Date.now() + 432e5, //12 hour 
-                    value: l
-                };
-                return l;
-            });    
-        if (!leaderboard.length) {
-            return context.message.channel.createMessage(':x: Seems like there is nobody to show on the leaderboard yet');
-        }
-        const users = await this.fetchUsers(leaderboard);
+    async getCoinsLeaderboard(context, leaderboardData, users) {
         return context.message.channel.createMessage({
             embed: {
                 title: 'Global coins leaderboard',
                 color: context.client.config.options.embedColor.generic,
-                description: leaderboard.slice(0, 10).map(u => `#${this.getPosition(u.id, leaderboard)} - **${users.get(u.id).tag}**\nCoins: ${u.economy.coins}`).join("\n\n"),
+                description: leaderboardData.leaderboard.map(u => `#${this.getPosition(u.id, leaderboardData.leaderboard)} - **${users.get(u.id).tag}**\nCoins: ${u.amount}`).join("\n\n"),
                 footer: {
-                    text: `Your position: #${leaderboard.findIndex(element => element.id === context.message.author.id) + 1}/${leaderboard.length}`
+                    text: 'Your position: ' + ((leaderboardData.userIndex + 1) ? `#${leaderboardData.userIndex + 1}/${leaderboardData.size}` : 'Not yet ranked')
                 },
                 thumbnail: {
                     url: context.client.bot.user.avatarURL
@@ -117,42 +90,31 @@ class Leaderboard extends FunCommands {
         });
     }
 
-    async getExperienceLeaderboard(context) {
+    async getExperienceLeaderboard(context, leaderboardData, users) {
         let leaderboard;
         if (context.global) {
-            leaderboard = context.client.cache.experienceLeaderboard && Date.now() < context.client.cache.experienceLeaderboard.date ? context.client.cache.experienceLeaderboard.value : false;
-            leaderboard = leaderboard 
-                ? leaderboard 
-                : await context.rethink.table("users").orderBy(context.rethink.desc(context.rethink.row("experience")("amount"))).run({arrayLimit: 2e5}).then(l => {
-                    l = l.map(u => {
-                        u = databaseUpdater(u, 'user');
-                        u.levelDetails = context.client.handlers.ExperienceHandler.getLevelDetails(new context.client.structures.ExtendedUserEntry(u, context.client).getLevel());
-                        return u;
-                    });
-                    context.client.cache.experienceLeaderboard = {
-                        date: Date.now() + 432e5, //12 hour 
-                        value: l
-                    };
-                    return l;
-                });
+            leaderboard = leaderboardData.leaderboard;
         } else {
-            leaderboard = context.guildEntry.experience.members.leaderboard.sort((a, b) => b.experience - a.experience).map(m => {
-                m.levelDetails = context.client.handlers.ExperienceHandler.getLevelDetails(context.guildEntry.getLevelOf(m.id));
-                return m;
-            });
+            leaderboard = context.guildEntry.experience.members.sort((a, b) => b.experience - a.experience);
+            if (!leaderboard[0]) {
+                return context.message.channel.createMessage(':x: Seems like there is nobody to show on the leaderboard yet');
+            }
+            users = await this.fetchUsers(leaderboard.slice(0, 10));
         }
-        if (!leaderboard.length) {
-            return context.message.channel.createMessage(':x: Seems like there is nobody to show on the leaderboard yet');
-        }
-        const users = await this.fetchUsers(leaderboard);
+        leaderboard = leaderboard.map(m => {
+            m.level = context.client.utils.helpers.getLevelFromExperience(m.experience || m.amount);
+            return m;
+        });
+        const globalUserPosition = (leaderboardData.userIndex + 1) ? `#${leaderboardData.userIndex + 1}/${leaderboardData.size}` : 'Not yet ranked';
+        const localUserPosition = leaderboard.find(u => u.id === context.message.author.id) ? `#${leaderboard.findIndex(element => element.id === context.message.author.id) + 1}/${leaderboard.length}` : `Not yet ranked/${leaderboard.length}`;
         return context.message.channel.createMessage({
             embed: {
                 title: `${context.global ? 'Global' : 'Local'} experience leaderboard`,
                 color: context.client.config.options.embedColor.generic,
-                description: leaderboard.slice(0, 10).map(u => `#${this.getPosition(u.id, leaderboard)} - **${users.get(u.id).tag}**\nLevel: ${u.levelDetails.level} | ${context.global ? 'Global' : 'Local'} experience: ${context.global ? u.experience.amount : u.experience}`).join("\n\n"),
-                footer: leaderboard.find(u => u.id === context.message.author.id) ? {
-                    text: `Your position: #${leaderboard.findIndex(element => element.id === context.message.author.id) + 1}/${leaderboard.length}`
-                } : undefined,
+                description: leaderboard.slice(0, 10).map(u => `#${this.getPosition(u.id, leaderboard)} - **${users.get(u.id).tag}**\nLevel: ${u.level} | ${context.global ? 'Global' : 'Local'} experience: ${context.global ? u.amount : u.experience}`).join("\n\n"),
+                footer: {
+                    text: context.global ? `Your position: ${globalUserPosition}` : `Your position: ${localUserPosition}`
+                },
                 thumbnail: {
                     url: context.global ? context.client.bot.user.avatarURL : context.message.channel.guild.iconURL
                 }
@@ -170,9 +132,6 @@ class Leaderboard extends FunCommands {
                         user = {
                             tag: 'Unknown User'
                         };
-                    }
-                    if (!user.tag) {
-                        user.tag = `${user.username}#${user.discriminator}`;
                     }
                     resolvedUsers.set(leaderboard[i].id, user);
                     i++;
