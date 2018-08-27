@@ -107,7 +107,6 @@ class DatabaseWrapper {
         type = type ? type : (value instanceof ExtendedUserEntry ? 'users' : 'guilds');
         //users + user and guilds + guild to ensure backward compatibility
         if (type === 'users' || type === 'user') {
-            return this.userData.set(value);
         } else if (type === 'guilds' || type === 'guild') {
             return this.guildData.set(value);
         }
@@ -135,6 +134,21 @@ class DatabaseWrapper {
             this._init().catch(this._handleFailedInit.bind(this));
         }, retryTimeout || 15000);
         this._initAttempts = this._initAttempts + 1;
+    }
+
+    /**
+     * Update the leaderboard cached by Redis
+     * @param {UserEntry} userEntry - The user entry to insert/update
+     * @returns {void}
+     */
+    _updateLeaderboard(userEntry) {
+        if (this.client.handlers.RedisManager.healthy) {
+            const pipeline = this.client.handlers.RedisManager.pipeline();
+            pipeline.zadd('experience-leaderboard', userEntry.experience.amount, userEntry.id);
+            pipeline.zadd('coins-leaderboard', userEntry.economy.coins, userEntry.id);
+            pipeline.zadd('love-leaderboard', userEntry.love.amount, userEntry.id);
+            pipeline.exec().catch(err => this.client.bot.emit("error", err));
+        }
     }
 
     _reload() {
