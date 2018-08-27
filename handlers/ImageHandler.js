@@ -65,12 +65,12 @@ class ImageHandler {
                             subCategory: imageHandler.interactions[type] ? 'interactions' : 'images',
                             preview: preview.url,
                             description: `Return a ${type} image`,
-                            usage: imageHandler.interactions[type] ? imageHandler.interactions[type].usage : `${type}`
+                            usage: imageHandler.interactions[type] && imageHandler.interactions[type].usage ? imageHandler.interactions[type].usage : `${type}`
                         },
                         conf: {
                             guildOnly: imageHandler.interactions[type] ? true : false,
                             subCommand: true,
-                            aliases: imageHandler.interactions[type] ? imageHandler.interactions[type].aliases : []
+                            aliases: imageHandler.interactions[type] && imageHandler.interactions[type].aliases ? imageHandler.interactions[type].aliases : []
                         },
                     });
                 }
@@ -78,7 +78,7 @@ class ImageHandler {
 
                 async run(context) {
                     const image = await context.client.weebSH.toph.getRandomImage(type);
-                    if (!imageHandler.interactions[type]) {
+                    if (!imageHandler.interactions[type] || !imageHandler.interactions[type].interaction) {
                         return context.message.channel.createMessage({
                             embed: {
                                 image: {
@@ -118,6 +118,11 @@ class ImageHandler {
                 }
             }
             imageHandler.client.commands.set(type, new SubCommand(this.client));
+            if (imageHandler.interactions[type] && imageHandler.interactions[type].aliases) {
+                for (const alias of imageHandler.interactions[type].aliases) {
+                    this.client.aliases.set(alias, type);
+                }
+            }
             generated++;
         }
         return generated;
