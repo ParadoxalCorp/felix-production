@@ -181,6 +181,15 @@ class Helpers {
             };
         });
     }
+
+    /**
+     * 
+     * @param {Number} experience - The experience
+     * @returns {Number} The level for this amount of experience
+     */
+    getLevelFromExperience(experience) {
+        return Math.floor(Math.pow(experience / this.client.config.options.experience.baseXP, 1 / this.client.config.options.experience.exponent));
+    }
 }
 
 module.exports = Helpers;

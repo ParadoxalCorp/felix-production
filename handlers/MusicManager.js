@@ -203,6 +203,12 @@ class MusicManager {
         this.disconnect();
         delete require.cache[module.filename];
         delete require.cache[require.resolve('../structures/HandlersStructures/MusicConnection')];
+        const events = ['disconnect', 'error', 'stuck', 'end'];
+        for (const [key] of this.connections) {
+            for (const event of events) {
+                this.connections.get(key).player.removeAllListeners(event);
+            }
+        }
         return new(require(module.filename))(this.client, {reload: true});
     }
 

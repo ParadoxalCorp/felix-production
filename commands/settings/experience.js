@@ -10,7 +10,7 @@ class Experience extends SettingsCommands {
                 externalDoc: 'https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#activity-system'
             },
             conf: {
-                aliases: ['activity'],
+                aliases: ['activity', "exp", "xp"],
                 requireDB: true,
                 guildOnly: true
             }

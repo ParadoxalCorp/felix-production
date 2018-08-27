@@ -103,6 +103,9 @@ class TableInterface {
             return this.cache.delete(data.new_val.id);
         }
         this.cache.set(data.new_val.id, data.new_val);
+        if (this.tableName === "users") {
+            this.client.handlers.DatabaseWrapper._updateLeaderboard(data.new_val);
+        }
     }
 
     async _handleBrokenStream(err) {

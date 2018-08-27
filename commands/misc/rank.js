@@ -2,7 +2,6 @@
 
 const axios = require("axios");
 const MiscCommands = require('../../structures/CommandCategories/MiscCommands');
-const databaseUpdater = require('../../utils/databaseUpdater');
 
 class Rank extends MiscCommands {
     constructor(client) {
@@ -26,7 +25,6 @@ class Rank extends MiscCommands {
     async run(context) {
         const { Canvas } = require('canvas-constructor');
         const fsn = require('fs-nextra');
-        const rethink = context.client.handlers.DatabaseWrapper.rethink;
       
         const user = await this.getUserFromText({ message: context.message, client: context.client, text: context.args.join(' ') });
         const target = user || context.message.author;
@@ -35,21 +33,8 @@ class Rank extends MiscCommands {
         const globalLevelDetails = context.client.handlers.ExperienceHandler.getLevelDetails(targetEntry.getLevel());
         const userExp = context.guildEntry.experience.members.find(u => u.id === target.id) ? context.guildEntry.experience.members.find(u => u.id === target.id).experience : 0;
         const member = context.message.channel.guild.members.get(target.id);
-        let leaderboardG = context.client.cache.experienceLeaderboard && Date.now() < context.client.cache.experienceLeaderboard.date ? context.client.cache.experienceLeaderboard.value : false;
-        leaderboardG = leaderboardG 
-            ? leaderboardG 
-            : await context.rethink.table("users").orderBy(context.rethink.desc(context.rethink.row("experience")("amount"))).run({arrayLimit: 2e5}).then(l => {
-                l = l.map(u => {
-                    u = databaseUpdater(u, 'user');
-                    return u;
-                });
-                context.client.cache.experienceLeaderboard = {
-                    date: Date.now() + 432e5, //12 hour 
-                    value: l
-                };
-                return l;
-            });
-        let leaderboardL = context.guildEntry.experience.members.sort((a, b) => b.experience - a.experience);
+        const leaderboardG = await this.getLeaderboard('experience', target);
+        const leaderboardL = context.guildEntry.experience.members.sort((a, b) => b.experience - a.experience);
         //Shortcut to the resource folder imgs
         let resources = './resources/imgs/';
         //Length progress bars
@@ -104,8 +89,8 @@ class Rank extends MiscCommands {
             //Value rank
             .setColor('#8DA0E1')
             .setTextAlign('center')
-            .addResponsiveText(`#${leaderboardG.findIndex(element => element.id === member.id) + 1}`, 93, 188, 70, 300)
-            .addResponsiveText(`#${leaderboardL.findIndex(element => element.id === member.id) + 1}`, 240, 188, 70, 300)
+            .addResponsiveText(leaderboardG.userIndex + 1 ? `#${leaderboardG.userIndex + 1}` : '#?', 93, 188, 70, 300)
+            .addResponsiveText(leaderboardL.findIndex(element => element.id === member.id) + 1 ? `#${leaderboardL.findIndex(element => element.id === member.id) + 1}` : '#?', 240, 188, 70, 300)
             //Text Global and local
             .setColor('#6E6E6E')
             .setTextAlign('center')

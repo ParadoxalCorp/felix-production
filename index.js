@@ -27,7 +27,7 @@ const master = new Sharder(config.token, '/main.js', {
         disableEvents: {
             TYPING_START: true
         },
-        messageLimit: 25,
+        messageLimit: 0,
         defaultImageSize: 1024,
     },
     guildsPerShards: config.process.guildsPerShards,
@@ -49,17 +49,17 @@ master.on('stats', res => {
 if (require('cluster').isMaster) {
     if (r) {
         const postGuilds = async() => {
-            const { stats: { guilds } } = await r.db(config.database.database).table('stats')
+            const { stats } = await r.db(config.database.database).table('stats')
                 .get(1);
 
             for (const botList in config.botLists) {
-                if (config.botLists[botList].token) {
+                if (config.botLists[botList].token && !config.botLists[botList].disabled) {
                     axios({
                         method: 'POST',
                         url: `http://${config.proxy.host}:${config.proxy.port}/`,
                         data: { 
                             data: {
-                                server_count: guilds
+                                server_count: stats.guilds
                             },
                             url: config.botLists[botList].url,
                             headers: { 'Authorization': config.botLists[botList].token, 'Content-Type': 'application/json' }, 
@@ -73,6 +73,24 @@ if (require('cluster').isMaster) {
                         log.error(`Failed to post guild stats to ${botList}: ${err}`);
                     });
                 }
+            }
+            if (config.botLists.dbl) {
+                axios.post(`http://${config.proxy.host}:${config.proxy.port}/`, {
+                    data: {
+                        data: {
+                            guilds: stats.guilds,
+                            users: stats.users,
+                            'voice_connections': stats.voice
+                        },
+                        url: config.botLists.dbl.url,
+                        headers: { 'Authorization': `Bot ${config.botLists.dbl.token}`, 'Content-Type': 'application/json' }, 
+                        method: 'POST'
+                    }
+                }).then(() => {
+                    log.info(`Successfully posted stats to DBL`);
+                }).catch(err => {
+                    log.error(`Failed to post stats to DBL: ${err}`);
+                }); 
             }
         };
         setTimeout(postGuilds, 180000);

@@ -22,9 +22,10 @@ class WhatAnime extends UtilityCommands {
     /** @param {import("../../structures/Contexts/UtilityContext")} context */
 
     async run(context) {
-        let image = context.message.attachments[0] || (context.args[0].toLowerCase().includes('http://') || context.args[0].toLowerCase().includes('https://')) ? context.message : false;
+        let image = context.message.attachments[0] || (context.args[0] && (context.args[0].toLowerCase().includes('http://') || context.args[0].toLowerCase().includes('https://'))) ? context.message : false;
         if (!image) {
-            image = Array.from(context.message.channel.messages.values())
+            const lastChannelMessages = await context.message.channel.getMessages(10);
+            image = lastChannelMessages
                 .sort((a, b) => b.timestamp - a.timestamp)
                 .slice(0, 10)
                 .find(m => m.attachments[0] ? this.validateFile(m.attachments[0]) : false);      
@@ -74,7 +75,7 @@ class WhatAnime extends UtilityCommands {
 
     validateFile(attachment) {
         const fileExtension = attachment.filename.split('.')[attachment.filename.split('.').length - 1];
-        return this.extra().imageExtensions.includes(fileExtension);
+        return this.extra.imageExtensions.includes(fileExtension);
     }
 
     async downloadImage(attachment) {

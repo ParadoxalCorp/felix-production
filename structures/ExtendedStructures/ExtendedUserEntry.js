@@ -4,7 +4,6 @@
 */
 
 const references = require('../References');
-const config = require('../../config');
 
 class ExtendedUserEntry {
     /**
@@ -136,7 +135,7 @@ class ExtendedUserEntry {
 
     getLevel() {
         // @ts-ignore
-        return Math.floor(Math.pow(this.experience.amount / config.options.experience.baseXP, 1 / config.options.experience.exponent));
+        return Math.floor(Math.pow(this.experience.amount / this.client.config.options.experience.baseXP, 1 / this.client.config.options.experience.exponent));
     }
 
     /**

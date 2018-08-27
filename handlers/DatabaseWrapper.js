@@ -137,6 +137,21 @@ class DatabaseWrapper {
         this._initAttempts = this._initAttempts + 1;
     }
 
+    /**
+     * Update the leaderboard cached by Redis
+     * @param {UserEntry} userEntry - The user entry to insert/update
+     * @returns {void}
+     */
+    _updateLeaderboard(userEntry) {
+        if (this.client.handlers.RedisManager.healthy && (userEntry.experience && userEntry.economy && (userEntry.love && userEntry.love.amount))) {
+            const pipeline = this.client.handlers.RedisManager.pipeline();
+            pipeline.zadd('experience-leaderboard', userEntry.experience.amount, userEntry.id);
+            pipeline.zadd('coins-leaderboard', userEntry.economy.coins, userEntry.id);
+            pipeline.zadd('love-leaderboard', userEntry.love.amount, userEntry.id);
+            pipeline.exec().catch(err => this.client.bot.emit("error", err));
+        }
+    }
+
     _reload() {
         this.healthy = false;
         this.rethink.getPoolMaster().removeAllListeners('healthy');
