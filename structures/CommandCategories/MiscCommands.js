@@ -63,7 +63,7 @@ class MiscCommands extends Command {
                         amount: entry[1],
                     };
                 }),
-                userIndex: results[1][1] || (results[1][1] !== 0) ? results[1][1] : -1,
+                userIndex: results[1][1] || (results[1][1] === 0) ? results[1][1] : -1,
                 size: results[2][1]
             };
         });
