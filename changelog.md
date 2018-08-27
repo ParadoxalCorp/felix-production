@@ -1,3 +1,13 @@
+# Patch 4.4.15 Changelog
+
+This patch address in a long-term way bugs that have been hot-fixed after the release of the update `4.4.14`
+
+### Backend changes/bug fixes
+
+* Back-log the necessary data to build a leaderboard to Redis instead of iterating through the whole database
+* Fix the track positions displayed in the `queue` command being incorrect 
+* Numerous small fixes 
+
 # Update 4.4.14 Changelog
 
 This update contains a lot of necessary back-end changes which is why it took so long, but also contains quite a few new features
