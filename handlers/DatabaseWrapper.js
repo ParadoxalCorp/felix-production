@@ -107,6 +107,7 @@ class DatabaseWrapper {
         type = type ? type : (value instanceof ExtendedUserEntry ? 'users' : 'guilds');
         //users + user and guilds + guild to ensure backward compatibility
         if (type === 'users' || type === 'user') {
+            return this.userData.set(value);
         } else if (type === 'guilds' || type === 'guild') {
             return this.guildData.set(value);
         }
@@ -142,7 +143,7 @@ class DatabaseWrapper {
      * @returns {void}
      */
     _updateLeaderboard(userEntry) {
-        if (this.client.handlers.RedisManager.healthy) {
+        if (this.client.handlers.RedisManager.healthy && (userEntry.experience && userEntry.economy && (userEntry.love && userEntry.love.amount))) {
             const pipeline = this.client.handlers.RedisManager.pipeline();
             pipeline.zadd('experience-leaderboard', userEntry.experience.amount, userEntry.id);
             pipeline.zadd('coins-leaderboard', userEntry.economy.coins, userEntry.id);
