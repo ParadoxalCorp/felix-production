@@ -15,7 +15,7 @@ class SetPermission extends ModerationCommands {
                 guildOnly: true,
                 expectedArgs: [{
                     description: 'What permission do you want to set, you can reply with a command name like `ping` to target this command, or the name of a command category followed by a `*` like `generic*` to target a whole category',
-                    validate: (client, message, arg) => this.validatePermission(client, arg)
+                    validate: (client, message, arg) => this.validatePermission(arg)
                 }, {
                     description: 'Do you want to restrict or allow this permission, reply with `true` to allow it and `false` to restrict it',
                     possibleValues: [{
