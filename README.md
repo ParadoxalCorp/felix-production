@@ -6,6 +6,7 @@
 [![discord](https://discordapp.com/api/guilds/328842643746324481/embed.png)](https://discord.gg/Ud49hQJ)
 [![Discord Bots](https://discordbots.org/api/widget/status/327144735359762432.svg)](https://discordbots.org/bot/327144735359762432)
 
+[![Discord Bot List](https://discordbotlist.com/bots/327144735359762432/widget.svg)](https://discordbotlist.com/bots/327144735359762432/)
 
 This repository contains the main source code of Felix, the Discord bot.
 

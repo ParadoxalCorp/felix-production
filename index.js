@@ -77,15 +77,16 @@ if (require('cluster').isMaster) {
             if (config.botLists.dbl) {
                 axios.post(`http://${config.proxy.host}:${config.proxy.port}/`, {
                     data: {
-                        data: {
-                            guilds: stats.guilds,
-                            users: stats.users,
-                            'voice_connections': stats.voice
-                        },
-                        url: config.botLists.dbl.url,
-                        headers: { 'Authorization': `Bot ${config.botLists.dbl.token}`, 'Content-Type': 'application/json' }, 
-                        method: 'POST'
-                    }
+                        guilds: stats.guilds,
+                        users: stats.users,
+                        'voice_connections': stats.voice
+                    },
+                    url: config.botLists.dbl.url,
+                    headers: { 'Authorization': `Bot ${config.botLists.dbl.token}`, 'Content-Type': 'application/json' }, 
+                    method: 'POST'
+                }, {
+                    headers: { 'Authorization': config.proxy.auth, 'Content-Type': 'application/json' },
+                    timeout: 15000
                 }).then(() => {
                     log.info(`Successfully posted stats to DBL`);
                 }).catch(err => {
