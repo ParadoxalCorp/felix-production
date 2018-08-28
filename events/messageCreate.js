@@ -11,7 +11,7 @@ class MessageHandler {
         if (databaseEntries.user && databaseEntries.user.blackListed) {
             return;
         }
-        if (databaseEntries.guild) {
+        if (databaseEntries.guild && databaseEntries.guild.experience.enabled) {
             client.handlers.ExperienceHandler.handle(message, databaseEntries.guild, databaseEntries.user);
         }
         const command = await Command.parseCommand(message, client);

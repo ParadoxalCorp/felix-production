@@ -10,21 +10,11 @@
  * @typedef {import("eris").TextChannel} TextChannel
  * @typedef {import("eris").VoiceChannel} VoiceChannel
  * @typedef {import("eris").Message} Message 
- * @typedef {import("../../handlers/ExperienceHandler").LevelDetails} LevelDetails
  */
 
 /** @typedef {Object} UserHasPermissions 
   * @prop {Array<String>|Boolean} missingPerms An array of permissions the user miss, or `false` if the user has all the given permissions 
   */
-
-/** @typedef {Object} Target 
- * @prop {UserEntry} [userEntry] The target's database entry, if any/the database is available
- * @prop {LevelDetails} [globalLevelDetails] The target's global level details, if any
- * @prop {LevelDetails} [localLevelDetails] The target's local level details, if any
- * @prop {Member} [member] The target's member object, if the message was sent in a guild
- * @prop {User|ExtendedUser} user The target's user object, this may be a normal `User` instance if one was given in `Context.setTarget()`
- * @prop {Number} [localExperience] The target's experience on this guild, if the message was sent in a guild
-*/
 
 class BaseContext {
     /**
@@ -54,12 +44,6 @@ class BaseContext {
         this.member = message.channel.guild ? message.channel.guild.members.get(message.author.id) : undefined;
         /** @type {Member} If the message was sent in a guild, the member object of the bot, otherwise undefined */
         this.clientMember = message.channel.guild ? message.channel.guild.members.get(client.bot.user.id) : undefined;
-        /** @type {LevelDetails} The global level details of the user, if any */
-        this.globalLevelDetails = this.userEntry ? client.handlers.ExperienceHandler.getLevelDetails(userEntry.getLevel()) : undefined;
-        /** @type {LevelDetails} The local level details of the user for this guild, if any */
-        this.localLevelDetails = this.guildEntry ? client.handlers.ExperienceHandler.getLevelDetails(guildEntry.getLevelOf(message.author.id)) : undefined;
-        /** @type {Target} This will be a `Target` instance if `Context.setTarget()` has been called, otherwise undefined */
-        this.target = undefined;
         this._emotes = {
             online: {
                 custom: '<:online:480178991467200524>',
@@ -150,40 +134,7 @@ class BaseContext {
         };
     }
 
-    /**
-     * Get the member object of the given user for this guild
-     * @param {String|User|ExtendedUser} user - The user to get the member object for
-     * @returns {Member} The member object for this user
-     */
-    getMember(user) {
-        if (typeof user === 'string') {
-            return this.guild.members.get(user);
-        } else {
-            return this.guild.members.get(user.id);
-        }
-    }
-
-    /**
-     * Set a specific target for this context, this will make `Context.target` a `Target` instance
-     * @param {User|ExtendedUser} user - The target user
-     * @returns {Target} The target's data
-     */
-    async setTarget(user) {
-        const userEntry = user.id === this.message.author.id 
-            ? this.userEntry 
-            : (this.client.handlers.DatabaseWrapper.healthy 
-                ? await this.client.handlers.DatabaseWrapper.getUser(user.id) 
-                : undefined);
-        this.target = {
-            userEntry,
-            member: this.guild ? this.getMember(user.id) : undefined,
-            globalLevelDetails: userEntry ? this.client.handlers.ExperienceHandler.getLevelDetails(userEntry.getLevel()) : undefined,
-            localLevelDetails: this.guildEntry ? this.client.handlers.ExperienceHandler.getLevelDetails(this.guildEntry.getLevelOf(user.id)) : undefined,
-            user,
-            localExperience: this.guildEntry && this.guildEntry.experience.members.find(u => u.id === user.id) ? this.guildEntry.experience.members.find(u => u.id === user.id).experience : 0
-        };
-        return this.target;
-    }
+    
 }
 
 module.exports = BaseContext;

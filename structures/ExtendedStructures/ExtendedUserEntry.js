@@ -30,7 +30,7 @@ class ExtendedUserEntry {
     /**
      * Add an item to the user entry, handle already owned items cases (increment the count). This modifies the object
      * @param {Number} itemID - The ID of the item to add
-     * @returns {ExtendedUserEntry} The user entry so calls can be chained
+     * @returns {void}
      */
     addItem(itemID) {
         if (this.hasItem(itemID)) {
@@ -40,31 +40,30 @@ class ExtendedUserEntry {
             // @ts-ignore
             this.economy.items.push(references.item(itemID));
         }
-        return this;
     }
 
     /**
      * Subtract coins from the user
      * @param {Number} amount - The amount of coins to subtract
-     * @returns {ExtendedUserEntry} The user entry so calls can be chained
+     * @returns {Number} The coins of the user after subtraction 
      */
     subtractCoins(amount) {
         // @ts-ignore
         this.economy.coins = this.economy.coins - amount;
         // @ts-ignore
-        return this;
+        return this.economy.coins;
     }
 
     /**
      * Add coins to the user
      * @param {Number} amount - The amount of coins to add
-     * @returns {ExtendedUserEntry} The user entry so calls can be chained
+     * @returns {Number} The coins of the user after the coins were added 
      */
     addCoins(amount) {
         // @ts-ignore
         this.economy.coins = this.economy.coins + amount;
         // @ts-ignore
-        return this;
+        return this.economy.coins;
     }
 
     /**
@@ -90,7 +89,7 @@ class ExtendedUserEntry {
      * Add a cooldown to the user
      * @param {String} cooldown - The name of the cooldown
      * @param {Number} duration - The duration in milliseconds of the cooldown
-     * @returns {ExtendedUserEntry} The user entry so calls can be chained
+     * @returns {Number} The timestamp at which the cooldown will expire
      */
     addCooldown(cooldown, duration) {
         // @ts-ignore
@@ -107,7 +106,7 @@ class ExtendedUserEntry {
         // @ts-ignore
         this.cooldowns[cooldown] = Date.now() + duration;
         // @ts-ignore
-        return this;
+        return this.cooldowns[cooldown];
     }
 
     /**
@@ -124,20 +123,16 @@ class ExtendedUserEntry {
     /**
      * Add experience to the user
      * @param {Number} amount The amount of experience to add to the user
-     * @returns {ExtendedUserEntry} The user entry so calls can be chained
+     * @returns {Number} The total experience of the user
      * @memberof ExtendedUserEntry
      */
     addExperience(amount) {
         // @ts-ignore
         this.experience.amount = this.experience.amount + amount;
         // @ts-ignore
-        return this;
+        return this.experience.amount;
     }
 
-    /**
-     * Get the level of this user
-     * @returns {Number} The level
-     */
     getLevel() {
         // @ts-ignore
         return Math.floor(Math.pow(this.experience.amount / this.client.config.options.experience.baseXP, 1 / this.client.config.options.experience.exponent));
