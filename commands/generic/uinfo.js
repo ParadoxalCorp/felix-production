@@ -18,64 +18,58 @@ class Uinfo extends GenericCommands {
     /** @param {import("../../structures/Contexts/GenericContext")} context */
 
     async run(context) {
-        const user = await this.getUserFromText({ message: context.message, client: context.client, text: context.args[0] });
-        const target = user || context.message.author;
-        const targetEntry = target.id !== context.message.author.id ? await context.client.handlers.DatabaseWrapper.getUser(target.id) : context.userEntry;
-        const localLevelDetails = context.client.handlers.ExperienceHandler.getLevelDetails(context.guildEntry.getLevelOf(target.id));
-        const globalLevelDetails = context.client.handlers.ExperienceHandler.getLevelDetails(targetEntry.getLevel());
-        const userExp = context.guildEntry.experience.members.find(u => u.id === target.id) ? context.guildEntry.experience.members.find(u => u.id === target.id).experience : 0;
-        const member = context.message.channel.guild.members.get(target.id);
+        const target = await context.setTarget(await this.getUserFromText({ message: context.message, client: context.client, text: context.args[0] }) || context.message.author);
 
         const embedFields = [{
             name: 'Name/Tag',
-            value: `${member.username}#${member.discriminator}`,
+            value: `${target.member.username}#${target.member.discriminator}`,
             inline: true
         },{
             name: 'Nickname',
-            value: member.nick ? member.nick : 'None',
+            value: target.member.nick ? target.member.nick : 'None',
             inline: true
         },{
             name: 'Status',
-            value: member.status,
+            value: target.member.status,
             inline: true
         },{
             name: 'Game',
-            value: member.game ? member.game.name : 'None',
+            value: target.member.game ? target.member.game.name : 'None',
             inline: true
         },{
             name: "Created",
-            value: context.client.utils.timeConverter.toHumanDate(member.createdAt),
+            value: context.client.utils.timeConverter.toHumanDate(target.member.createdAt),
             inline: true
         },{
             name: "Joined",
-            value: context.client.utils.timeConverter.toHumanDate(member.joinedAt),
+            value: context.client.utils.timeConverter.toHumanDate(target.member.joinedAt),
             inline: true
         },{
             name: 'Love points',
-            value: `${targetEntry.love.amount}`,
+            value: `${target.userEntry.love.amount}`,
             inline: true
         },{
             name: "Coins",
-            value: `${targetEntry.economy.coins}`,
+            value: `${target.userEntry.economy.coins}`,
             inline: true
         },{
             name: "Local experience",
-            value: `Level: ${localLevelDetails.level}
-      Exp: ${userExp}
-      Level progress: ${(userExp - localLevelDetails.thisLevelExp)} / ${(localLevelDetails.nextLevelExp - localLevelDetails.thisLevelExp)}`,
+            value: `Level: ${target.localLevelDetails.level}
+      Exp: ${target.localExperience}
+      Level progress: ${(target.localExperience - target.localLevelDetails.thisLevelExp)} / ${(target.localLevelDetails.nextLevelExp - target.localLevelDetails.thisLevelExp)}`,
             inline: true
         },{
             name: 'Global experience',
-            value: `Level: ${globalLevelDetails.level}
-      Exp: ${targetEntry.experience.amount}
-      Level progress: ${(targetEntry.experience.amount - globalLevelDetails.thisLevelExp)} / ${(globalLevelDetails.nextLevelExp - globalLevelDetails.thisLevelExp)}`,
+            value: `Level: ${target.globalLevelDetails.level}
+      Exp: ${target.userEntry.experience.amount}
+      Level progress: ${(target.userEntry.experience.amount - target.globalLevelDetails.thisLevelExp)} / ${(target.globalLevelDetails.nextLevelExp - target.globalLevelDetails.thisLevelExp)}`,
             inline: true
         },{
-            name: `Roles: (${member.roles.length})`,
-            value: member.roles.length === 0 ? 'No role' : this.sliceRoles(member.roles.sort((a,b) => member.guild.roles.get(b).position - member.guild.roles.get(a).position).map(r => `<@&${r}>`))
+            name: `Roles: (${target.member.roles.length})`,
+            value: target.member.roles.length === 0 ? 'No role' : this.sliceRoles(target.member.roles.sort((a,b) => target.member.guild.roles.get(b).position - target.member.guild.roles.get(a).position).map(r => `<@&${r}>`))
         }];
         context.message.channel.createMessage({
-            content: `${member.username}'s info`,
+            content: `${target.member.username}'s info`,
             embed: {
                 color: context.client.config.options.embedColor.generic,
                 author: {
@@ -83,7 +77,7 @@ class Uinfo extends GenericCommands {
                     icon_url: context.message.author.avatarURL
                 },
                 thumbnail: {
-                    url: target.avatarURL
+                    url: target.user.avatarURL
                 },
                 fields: embedFields,
                 timestamp: new Date(),
