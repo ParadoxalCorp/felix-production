@@ -1,3 +1,9 @@
+# Patch 4.4.16 Changelog
+
+### Bug fixes
+
+* Fixed a bug in which both queries of the `removepermission` and `setpermission` commands would error when the user answer
+
 # Patch 4.4.15 Changelog
 
 This patch address in a long-term way bugs that have been hot-fixed after the release of the update `4.4.14`
