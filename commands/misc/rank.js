@@ -26,14 +26,8 @@ class Rank extends MiscCommands {
         const { Canvas } = require('canvas-constructor');
         const fsn = require('fs-nextra');
       
-        const user = await this.getUserFromText({ message: context.message, client: context.client, text: context.args.join(' ') });
-        const target = user || context.message.author;
-        const targetEntry = target.id !== context.message.author.id ? await context.client.handlers.DatabaseWrapper.getUser(target.id) : context.userEntry;
-        const localLevelDetails = context.client.handlers.ExperienceHandler.getLevelDetails(context.guildEntry.getLevelOf(target.id));
-        const globalLevelDetails = context.client.handlers.ExperienceHandler.getLevelDetails(targetEntry.getLevel());
-        const userExp = context.guildEntry.experience.members.find(u => u.id === target.id) ? context.guildEntry.experience.members.find(u => u.id === target.id).experience : 0;
-        const member = context.message.channel.guild.members.get(target.id);
-        const leaderboardG = await this.getLeaderboard('experience', target);
+        const target = await context.setTarget(await this.getUserFromText({ message: context.message, client: context.client, text: context.args[0] }) || context.message.author);
+        const leaderboardG = await this.getLeaderboard('experience', target.user);
         const leaderboardL = context.guildEntry.experience.members.sort((a, b) => b.experience - a.experience);
         //Shortcut to the resource folder imgs
         let resources = './resources/imgs/';
@@ -45,7 +39,7 @@ class Rank extends MiscCommands {
         });
         //Declaration of Canvas and creating a template (Length 300 and Width 300)
         // @ts-ignore
-        const background = await context.client.handlers.DatabaseWrapper.rethink.table("user_profiles").get(target.id).run().then(data => data ? Buffer.from(data.image, 'base64') : false) || await fsn.readFile(`${resources}back0.jpg`);  
+        const background = await context.client.handlers.DatabaseWrapper.rethink.table("user_profiles").get(target.user.id).run().then(data => data ? Buffer.from(data.image, 'base64') : false) || await fsn.readFile(`${resources}back0.jpg`);  
         const GetRank = new Canvas(300, 300)
             //Background (Changeable in the future logically)
             .addImage(background, 0, 0, 300, 300) //We will look for the image "Background" in the folder "imgs" (x=0, y=0, Length=300, Width=300)
@@ -61,18 +55,18 @@ class Rank extends MiscCommands {
             .addRect(
                 13,
                 197,
-                Math.round(progressBar*((targetEntry.experience.amount - globalLevelDetails.thisLevelExp)/(globalLevelDetails.nextLevelExp - globalLevelDetails.thisLevelExp))),
+                Math.round(progressBar*((target.userEntry.experience.amount - target.globalLevelDetails.thisLevelExp)/(target.globalLevelDetails.nextLevelExp - target.globalLevelDetails.thisLevelExp))),
                 17
             ) //Creating picture progress bar Global (x=13, y=197, Length=XP current, Width=17)
             //Picture progress bar Local
             .addRect(
                 156,
                 197,
-                Math.round(progressBar*((userExp - localLevelDetails.thisLevelExp)/(localLevelDetails.nextLevelExp - localLevelDetails.thisLevelExp))),
+                Math.round(progressBar*((target.localExperience - target.localLevelDetails.thisLevelExp)/(target.localLevelDetails.nextLevelExp - target.localLevelDetails.thisLevelExp))),
                 17
             ) //Creating picture progress bar Local (x=156, y=197, Length=XP current, Width=17)
             //Push avatar user
-            .addImage(await axios.default.get(member.avatarURL, {
+            .addImage(await axios.default.get(target.member.avatarURL, {
                 responseType: 'arraybuffer'
             }).then((res) =>
                 res.data
@@ -85,12 +79,12 @@ class Rank extends MiscCommands {
             .setColor('#ffffff')
             .setTextAlign('center')
             .setTextFont('20px rank')
-            .addResponsiveText(`${member.username.substring(0,24)}`, 150, 160, 282, 282)
+            .addResponsiveText(`${target.member.username.substring(0,24)}`, 150, 160, 282, 282)
             //Value rank
             .setColor('#8DA0E1')
             .setTextAlign('center')
             .addResponsiveText(leaderboardG.userIndex + 1 ? `#${leaderboardG.userIndex + 1}` : '#?', 93, 188, 70, 300)
-            .addResponsiveText(leaderboardL.findIndex(element => element.id === member.id) + 1 ? `#${leaderboardL.findIndex(element => element.id === member.id) + 1}` : '#?', 240, 188, 70, 300)
+            .addResponsiveText(leaderboardL.findIndex(element => element.id === target.member.id) + 1 ? `#${leaderboardL.findIndex(element => element.id === target.member.id) + 1}` : '#?', 240, 188, 70, 300)
             //Text Global and local
             .setColor('#6E6E6E')
             .setTextAlign('center')
@@ -98,8 +92,8 @@ class Rank extends MiscCommands {
             .addText(`Global`, 35, 188, 300, 300)
             .addText(`Local`, 174, 188, 300, 300)
             //Text XP bars
-            .addResponsiveText(`${(targetEntry.experience.amount - globalLevelDetails.thisLevelExp)}/${(globalLevelDetails.nextLevelExp - globalLevelDetails.thisLevelExp)}`, 77, 211, 129, 129)
-            .addResponsiveText(`${(userExp - localLevelDetails.thisLevelExp)}/${(localLevelDetails.nextLevelExp - localLevelDetails.thisLevelExp)}`, 225, 211, 129, 129)
+            .addResponsiveText(`${(target.userEntry.experience.amount - target.globalLevelDetails.thisLevelExp)}/${(target.globalLevelDetails.nextLevelExp - target.globalLevelDetails.thisLevelExp)}`, 77, 211, 129, 129)
+            .addResponsiveText(`${(target.localExperience - target.localLevelDetails.thisLevelExp)}/${(target.localLevelDetails.nextLevelExp - target.localLevelDetails.thisLevelExp)}`, 225, 211, 129, 129)
             //Text Global
             .setTextFont('15px rank')
             .addText(`Level :`, 35, 231, 300, 300)
@@ -111,13 +105,13 @@ class Rank extends MiscCommands {
             .addText(`Level progress`, 221, 272, 300, 300)
             //Value Global
             .setColor('#8DA0E1')
-            .addResponsiveText(globalLevelDetails.level, 95, 231, 84, 300)
-            .addResponsiveText(targetEntry.experience.amount, 95, 252, 84, 300)
-            .addResponsiveText(`${(((targetEntry.experience.amount - globalLevelDetails.thisLevelExp)/(globalLevelDetails.nextLevelExp - globalLevelDetails.thisLevelExp))*100).toFixed(2)}%`, 77, 289, 135, 135)
+            .addResponsiveText(target.globalLevelDetails.level, 95, 231, 84, 300)
+            .addResponsiveText(target.userEntry.experience.amount, 95, 252, 84, 300)
+            .addResponsiveText(`${(((target.userEntry.experience.amount - target.globalLevelDetails.thisLevelExp)/(target.globalLevelDetails.nextLevelExp - target.globalLevelDetails.thisLevelExp))*100).toFixed(2)}%`, 77, 289, 135, 135)
             //Value Local
-            .addResponsiveText(localLevelDetails.level, 238, 231, 84, 300)
-            .addResponsiveText(userExp, 238, 252, 84, 300)
-            .addResponsiveText(`${(((userExp - localLevelDetails.thisLevelExp)/(localLevelDetails.nextLevelExp - localLevelDetails.thisLevelExp))*100).toFixed(2)}%`, 221, 289, 135, 135)
+            .addResponsiveText(target.localLevelDetails.level, 238, 231, 84, 300)
+            .addResponsiveText(target.localExperience, 238, 252, 84, 300)
+            .addResponsiveText(`${(((target.localExperience - target.localLevelDetails.thisLevelExp)/(target.localLevelDetails.nextLevelExp - target.localLevelDetails.thisLevelExp))*100).toFixed(2)}%`, 221, 289, 135, 135)
             .toBuffer();
         return context.message.channel.createMessage(``, {
             file: GetRank,

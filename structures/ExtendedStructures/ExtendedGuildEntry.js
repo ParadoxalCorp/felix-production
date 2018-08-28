@@ -165,14 +165,14 @@ class ExtendedGuildEntry {
     /**
      * Remove a role set to be given at a certain level
      * @param {String} id - The ID of the role to remove
-     * @returns {Number} The new count of roles set to be given at a certain level
+     * @returns {ExtendedGuildEntry} This guild entry so calls can be chained
      * @example Guild.removeActivityRole("123456789");
      */
     removeActivityRole(id) {
         // @ts-ignore
         this.experience.roles.splice(this.experience.roles.findIndex(r => r.id === id), 1);
         // @ts-ignore
-        return this.experience.roles.length;
+        return this;
     }
 
     /**
