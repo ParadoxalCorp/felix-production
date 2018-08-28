@@ -1,4 +1,10 @@
-/** @typedef {import("../main.js").Client} Client */
+/** @typedef {import("../main.js").Client} Client 
+ * @typedef {import("../utils/Collection")} Collection
+ * @typedef {import("eris").Message} Message 
+ * @typedef {import("../structures/ExtendedStructures/ExtendedGuildEntry")} ExtendedGuildEntry
+ * @typedef {import("../structures/ExtendedStructures/ExtendedUserEntry")} ExtendedUserEntry
+*/
+
 
 /**
  * @typedef LevelDetails 
@@ -18,12 +24,19 @@ class ExperienceHandler {
     constructor(client) {
         /** @type {Client} */
         this.client = client;
-        /** @type {import("../utils/Collection")} */
+        /** @type {Collection} */
         this.cooldowns = new client.Collection();
         this._sweepInterval = setInterval(this._sweep.bind(this), client.config.options.experience.sweepInterval);
         this.levelledUp = new client.Collection();
     }
 
+    /**
+     * 
+     * @param {Message} message - The message
+     * @param {ExtendedGuildEntry} guildEntry - The guild entry
+     * @param {ExtendedUserEntry} userEntry - The user entry
+     * @returns {Boolean} Whether it has been handled successfully 
+     */
     async handle(message, guildEntry, userEntry) {
         if (this.cooldowns.has(message.author.id)) {
             return;
@@ -37,14 +50,14 @@ class ExperienceHandler {
         })() : false;
         const expGain = totalSize ? this.client.config.options.experience.uploadGainFormula(totalSize) : this.client.config.options.experience.gainFormula(message.content.length);
         const levelDetails = this.client.handlers.ExperienceHandler.getLevelDetails(guildEntry.getLevelOf(message.author.id));
-        const totalExperience = guildEntry.addExperience(expGain).to(message.author.id);
+        const totalExperience = guildEntry.experience.enabled ? guildEntry.addExperience(expGain).to(message.author.id) : 0;
         userEntry.addExperience(expGain);
         this._addCooldown(this.client.config.options.experience.cooldown).to(message.author.id);
-        await Promise.all([this.client.handlers.DatabaseWrapper.set(guildEntry, 'guild'), this.client.handlers.DatabaseWrapper.set(userEntry, 'user')]);
+        await Promise.all([guildEntry.experience.enabled ? guildEntry.save() : this.client.utils.sleep(1), userEntry.save()]);
         if ((totalExperience >= levelDetails.nextLevelExp) && (this.levelledUp.get(message.author.id) !== levelDetails.nextLevel)) {
             this.levelledUp.set(message.author.id, levelDetails.nextLevel);
             const wonRoles = guildEntry.experience.roles.find(r => r.at <= levelDetails.nextLevel) ? await this._addWonRoles(message, guildEntry, levelDetails) : false;
-            if (guildEntry.experience.notifications.enabled) {
+            if (guildEntry.experience.enabled && guildEntry.experience.notifications.enabled) {
                 // @ts-ignore
                 this._notifyUser(message, guildEntry, levelDetails, wonRoles.text);
             }
