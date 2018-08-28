@@ -24,7 +24,7 @@ class Reload extends AdminCommands {
         }
         const isPath = new RegExp(/\/|\\/gim).test(context.args[0]);
         const command = context.client.commands.get(context.args[0]) || context.client.commands.get(context.client.aliases.get(context.args[0]));
-        const path = context.args[0] === 'all' || this.verifyPath(context.args.includes('--command') && !isPath ? `../${(command.help.category || command.category.name).toLowerCase()}/${command.help.name}` : context.args[0]);
+        const path = context.args[0] === 'all' || this.verifyPath(context.args.includes('--command') && !isPath ? `../${command.category.name.toLowerCase()}/${command.help.name}` : context.args[0]);
         if (!path) {
             return context.message.channel.createMessage(':x: Look, i don\'t want to be mean, but this is NOT a valid path, try again');
         }

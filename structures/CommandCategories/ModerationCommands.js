@@ -66,12 +66,12 @@ class ModerationCommands extends Command {
         arg = arg ? arg.toLowerCase() : '';
         //eslint-disable-next-line no-unused-vars
         for (const [key, command] of this.client.commands) {
-            if (!categories.includes(command.help.category) && command.help.category !== 'admin') {
-                categories.push(`${command.help.category}*`);
+            if (!categories.includes(command.category.name) && command.category.name !== 'admin') {
+                categories.push(`${command.category.name.toLowerCase()}*`);
             } 
         }
         let command = this.client.commands.get(arg) || this.client.commands.get(this.client.aliases.get(arg));
-        if (command && command.help.category === 'admin') {
+        if (command && command.category.name === 'admin') {
             return false;
         }
         return (!command && !categories.includes(arg) && arg !== '*') ? false : true;

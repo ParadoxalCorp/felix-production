@@ -86,10 +86,10 @@ class MessageHandler {
     _checkDefaultPermissions(client, message, command) {
         let allowed;
 
-        if (client.structures.References.defaultPermissions.allowedCommands.includes(`${command.help.category}*`)) {
+        if (client.structures.References.defaultPermissions.allowedCommands.includes(`${command.category.name}*`)) {
             allowed = true;
         }
-        if (client.structures.References.defaultPermissions.restrictedCommands.includes(`${command.help.category}*`)) {
+        if (client.structures.References.defaultPermissions.restrictedCommands.includes(`${command.category.name}*`)) {
             allowed = false;
         }
         if (client.structures.References.defaultPermissions.allowedCommands.includes(command.help.name)) {
@@ -103,7 +103,7 @@ class MessageHandler {
             allowed = true;
         }
 
-        if (command.help.category === "admin") {
+        if (command.category.name === "admin") {
             if (client.config.admins.includes(message.author.id)) {
                 allowed = command.conf.ownerOnly && client.config.ownerID !== message.author.id ? false : true;
             } else {

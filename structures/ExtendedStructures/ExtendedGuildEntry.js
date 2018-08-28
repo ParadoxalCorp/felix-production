@@ -104,7 +104,7 @@ class ExtendedGuildEntry {
             return undefined;
         }
         //Give priority to commands over categories by checking them after the categories
-        let priorityOrder = ['*', `${(command.help.category || command.category.name.toLowerCase())}*`, command.help.name];
+        let priorityOrder = ['*', `${(command.category.name.toLowerCase())}*`, command.help.name];
         for (const permission of priorityOrder) {
             if (targetPos.allowedCommands.includes(permission)) {
                 isAllowed = true;

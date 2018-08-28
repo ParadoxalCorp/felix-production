@@ -50,8 +50,8 @@ class Help extends GenericCommands {
         const categories = [];
 
         context.client.commands.forEach(c => {
-            if (!categories.includes(c.help.category || c.category.name) && (context.client.config.admins.includes(context.message.author.id) || !c.conf.hidden)) {
-                categories.push(c.help.category || c.category.name);
+            if (!categories.includes(c.category.name) && (context.client.config.admins.includes(context.message.author.id) || !c.conf.hidden)) {
+                categories.push(c.category.name);
             }
         });
 
@@ -61,11 +61,11 @@ class Help extends GenericCommands {
                     title: ":book: Available commands",
                     description: `Here is the list of all available commands and their categories, you can use commands like \`${context.prefix}<command>\`\n\n${this.additionalInfo}`,
                     fields: categories.map(c => {
-                        const firstCommandInCategory = context.client.commands.find(cmd => (cmd.help.category || cmd.category.name) === c);
+                        const firstCommandInCategory = context.client.commands.find(cmd => cmd.category.name === c);
                         const subCategories = this.getSubCategories(c);
                         const value = subCategories[0] 
                             ? subCategories.map(sc => `**${sc}**: ${context.client.commands.filter(command => command.help.subCategory === sc).map(command => '`' + command.help.name + '`').join(" ")}`).join('\n\n')
-                            : context.client.commands.filter(command => (command.help.category || command.category.name) === c).map(command => `\`${command.help.name}\``).join(" ");
+                            : context.client.commands.filter(command => command.category.name === c).map(command => `\`${command.help.name}\``).join(" ");
                         return {
                             name: `${c} ${firstCommandInCategory.category ? this.parseCategoryEmotes(context, firstCommandInCategory.category.emote) : ''}`,
                             value: value
@@ -77,7 +77,7 @@ class Help extends GenericCommands {
                     color: context.client.config.options.embedColor.generic
                 }
             },
-            normalMessage: `Here is the list of all available commands and their categories, you can use commands like \`${context.prefix}<command>\`\n\n${categories.map(c => '**' + c + '** =>' + context.client.commands.filter(command => (command.help.category || command.category.name) === c).map(command => '\`' + command.help.name + '\`').join(', ')).join('\n\n')}`
+            normalMessage: `Here is the list of all available commands and their categories, you can use commands like \`${context.prefix}<command>\`\n\n${categories.map(c => '**' + c + '** =>' + context.client.commands.filter(command => command.category.name === c).map(command => '\`' + command.help.name + '\`').join(', ')).join('\n\n')}`
         };
     }
 
@@ -97,7 +97,7 @@ class Help extends GenericCommands {
     getEmbedCommandHelp(context, command) {      
         const embedFields = [{
             name: 'Category',
-            value: command.help.category || command.category.name,
+            value: command.category.name,
             inline: true
         }, {
             name: 'Usage',
@@ -174,7 +174,7 @@ class Help extends GenericCommands {
     getNormalCommandHelp(context, command) {
         //Focusing highly on readability here, one-lining this would look like hell
         let normalHelp = `**Description**: ${command.help.description.replace(/{prefix}/gim, context.prefix)}\n`;
-        normalHelp += `**Category**: ${command.help.category || command.category.name}\n`;
+        normalHelp += `**Category**: ${command.category.name}\n`;
         normalHelp += `**Usage**: \`${command.help.usage.replace(/{prefix}/gim, context.prefix)}\`\n`;
         if (command.conf.aliases[0]) {
             normalHelp += `**Aliases**: ${command.conf.aliases.map(a => '\`' + a + '\`').join(', ')}\n`;
@@ -212,7 +212,7 @@ class Help extends GenericCommands {
         let subCategories = [];
         for (const value of this.client.commands) {
             const cmd = value[1];
-            if ((cmd.help.category || cmd.category.name) === category) {
+            if (cmd.category.name === category) {
                 if (cmd.help.subCategory && !subCategories.includes(cmd.help.subCategory)) {
                     subCategories.push(cmd.help.subCategory);
                 }
