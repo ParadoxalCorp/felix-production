@@ -8,9 +8,10 @@
  * @prop {import("./References.js").References} References The generic data models references
  * @prop {import("./HandlersStructures/TableInterface.js")} TableInterface The rethink table interface
  * @prop {import("./Contexts/BaseContext.js")} BaseContext The base context for all commands
- * @prop {import("./HandlersStructures/dailyEvents.js")} dailyEvents An object representing the existing daily events
- * @prop {import("./HandlersStructures/marketItems.js")} marketItems An object representing the existing market items
- * @prop {import("./HandlersStructures/slotsEvents.js")} slotsEvents An object representing the existing slots events
+ * @prop {import("./HandlersStructures/dailyEvents.js")} dailyEvents An array representing the existing daily events
+ * @prop {import("./HandlersStructures/marketItems.js")} marketItems An array representing the existing market items
+ * @prop {import("./HandlersStructures/slotsEvents.js")} slotsEvents An array representing the existing slots events
+ * @prop {import("./HandlersStructures/commonEvents.js")} commonEvents An array providing events common to daily and slots
  */
 
 module.exports = {
@@ -27,5 +28,6 @@ module.exports = {
     BaseContext: require('./Contexts/BaseContext.js'),
     dailyEvents: require('./HandlersStructures/dailyEvents.js'),
     marketItems: require('./HandlersStructures/marketItems.js'),
-    slotsEvents: require('./HandlersStructures/slotsEvents.js')
+    slotsEvents: require('./HandlersStructures/slotsEvents.js'),
+    commonEvents: require('./HandlersStructures/commonEvents.js')
 };
