@@ -1,6 +1,9 @@
 /**   
 * @typedef {import("../../main.js").Client} Client
 * @typedef {import("../Command.js").PartialCommandOptions} PartialCommandOptions
+* @typedef {import("../Contexts/EconomyContext")} EconomyContext
+* @typedef {import("../HandlersStructures/commonEvents").CommonEvent} CommonEvent
+* @typedef {import("../HandlersStructures/commonEvents").ConditionalVariantContext} ConditionalVariantContext
 */
 
 const Command = require('../Command');
@@ -22,6 +25,20 @@ class EconomyCommands extends Command {
             }
         }});
         this.options = options;
+    }
+
+    /**
+     *
+     *
+     * @param {EconomyContext} context - The context
+     * @param {CommonEvent} event - The event
+     * @returns {ConditionalVariantContext} A random conditional variant
+     * @memberof EconomyCommands
+     */
+    selectRandomVariant(context, event) {
+        const conditionalVariants = event.conditionalVariants.filter(v => v.condition(context.userEntry));
+        const randomVariant = conditionalVariants[context.client.utils.getRandomNumber(0, conditionalVariants.length - 1)];
+        return randomVariant && randomVariant.context ? randomVariant.context(context.userEntry) : randomVariant;
     }
 }
 

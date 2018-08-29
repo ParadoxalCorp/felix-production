@@ -26,10 +26,10 @@ class SetPermission extends ModerationCommands {
                         interpretAs: 'false'
                     }]
                 }, {
-                    description: 'To what this permission should apply to, you can reply with `global` to target the entire server, `channel` to target a specific channel, `role` to target a specific role or `user` to target a specific user',
-                    validate: (client, message, arg) => this.validateTarget(arg)
+                    description: 'To what this permission should apply to, you can reply with `global` to target the entire server, `category` to target a channel category, `channel` to target a specific channel, `role` to target a specific role or `user` to target a specific user',
+                    validate: (client, message, arg) => this.validatePermissionTarget(arg)
                 }, {
-                    description: `Please reply with the name of the target (channel/role/user) you want to apply this permission on`,
+                    description: `Please reply with the name of the target (category/channel/role/user) you want to apply this permission on`,
                     condition: (client, message, args) => args[2].toLowerCase() !== 'global'
                 }]
             },
@@ -38,12 +38,7 @@ class SetPermission extends ModerationCommands {
     /** @param {import("../../structures/Contexts/ModerationContext")} context */
 
     async run(context) {
-        if (context.args.length < 3) {
-            return context.message.channel.createMessage(`:x: You didn't specified enough arguments, if you are lost, just run \`${context.prefix}${this.help.name}\``);
-        }
-        if (!this.validatePermission(context.args[0])) {
-            return context.message.channel.createMessage(':x: The permission must be a command name, like `ping`, or the name of a command category followed by a `*` like `generic*` to target a whole category. If you are lost, simply run this command like `' + context.prefix + this.help.name + '`');
-        } else if (!['true', 'false'].includes(context.args[1].toLowerCase())) {
+        if (!['true', 'false'].includes(context.args[1].toLowerCase())) {
             return context.message.channel.createMessage(':x: You must specify whether to restrict or allow this permission with `true` or `false`. If you are lost, simply run this command like `' + context.prefix + this.help.name + '`');
         } else if (!this.validatePermissionTarget(context.args[2])) {
             return context.message.channel.createMessage(':x: You must specify to what this permission should apply to with either `global`, `category`, `channel`, `role` or `user`. If you are lost, simply run this command like `' + context.prefix + this.help.name + '`');
@@ -57,17 +52,7 @@ class SetPermission extends ModerationCommands {
     }
 
     async setPermission(context, args) {
-        let specialTargetCases = {
-            global: 'global',
-            category: 'categories'
-        };
-        let targetPerms = context.guildEntry.permissions[specialTargetCases[args.targetType] || `${args.targetType}s`];
-        if (Array.isArray(targetPerms)) {
-            if (!targetPerms.find(perms => perms.id === args.target.id)) {
-                targetPerms.push(context.client.structures.References.permissionsSet(args.target.id));
-            }
-            targetPerms = targetPerms.find(perms => perms.id === args.target.id);
-        }
+        const targetPerms = this.getTargetPerms(context, args, true);
         if (targetPerms[args.override ? 'allowedCommands' : 'restrictedCommands'].includes(args.permission)) {
             return context.message.channel.createMessage(`:x: The permission \`${args.permission}\` is already ${args.override ? 'allowed' : 'restricted'} for this ${args.targetType === 'global' ? 'server' : args.targetType}`);
         }

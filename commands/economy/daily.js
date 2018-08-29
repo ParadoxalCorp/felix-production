@@ -31,11 +31,7 @@ class Daily extends EconomyCommands {
         const dailyEvent = context.client.handlers.EconomyManager.dailyEvents[context.client.utils.getRandomNumber(0, context.client.handlers.EconomyManager.dailyEvents.length - 1)];
         const eventCoinsChangeRate = Array.isArray(dailyEvent.changeRate) ? context.client.utils.getRandomNumber(dailyEvent.changeRate[0], dailyEvent.changeRate[1]) : dailyEvent.changeRate;
         const eventCoinsChange = Math.round(Math.abs(context.client.config.options.dailyCoins / 100 * eventCoinsChangeRate));
-        const conditionalVariant = (() => {
-            const conditionalVariants = dailyEvent.conditionalVariants.filter(v => v.condition(context.userEntry));
-            const randomVariant = conditionalVariants[context.client.utils.getRandomNumber(0, conditionalVariants.length - 1)];
-            return randomVariant && randomVariant.context ? randomVariant.context(context.userEntry) : randomVariant;
-        })();
+        const conditionalVariant = this.selectRandomVariant(context, dailyEvent);
         const conditionalVariantSuccess = conditionalVariant ? context.client.utils.getRandomNumber(0, 100) < conditionalVariant.successRate : false;
         let resultText = 'Hai ! Here\'s your daily holy coins... Wait... ';
         if (conditionalVariant) {

@@ -174,11 +174,7 @@ class Slots extends EconomyCommands {
         const slotsEvent = filteredSlotsEvents[context.client.utils.getRandomNumber(0, filteredSlotsEvents.length - 1)];
         const eventCoinsChangeRate = Array.isArray(slotsEvent.changeRate) ? context.client.utils.getRandomNumber(slotsEvent.changeRate[0], slotsEvent.changeRate[1]) : slotsEvent.changeRate;
         const eventCoinsChange = Math.round(Math.abs(coinsChange / 100 * eventCoinsChangeRate));
-        const conditionalVariant = (() => {
-            const conditionalVariants = slotsEvent.conditionalVariants.filter(v => v.condition(context.userEntry));
-            const randomVariant = conditionalVariants[context.client.utils.getRandomNumber(0, conditionalVariants.length - 1)];
-            return randomVariant && randomVariant.context ? randomVariant.context(context.userEntry) : randomVariant;
-        })();
+        const conditionalVariant = this.selectRandomVariant(context, slotsEvent);
         const conditionalVariantSuccess = conditionalVariant ? context.client.utils.getRandomNumber(0, 100) < conditionalVariant.successRate : false;
         let resultText;
         let targetFunc;

@@ -136,16 +136,17 @@ class MessageHandler {
         if (!queryMissingArgs && !args[0] && command.conf.expectedArgs[0]) {
             return;
         }
-        //Temporary code to make both the new and old commands structure cohabit 
-        if (command.client) {
-            const initialCheck = await command.initialCheck(client, message, queryMissingArgs || args, databaseEntries.guild, databaseEntries.user).catch(err => client.bot.emit('error', err, message));
-            if (!initialCheck.passed) {
+        const initialCheck = await command.initialCheck(client, message, queryMissingArgs || args, databaseEntries.guild, databaseEntries.user).catch(err => client.bot.emit('error', err, message));
+        if (!initialCheck.passed) {
+            return;
+        }
+        if (command.categoryCheck) {
+            const categoryCheck = await command.categoryCheck(initialCheck.context);
+            if (!categoryCheck.passed) {
                 return;
             }
-            command.run(initialCheck.context).catch(err => client.bot.emit('error', err, message));
-        } else {
-            command.run(client, message, queryMissingArgs || args, databaseEntries.guild, databaseEntries.user).catch(err => client.bot.emit('error', err, message));
         }
+        command.run(initialCheck.context).catch(err => client.bot.emit('error', err, message));
         const commandCooldownWeight = typeof command.conf.cooldownWeight === 'undefined' ? client.config.options.defaultCooldownWeight : command.conf.cooldownWeight;
         client.ratelimited.set(message.author.id, client.ratelimited.get(message.author.id) ?
             (client.ratelimited.get(message.author.id) + commandCooldownWeight) : commandCooldownWeight);

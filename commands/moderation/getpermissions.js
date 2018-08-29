@@ -34,14 +34,7 @@ class GetPermissions extends ModerationCommands {
     }
 
     async getPermissions(context, args) {
-        let specialTargetCases = {
-            global: 'global',
-            category: 'categories'
-        };
-        let targetPerms = context.guildEntry.permissions[specialTargetCases[args.targetType] || `${args.targetType}s`];
-        if (Array.isArray(targetPerms)) {
-            targetPerms = targetPerms.find(perms => perms.id === args.target.id);
-        }
+        const targetPerms = this.getTargetPerms(context, args);
         if (!targetPerms) {
             return context.message.channel.createMessage(`:x: There is not any permissions set for the ${args.targetType} **${(args.target.name || args.target.tag)}**`);
         }
