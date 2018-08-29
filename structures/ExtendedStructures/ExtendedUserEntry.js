@@ -3,18 +3,17 @@
  * @typedef {import("../../main.js").Client} Client
 */
 
-const references = require('../References');
+const BaseExtendedEntry = require('./BaseExtendedEntry');
 
-class ExtendedUserEntry {
+class ExtendedUserEntry extends BaseExtendedEntry {
     /**
      * 
      * @param {UserEntry} userEntry - The user entry
      * @param {Client} client - The client instance
      */
     constructor(userEntry, client) {
+        super(client);
         Object.assign(this, userEntry);
-        /** @type {Client} The client instance */
-        this.client = client;
     }
 
     /**
@@ -38,7 +37,7 @@ class ExtendedUserEntry {
             this.economy.items[this.economy.items.findIndex(i => i.id === itemID)].count++;
         } else {
             // @ts-ignore
-            this.economy.items.push(references.item(itemID));
+            this.economy.items.push(this.client.structures.References.item(itemID));
         }
         return this;
     }

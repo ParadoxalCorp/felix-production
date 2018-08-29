@@ -14,17 +14,18 @@
   * @prop {ToMember} to Defines to who the amount of experience should be added
   */
 
+const BaseExtendedEntry = require('./BaseExtendedEntry');
+
 /** @class ExtendedGuildEntry */
-class ExtendedGuildEntry {
+class ExtendedGuildEntry extends BaseExtendedEntry {
     /**
      * 
      * @param {GuildEntry} guildEntry - The guild entry
      * @param {Client} client - The client instance
      */
     constructor(guildEntry, client) {
+        super(client);
         Object.assign(this, guildEntry);
-        /** @type {Client} The client instance */
-        this.client = client;
     }
 
     get getPrefix() {
@@ -173,40 +174,6 @@ class ExtendedGuildEntry {
         this.experience.roles.splice(this.experience.roles.findIndex(r => r.id === id), 1);
         // @ts-ignore
         return this;
-    }
-
-    /**
-     * Check if the guild has the premium status
-     * @returns {Boolean} Whether the guild has the premium status or not 
-     */
-    hasPremiumStatus() {
-        // @ts-ignore
-        if (typeof this.premium === 'number') {
-            // @ts-ignore
-            return this.premium > Date.now();
-        } else {
-            // @ts-ignore
-            return this.premium ? true : false;
-        }
-        
-    }
-
-    /**
-     * Return this without the additional methods, essentially returns a proper database entry, ready to be saved into the database
-     * Note that this shouldn't be called before saving it into the database, as the database wrapper already does it
-     * @returns {GuildEntry} - This, as a proper database entry object (without the additional methods)
-     */
-    toDatabaseEntry() {
-        const cleanObject = (() => {
-            const newObject = {};
-            for (const key in this) {
-                if (typeof this[key] !== 'function' && key !== 'client') {
-                    newObject[key] = this[key];
-                }
-            }
-            return newObject;
-        })();
-        return cleanObject;
     }
 
     /**

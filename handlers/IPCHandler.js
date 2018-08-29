@@ -68,15 +68,9 @@ class IPCHandler {
      * @returns {Promise<array>} An array containing the responses of each clusters, if the reload failed in at least one cluster, the promise is rejected
      */
     broadcastReload(type, path, name, options) {
-        const ID = `${this.client.utils.getRandomNumber(1000, 10000) + Date.now()}`;
         return new Promise((resolve, reject) => {
-            this.requests.set(ID, {
-                responses: [],
-                resolve: resolve,
-                reject: reject
-            });
             this.client.ipc.broadcast("reload", {
-                id: ID,
+                id: this._setRequest(resolve, reject),
                 type: "reload",
                 clusterID: this.client.clusterID,
                 data: {
@@ -93,15 +87,9 @@ class IPCHandler {
         if (this.client.bot.guilds.has(id)) {
             return this.client.bot.guilds.get(id);
         }
-        const ID = `${this.client.utils.getRandomNumber(1000, 10000) + Date.now()}`;
         return new Promise((resolve, reject) => {
-            this.requests.set(ID, {
-                responses: [],
-                resolve: resolve,
-                reject: reject
-            });
             this.client.ipc.broadcast("fetchGuild", {
-                id: ID,
+                id: this._setRequest(resolve, reject),
                 type: "fetchGuild",
                 clusterID: this.client.clusterID,
                 data: id
@@ -260,6 +248,24 @@ class IPCHandler {
                 : 1)
             ? true
             : false;
+    }
+
+    /**
+     *
+     * Register an ongoing request
+     * @param {Function} resolve The resolver function
+     * @param {Function} reject The rejection function
+     * @returns {String} The ID of the ongoing request
+     * @memberof IPCHandler
+     */
+    _setRequest(resolve, reject) {
+        const ID = `${this.client.utils.getRandomNumber(1000, 10000) + Date.now()}`;
+        this.requests.set(ID, {
+            responses: [],
+            resolve: resolve,
+            reject: reject
+        });
+        return ID;
     }
 
     _reload() {
