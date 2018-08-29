@@ -93,7 +93,7 @@ class IPCHandler {
         if (this.client.bot.guilds.has(id)) {
             return this.client.bot.guilds.get(id);
         }
-        const ID = `${this.client.getRandomNumber(1000, 10000) + Date.now()}`;
+        const ID = `${this.client.utils.getRandomNumber(1000, 10000) + Date.now()}`;
         return new Promise((resolve, reject) => {
             this.requests.set(ID, {
                 responses: [],

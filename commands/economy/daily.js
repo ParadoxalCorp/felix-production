@@ -22,7 +22,7 @@ class Daily extends EconomyCommands {
         } else {
             context.userEntry.addCoins(context.client.config.options.dailyCoins);
         }
-        context.userEntry.addCooldown('dailyCooldown', context.client.config.options.dailyCooldown);
+        (randomEvent ? randomEvent.user : context.userEntry).addCooldown('dailyCooldown', context.client.config.options.dailyCooldown);
         await context.client.handlers.DatabaseWrapper.set(randomEvent ? randomEvent.user : context.userEntry, "user");
         return context.message.channel.createMessage(randomEvent ? randomEvent.text : `Hai ! You received \`${context.client.config.options.dailyCoins}\` holy coins, you now have \`${context.userEntry.economy.coins}\` holy coins`);
     }
