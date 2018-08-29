@@ -38,7 +38,7 @@ class MessageHandler {
         if (!memberHasPermissions) {
             return message.channel.createMessage(`:x: You don't have the permission to use this command`).catch(() => {});
         }
-        if (client.ratelimited.has(message.author.id) && client.ratelimited.get(message.author.id) >= 20) {
+        if (client.ratelimited.has(message.author.id) && client.ratelimited.get(message.author.id) >= 20 && !client.config.admins.includes(message.author.id)) {
             return message.channel.createMessage(':x: Hoi hoi chill a little, there, a 20 seconds cooldown for you :heart:');
         }
         this.runCommand(client, message, command, databaseEntries);

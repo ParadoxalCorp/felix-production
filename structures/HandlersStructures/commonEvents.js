@@ -51,44 +51,22 @@ const commonEvents = (client, economyManager) => {
         message: 'A pirate ship attack and steals `{value}` from your gains!',
         changeRate: [-60, -80],
         conditionalVariants: [{
-            /** 
-             * @param {UserEntry} userEntry userEntry
-             * @returns {Boolean} true / false
-            */
-            // @ts-ignore
             condition: (userEntry) => userEntry.economy.items.find(i => economyManager.getItem(i.id).data && economyManager.getItem(i.id).data.type === 'Destroyer'),
-            /** 
-             * @param {UserEntry} userEntry userEntry
-             * @returns {ConditionalVariantContext} object
-            */
-            context: (userEntry) => {
-                return {
-                    success: `A pirate ship is suspiciously approaching the coast, but as soon as their intent to steal you becomes clear, torpedoes hit their broadside and sink the ship. Those torpedoes were from your **${economyManager.marketItems.filter(i => i.data && i.data.type === 'Destroyer' && userEntry.hasItem(i.id))[client.utils.getRandomNumber(0, economyManager.marketItems.filter(i => i.data && i.data.type === 'Destroyer' && userEntry.hasItem(i.id)).length - 1)].name}** !`,
-                    fail: '',
-                    successRate: 100
-                };
-            }
+            context: (userEntry) => commonNavalContext('torpedoes hit their broadside and sink the ship. Those torpedoes were from your', 'Destroyer', '', client, economyManager, userEntry)
         }, {
-            /** 
-             * @param {UserEntry} userEntry userEntry
-             * @returns {Boolean} true / false
-            */
-            // @ts-ignore
             condition: (userEntry) => userEntry.economy.items.find(i => economyManager.getItem(i.id).data && economyManager.getItem(i.id).data.type === 'Battleship'),
-            /** 
-             * @param {UserEntry} userEntry userEntry
-             * @returns {ConditionalVariantContext} object
-            */
-            context: (userEntry) => {
-                return {
-                    success: `A pirate ship is suspiciously approaching the coast, but as soon as their intent to steal you becomes clear, you hear loud gun fires and notice that they come from your **${economyManager.marketItems.filter(i => i.data && i.data.type === 'Battleship' && userEntry.hasItem(i.id))[client.utils.getRandomNumber(0, economyManager.marketItems.filter(i => i.data && i.data.type === 'Battleship' && userEntry.hasItem(i.id)).length - 1)].name}** ! Her main battery guns instantly sank the pirate ship`,
-                    fail: '',
-                    successRate: 100
-                };
-            }
+            context: (userEntry) => commonNavalContext('you hear loud gun fires and notice that they come from your', 'Battleship', 'Her main battery guns instantly sank the pirate ship', client, economyManager, userEntry)
         }],
         case: 'won'
     }];
 };
+
+function commonNavalContext(intro, type, ending, client, economyManager, userEntry) {
+    return {
+        success: `A pirate ship is suspiciously approaching the coast, but as soon as their intent to steal you becomes clear, ${intro} **${economyManager.marketItems.filter(i => i.data && i.data.type === type && userEntry.hasItem(i.id))[client.utils.getRandomNumber(0, economyManager.marketItems.filter(i => i.data && i.data.type === type && userEntry.hasItem(i.id)).length - 1)].name}** ! ${ending}`,
+        fail: '',
+        successRate: 100
+    };
+}
 
 module.exports = commonEvents;
