@@ -139,8 +139,6 @@
 
 /**
  * This class provides all the default data model the process may use, for example, the default data models for guild and user entries in the database
- * @class References
- * @typedef {References} References 
  */
 class References {
     constructor() {

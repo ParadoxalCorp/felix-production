@@ -8,10 +8,10 @@
  * @prop {import("./References.js").References} References The generic data models references
  * @prop {import("./HandlersStructures/TableInterface.js")} TableInterface The rethink table interface
  * @prop {import("./Contexts/BaseContext.js")} BaseContext The base context for all commands
- * @prop {import("./HandlersStructures/dailyEvents.js")} dailyEvents An array representing the existing daily events
- * @prop {import("./HandlersStructures/marketItems.js")} marketItems An array representing the existing market items
- * @prop {import("./HandlersStructures/slotsEvents.js")} slotsEvents An array representing the existing slots events
- * @prop {import("./HandlersStructures/commonEvents.js")} commonEvents An array providing events common to daily and slots
+ * @prop {Array<import("./HandlersStructures/dailyEvents.js").DailyEvent>} dailyEvents An array representing the existing daily events
+ * @prop {Array<import("./HandlersStructures/marketItems.js").MarketItem>} marketItems An array representing the existing market items
+ * @prop {Array<import("./HandlersStructures/slotsEvents.js").SlotsEvent>} slotsEvents An array representing the existing slots events
+ * @prop {Array<import("./HandlersStructures/commonEvents.js").CommonEvent>} commonEvents An array providing events common to daily and slots
  */
 
 module.exports = {
