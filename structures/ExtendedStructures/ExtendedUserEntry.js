@@ -187,24 +187,6 @@ class ExtendedUserEntry extends BaseExtendedEntry {
     }
 
     /**
-     * Return this without the additional methods, essentially returns a proper database entry, ready to be saved into the database
-     * Note that this shouldn't be called before saving it into the database, as the database wrapper already does it
-     * @returns {UserEntry} - This, as a proper database entry object (without the additional methods)
-     */
-    toDatabaseEntry() {
-        const cleanObject = (() => {
-            const newObject = {};
-            for (const key in this) {
-                if (typeof this[key] !== 'function' && key !== "client") {
-                    newObject[key] = this[key];
-                }
-            }
-            return newObject;
-        })();
-        return cleanObject;
-    }
-
-    /**
      * Save this user entry in the database
      * @returns {Promise<UserEntry>} - The saved entry
      */
