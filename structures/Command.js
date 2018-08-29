@@ -496,7 +496,7 @@ class Command {
      * @param {Array<String>} args - An array of parsed arguments
      * @param {GuildEntry} guildEntry - The guild's database entry
      * @param {UserEntry} userEntry - The user's database entry
-     * @returns {Object} The generic initial check's return value
+     * @returns {Promise<Object>} The generic initial check's return value
      */
     async initialCheck(client, message, args, guildEntry, userEntry) {
         if (this.options.noArgs && !args[0]) {

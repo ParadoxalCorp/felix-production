@@ -15,7 +15,7 @@ const config = require('./config');
  * @prop {import("./handlers/index.js").Handlers} handlers The handlers for each part of the client
  * @prop {import("./structures/index.js").Structures} structures Contains most of the classes, data models and such that structures the client
  * @prop {config} config The config file
- * @prop {Object} package This projects's package.json
+ * @prop {Object} package This project's package.json
  * @prop {Array<string>} prefixes An array of prefixes the bot listens to
  * @prop {import("./handlers/IPCHandler.js").ClientStats} stats The stats of the client
  * @prop {import("./utils/index.js").Utils} utils Some util methods and classes
