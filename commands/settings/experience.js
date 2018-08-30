@@ -204,7 +204,7 @@ class Experience extends SettingsCommands {
         if (!context.guildEntry.experience.roles[0]) {
             return context.message.channel.createMessage(':x: There is no role(s) set to be given at any level');
         }
-        return context.client.interactiveList.createPaginatedMessage({
+        return context.client.handlers.InteractiveList.createPaginatedMessage({
             channel: context.message.channel,
             userID: context.message.author.id,
             messages: context.guildEntry.experience.roles.map(r => {
