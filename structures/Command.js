@@ -285,8 +285,7 @@ class Command {
     /**
      * 
      * @param {object} options - An object of options
-     * @param {Client} options.client - The client instance
-     * @param {Message} options.message - The message
+     * @param {BaseContext} options.context - The context
      * @param {string} [options.text=message.content] - The text to resolve a channel from
      * @param {Boolean} [options.textual=true] - Whether the channel to resolve is a text channel or a voice channel
      * @param {String|Number} [options.type] - The explicit type of the channel to search for, can be used to search for categories for example ('category', 'text', 'voice')
@@ -304,7 +303,7 @@ class Command {
         }
         let text = options.text || options.message.content;
         // @ts-ignore
-        const exactMatch = await this._resolveChannelByExactMatch(options.client, options.message, text, type);
+        const exactMatch = await this._resolveByExactMatch(options.context, text, 'channels', { type });
         if (exactMatch) {
             return exactMatch;
         }
@@ -358,12 +357,15 @@ class Command {
      * @param {BaseContext} context - The context
      * @param {String} text - The text to resolve something from
      * @param {String} type - The type of the thing to resolve, can be either `roles`, `members`, or `channels`
+     * @param {}
      * @returns {Promise<Role|User|TextChannel>} The resolved role/user/channel
      * @memberof Command
      */
-    async _resolveByExactMatch(context, text, type) {
+    async _resolveByExactMatch(context, text, type, options) {
         // @ts-ignore
-        const exactMatches = context.message.channel.guild[type].filter(r => (r.name || r.username).toLowerCase().split(/\s+/).join(" ") === text.toLowerCase().split(/\s+/).join(" "));
+        const exactMatches = context.message.channel.guild[type]
+            .filter(v => (v.name || v.username).toLowerCase().split(/\s+/).join(" ") === text.toLowerCase().split(/\s+/).join(" "))
+            .filter()
         const dataToShow = (value) => {
             let data = value.name || `${value.username}#${value.tag}`;
             //Roles

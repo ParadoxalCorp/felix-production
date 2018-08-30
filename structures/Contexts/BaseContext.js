@@ -26,6 +26,12 @@
  * @prop {Number} [localExperience] The target's experience on this guild, if the message was sent in a guild
 */
 
+/** @typedef {Object} ExactMatchResolverOptions 
+ * @prop {String} text The text to resolve something from
+ * @prop {String} type The type of the thing to resolve, can be either `roles`, `members`, or `channels`
+ * @prop {Number} [channelType] If a channel, an optional channel type to restrict the search to
+*/
+
 class BaseContext {
     /**
      * 
@@ -183,6 +189,88 @@ class BaseContext {
             localExperience: this.guildEntry && this.guildEntry.experience.members.find(u => u.id === user.id) ? this.guildEntry.experience.members.find(u => u.id === user.id).experience : 0
         };
         return this.target;
+    }
+
+    async getRoleFromText(text) {
+        const exactMatch = await this._resolveByExactMatch({text, type: 'roles'});
+        if (exactMatch) {
+            return exactMatch;
+        }
+        //While it is very unlikely, resolve the role by ID/mention if possible
+        // @ts-ignore
+        text = text.replace(/<|>|\@|\&/g, '');
+        if (this.message.channel.guild.roles.get(text)) {
+            // @ts-ignore
+            return this.message.channel.guild.roles.get(text);
+        }
+        return false;
+    }
+
+    async getChannelFromText(text, type) {
+        const channelTypes = {
+            category: 4,
+            text: 0,
+            voice: 2
+        };
+        type = typeof type === 'number' ? type : channelTypes[type];
+        // @ts-ignore
+        const exactMatch = await this._resolveByExactMatch({text, type: 'channels', channelType: type});
+        if (exactMatch) {
+            return exactMatch;
+        }
+
+        //While it is very unlikely, resolve the channel by ID (and mention) if possible
+        text = text.replace(/<|>|#/g, '');
+        // @ts-ignore
+        const channelByID = this.message.channel.guild.channels.get(text);
+        if (channelByID && channelByID.type === type) {
+            return channelByID;
+        }
+
+        return false;
+    }
+
+    /**
+     * Resolve something by exact match
+     * @param {ExactMatchResolverOptions} options - The options for the resolver
+     * @returns {Promise<Role|User|TextChannel>} The resolved role/user/channel
+     */
+    async _resolveByExactMatch(options) {
+        // @ts-ignore
+        const exactMatches = this.message.channel.guild[options.type]
+            .filter(v => (v.name || v.username).toLowerCase().split(/\s+/).join(" ") === options.text.toLowerCase().split(/\s+/).join(" "))
+            .filter(v => options.channelType ? v.type === options.channelType : true);
+        const dataToShow = (value) => {
+            let data = value.name || `${value.username}#${value.tag}`;
+            //Roles
+            if (typeof value.hoisted !== 'undefined') {
+                data += `(Position: ${value.position} ; Hoisted: ${value.hoist ? "Yes" : "No"})`;
+            } 
+            //Voice channels/Text channels
+            else if (typeof value.topic !== 'undefined' || typeof value.bitrate !== 'undefined') {
+                data += `(Topic: ${value.topic ? value.topic.substr(0, 42) + '...' : 'None'} ; Bitrate: ${value.bitrate ? value.bitrate : "None"})`;
+            }
+            return data;
+        };
+        if (exactMatches.length === 1) {
+            return exactMatches[0];
+        } else if (exactMatches.length > 1) {
+            let i = 1;
+            await this.message.channel.createMessage({
+                embed: {
+                    title: ':mag: Role search',
+                    description:`'I found multiple ${options.type} with that name, select one by answering with their corresponding number\`\`\`\n` + exactMatches.map(v => `[${i++}] - ${dataToShow(v)}`).join("\n") + "```",
+                    footer: {
+                        text: 'Time limit: 60 seconds'
+                    }
+                }
+            });
+            const reply = await this.client.handlers.MessageCollector.awaitMessage(this.message.channel.id, this.message.author.id, 60000).catch(err => {
+                this.client.bot.emit("error", err);
+                return false;
+            });
+            return exactMatches[reply.content - 1] ? exactMatches[reply.content - 1] : false;
+        }
     }
 }
 
