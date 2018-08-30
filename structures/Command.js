@@ -10,6 +10,8 @@
  * @typedef {import("../main.js").Client} Client
  * @typedef {import("./ExtendedStructures/ExtendedGuildEntry.js") & import("./References").GuildEntry} GuildEntry
  * @typedef {import("./ExtendedStructures/ExtendedUserEntry") & import("./References").UserEntry} UserEntry
+ * @typedef {import("./Contexts/BaseContext")} BaseContext
+ * @typedef {import("eris").TextChannel} TextChannel
  */
 
 /** @typedef {Object} CommandHelp
@@ -170,9 +172,6 @@ class Command {
      * @returns {Promise<ExtendedUser | Boolean>} The resolved user, or false if none could be resolved
      */
     async getUserFromText(options) {
-        if (!options.client || !options.message) {
-            Promise.reject(new Error(`The options.client and options.message parameters are mandatory`));
-        }
         options.text = options.text || options.message.content;
         const exactMatch = await this._resolveUserByExactMatch(options.client, options.message, options.text);
         if (exactMatch) {
@@ -238,9 +237,6 @@ class Command {
      * @returns {Promise<Role | Boolean>} The resolved role, or false if none could be resolved
      */
     async getRoleFromText(options) {
-        if (!options.client || !options.message) {
-            Promise.reject(new Error(`The options.client and options.message parameters are mandatory`));
-        }
         options.text = options.text || options.message.content;
         const exactMatch = await this._resolveRoleByExactMatch(options.client, options.message, options.text);
         if (exactMatch) {
@@ -350,6 +346,51 @@ class Command {
             });
             const reply = await client.handlers.MessageCollector.awaitMessage(message.channel.id, message.author.id, 60000).catch(err => {
                 client.bot.emit("error", err);
+                return false;
+            });
+            return exactMatches[reply.content - 1] ? exactMatches[reply.content - 1] : false;
+        }
+    }
+
+    /**
+     *
+     *
+     * @param {BaseContext} context - The context
+     * @param {String} text - The text to resolve something from
+     * @param {String} type - The type of the thing to resolve, can be either `roles`, `members`, or `channels`
+     * @returns {Promise<Role|User|TextChannel>} The resolved role/user/channel
+     * @memberof Command
+     */
+    async _resolveByExactMatch(context, text, type) {
+        // @ts-ignore
+        const exactMatches = context.message.channel.guild[type].filter(r => (r.name || r.username).toLowerCase().split(/\s+/).join(" ") === text.toLowerCase().split(/\s+/).join(" "));
+        const dataToShow = (value) => {
+            let data = value.name || `${value.username}#${value.tag}`;
+            //Roles
+            if (typeof value.hoisted !== 'undefined') {
+                data += `(Position: ${value.position} ; Hoisted: ${value.hoist ? "Yes" : "No"})`;
+            } 
+            //Voice channels/Text channels
+            else if (typeof value.topic !== 'undefined' || typeof value.bitrate !== 'undefined') {
+                data += `(Topic: ${value.topic ? value.topic.substr(0, 42) + '...' : 'None'} ; Bitrate: ${value.bitrate ? value.bitrate : "None"})`;
+            }
+            return data;
+        };
+        if (exactMatches.length === 1) {
+            return exactMatches[0];
+        } else if (exactMatches.length > 1) {
+            let i = 1;
+            await context.message.channel.createMessage({
+                embed: {
+                    title: ':mag: Role search',
+                    description:`'I found multiple ${type} with that name, select one by answering with their corresponding number\`\`\`\n` + exactMatches.map(v => `[${i++}] - ${dataToShow(v)}`).join("\n") + "```",
+                    footer: {
+                        text: 'Time limit: 60 seconds'
+                    }
+                }
+            });
+            const reply = await context.client.handlers.MessageCollector.awaitMessage(context.message.channel.id, context.message.author.id, 60000).catch(err => {
+                context.client.bot.emit("error", err);
                 return false;
             });
             return exactMatches[reply.content - 1] ? exactMatches[reply.content - 1] : false;
