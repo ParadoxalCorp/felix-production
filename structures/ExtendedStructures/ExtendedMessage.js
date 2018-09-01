@@ -21,10 +21,10 @@ class ExtendedMessage {
      * @param {Client} client - The client instance
      */
     constructor(message, client) {
-        Object.assign(this, {
+        Object.assign(this, message, {
             client,
             author: new client.structures.ExtendedUser(message.author, client)
-        }, message);
+        });
     }
 }
 
