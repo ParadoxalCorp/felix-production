@@ -21,7 +21,7 @@ class Invite extends GenericCommands {
                     name: `Requested by: ${context.message.author.username}#${context.message.author.discriminator}`,
                     icon_url: context.message.author.avatarURL
                 },
-                description: `[Invitation link](https://discordapp.com/oauth2/authorize?&client_id=${context.client.bot.user.id}&scope=bot&permissions=2146950271)\n**Please remember that I might not work perfectly if I dont have all permissions~**`,
+                description: `[Invitation link](https://discordapp.com/oauth2/authorize?&client_id=${context.client.bot.user.id}&scope=bot&permissions=2146950271)\n\nIf you aren't sure about what permissions to give, [you should definitely read this](https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md)`,
                 thumbnail: {
                     url: context.client.bot.user.avatarURL
                 },

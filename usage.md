@@ -30,6 +30,7 @@
 * [Self-assignable roles](#self-assignable-roles)
 - * [Incompatible roles](#incompatible-roles)
 - - * [Example](#example)
+* [Permissions](#permissions)
 * [More info](#more-info)
 - * [Services](#services)
 - - * [Database](#rethinkdb)
@@ -270,6 +271,38 @@ And
 That will make the `Blue` role "incompatible" with the `Red` role, and the `Red` role incompatible with the `Blue` role
 
 ![Preview](https://cdn.discordapp.com/attachments/356224772184735756/470247980872630303/unknown.png)
+
+## Permissions
+
+When inviting Felix, it will probably asks you to select what permissions to give to Felix, Felix's default invite link has all permissions checked but that's merely to give you the option to chose the ones you want to give, **you shouldn't give a bot all permissions, especially Administrator**. 
+
+While the `Administrator` permission is a great shortcut a bot has all the needed permissions, it is extremely unsafe and you expose your server at high risks if the bot ever gets compromised. I take security seriously, and do my best to make sure Felix is never compromised, but you know what they say, better safe than sorry.
+
+Here's the permissions Felix actually needs to work properly (permissions marked with a `*` are mandatory):
+
+* `Embed Links*` - Felix will basically not work **at all** without it, as most of Felix's commands outputs depends on it
+
+* `Send Messages*` - Obviously
+
+* `Read Message History*` 
+
+* `Use External Emotes` - Felix will use lame emotes otherwise, your choice
+
+* `Add Reactions*` - Some command works with reactions
+
+* `Connect` - Needed for the music feature
+
+* `Speak` - Needed for the music feature
+
+* `Manage Messages` - Needed for the `clear` command
+
+* `Manage Roles` - Needed for the self-assignable roles features and automatic role add on new members, along with the need for the set roles to be under Felix's highest role
+
+* `Attach Files*` - Some commands (mainly image commands) need this permission to upload images
+
+The permissions that aren't marked with `*` are handled internally and shouldn't cause any issue if Felix is missing them as long as you don't plan to use the features that requires it
+
+You can also disallow the `Read Messages` permission for Felix on channels you don't want Felix to answer 
 
 ## More info
 
