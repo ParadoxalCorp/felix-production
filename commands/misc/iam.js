@@ -73,11 +73,7 @@ class Iam extends FunCommands {
     }
 
     async assignRole(context) {
-        const guildRole = await this.getRoleFromText({
-            message: context.message,
-            client: context.client,
-            text: context.args.join(' ')
-        });
+        const guildRole = await context.getRoleFromText(context.args.join(' '));
         const member = context.message.channel.guild.members.get(context.message.author.id);
         if (!guildRole || !context.guildEntry.selfAssignableRoles.find(r => r.id === guildRole.id)) {
             return context.message.channel.createMessage(":x: The specified role does not exist or it is not a self-assignable role");

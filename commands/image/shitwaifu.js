@@ -19,7 +19,7 @@ class ShitWaifu extends GenericCommands {
     /** @param {import("../../structures/Contexts/ImageContext")} context */
 
     async run(context) {
-        const user = context.args[0] ? await this.getUserFromText({client: context.client, message: context.message, text: context.args[0]}) : context.message.author;
+        const user = context.args[0] ? await context.getUserFromText(context.args[0]) : context.message.author;
         let typing = false;
         //If the queue contains 2 items or more, expect that this request will take some seconds and send typing to let the user know
         if (context.client.weebSH.korra.requestHandler.queue.length >= 2) {

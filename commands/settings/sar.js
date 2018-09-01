@@ -95,14 +95,7 @@ class Sar extends SettingsCommands {
     /** @param {import("../../structures/Contexts/SettingsContext")} context */
 
     async add(context) {
-        const role =
-			typeof context.args[1] === "string"
-			    ? await this.getRoleFromText({
-			        message: context.message,
-			        client: this.client,
-			        text: context.args[1]
-				  })
-			    : context.args[1];
+        const role = typeof context.args[1] === "string" ? await context.getRoleFromText(context.args[1]) : context.args[1];						    	    
         const alreadySet = role
             ? context.guildEntry.selfAssignableRoles.find(r => r.id === role.id)
             : false;
@@ -118,11 +111,7 @@ class Sar extends SettingsCommands {
         let resolvedRoles = [];
         if (incompatibleRoles && incompatibleRoles[0]) {
             for (const incompatibleRole of incompatibleRoles) {
-                const resolved = await this.getRoleFromText({
-                    message: context.message,
-                    client: this.client,
-                    text: incompatibleRole
-                });
+                const resolved = await context.getRoleFromText(incompatibleRole);
                 if (!resolved) {
                     return context.message.channel.createMessage(
                         `:x: I could not find the role \`${incompatibleRole}\``
@@ -170,11 +159,7 @@ class Sar extends SettingsCommands {
     /** @param {import("../../structures/Contexts/SettingsContext")} context */
 
     async remove(context) {
-        const role = await this.getRoleFromText({
-            message: context.message,
-            client: this.client,
-            text: context.args[1]
-        });
+        const role = await context.getRoleFromText(context.args[1]);
         const isSet = role
             ? context.guildEntry.selfAssignableRoles.find(r => r.id === role.id)
             : false;

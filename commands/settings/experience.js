@@ -81,7 +81,7 @@ class Experience extends SettingsCommands {
                 if (!args.includes('add_role')) {
                     return false;
                 }
-                const role = await this.getRoleFromText({ message: message, client: client, text: args[1] });
+                const role = await new (require('../../structures/Contexts/BaseContext'))(client, message, args).getRoleFromText(args[1]);
                 //Overwrite argument so the command handler will pass the resolved role to the command
                 //That not only avoid a slower duplicate check, but also a duplicate query if multiple roles have first been resolved
                 if (role) {
@@ -160,7 +160,7 @@ class Experience extends SettingsCommands {
     }
 
     async addRole(context) {
-        const role = typeof context.args[1] === 'string' ? await this.getRoleFromText({ message: context.message, client: context.client, text: context.args[1] }) : context.args[1];
+        const role = typeof context.args[1] === 'string' ? await context.getRoleFromText(context.args[1]) : context.args[1];
         const alreadySet = role ? context.guildEntry.experience.roles.find(r => r.id === role.id) : false;
         if (!role) {
             return context.message.channel.createMessage(`:x: I couldn't find the role \`${context.args[1]}\` in this server`);
@@ -187,7 +187,7 @@ class Experience extends SettingsCommands {
     }
 
     async removeRole(context) {
-        const role = await this.getRoleFromText({ message: context.message, client: context.client, text: context.args[1] });
+        const role = await context.getRoleFromText(context.args[1]);
         const isSet = role ? context.guildEntry.experience.roles.find(r => r.id === role.id) : false;
         if (!role) {
             return context.message.channel.createMessage(`:x: I couldn't find the role \`${context.args[1]}\` in this server`);
@@ -266,7 +266,7 @@ class Experience extends SettingsCommands {
             await context.client.handlers.DatabaseWrapper.set(context.guildEntry, 'guild');
             return context.message.channel.createMessage(`:white_check_mark: Alright, the level up notifications target has been updated`);
         }
-        const channel = await this.getChannelFromText({ client: context.client, message: context.message, text: context.args[1] });
+        const channel = await context.getChannelFromText(context.args[1]);
         if (!channel) {
             return context.message.channel.createMessage(`:x: I couldn't find a channel named \`${context.args[1]}\` on this server`);
         } else if (context.guildEntry.experience.notifications.channel === channel.id) {

@@ -26,7 +26,7 @@ class Rank extends MiscCommands {
         const { Canvas } = require('canvas-constructor');
         const fsn = require('fs-nextra');
       
-        const target = await context.setTarget(await this.getUserFromText({ message: context.message, client: context.client, text: context.args[0] }) || context.message.author);
+        const target = await context.setTarget(await context.getUserFromText(context.args.join(' ')) || context.message.author);
         const leaderboardG = await this.getLeaderboard('experience', target.user);
         const leaderboardL = context.guildEntry.experience.members.sort((a, b) => b.experience - a.experience);
         //Shortcut to the resource folder imgs

@@ -60,11 +60,11 @@ class ModerationCommands extends Command {
         let target = context.args[startsAt].toLowerCase() === 'global' ? 'global' : null;
         let targetType = context.args[startsAt].toLowerCase();
         if (['category', 'channel'].includes(targetType)) {
-            target = await this.getChannelFromText({client: context.client, message: context.message, text: context.args.slice(startsAt + 1).join(' '), type: targetType === 'channel' ? 'text' : 'category'});
+            target = await context.getChannelFromText(context.args.slice(startsAt + 1).join(' '), targetType === 'channel' ? 'text' : 'category');
         } else if (targetType === 'role') {
-            target = await this.getRoleFromText({client: context.client, message: context.message, text: context.args.slice(startsAt + 1).join(' ')});
+            target = await context.getRoleFromText(context.args.slice(startsAt + 1).join(' '));
         } else if (targetType === 'user') {
-            target = await this.getUserFromText({client: context.client, message: context.message, text: context.args.slice(startsAt + 1).join(' ')});
+            target = await context.getUserFromText(context.args.slice(startsAt + 1).join(' '));
         }
         return target;
     }

@@ -70,7 +70,7 @@ class OnJoinRoles extends SettingsCommands {
 
     async addRole(context) {
         const roleName = context.args.splice(1).join(" ");
-        const role = await this.getRoleFromText({message: context.message, client: this.client, text: roleName});
+        const role = await context.getRoleFromText(roleName);
         const alreadySet = role
             ? context.guildEntry.onJoinRoles.includes(role.id)
             : false;
@@ -109,7 +109,7 @@ class OnJoinRoles extends SettingsCommands {
 
     async removeRole(context) {
         const roleName = context.args.splice(1).join(" ");
-        const role = await this.getRoleFromText({message: context.message, client: this.client, text: roleName});
+        const role = await context.getRoleFromText(roleName);
         context.guildEntry.onJoinRoles = context.guildEntry.onJoinRoles.filter(r => context.message.channel.guild.roles.has(r));
         const isSet = role
             ? context.guildEntry.onJoinRoles.includes(role.id)

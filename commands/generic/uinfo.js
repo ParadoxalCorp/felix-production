@@ -18,7 +18,7 @@ class Uinfo extends GenericCommands {
     /** @param {import("../../structures/Contexts/GenericContext")} context */
 
     async run(context) {
-        const target = await context.setTarget(await this.getUserFromText({ message: context.message, client: context.client, text: context.args[0] }) || context.message.author);
+        const target = await context.setTarget(await context.getUserFromText(context.args.join(' ')) || context.message.author);
 
         const embedFields = [{
             name: 'Name/Tag',

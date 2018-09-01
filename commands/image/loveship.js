@@ -20,8 +20,8 @@ class LoveShip extends GenericCommands {
     /** @param {import("../../structures/Contexts/ImageContext")} context */
 
     async run(context) {
-        const firstUser = await this.getUserFromText({client: context.client, message: context.message, text: context.args[0]});
-        const secondUser = context.args[1] ? await this.getUserFromText({client: context.client, message: context.message, text: context.args.splice(1).join(' ')}) : context.message.author;
+        const firstUser = await context.getUserFromText(context.args[0]);
+        const secondUser = context.args[1] ? await context.getUserFromText(context.args.splice(1).join(' ')) : context.message.author;
         if ((!firstUser && secondUser.id === context.message.author.id) || (!secondUser && firstUser)) {
             return context.message.channel.createMessage(':x: I\'m sorry but I couldn\'t find the users you specified :c');
         } else if (firstUser.id === secondUser.id) {

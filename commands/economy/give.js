@@ -26,7 +26,7 @@ class Give extends EconomyCommands {
         if (!userInput) {
             return context.message.channel.createMessage(`:x: Invalid syntax or missing parameters, the correct syntax should be \`${this.help.usage.replace(/{prefix}/gim, context.guildEntry.prefix || context.client.config.prefix)}\``);
         }
-        const receiver = await this.getUserFromText({ message: context.message, client: context.client, text: userInput.join(" ") });
+        const receiver = await context.getUserFromText(userInput.join(" "));
         const coins = context.client.utils.isWholeNumber(context.args[context.args.length - 1]) ? Number(context.args[context.args.length - 1]) : false;
         if (!receiver || !coins) {
             return context.message.channel.createMessage(!receiver ? ':x: I couldn\'t find the user you specified' : ':x: Please specify a whole number !');

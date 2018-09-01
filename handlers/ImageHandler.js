@@ -93,7 +93,7 @@ class ImageHandler {
                     const users = await (async() => {
                         let resolvedUsers = [];
                         for (const arg of context.args) {
-                            const resolved = await this.getUserFromText({client: context.client, message: context.message, text: arg});
+                            const resolved = await context.getUserFromText(arg);
                             // @ts-ignore
                             if (resolved && !resolvedUsers.find(u =>  u.id === resolved.id) && (resolved.id !== context.message.author.id)) {
                                 resolvedUsers.push(resolved);

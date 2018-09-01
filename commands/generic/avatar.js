@@ -16,7 +16,7 @@ class Avatar extends GenericCommands {
     /** @param {import("../../structures/Contexts/GenericContext")} context */
 
     async run(context) {
-        const user = await this.getUserFromText({ message: context.message, client: context.client, text: context.args.join(' ') });
+        const user = await context.getUserFromText(context.args.join(' '));
         const target = user || context.message.author;
         return context.message.channel.createMessage({
             content: `${context.emote('picture')} The avatar of **${target.username}**`,

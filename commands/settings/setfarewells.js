@@ -109,7 +109,7 @@ class SetFarewells extends SettingsCommands {
     /** @param {import("../../structures/Contexts/SettingsContext")} context */
 
     async setMessageTarget(context) {
-        const channel = await this.getChannelFromText({client: this.client, message: context.message, text: context.args[1]});
+        const channel = await context.getChannelFromText(context.args[1]);
         if (!channel) {
             return context.message.channel.createMessage(`:x: I couldn't find a channel named \`${context.args[1]}\` on this server`);
         } else if (context.guildEntry.farewells.channel === channel.id) {

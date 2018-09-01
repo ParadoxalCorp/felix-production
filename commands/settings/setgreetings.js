@@ -117,7 +117,7 @@ class SetGreetings extends SettingsCommands {
             await context.client.handlers.DatabaseWrapper.set(context.guildEntry, "guild");
             return context.message.channel.createMessage(`:white_check_mark: Alright, the greetings target has been updated`);
         }
-        const channel = await this.getChannelFromText({client: this.client, message: context.message, text: context.args[1]});
+        const channel = await context.getChannelFromText(context.args[1]);
         if (!channel) {
             return context.message.channel.createMessage(`:x: I couldn't find a channel named \`${context.args[1]}\` on this server`);
         } else if (context.guildEntry.greetings.channel === channel.id) {

@@ -32,7 +32,7 @@ class Love extends FunCommands {
             return context.message.channel.createMessage(`:x: You already used all your love points, time remaining: ${remainingTime.days}d ${remainingTime.hours}h ${remainingTime.minutes}m ${remainingTime.seconds}s`);
         }
         const user = lp === parseInt(context.args[0]) ? context.args.splice(1).join(' ') : context.args.join(' ');
-        const targetUser = await this.getUserFromText({ client: this.client, message: context.message, text: user });
+        const targetUser = await context.getUserFromText(user);
         if (!targetUser) {
             return context.message.channel.createMessage(`:x: I couldn't find the user you specified :v`);
         } else if (targetUser.id === context.message.author.id) {

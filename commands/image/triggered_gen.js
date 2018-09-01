@@ -21,7 +21,7 @@ class TriggeredGen extends GenericCommands {
     /** @param {import("../../structures/Contexts/ImageContext")} context */
 
     async run(context) {
-        const user = await this.getUserFromText({ message: context.message, client: context.client, text: context.args.join(' ') });
+        const user = await context.getUserFromText(context.args.join(' '));
         const target = user || context.message.author;
         const image = await axios.get(`https://cute-api.tk/v1/generate/triggered?url=${target.avatarURL || target.defaultCDNAvatar}`, {responseType: 'arraybuffer'});
         return context.message.channel.createMessage(``, {

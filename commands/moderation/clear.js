@@ -49,7 +49,7 @@ class Clear extends ModerationCommands {
                     filtered = filtered.concat(fetchedMessages.filter(m => m.author.bot));
                 }
                 if (arg.toLowerCase().includes("u")) {
-                    const user = await this.getUserFromText({message: context.message, client: this.client, text: context.args.splice(2).join(" ")});
+                    const user = await context.getUserFromText(context.args.splice(2).join(" "));
                     filtered = filtered.concat(fetchedMessages.filter(m => m.author.id === (
                         user
                             ? user.id
