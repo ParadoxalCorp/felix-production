@@ -11,6 +11,8 @@
  * @typedef {import("eris").VoiceChannel} VoiceChannel
  * @typedef {import("eris").Message} Message 
  * @typedef {import("../../handlers/ExperienceHandler").LevelDetails} LevelDetails
+ * @typedef {import("eris").Role} Role 
+ * @typedef {import("eris").CategoryChannel} CategoryChannel
  */
 
 /** @typedef {Object} UserHasPermissions 
@@ -191,7 +193,33 @@ class BaseContext {
         return this.target;
     }
 
-    async getRoleFromText(text) {
+    /**
+     * 
+     * @param {String} [text] - The  text to resolve a user from, defaults to `<Context>.args[0]` or `<Context>.message.content` if `args` is empty
+     * @returns {Promise<ExtendedUser>} The resolved user, or null if none is found
+     */
+    async getUserFromText(text = (this.args[0] || this.message.content)) {
+        const exactMatch = await this._resolveByExactMatch({text, type: 'members'});
+        if (exactMatch) {
+            return new this.client.structures.ExtendedUser(exactMatch, this.client);
+        }
+        //While it is unlikely, resolve the user by ID if possible
+        // @ts-ignore
+        text = text.replace(/<@!/g, '').replace(/<@/g, '').replace(/>/g, '');
+        if (this.guild.members.get(text)) {
+            // @ts-ignore
+            return new this.client.structures.ExtendedUser(this.guild.members.get(text).user, this.client || this.client);
+        }
+        const user = this.client.bot.users.get(text);
+        return user ? new this.client.structures.ExtendedUser(user, this.client || this.client) : null;
+    }
+
+    /**
+     * 
+     * @param {String} [text] - The text to resolve a role from, defaults to `<Context>.args[0]` or `<Context>.message.content` if `args` is empty
+     * @returns {Promise<Role>} The resolved role, or null if none is found
+     */
+    async getRoleFromText(text = (this.args[0] || this.message.content)) {
         const exactMatch = await this._resolveByExactMatch({text, type: 'roles'});
         if (exactMatch) {
             return exactMatch;
@@ -199,14 +227,20 @@ class BaseContext {
         //While it is very unlikely, resolve the role by ID/mention if possible
         // @ts-ignore
         text = text.replace(/<|>|\@|\&/g, '');
-        if (this.message.channel.guild.roles.get(text)) {
+        if (this.guild.roles.get(text)) {
             // @ts-ignore
-            return this.message.channel.guild.roles.get(text);
+            return this.guild.roles.get(text);
         }
-        return false;
+        return null;
     }
 
-    async getChannelFromText(text, type) {
+    /**
+     * 
+     * @param {String} [text] - The text to resolve a channel from, defaults to `<Context>.args[0]` or `<Context>.message.content` if `args` is empty
+     * @param {String|Number} [type] - The type of the channel to resolve, can be either `category`, `text`, `voice` or the raw type numbers as specified in Discord's API. Defaults to `text`
+     * @returns {Promise<CategoryChannel|TextChannel|VoiceChannel>} The resolved channel, or null if none is found
+     */
+    async getChannelFromText(text = (this.args[0] || this.message.content), type = 0) {
         const channelTypes = {
             category: 4,
             text: 0,
@@ -222,26 +256,27 @@ class BaseContext {
         //While it is very unlikely, resolve the channel by ID (and mention) if possible
         text = text.replace(/<|>|#/g, '');
         // @ts-ignore
-        const channelByID = this.message.channel.guild.channels.get(text);
+        const channelByID = this.guild.channels.get(text);
         if (channelByID && channelByID.type === type) {
             return channelByID;
         }
 
-        return false;
+        return null;
     }
 
     /**
      * Resolve something by exact match
      * @param {ExactMatchResolverOptions} options - The options for the resolver
-     * @returns {Promise<Role|User|TextChannel>} The resolved role/user/channel
+     * @returns {Promise<Role|User|TextChannel|CategoryChannel|VoiceChannel>} The resolved role/user/channel
      */
     async _resolveByExactMatch(options) {
         // @ts-ignore
-        const exactMatches = this.message.channel.guild[options.type]
-            .filter(v => (v.name || v.username).toLowerCase().split(/\s+/).join(" ") === options.text.toLowerCase().split(/\s+/).join(" "))
+        const exactNameMatch = (name) => (name).toLowerCase().split(/\s+/).join(" ") === options.text.toLowerCase().split(/\s+/).join(" ");
+        const exactMatches = this.guild[options.type]
+            .filter(v => exactNameMatch(v.name || v.username) || exactNameMatch(v.nick || ''))
             .filter(v => options.channelType ? v.type === options.channelType : true);
         const dataToShow = (value) => {
-            let data = value.name || `${value.username}#${value.tag}`;
+            let data = value.name || `${value.username}#${value.discriminator}`;
             //Roles
             if (typeof value.hoisted !== 'undefined') {
                 data += `(Position: ${value.position} ; Hoisted: ${value.hoist ? "Yes" : "No"})`;
@@ -258,18 +293,19 @@ class BaseContext {
             let i = 1;
             await this.message.channel.createMessage({
                 embed: {
-                    title: ':mag: Role search',
-                    description:`'I found multiple ${options.type} with that name, select one by answering with their corresponding number\`\`\`\n` + exactMatches.map(v => `[${i++}] - ${dataToShow(v)}`).join("\n") + "```",
+                    title: `:mag: ${options.type.charAt(0).toUpperCase() + options.type.substr(1)} search`,
+                    description:`I found multiple ${options.type} with that name, select one by answering with their corresponding number\`\`\`\n` + exactMatches.map(v => `[${i++}] - ${dataToShow(v)}`).join("\n") + "```",
                     footer: {
                         text: 'Time limit: 60 seconds'
-                    }
+                    },
+                    color: this.client.config.options.embedColor.generic
                 }
             });
             const reply = await this.client.handlers.MessageCollector.awaitMessage(this.message.channel.id, this.message.author.id, 60000).catch(err => {
                 this.client.bot.emit("error", err);
-                return false;
+                return null;
             });
-            return exactMatches[reply.content - 1] ? exactMatches[reply.content - 1] : false;
+            return exactMatches[reply.content - 1] ? exactMatches[reply.content - 1] : null;
         }
     }
 }
