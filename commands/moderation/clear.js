@@ -57,10 +57,10 @@ class Clear extends ModerationCommands {
                 }
                 if (arg.toLowerCase().includes("c")) {
                     filtered = filtered.concat(fetchedMessages.filter(m => m.author.id === context.client.bot.user.id));
-                    filtered = filtered.concat(fetchedMessages.filter(m => m.context.startsWith(
+                    filtered = filtered.concat(fetchedMessages.filter(m => m.content.startsWith(
                         context.guildEntry
                             ? context.guildEntry.getPrefix
-                            : context.client.config.prefix) || m.context.startsWith(`<@${context.client.bot.user.id}>`) || m.context.startsWith(`<@!${context.client.bot.user.id}`)));
+                            : context.client.config.prefix) || m.content.startsWith(`<@${context.client.bot.user.id}>`) || m.content.startsWith(`<@!${context.client.bot.user.id}`)));
                 }
             }
         }
