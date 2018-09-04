@@ -19,12 +19,12 @@ class SetFarewells extends SettingsCommands {
             possibleActions: [
                 {
                     name: "enable",
-                    func: this.enable.bind(this),
+                    func: this.toggleGreetingsOrFarewells.bind(this, 'farewells', 'enable'),
                     interpretAs: "{value}",
                     expectedArgs: 0
                 }, {
                     name: "disable",
-                    func: this.disable.bind(this),
+                    func: this.toggleGreetingsOrFarewells.bind(this, 'farewells', 'disable'),
                     interpretAs: "{value}",
                     expectedArgs: 0
                 }, {
@@ -80,30 +80,6 @@ class SetFarewells extends SettingsCommands {
             return context.message.channel.createMessage(`:x: This action expect \`${action.expectedArgs - (context.args.length - 1)}\` more argument(s), if you are lost, simply run the command like \`${getPrefix(context.client, context.guildEntry)}${this.help.name}\``);
         }
         return action.func(context);
-    }
-
-    /** @param {import("../../structures/Contexts/SettingsContext")} context */
-
-    async enable(context) {
-        if (!context.guildEntry.farewells.enabled) {
-            context.guildEntry.farewells.enabled = true;
-            await context.client.handlers.DatabaseWrapper.set(context.guildEntry, "guild");
-            return context.message.channel.createMessage(":white_check_mark: Alright, the farewells are now enabled. Make sure to also set up a farewells message and the target");
-        } else {
-            return context.message.channel.createMessage(":x: The farewells are already enabled");
-        }
-    }
-
-    /** @param {import("../../structures/Contexts/SettingsContext")} context */
-
-    async disable(context) {
-        if (context.guildEntry.farewells.enabled) {
-            context.guildEntry.farewells.enabled = false;
-            await context.client.handlers.DatabaseWrapper.set(context.guildEntry, "guild");
-            return context.message.channel.createMessage(":white_check_mark: Alright, the farewells are now disabled");
-        } else {
-            return context.message.channel.createMessage(":x: The farewells are already disabled");
-        }
     }
 
     /** @param {import("../../structures/Contexts/SettingsContext")} context */

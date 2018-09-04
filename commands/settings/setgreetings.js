@@ -19,12 +19,12 @@ class SetGreetings extends SettingsCommands {
             possibleActions: [
                 {
                     name: "enable",
-                    func: this.enable.bind(this),
+                    func: this.toggleGreetingsOrFarewells.bind(this, 'greetings', 'enable'),
                     interpretAs: "{value}",
                     expectedArgs: 0
                 }, {
                     name: "disable",
-                    func: this.disable.bind(this),
+                    func: this.toggleGreetingsOrFarewells.bind(this, 'greetings', 'disable'),
                     interpretAs: "{value}",
                     expectedArgs: 0
                 }, {
@@ -80,30 +80,6 @@ class SetGreetings extends SettingsCommands {
             return context.message.channel.createMessage(`:x: This action expect \`${action.expectedArgs - (context.args.length - 1)}\` more argument(s), if you are lost, simply run the command like \`${getPrefix(context.client, context.guildEntry)}${this.help.name}\``);
         }
         return action.func(context);
-    }
-
-    /** @param {import("../../structures/Contexts/SettingsContext")} context */
-
-    async enable(context) {
-        if (!context.guildEntry.greetings.enabled) {
-            context.guildEntry.greetings.enabled = true;
-            await context.client.handlers.DatabaseWrapper.set(context.guildEntry, "guild");
-            return context.message.channel.createMessage(":white_check_mark: Alright, the greetings are now enabled. Make sure to also set up a greetings message and the target");
-        } else {
-            return context.message.channel.createMessage(":x: The greetings are already enabled");
-        }
-    }
-
-    /** @param {import("../../structures/Contexts/SettingsContext")} context */
-
-    async disable(context) {
-        if (context.guildEntry.greetings.enabled) {
-            context.guildEntry.greetings.enabled = false;
-            await context.client.handlers.DatabaseWrapper.set(context.guildEntry, "guild");
-            return context.message.channel.createMessage(":white_check_mark: Alright, the greetings are now disabled");
-        } else {
-            return context.message.channel.createMessage(":x: The greetings are already disabled");
-        }
     }
 
     /** @param {import("../../structures/Contexts/SettingsContext")} context */

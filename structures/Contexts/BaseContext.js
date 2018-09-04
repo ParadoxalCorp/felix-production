@@ -9,7 +9,6 @@
  * @typedef {import("eris").Message} Message
  * @typedef {import("eris").TextChannel} TextChannel
  * @typedef {import("eris").VoiceChannel} VoiceChannel
- * @typedef {import("eris").Message} Message 
  * @typedef {import("../../handlers/ExperienceHandler").LevelDetails} LevelDetails
  * @typedef {import("eris").Role} Role 
  * @typedef {import("eris").CategoryChannel} CategoryChannel
