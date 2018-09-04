@@ -101,7 +101,7 @@ class SetGreetings extends SettingsCommands {
         }
         context.guildEntry.greetings.channel = channel.id;
         await context.guildEntry.save();
-        const hasPerm = !context.hasPermissions(['sendMessages'], context.client.bot.user.id).missingPerms
+        const hasPerm = !context.hasPermissions(['sendMessages'], context.client.bot.user.id).missingPerms;
         return context.message.channel.createMessage(`:white_check_mark: Alright, the greetings target has been set to the channel <#${channel.id}>` + (
             !hasPerm
                 ? `\n\n:warning: It seems like i don\'t have enough permissions to send messages in <#${channel.id}>, you may want to fix that`
