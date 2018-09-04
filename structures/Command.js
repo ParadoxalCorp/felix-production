@@ -233,7 +233,7 @@ class Command {
             return new client.structures.ExtendedUser(user ? user : defaultUser, this.client);
         } else if (typeof userResolvable === 'string') {
             const spliced = userResolvable.split('#');
-            const user = client.bot.users.filter(u => u.username === spliced[0] && u.discriminator === spliced[1]).random();
+            const user = client.bot.users.find(u => u.username === spliced[0] && u.discriminator === spliced[1]);
             return new client.structures.ExtendedUser(user ? user : defaultUser, this.client);
         } else if (typeof userResolvable === 'object') {
             return new client.structures.ExtendedUser(userResolvable, this.client);

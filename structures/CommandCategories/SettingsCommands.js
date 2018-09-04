@@ -28,7 +28,7 @@ class SettingsCommands extends Command {
 
     /**
      * 
-     * @param {String} type - The type of the feature to enable, either `greetings` or `farewells` 
+     * @param {String} type - The type of the feature to enable, either `greetings`, `farewells` or `experience`
      * @param {String} toggle - Either `disable` or `enable`
      * @param {SettingsContext} context - The context
      */
@@ -38,12 +38,12 @@ class SettingsCommands extends Command {
             context.guildEntry[type].enabled = enable;
             await context.guildEntry.save();
             if (enable) {
-                return context.message.channel.createMessage(`:white_check_mark: Alright, the ${type} are now enabled. Make sure to also set up a ${type} message and the target`);
+                return context.message.channel.createMessage(`:white_check_mark: Alright, the ${type} feature is now enabled. Make sure to also set up a ${type} message and the target`);
             } else {
-                return context.message.channel.createMessage(`:white_check_mark: Alright, the ${type} are now disabled`);
+                return context.message.channel.createMessage(`:white_check_mark: Alright, the ${type} is now disabled`);
             }
         } else {
-            return context.message.channel.createMessage(`:x: The ${type} are already ${toggle}d`);
+            return context.message.channel.createMessage(`:x: The ${type} feature is already ${toggle}d`);
         }
     }
 }
