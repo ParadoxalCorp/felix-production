@@ -31,6 +31,7 @@ class SettingsCommands extends Command {
      * @param {String} type - The type of the feature to enable, either `greetings` or `farewells` 
      * @param {String} toggle - Either `disable` or `enable`
      * @param {SettingsContext} context - The context
+     * @returns {Promise<any>} A promise
      */
     async toggleGreetingsOrFarewells(type, toggle, context) {
         const enable = toggle === "enable" ? true : false;
