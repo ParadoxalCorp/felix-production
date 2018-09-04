@@ -18,12 +18,12 @@ class Experience extends SettingsCommands {
         this.extra = {
             possibleActions: [{
                 name: 'enable',
-                func: this.enable.bind(this),
+                func: this.toggleGreetingsOrFarewells.bind(this, 'experience', 'enable'),
                 interpretAs: '{value}',
                 expectedArgs: 0
             }, {
                 name: 'disable',
-                func: this.disable.bind(this),
+                func: this.toggleGreetingsOrFarewells.bind(this, 'experience', 'disable'),
                 interpretAs: '{value}',
                 expectedArgs: 0
             }, {
@@ -138,27 +138,7 @@ class Experience extends SettingsCommands {
         }
         return action.func(context);
     }
-
-    async enable(context) {
-        if (!context.guildEntry.experience.enabled) {
-            context.guildEntry.experience.enabled = true;
-            await context.client.handlers.DatabaseWrapper.set(context.guildEntry, 'guild');
-            return context.message.channel.createMessage(':white_check_mark: Alright, the activity system is now enabled, members will gain experience as they speak');
-        } else {
-            return context.message.channel.createMessage(':x: The activity system is already enabled');
-        }
-    }
-
-    async disable(context) {
-        if (context.guildEntry.experience.enabled) {
-            context.guildEntry.experience.enabled = false;
-            await context.client.handlers.DatabaseWrapper.set(context.guildEntry, 'guild');
-            return context.message.channel.createMessage(':white_check_mark: Alright, the activity system is now disabled');
-        } else {
-            return context.message.channel.createMessage(':x: The activity system is already disabled');
-        }
-    }
-
+        
     async addRole(context) {
         const role = typeof context.args[1] === 'string' ? await context.getRoleFromText(context.args[1]) : context.args[1];
         const alreadySet = role ? context.guildEntry.experience.roles.find(r => r.id === role.id) : false;
