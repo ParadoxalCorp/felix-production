@@ -18,12 +18,12 @@ class Experience extends SettingsCommands {
         this.extra = {
             possibleActions: [{
                 name: 'enable',
-                func: this.toggleGreetingsOrFarewells.bind(this, 'experience', 'enable'),
+                func: this.toggleFeature.bind(this, 'experience', 'enable'),
                 interpretAs: '{value}',
                 expectedArgs: 0
             }, {
                 name: 'disable',
-                func: this.toggleGreetingsOrFarewells.bind(this, 'experience', 'disable'),
+                func: this.toggleFeature.bind(this, 'experience', 'disable'),
                 interpretAs: '{value}',
                 expectedArgs: 0
             }, {

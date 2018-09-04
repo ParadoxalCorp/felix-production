@@ -19,17 +19,17 @@ class SetFarewells extends SettingsCommands {
             possibleActions: [
                 {
                     name: "enable",
-                    func: this.toggleGreetingsOrFarewells.bind(this, 'farewells', 'enable'),
+                    func: this.toggleFeature.bind(this, 'farewells', 'enable'),
                     interpretAs: "{value}",
                     expectedArgs: 0
                 }, {
                     name: "disable",
-                    func: this.toggleGreetingsOrFarewells.bind(this, 'farewells', 'disable'),
+                    func: this.toggleFeature.bind(this, 'farewells', 'disable'),
                     interpretAs: "{value}",
                     expectedArgs: 0
                 }, {
                     name: "set_message",
-                    func: this.setMessage.bind(this),
+                    func: this.setMessage.bind(this, 'farewells'),
                     interpretAs: "{value}",
                     expectedArgs: 1
                 }, {
@@ -100,19 +100,6 @@ class SetFarewells extends SettingsCommands {
             !hasPerm
                 ? `\n\n:warning: It seems like i don\'t have enough permissions to send messages in <#${channel.id}>, you may want to fix that`
                 : ""));
-    }
-
-    /** @param {import("../../structures/Contexts/SettingsContext")} context */
-
-    async setMessage(context) {
-        if (!context.args[1]) {
-            return context.message.channel.createMessage(":x: You must specify the new farewells message to use");
-        }
-        context.guildEntry.farewells.message = context.args[2]
-            ? context.args.splice(1).join(" ")
-            : context.args[1];
-        await context.client.handlers.DatabaseWrapper.set(context.guildEntry, "guild");
-        return context.message.channel.createMessage(":white_check_mark: Alright, the farewells message has been updated");
     }
 
     /** @param {import("../../structures/Contexts/SettingsContext")} context */
