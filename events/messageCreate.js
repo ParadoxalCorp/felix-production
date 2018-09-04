@@ -1,4 +1,4 @@
-const Command = new(require('../structures/Command'));
+const Command = require('../structures/Command');
 
 class MessageHandler {
     constructor() {}

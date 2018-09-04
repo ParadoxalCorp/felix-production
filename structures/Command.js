@@ -96,7 +96,7 @@ class Command {
      * @param {Client} client - The client instance
      * @returns {Promise<object | undefined>} - The command object, or undefined if the message is not prefixed or the command does not exist
      */
-    parseCommand(message, client) {
+    static parseCommand(message, client) {
         return new Promise(async (resolve, reject) => {
             const args = message.content.split(/\s+/);
             // @ts-ignore
@@ -137,7 +137,7 @@ class Command {
      * @returns {{prefix: String, command: String}} unspaced command
      * @memberof Command
      */
-    _parseUnspacedCommand(message, client, guildEntry, args) {
+    static _parseUnspacedCommand(message, client, guildEntry, args) {
         const mentionTest = message.content.startsWith(`<@${client.bot.user.id}>`) || message.content.startsWith(`<@!${client.bot.user.id}`);
         const supposedCommand = !mentionTest
             ? args.shift().slice(guildEntry.getPrefix.length).toLowerCase()
@@ -147,6 +147,19 @@ class Command {
             prefix,
             command: supposedCommand
         };
+    }
+
+    /**
+     * Check if the bot has the given permissions to work properly
+     * This is a deep check and the channels wide permissions will be checked too
+     * @param {Message} message - The message that triggered the command
+     * @param {Client} client  - The client instance
+     * @param {array} permissions - An array of permissions to check for
+     * @param {object} [channel=message.channel] - Optional, a specific channel to check perms for (to check if the bot can connect to a VC for example)
+     * @returns {Boolean | Array<String>} - An array of permissions the bot miss, or true if the bot has all the permissions needed, sendMessages permission is also returned if missing
+     */
+    static clientHasPermissions(message, client, permissions, channel = message.channel) {
+        return client.utils.helpers.hasPermissions(message, client.bot.user, permissions, channel);
     }
 
     /**
@@ -170,7 +183,7 @@ class Command {
      * @param {*} command - The command that the user is trying to run
      * @returns {Promise<Array | Boolean>} An array of arguments
      */
-    async queryMissingArgs(client, message, command) {
+    static async queryMissingArgs(client, message, command) {
         /** @type {Array} */
         let args = [];
 
@@ -305,7 +318,7 @@ class Command {
      * @param {UserEntry} userEntry - The user's database entry
      * @returns {Promise<Object>} The generic initial check's return value
      */
-    async initialCheck(client, message, args, guildEntry, userEntry) {
+    static async initialCheck(client, message, args, guildEntry, userEntry) {
         if (this.options.noArgs && !args[0]) {
             return message.channel.createMessage(this.options.noArgs);
         }
