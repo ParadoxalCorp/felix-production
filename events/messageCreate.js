@@ -1,7 +1,14 @@
 const Command = require('../structures/Command');
 
 class MessageHandler {
-    constructor() {}
+    constructor() {
+        this.ratelimited = new Map();
+        this.commandCooldownDuration = 25000;
+        this._sweepInterval = setInterval(this._sweep.bind(this), this.commandCooldownDuration);
+        this.defaultCooldownWeight = 5;
+        this.maxCooldownWeight = 20;
+        this.latestSweep = Date.now();
+    }
 
     async handle(client, message) {
         if (!message.author || message.author.bot) {
@@ -38,8 +45,8 @@ class MessageHandler {
         if (!memberHasPermissions) {
             return message.channel.createMessage(`:x: You don't have the permission to use this command`).catch(() => {});
         }
-        if (client.ratelimited.has(message.author.id) && client.ratelimited.get(message.author.id) >= 20 && !client.config.admins.includes(message.author.id)) {
-            return message.channel.createMessage(':x: Hoi hoi chill a little, there, a 20 seconds cooldown for you :heart:');
+        if (this.ratelimited.has(message.author.id) && this.ratelimited.get(message.author.id) >= this.maxCooldownWeight) {
+            return message.channel.createMessage(`:x: Hoi hoi chill a little, there, a ${Math.ceil((this.latestSweep + this.commandCooldownDuration - Date.now()) / 1000)} second(s) cooldown for you :heart:`);
         }
         this.runCommand(client, message, command, databaseEntries);
     }
@@ -123,7 +130,7 @@ class MessageHandler {
         }
         args = args || message.content.split(/\s+/gim).splice(toSplice);
         if (!args[0] && command.conf.expectedArgs[0]) {
-            await Command.queryMissingArgs(client, message, command).catch((err) => err)
+            await Command.queryMissingArgs(client, message, command)
                 .then(args => {
                     if (args) {
                         queryMissingArgs = args;
@@ -140,23 +147,29 @@ class MessageHandler {
         if (!initialCheck.passed) {
             return;
         }
-        if (command.categoryCheck) {
-            const categoryCheck = await command.categoryCheck(initialCheck.context);
-            if (!categoryCheck.passed) {
-                return;
-            }
+        const categoryCheck = command.categoryCheck ? await command.categoryCheck(initialCheck.context) : undefined;
+        if (categoryCheck && !categoryCheck.passed) {
+            return;
         }
-        command.run(initialCheck.context).catch(err => client.bot.emit('error', err, message));
-        const commandCooldownWeight = typeof command.conf.cooldownWeight === 'undefined' ? client.config.options.defaultCooldownWeight : command.conf.cooldownWeight;
-        client.ratelimited.set(message.author.id, client.ratelimited.get(message.author.id) ?
-            (client.ratelimited.get(message.author.id) + commandCooldownWeight) : commandCooldownWeight);
-        setTimeout(() => {
-            if (client.ratelimited.get(message.author.id) > commandCooldownWeight) {
-                client.ratelimited.set(message.author.id, client.ratelimited.get(message.author.id) - commandCooldownWeight);
-            } else {
-                client.ratelimited.delete(message.author.id);
-            }
-        }, client.config.options.commandCooldownDuration);
+        //If the category check returned a function to call back, call it, otherwise call the command's run method
+        (categoryCheck && categoryCheck.callback ? categoryCheck.callback.bind(command) : command.run.bind(command))(initialCheck.context)
+            .catch(err => client.bot.emit('error', err, message));
+        this.handleCooldown(client, message, command);
+    }
+
+    handleCooldown(client, message, command) {
+        const commandCooldownWeight = typeof command.conf.cooldownWeight === 'undefined' ? this.defaultCooldownWeight : command.conf.cooldownWeight;
+        if (!client.config.admins.includes(message.author.id)) {
+            this.ratelimited.set(message.author.id, this.ratelimited.get(message.author.id) ? 
+                (this.ratelimited.get(message.author.id) + commandCooldownWeight) 
+                : commandCooldownWeight);
+        }
+            
+    }
+
+    _sweep() {
+        this.ratelimited = new Map();
+        this.latestSweep = Date.now();
     }
 
 }

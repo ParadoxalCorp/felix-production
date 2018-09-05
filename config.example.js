@@ -78,10 +78,6 @@ module.exports = {
         },
         //If given, Felix will use this animated emotes to animate the slots command; Should look like this: <a:animatedslots:443420980170326036> 
         animatedSlotsEmote: "",
-        //Roughly allows the use of 4 commands within the given period before ratelimits may apply
-        defaultCooldownWeight: 5,
-        //Duration in milliseconds the command cooldown may last, setting it to something like 1000 would effectively disable it
-        commandCooldownDuration: 20000,
         //Define how many roles can be set to be given to new members
         maxDefaultRoles: 3,
         experience: {

@@ -62,7 +62,6 @@ class Felix extends Base {
 
     launch() {
         this.initializeHandlers();
-        this.ratelimited = new this.Collection();
         //This will be filled with mentions prefix once ready
         this.commands = new this.Collection();
         this.aliases = new this.Collection();
