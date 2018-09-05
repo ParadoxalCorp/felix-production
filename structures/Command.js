@@ -43,7 +43,7 @@
   * @prop {Boolean} [ownerOnly=false] Whether the command can only be used by the owner set in the config
   * @prop {Array<ExpectedArg>} [expectedArgs=[]] An array of arguments the command needs in order to properly execute the action
   * @prop {Number} [cooldownWeight=5] The "weight" of the command, roughly representing how big the output is, to determine how much the command should impact the user's cooldown
-  * @prop {Array<string>} [require=[]] An array of API Keys name (must be the same than set in the config) the command needs, if they are missing from the config, the command will be disabled
+  * @prop {Array<String>} [require=[]] An array of API Keys name (must be the same than set in the config) the command needs, if they are missing from the config, the command will be disabled
   * @prop {Boolean} [guildOwnerOnly=false] Whether this command should be restricted to the guild's owner (if true, must be combined with guildOnly)
   * @prop {Boolean} [hidden=false] Whether this command should be hidden from everyone except the admins set in the config
   */
@@ -79,10 +79,10 @@
 class Command {
     /**
      * Create a new instance of Command
-     * @param {Client} [client] - The client instance
-     * @param {CommandOptions} [options] - General configuration of the command
+     * @param {Client} client - The client instance
+     * @param {CommandOptions} options - General configuration of the command
      */
-    constructor(client, options = {}) {
+    constructor(client, options) {
         this.client = client;
         this.help = options.help;
         this.conf = this.commandsConf(options.category ? options.category.conf : {}, options.conf);
@@ -318,7 +318,7 @@ class Command {
      * @param {UserEntry} userEntry - The user's database entry
      * @returns {Promise<Object>} The generic initial check's return value
      */
-    static async initialCheck(client, message, args, guildEntry, userEntry) {
+    async initialCheck(client, message, args, guildEntry, userEntry) {
         if (this.options.noArgs && !args[0]) {
             return message.channel.createMessage(this.options.noArgs);
         }

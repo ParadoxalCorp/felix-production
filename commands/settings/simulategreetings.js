@@ -50,11 +50,7 @@ class SimulateGreetings extends SettingsCommands {
             context.message.channel.guild,
             context.message.channel.guild.members.get(context.message.author.id)
         );
-        return context.message.channel.createMessage(
-            this.client.commands
-                .get("setgreetings")
-                ._checkPermissions(context)
-        );
+        return context.message.channel.createMessage(this.checkChannelPermissions('farewells', context));
     }
 }
 

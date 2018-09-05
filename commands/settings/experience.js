@@ -124,20 +124,6 @@ class Experience extends SettingsCommands {
             description: `Please specify the level up message you want to be sent whenever a member level up, check <${this.help.externalDoc}> for more information and a list of tags you can use`
         }];
     }
-
-    /** @param {import("../../structures/Contexts/ModerationContext")} context */
-
-    async run(context) {
-        const action = this.extra.possibleActions.find(a => a.name === context.args[0]);
-        if (!action) {
-            return context.message.channel.createMessage(`:x: The specified action is invalid, if you are lost, simply run the command like \`${context.prefix}experience\``);
-        }
-        //If the command isn't ran without args and the args aren't what's expected, to not conflict with the skipping in conditions 
-        if (context.message.content.split(/\s+/g).length !== 2 && (action.expectedArgs > context.args.length - 1)) {
-            return context.message.channel.createMessage(`:x: This action expect \`${action.expectedArgs - (context.args.length - 1)}\` more argument(s), if you are lost, simply run the command like \`${context.prefix}experience\``);
-        }
-        return action.func(context);
-    }
         
     async addRole(context) {
         const role = typeof context.args[1] === 'string' ? await context.getRoleFromText(context.args[1]) : context.args[1];

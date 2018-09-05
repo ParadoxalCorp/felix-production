@@ -15,36 +15,7 @@ class SetFarewells extends SettingsCommands {
                 guildOnly: true
             }
         });
-        this.extra = {
-            possibleActions: [
-                {
-                    name: "enable",
-                    func: this.toggleFeature.bind(this, 'farewells', 'enable'),
-                    interpretAs: "{value}",
-                    expectedArgs: 0
-                }, {
-                    name: "disable",
-                    func: this.toggleFeature.bind(this, 'farewells', 'disable'),
-                    interpretAs: "{value}",
-                    expectedArgs: 0
-                }, {
-                    name: "set_message",
-                    func: this.setMessage.bind(this, 'farewells'),
-                    interpretAs: "{value}",
-                    expectedArgs: 1
-                }, {
-                    name: "set_message_target",
-                    func: this.setMessageTarget.bind(this),
-                    interpretAs: "{value}",
-                    expectedArgs: 1
-                }, {
-                    name: "see_settings",
-                    func: this.seeSettings.bind(this),
-                    interpretAs: "{value}",
-                    expectedArgs: 0
-                }
-            ]
-        };
+        this.extra = { possibleActions: this.genericPossibleActions('farewells') };
         this.conf.expectedArgs = [
             {
                 description: "Please specify the action you want to do in the following possible actions: " + this.extra.possibleActions.map(a => `\`${a.name}\``).join(", "),
@@ -65,41 +36,6 @@ class SetFarewells extends SettingsCommands {
                 description: `Please specify the farewells message you want to be sent whenever a new user join the server, check <${this.help.externalDoc}> for more information and a list of tags you can use`
             }
         ];
-    }
-
-    /** @param {import("../../structures/Contexts/SettingsContext")} context */
-
-    async run(context) {
-        const action = this.extra.possibleActions.find(a => a.name === context.args[0]);
-        const getPrefix = this.client.commands.get("help").getPrefix;
-        if (!action) {
-            return context.message.channel.createMessage(`:x: The specified action is invalid, if you are lost, simply run the command like \`${getPrefix(context.client, context.guildEntry)}${this.help.name}\``);
-        }
-        //If the command isn't ran without args and the args aren't what's expected, to not conflict with the skipping in conditions
-        if (action.expectedArgs > context.args.length - 1) {
-            return context.message.channel.createMessage(`:x: This action expect \`${action.expectedArgs - (context.args.length - 1)}\` more argument(s), if you are lost, simply run the command like \`${getPrefix(context.client, context.guildEntry)}${this.help.name}\``);
-        }
-        return action.func(context);
-    }
-
-    /** @param {import("../../structures/Contexts/SettingsContext")} context */
-
-    async setMessageTarget(context) {
-        const channel = await context.getChannelFromText(context.args[1]);
-        if (!channel) {
-            return context.message.channel.createMessage(`:x: I couldn't find a channel named \`${context.args[1]}\` on this server`);
-        } else if (context.guildEntry.farewells.channel === channel.id) {
-            return context.message.channel.createMessage(`:x: The farewells target is already set to the channel <#${channel.id}>`);
-        }
-        context.guildEntry.farewells.channel = channel.id;
-        await context.client.handlers.DatabaseWrapper.set(context.guildEntry, "guild");
-        const hasPerm = Array.isArray(this.clientHasPermissions(context.message, this.client, ["sendMessages"], channel))
-            ? false
-            : true;
-        return context.message.channel.createMessage(`:white_check_mark: Alright, the farewells target has been set to the channel <#${channel.id}>` + (
-            !hasPerm
-                ? `\n\n:warning: It seems like i don\'t have enough permissions to send messages in <#${channel.id}>, you may want to fix that`
-                : ""));
     }
 
     /** @param {import("../../structures/Contexts/SettingsContext")} context */
@@ -126,28 +62,12 @@ class SetFarewells extends SettingsCommands {
                             : "Not set :x:"
                     }, {
                         name: "Permissions",
-                        value: this._checkPermissions(context)
+                        value: this.checkChannelPermissions('farewells', context)
                     }
                 ],
                 color: context.client.config.options.embedColor.generic
             }
         });
-    }
-
-    /** @param {import("../../structures/Contexts/SettingsContext")} context */
-
-    _checkPermissions(context) {
-        let result = "";
-        const channel = context.message.channel.guild.channels.get(context.guildEntry.farewells.channel);
-        if (channel) {
-            result += Array.isArray(this.clientHasPermissions(context.message, this.client, ["sendMessages"], channel))
-                ? `:warning: I don't have enough permissions to send messages in <#${
-                    channel.id}>\n` : "";
-        }
-        if (!result) {
-            result = ":white_check_mark: No permissions issues have been detected with the current settings";
-        }
-        return result;
     }
 }
 
