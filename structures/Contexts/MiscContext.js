@@ -2,6 +2,7 @@
  * @typedef {import("eris").Message} Message
  * @typedef {import("../References").GuildEntry & import("../ExtendedStructures/ExtendedGuildEntry")} GuildEntry
  * @typedef {import("../References").UserEntry & import("../ExtendedStructures/ExtendedUserEntry")} UserEntry
+ * @typedef {import("eris").Role} Role
 */
 
 const BaseContext = require('./BaseContext');
@@ -17,6 +18,8 @@ class MiscContext extends BaseContext {
      */
     constructor(client, message, args, guildEntry, userEntry) {
         super(client, message, args, guildEntry, userEntry);
+        /** @type {Role} Only existing for the `iam` and `iamnot` commands, represent the role selected by the user */ 
+        this.guildRole;
     }    
 }
 
