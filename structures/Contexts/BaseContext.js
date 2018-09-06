@@ -269,6 +269,9 @@ class BaseContext {
      * @returns {Promise<Role|User|TextChannel|CategoryChannel|VoiceChannel>} The resolved role/user/channel
      */
     async _resolveByExactMatch(options) {
+        if (!options.text) {
+            return null;
+        }
         // @ts-ignore
         const exactNameMatch = (name) => (name).toLowerCase().split(/\s+/).join(" ") === options.text.toLowerCase().split(/\s+/).join(" ");
         const exactMatches = this.guild[options.type]
