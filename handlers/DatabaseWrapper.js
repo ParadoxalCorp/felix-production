@@ -143,7 +143,7 @@ class DatabaseWrapper {
      * @returns {void}
      */
     _updateLeaderboard(userEntry) {
-        if (this.client.handlers.RedisManager.healthy && (userEntry.experience && userEntry.economy && (userEntry.love && userEntry.love.amount))) {
+        if (this.client.handlers.RedisManager.healthy && (userEntry.experience && userEntry.economy && (userEntry.love && (typeof userEntry.love.amount === "number")))) {
             const pipeline = this.client.handlers.RedisManager.pipeline();
             pipeline.zadd('experience-leaderboard', userEntry.experience.amount, userEntry.id);
             pipeline.zadd('coins-leaderboard', userEntry.economy.coins, userEntry.id);
