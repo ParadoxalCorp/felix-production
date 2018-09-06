@@ -12,7 +12,8 @@
  * @typedef {import("./ExtendedStructures/ExtendedUserEntry") & import("./References").UserEntry} UserEntry
  * @typedef {import("./Contexts/BaseContext")} BaseContext
  * @typedef {import("eris").TextChannel} TextChannel
- */
+ * @typedef {import("eris").EmbedOptions} EmbedOptions
+ */ 
 
 /** @typedef {Object} CommandHelp
   * @prop {string} [category] DEPRECATED. The category of the command
@@ -337,6 +338,23 @@ class Command {
             name: '\u200B',
             value: '\u200B',
             inline: true
+        };
+    }
+
+    /**
+     * Merge the given embed into the bot's generic embed
+     * @param {EmbedOptions} embed - The embed to merge onto the generic embed
+     * @returns {EmbedOptions} The embed
+     */
+    genericEmbed(embed) {
+        return {
+            timestamp: new Date(),
+            footer: {
+                text: this.client.bot.user.username,
+                icon_url: this.client.bot.user.avatarURL
+            },
+            color: this.client.config.options.embedColor.generic,
+            ...embed
         };
     }
 }
