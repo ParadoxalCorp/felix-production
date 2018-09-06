@@ -20,8 +20,7 @@ class Avatar extends GenericCommands {
         const target = user || context.message.author;
         return context.message.channel.createMessage({
             content: `${context.emote('picture')} The avatar of **${target.username}**`,
-            embed: {
-                color: context.client.config.options.embedColor.generic,
+            embed: this.genericEmbed({
                 author: {
                     name: `Requested by: ${context.message.author.username}#${context.message.author.discriminator}`,
                     icon_url: context.message.author.avatarURL
@@ -30,13 +29,8 @@ class Avatar extends GenericCommands {
                 url: target.avatarURL || target.defaultCDNAvatar,
                 image: {
                     url: target.avatarURL || target.defaultCDNAvatar
-                },
-                timestamp: new Date(),
-                footer: {
-                    text: context.client.bot.user.username,
-                    icon_url: context.client.bot.user.avatarURL
                 }
-            }
+            })
         });
     }
 }

@@ -64,8 +64,7 @@ class Sinfo extends GenericCommands {
         }];
         context.message.channel.createMessage({
             content: `${context.message.channel.guild.name}'s info`,
-            embed: {
-                color: context.client.config.options.embedColor.generic,
+            embed: this.genericEmbed({
                 author: {
                     name: `Requested by: ${context.message.author.username}#${context.message.author.discriminator}`,
                     icon_url: context.message.author.avatarURL
@@ -73,13 +72,8 @@ class Sinfo extends GenericCommands {
                 thumbnail: {
                     url: context.message.channel.guild.iconURL ? context.message.channel.guild.iconURL : 'https://cdn.discordapp.com/attachments/480710816136560651/480710970243547144/defautIcon.png'
                 },
-                fields: embedFields,
-                timestamp: new Date(),
-                footer: {
-                    text: context.client.bot.user.username,
-                    icon_url: context.client.bot.user.avatarURL
-                }
-            }
+                fields: embedFields
+            })
         });
     }
 }

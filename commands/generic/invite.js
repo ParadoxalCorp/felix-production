@@ -15,8 +15,7 @@ class Invite extends GenericCommands {
     async run(context) {
         context.message.channel.createMessage({
             content: `Here's my invite link :wave:`,
-            embed: {
-                color: context.client.config.options.embedColor.generic,
+            embed: this.genericEmbed({
                 author: {
                     name: `Requested by: ${context.message.author.username}#${context.message.author.discriminator}`,
                     icon_url: context.message.author.avatarURL
@@ -33,13 +32,8 @@ class Invite extends GenericCommands {
                     name: "Users/Members",
                     value: context.client.bot.users.size,
                     inline: true
-                }],
-                timestamp: new Date(),
-                footer: {
-                    text: context.client.bot.user.username,
-                    icon_url: context.client.bot.user.avatarURL
-                }
-            }
+                }]
+            })
         });
     }
 }
