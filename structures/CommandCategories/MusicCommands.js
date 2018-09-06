@@ -3,6 +3,9 @@
 * @typedef {import("../HandlersStructures/musicConnection").FelixTrack} FelixTrack
 * @typedef {import("../Command.js").PartialCommandOptions} PartialCommandOptions
 * @typedef {import("../Contexts/MusicContext")} MusicContext
+* @typedef {import("../HandlersStructures/MusicConnection").LavalinkTrack} LavalinkTrack
+* @typedef {import("../HandlersStructures/MusicConnection").FelixTrack} FelixTrack
+* @typedef {import("eris").Message} Message
 */
 
 const Command = require('../Command');
@@ -54,7 +57,36 @@ class MusicCommands extends Command {
             }
             context.position = parseInt(position) - 1;
         }
-        return { passed: true };
+        return { passed: true, callback: ['skip', 'skipto'].includes(this.help.name) ? this.runVote : null };
+    }
+
+    /**
+     * 
+     * @param {MusicContext} context - The context
+     * @returns {Promise<Message>} The message
+     */
+    async runVote(context) {
+        if (!context.connection.skipVote.count) {
+            context.connection.skipVote.count = 1;
+            if (this.help.name === 'skipto') {
+                context.connection.skipVote.id = Date.now();
+                context.connection.queue[context.position].voteID = Date.now();
+            }
+            context.connection.skipVote.callback = this.handleVoteEnd.bind(this, context, context.connection.queue[context.position]);
+            context.connection.skipVote.timeout = setTimeout(this.handleVoteEnd.bind(this, context, context.connection.queue[context.position], 'timeout'), this.client.config.options.music.voteSkipDuration);
+        } else {
+            if ((context.connection.skipVote.id && this.help.name === 'skip') || (context.connection.skipVote.id && context.connection.queue[context.position].voteID !== context.connection.skipVote.id)) {
+                return context.message.channel.createMessage(`:x: Another vote to skip to the song **${context.connection.queue.find(t => t.voteID === context.connection.skipVote.id).info.title}** is already ongoing`);
+            } else if (!context.connection.skipVote.id && this.help.name === 'skipto') {
+                return context.message.channel.createMessage(':x: A vote to skip the current song is already ongoing');
+            }
+            if (context.connection.skipVote.voted.includes(context.message.author.id)) {
+                return context.message.channel.createMessage(':x: You already voted to skip this song');
+            }
+            context.connection.skipVote.count = context.connection.skipVote.count + 1;
+        }
+        context.connection.skipVote.voted.push(context.message.author.id);
+        return this.processVote(context);
     }
 
     /**
@@ -127,6 +159,60 @@ class MusicCommands extends Command {
         } else {
             return tracks[reply.content - 1];
         }
+    }
+
+    /**
+     * 
+     * @param {MusicContext} context - The context
+     * @param {FelixTrack | LavalinkTrack} [song] - The song to which this vote was aiming to skip to, if any
+     * @param {String} reason - The reason of the vote's end
+     * @returns {Promise<Message>} The message
+     */
+    handleVoteEnd(context, song, reason) {
+        if (typeof song === 'string') {
+            reason = song;
+        }
+        switch (reason) {
+        case 'timeout': 
+            context.connection.resetVote();
+            return context.message.channel.createMessage(this.help.name === 'skipto' ? 
+                `:x: The vote to skip to the song **${song.info.title}** ended because not enough users voted` :
+                ':x: The vote to skip the current song ended, not enough users voted');
+            break;
+        case 'deleted':
+            return context.message.channel.createMessage(`:x: The vote to skip to the song **${song.info.title}** ended because the song was removed from the queue`);
+            break;
+        case 'started': 
+            return context.message.channel.createMessage(`:x: The vote to skip to the song **${song.info.title}** ended because the song just started`);
+            break;
+        case 'ended':
+            return context.message.channel.createMessage(':x: The vote to skip the current song has been cancelled because the song just ended');
+            break;
+        }
+    }
+
+    /**
+     * 
+     * @param {MusicContext} context - The context
+     * @returns {Promise<Message>} The message
+     */
+    processVote(context) {
+        const voiceChannel = context.message.channel.guild.channels.get(context.message.channel.guild.members.get(this.client.bot.user.id).voiceState.channelID);
+        const userCount = voiceChannel.voiceMembers.filter(m => !m.bot).length;
+        let [trackIndex, track] = [];
+        if (this.help.name === 'skipto') {
+            trackIndex = context.connection.queue.findIndex(track => track.voteID === context.connection.skipVote.id);
+            track = context.connection.queue[trackIndex];
+        }
+        if (context.connection.skipVote.count >= (userCount === 2 ? 2 : (Math.ceil(userCount / 2)))) {
+            context.connection.resetVote();
+            const skippedSong = context.connection.skipTrack(trackIndex);
+            return context.message.channel.createMessage(track ? 
+                `:white_check_mark: Successfully skipped to the song **${track.info.title}**` :
+                `:white_check_mark: Skipped **${skippedSong.info.title}**`);
+        }
+        const action = track ? `to skip to the song **${track.info.title}**` : 'to skip the song';
+        return context.message.channel.createMessage(`:white_check_mark: Successfully registered the vote ${action}, as there is \`${userCount}\` users listening and already \`${context.connection.skipVote.count}\` voted, \`${userCount === 2 ? 1 : Math.ceil(userCount / 2) - context.connection.skipVote.count}\` more vote(s) are needed`);
     }
 }
 
