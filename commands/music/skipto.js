@@ -16,17 +16,12 @@ class SkipTo extends MusicCommands {
     */
 
     async run(context) {
-        let position = context.args[0];
-        if (!this.isValidPosition(position, context.connection.queue)) {
-            return context.message.channel.createMessage(':x: You did not specify a valid number ! You must specify a number corresponding to the position in the queue of the song you want to skip to');
-        }
-        position = parseInt(position) - 1;
         if (!context.connection.skipVote.count) {
             context.connection.skipVote.count = 1;
             context.connection.skipVote.id = Date.now();
-            context.connection.queue[position].voteID = Date.now();
-            context.connection.skipVote.callback = this.handleVoteEnd.bind(this, context, context.connection.queue[position]);
-            context.connection.skipVote.timeout = setTimeout(this.handleVoteEnd.bind(this, context, context.connection.queue[position], 'timeout'), this.client.config.options.music.voteSkipDuration);
+            context.connection.queue[context.position].voteID = Date.now();
+            context.connection.skipVote.callback = this.handleVoteEnd.bind(this, context, context.connection.queue[context.position]);
+            context.connection.skipVote.timeout = setTimeout(this.handleVoteEnd.bind(this, context, context.connection.queue[context.position], 'timeout'), this.client.config.options.music.voteSkipDuration);
         } else {
             if (!context.connection.skipVote.id) {
                 return context.message.channel.createMessage(':x: A vote to skip the current song is already ongoing');

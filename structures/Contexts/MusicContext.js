@@ -28,6 +28,8 @@ class MusicContext extends BaseContext {
         this.clientVC = message.channel.guild.channels.get(message.channel.guild.members.get(this.client.bot.user.id).voiceState.channelID);
         /** @type {VoiceChannel} The voice channel the user is in, if any */
         this.userVC = message.channel.guild.channels.get(message.channel.guild.members.get(message.author.id).voiceState.channelID);
+        /** @type {Number} Only exists for the `skipto`, `forceskipto` and `removesong` commands, the position of the song to interact with as specified by the user */
+        this.position;
     }    
 }
 

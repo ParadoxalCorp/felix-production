@@ -19,11 +19,8 @@ class ForceSkipTo extends MusicCommands {
     /** @param {import("../../structures/Contexts/MusicContext.js")} context */
 
     async run(context) {
-        if (!this.isValidPosition(context.args[0], context.connection.queue)) {
-            return context.message.channel.createMessage(':x: The specified position isn\'t valid :v');
-        }
-        const skippedTo = context.connection.queue[parseInt(context.args[0]) - 1];
-        context.connection.skipTrack(parseInt(context.args[0]) - 1);
+        const skippedTo = context.connection.queue[context.position];
+        context.connection.skipTrack(context.position);
         return context.message.channel.createMessage(`:white_check_mark: Succesfully skipped to the song \`${skippedTo.info.title}\` by \`${skippedTo.info.author}\``);
     }
 }
