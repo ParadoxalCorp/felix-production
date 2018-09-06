@@ -105,9 +105,10 @@ class Queue extends MusicCommands {
                 text: textToAdd
             };
         }
+        formattedQueue[0].embed.description = formattedQueue.length > 1 ? formattedQueue[0].embed.description : formattedQueue[0].embed.description.replace(/undefined/gim, '');
         return formattedQueue.length > 1 
             ? context.client.handlers.InteractiveList.createPaginatedMessage({channel: context.message.channel, messages: formattedQueue, userID: context.message.author.id}) 
-            : context.message.channel.createMessage(formattedQueue[0].embed.description.replace(/undefined/gim, ''));
+            : context.message.channel.createMessage(formattedQueue[0]);
     }
 
     queuePage(context) {
