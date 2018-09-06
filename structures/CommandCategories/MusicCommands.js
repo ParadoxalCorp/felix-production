@@ -2,9 +2,8 @@
 * @typedef {import("../../main.js").Client} Client
 * @typedef {import("../HandlersStructures/musicConnection").FelixTrack} FelixTrack
 * @typedef {import("../Command.js").PartialCommandOptions} PartialCommandOptions
+* @typedef {import("../Contexts/MusicContext")} MusicContext
 */
-
-const MusicContext = require('../Contexts/MusicContext.js');
 
 const Command = require('../Command');
 
@@ -27,35 +26,35 @@ class MusicCommands extends Command {
         this.options = options;
     }
 
-    //eslint-disable-next-line no-unused-vars
-    async initialCheck(client, message, args, guildEntry, userEntry) {
-        const member = message.channel.guild.members.get(message.author.id);
-        const clientMember = message.channel.guild.members.get(this.client.bot.user.id);
-        if (this.options.userInVC && (clientMember.voiceState.channelID && clientMember.voiceState.channelID !== member.voiceState.channelID)) {
-            return message.channel.createMessage(':x: You must be connected in a voice channel with me to use that');
+    /** 
+     * @param {MusicContext} context - The context
+     * @returns {Promise<Object>} An object representing whether the category check passed
+     */
+    async categoryCheck(context) {
+        if (this.options.userInVC && (context.clientMember.voiceState.channelID && context.clientMember.voiceState.channelID !== context.member.voiceState.channelID)) {
+            return context.message.channel.createMessage(':x: You must be connected in a voice channel with me to use that');
         } 
-        const userVC = message.channel.guild.channels.get(member.voiceState.channelID);
-        if (this.options.autoJoin && !clientMember.voiceState.channelID) {
-            if (Array.isArray(this.clientHasPermissions(message, this.client, ['voiceConnect', 'voiceSpeak'], message.channel.guild.channels.get(member.voiceState.channelID)))) {
-                return message.channel.createMessage(':x: It seems like I lack the permission to connect or to speak in the voice channel you are in :c');
+        if (this.options.autoJoin && !context.clientMember.voiceState.channelID) {
+            if (context.hasPermissions(['voiceConnect', 'voiceSpeak'], context.clientMember, context.userVC).missingPerms) {
+                return context.message.channel.createMessage(':x: It seems like I lack the permission to connect or to speak in the voice channel you are in :c');
             }
-            if (userVC) {
-                await this.client.handlers.MusicManager.getPlayer(userVC);
+            if (context.userVC) {
+                await this.client.handlers.MusicManager.getPlayer(context.userVC).then(p => context.connection = p);
             }
         }
-        const connection = this.client.handlers.MusicManager.connections.get(message.channel.guild.id);
         if (this.options.playing) {
-            if (!connection || !connection.nowPlaying) {
-                return message.channel.createMessage(':x: I am not playing anything');
+            if (!context.connection || !context.connection.nowPlaying) {
+                return context.message.channel.createMessage(':x: I am not playing anything');
             }
         }
-        if (this.options.noArgs && !args[0]) {
-            return message.channel.createMessage(this.options.noArgs);
+        if (['skipto', 'removesong', 'forceskipto'].includes(this.help.name)) {
+            let position = context.args[0];
+            if (!this.isValidPosition(position, context.connection.queue)) {
+                return context.message.channel.createMessage(`:x: You did not specify a valid number ! You must specify a number corresponding to the position in the queue of the song you want to ${this.help.name === 'removesong' ? 'remove' : 'skip to'}`);
+            }
+            context.position = parseInt(position) - 1;
         }
-        return { 
-            passed: true,
-            context: new MusicContext(client, message, args, guildEntry, userEntry)
-        };
+        return { passed: true };
     }
 
     /**
@@ -112,13 +111,13 @@ class MusicCommands extends Command {
         for (const song of tracks) {
             searchResults += `\`${i++}\` - **${song.info.title}** by **${song.info.author}** (${this.client.handlers.MusicManager.parseDuration(song)})\n`;
         }
-        await context.message.channel.createMessage(searchResults);
-        const reply = await this.client.handlers.MessageCollector.awaitMessage(context.message.channel.id, context.message.author.id);
+        await context.context.message.channel.createMessage(searchResults);
+        const reply = await this.client.handlers.MessageCollector.awaitMessage(context.context.message.channel.id, context.context.message.author.id);
         if (!reply) {
-            context.message.channel.createMessage(':x: Timeout, command aborted').catch(() => {});
+            context.context.message.channel.createMessage(':x: Timeout, command aborted').catch(() => {});
             return false;
         } else if (!this.client.utils.isWholeNumber(reply.content)) {
-            context.message.channel.createMessage(':x: You must reply with a whole number').catch(() => {});
+            context.context.message.channel.createMessage(':x: You must reply with a whole number').catch(() => {});
             return false;
         }
         if (reply.content >= tracks.length) {
