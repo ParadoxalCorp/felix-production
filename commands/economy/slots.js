@@ -106,21 +106,9 @@ class Slots extends EconomyCommands {
         slotsResults += `----------------------\n`;
         slotsResults += resultText;
         if (!animatedSlots) {
-            return context.message.channel.createMessage(noEmbed ? slotsResults.replace(/undefined/gim, '') : {
-                embed: {
-                    title: ":slot_machine: Slots",
-                    description: slotsResults.replace(/undefined/gim, ''),
-                    color: context.client.config.options.embedColor.generic
-                }
-            });
+            return context.message.channel.createMessage(noEmbed ? slotsResults.replace(/undefined/gim, '') : this.genericSlotsResults(slotsResults));
         } else {
-            return animatedSlots.edit(noEmbed ? slotsResults.replace(/undefined/gim, '') : {
-                embed: {
-                    title: ":slot_machine: Slots",
-                    description: slotsResults.replace(/undefined/gim, ''),
-                    color: context.client.config.options.embedColor.generic
-                }
-            });
+            return animatedSlots.edit(noEmbed ? slotsResults.replace(/undefined/gim, '') : this.genericSlotsResults(slotsResults));
         }
     }
 
@@ -133,13 +121,7 @@ class Slots extends EconomyCommands {
             slotsResults += `>| ${animatedEmote} | ${animatedEmote} | ${animatedEmote} |<\n`;
             slotsResults += `-| ${animatedEmote} | ${animatedEmote} | ${animatedEmote} |-\n\n`;
             slotsResults += `----------------------\n`;
-            const animatedSlots = await context.message.channel.createMessage(noEmbed ? slotsResults.replace(/undefined/gim, '') : {
-                embed: {
-                    title: ":slot_machine: Slots",
-                    description: slotsResults.replace(/undefined/gim, ''),
-                    color: context.client.config.options.embedColor.generic
-                }
-            });
+            const animatedSlots = await context.message.channel.createMessage(noEmbed ? slotsResults.replace(/undefined/gim, '') : this.genericSlotsResults(slotsResults));
             setTimeout(() => {
                 return resolve(animatedSlots);
             }, 2000);
@@ -191,6 +173,16 @@ class Slots extends EconomyCommands {
             resultText += slotsEvent.message.replace(/{value}/gim, eventCoinsChange);
         }
         return targetFunc(context, slots, conditionalVariantSuccess ? coinsChange : (eventCoinsChangeRate > 0 ? coinsChange + eventCoinsChange : coinsChange - eventCoinsChange), resultText, animatedSlots);
+    }
+
+    genericSlotsResults(results) {
+        return {
+            embed: {
+                title: ":slot_machine: Slots",
+                description: results.replace(/undefined/gim, ''),
+                color: this.client.config.options.embedColor.generic
+            }
+        }
     }
 }
 
