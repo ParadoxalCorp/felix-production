@@ -195,7 +195,6 @@ class SettingsCommands extends Command {
         if (!context.hasPerms(['manageRoles']) && (feature === 'experience' ? targetFeature[0] : targetFeature[0])) {
             result += ':warning: I don\'t have the `Manage Roles` permission and there are roles set to be given\n';
         }
-        console.log(require('util').inspect(targetFeature));
         targetFeature = targetFeature.filter(r => context.guild.roles.has(r.id || r));
         const higherRoles = targetFeature.filter(r => context.guild.roles.get(r.id || r).position > this.getHighestRole(context.clientMember.id, context.guild).position);
         if (higherRoles[0]) {
