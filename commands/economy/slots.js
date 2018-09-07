@@ -182,7 +182,7 @@ class Slots extends EconomyCommands {
                 description: results.replace(/undefined/gim, ''),
                 color: this.client.config.options.embedColor.generic
             }
-        }
+        };
     }
 }
 
