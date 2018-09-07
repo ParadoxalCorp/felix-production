@@ -56,6 +56,13 @@ class SettingsCommands extends Command {
         }];
     }
 
+    genericExpectedArgs(expectedArgs) {
+        return [...[{
+            description: "Please specify the action you want to do in the following possible actions: " + this.extra.possibleActions.map(a => `\`${a.name}\``).join(", "),   
+            possibleValues: this.extra.possibleActions
+        }], ...expectedArgs];
+    }
+
     /**
      * 
      * @param {SettingsContext} context - The context
@@ -68,7 +75,7 @@ class SettingsCommands extends Command {
                 return context.message.channel.createMessage(`:x: The specified action is invalid, if you are lost, simply run the command like \`${context.prefix}${this.help.name}\``);
             }
             //If the command isn't ran without args and the args aren't what's expected, to not conflict with the skipping in conditions
-            if (context.message.content.split(/\s+/g).length !== 2 && (action.expectedArgs > context.args.length - 1)) {
+            if (((this.help.name === 'experience' && context.message.content.split(/\s+/g).length !== 2) || this.help.name !== 'experience') && (action.expectedArgs > context.args.length - 1)) {
                 return context.message.channel.createMessage(`:x: This action expect \`${action.expectedArgs - (context.args.length - 1)}\` more argument(s), if you are lost, simply run the command like \`${context.prefix}${this.help.name}\``);
             }
             if (this.help.name === 'sar') {
@@ -146,7 +153,7 @@ class SettingsCommands extends Command {
         }
         context.guildEntry[feature].channel = channel.id;
         await context.guildEntry.save();
-        const hasPerm = context.hasPerms(['sendMessages'], null, channel);
+        const hasPerm = context.hasPerms(['sendMessages'], undefined, channel);
         return context.message.channel.createMessage(`:white_check_mark: Alright, the ${feature} target has been set to the channel <#${channel.id}>` + (
             !hasPerm
                 ? `\n\n:warning: It seems like i don\'t have enough permissions to send messages in <#${channel.id}>, you may want to fix that`
@@ -163,7 +170,7 @@ class SettingsCommands extends Command {
         let result = "";
         const channel = context.guild.channels.get(context.guildEntry[feature].channel);
         if (channel) {
-            result += !context.hasPerms(["sendMessages"], null, channel) ?
+            result += !context.hasPerms(["sendMessages"], undefined, channel) ?
                 `:warning: I don't have enough permissions to send messages in <#${channel.id}>\n` :
                 ""; 
         }
@@ -174,25 +181,26 @@ class SettingsCommands extends Command {
     }
 
     /**
-     * @param {String} feature - The feature to check the role permissions for, can be either `selfAssignableRoles` or `experience`
+     * @param {String} feature - The feature to check the role permissions for, can be either `sar`, `ojr` or `experience`
      * @param {SettingsContext} context - The context
      * @returns {String} A warning string if missing permissions, otherwise an empty string
      */
     checkRolePermissions(feature, context) {
         let result = '';
-        let targetFeature = feature === 'experience' ? context.guildEntry.experience.roles : context.guildEntry.selfAssignableRoles;
+        let targetFeature = { experience: context.guildEntry.experience.roles, sar: context.guildEntry.selfAssignableRoles, ojr: context.guildEntry.onJoinRoles }[feature];
         const channel = feature === 'experience' ? context.message.channel.guild.channels.get(context.guildEntry.experience.notifications.channel) : null;
         if (channel) {
-            result += !context.hasPerms(['sendMessages'], null, channel) ? `:warning: I don't have enough permissions to send messages in <#${channel.id}>\n` : '';
+            result += !context.hasPerms(['sendMessages'], undefined, channel) ? `:warning: I don't have enough permissions to send messages in <#${channel.id}>\n` : '';
         }
         if (!context.hasPerms(['manageRoles']) && (feature === 'experience' ? targetFeature[0] : targetFeature[0])) {
             result += ':warning: I don\'t have the `Manage Roles` permission and there are roles set to be given\n';
         }
-        targetFeature = targetFeature.filter(r => context.guild.roles.has(r.id));
-        const higherRoles = targetFeature.filter(r => context.guild.roles.get(r.id).position > this.getHighestRole(context.clientMember.id, context.guild).position);
+        console.log(require('util').inspect(targetFeature));
+        targetFeature = targetFeature.filter(r => context.guild.roles.has(r.id || r));
+        const higherRoles = targetFeature.filter(r => context.guild.roles.get(r.id || r).position > this.getHighestRole(context.clientMember.id, context.guild).position);
         if (higherRoles[0]) {
-            const setAs = feature === 'experience' ? 'to be given at some point' : 'as self-assignable';
-            result += ':warning: The role(s) ' + higherRoles.map(r => `\`${context.guild.roles.get(r.id).name}\``).join(', ') + ' is/are ' + setAs + ', however it is/they are higher than my highest role and i therefore can\'t give it/them';
+            const setAs = feature === 'experience' ? 'to be given at some point' : (feature === 'ojr' ? 'to be given to new members' : 'as self-assignable');
+            result += ':warning: The role(s) ' + higherRoles.map(r => `\`${context.guild.roles.get(r.id || r).name}\``).join(', ') + ' is/are set ' + setAs + ', however it is/they are higher than my highest role and i therefore can\'t give it/them';
         }
         if (!result) {
             result = ':white_check_mark: No permissions issues have been detected with the current settings';

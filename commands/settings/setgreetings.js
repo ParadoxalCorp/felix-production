@@ -16,26 +16,19 @@ class SetGreetings extends SettingsCommands {
             }
         });
         this.extra = { possibleActions: this.genericPossibleActions('greetings', true) };
-        this.conf.expectedArgs = [
-            {
-                description: "Please specify the action you want to do in the following possible actions: " + this.extra.possibleActions.map(a => `\`${a.name}\``).join(", "),
-                possibleValues: this.extra.possibleActions
-            }, {
-                //Conditional set_message_target branch
-                condition: (client, message, args) => args.includes("set_message_target"),
-                description: "Please specify the target of the greetings messages, specify `#<channel_name>` or `<channel_name>` to send them in a specific channel or `dm` to send them directly to the member who just joined",
-                possibleValues: [
-                    {
-                        name: "*",
-                        interpretAs: "{value}"
-                    }
-                ]
-            }, {
-                //Conditional set_message branch
-                condition: (client, message, args) => args.includes("set_message"),
-                description: `Please specify the greetings message you want to be sent whenever a new user join the server, check <${this.help.externalDoc}> for more information and a list of tags you can use`
-            }
-        ];
+        this.conf.expectedArgs = this.genericExpectedArgs([{
+            //Conditional set_message_target branch
+            condition: (client, message, args) => args.includes("set_message_target"),
+            description: "Please specify the target of the greetings messages, specify `#<channel_name>` or `<channel_name>` to send them in a specific channel or `dm` to send them directly to the member who just joined",
+            possibleValues: [{           
+                name: "*",
+                interpretAs: "{value}"    
+            }]
+        }, {
+            //Conditional set_message branch
+            condition: (client, message, args) => args.includes("set_message"),
+            description: `Please specify the greetings message you want to be sent whenever a new user join the server, check <${this.help.externalDoc}> for more information and a list of tags you can use` 
+        }]);
     }
 
     /** @param {import("../../structures/Contexts/SettingsContext")} context */

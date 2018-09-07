@@ -152,7 +152,7 @@ class BaseContext {
      */
     hasPerms(permissions, target = this.clientMember, channel = this.message.channel) {
         const result = this.client.utils.helpers.hasPermissions(this.message, target, permissions, channel);
-        return result ? false : true;
+        return Array.isArray(result) ? false : true;
     }
 
     /**

@@ -38,7 +38,7 @@ class MusicCommands extends Command {
             return context.message.channel.createMessage(':x: You must be connected in a voice channel with me to use that');
         } 
         if (this.options.autoJoin && !context.clientMember.voiceState.channelID) {
-            if (!context.hasPerms(['voiceConnect', 'voiceSpeak'], null, context.userVC)) {
+            if (!context.hasPerms(['voiceConnect', 'voiceSpeak'], undefined, context.userVC)) {
                 return context.message.channel.createMessage(':x: It seems like I lack the permission to connect or to speak in the voice channel you are in :c');
             }
             if (context.userVC) {

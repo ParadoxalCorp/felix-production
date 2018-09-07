@@ -37,31 +37,18 @@ class Sar extends SettingsCommands {
                 }
             ]
         };
-        this.conf.expectedArgs = [
-            {
-                description:
-					"Please specify the action you want to do in the following possible actions: " +
-					this.extra.possibleActions.map(a => `\`${a.name}\``).join(", "),
-                possibleValues: this.extra.possibleActions
-            },
-            {
-                //Conditional add branch
-                condition: (client, message, args) => args.includes("add"),
-                description:
-					"Please specify the name of the role to make self-assignable"
-            },
-            {
-                condition: (client, message, args) => args.includes("add"),
-                description:
-					"Can this role be stacked with all other roles? If not, answer with a list of roles separated by `;` with which this role can't be stacked with, otherwise just answer `yes`\nYou can learn more about this here <https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#incompatible-roles>"
-            },
-            {
-                //Conditional remove branch
-                condition: (client, message, args) => args.includes("remove"),
-                description:
-					"Please specify the name of the self-assignable role to remove"
-            }
-        ];
+        this.conf.expectedArgs = this.genericExpectedArgs([{
+            //Conditional add branch
+            condition: (client, message, args) => args.includes("add"),
+            description: "Please specify the name of the role to make self-assignable"		
+        }, {
+            condition: (client, message, args) => args.includes("add"),
+            description: "Can this role be stacked with all other roles? If not, answer with a list of roles separated by `;` with which this role can't be stacked with, otherwise just answer `yes`\nYou can learn more about this here <https://github.com/ParadoxalCorp/felix-production/blob/master/usage.md#incompatible-roles>"
+        }, {
+            //Conditional remove branch
+            condition: (client, message, args) => args.includes("remove"),
+            description: "Please specify the name of the self-assignable role to remove"
+        }]);
     }
 
     /** @param {import("../../structures/Contexts/SettingsContext")} context */
@@ -106,7 +93,7 @@ class Sar extends SettingsCommands {
             )
         );
         await context.guildEntry.save();
-        const warning = this.checkRolePermissions('selfAssignableRoles', context);
+        const warning = this.checkRolePermissions('sar', context);
         return context.message.channel.createMessage(`:white_check_mark: Successfully set the role \`${role.name}\` as a self-assignable role \n\n${warning}`);
     }
 
@@ -120,17 +107,11 @@ class Sar extends SettingsCommands {
         } else if (!isSet) {
             return context.message.channel.createMessage(`:x: This role isn't set as self-assignable`);                        
         }
-        context.guildEntry.selfAssignableRoles.splice(
-            context.guildEntry.selfAssignableRoles.findIndex(r => r === role.id),
-            1
-        );
-        await context.client.handlers.DatabaseWrapper.set(
-            context.guildEntry,
-            "guild"
-        );
-        return context.message.channel.createMessage(
-            `:white_check_mark: Successfully removed the role \`${role.name}\``
-        );
+        context.guildEntry.selfAssignableRoles.splice(context.guildEntry.selfAssignableRoles.findIndex(r => r === role.id), 1);
+        await context.guildEntry.save();
+        return context.message.channel.createMessage(`:white_check_mark: Successfully removed the role \`${role.name}\``);
+            
+        
     }
 
     /** @param {import("../../structures/Contexts/SettingsContext")} context */
