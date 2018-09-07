@@ -144,8 +144,20 @@ class BaseContext {
     }
 
     /**
-     * 
-     * @param {Array<String>} permissions - An array of permissions to check if 
+     * Check if the given user has all the given permissions
+     * @param {Array<String>} permissions - An array of permissions to check for
+     * @param {Member | User | ExtendedUser} [target=this.clientMember] - The user from whose permissions should be checked, default to the bot 
+     * @param {VoiceChannel | TextChannel} [channel=this.message.channel] - Optional, a specific channel to check perms for (to check if the bot can connect to a VC for example), defaults to the message's channel
+     * @returns {Boolean} Whether the target user has the given permissions
+     */
+    hasPerms(permissions, target = this.clientMember, channel = this.message.channel) {
+        const result = this.client.utils.helpers.hasPermissions(this.message, target, permissions, channel);
+        return result ? false : true;
+    }
+
+    /**
+     * Check if the given user has the given permissions, and returns the missing permissions if the user miss some
+     * @param {Array<String>} permissions - An array of permissions to check for
      * @param {Member | User | ExtendedUser} [target=this.message.author]  - The user from whose permissions should be checked
      * @param {VoiceChannel | TextChannel} [channel=this.message.channel] - Optional, a specific channel to check perms for (to check if the bot can connect to a VC for example), defaults to the message's channel
      * @returns {UserHasPermissions} The user's missing permissions, if any

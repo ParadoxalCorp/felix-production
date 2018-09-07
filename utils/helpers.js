@@ -125,11 +125,11 @@ class Helpers {
             }
         }
         hasPerm = hasPerm.bind(this);
-        permissions.forEach(perm => {
+        for (const perm of permissions) {
             if (!hasPerm(perm)) {
                 missingPerms.push(perm);
             }
-        });
+        }
         if (!permissions.includes('sendMessages') && !hasPerm('sendMessages')) {
             missingPerms.push('sendMessages');
         }

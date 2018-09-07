@@ -140,9 +140,9 @@ class Experience extends SettingsCommands {
             return context.message.channel.createMessage(`:x: \`${context.client.config.options.experience.maxRolesLevel}\` is the maximum level at which you can assign roles, as it isn't realistically possible to reach it`);
         }
         context.guildEntry.experience.roles.push(context.client.structures.References.activityGuildRole(role.id, parseInt(context.args[2]), context.args.includes('static')));
-        await context.client.handlers.DatabaseWrapper.set(context.guildEntry, 'guild');
+        await context.guildEntry.save();
         let warning = '';
-        const hasPerm = Array.isArray(this.clientHasPermissions(context.message, context.client, ['manageRoles'])) ? false : true;
+        const hasPerm = context.hasPerms(['manageRoles']);
         if (!hasPerm || role.position > this.getHighestRole(context.client.bot.user.id, context.message.channel.guild).position) {
             warning += ':warning: ';
             warning += !hasPerm ? 'I lack the `Manage Roles` permission' : '';
@@ -275,31 +275,11 @@ class Experience extends SettingsCommands {
                     value: context.guildEntry.experience.notifications.channel ? (context.guildEntry.experience.notifications.channel === 'dm' ? 'dm' : `<#${context.guildEntry.experience.notifications.channel}>`) : 'this'
                 }, {
                     name: 'Permissions',
-                    value: this._checkPermissions(context)
+                    value: this.checkRolePermissions('experience', context)
                 }],
                 color: context.client.config.options.embedColor.generic
             }
         });
-    }
-
-    _checkPermissions(context) {
-        let result = '';
-        const channel = context.message.channel.guild.channels.get(context.guildEntry.experience.notifications.channel);
-        if (channel) {
-            result += Array.isArray(this.clientHasPermissions(context.message, context.client, ['sendMessages'], channel)) ? `:warning: I don't have enough permissions to send messages in <#${channel.id}>\n` : '';
-        }
-        if (Array.isArray(this.clientHasPermissions(context.message, context.client, ['manageRoles'])) && context.guildEntry.experience.roles[0]) {
-            result += ':warning: I don\'t have the `Manage Roles` permission and there are roles set to be given\n';
-        }
-        context.guildEntry.experience.roles = context.guildEntry.experience.roles.filter(r => context.message.channel.guild.roles.has(r.id));
-        const higherRoles = context.guildEntry.experience.roles.filter(r => context.message.channel.guild.roles.get(r.id).position > this.getHighestRole(context.client.bot.user.id, context.message.channel.guild).position);
-        if (higherRoles[0]) {
-            result += ':warning: The role(s) ' + higherRoles.map(r => `\`${context.message.channel.guild.roles.get(r.id).name}\``).join(', ') + ' is/are set to be given at some point, however it is/they are higher than my highest role and i therefore can\'t give them';
-        }
-        if (!result) {
-            result = ':white_check_mark: No permissions issues have been detected with the current settings';
-        }
-        return result;
     }
 }
 

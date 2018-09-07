@@ -66,34 +66,6 @@ class Sar extends SettingsCommands {
 
     /** @param {import("../../structures/Contexts/SettingsContext")} context */
 
-    async run(context) {
-        const action = this.extra.possibleActions.find(
-            a => a.name === context.args[0]
-        );
-        if (!action) {
-            return context.message.channel.createMessage(
-                `:x: The specified action is invalid, if you are lost, simply run the command like \`${
-                    context.guildEntry.getPrefix
-                } ${this.help.name}\``
-            );
-        }
-        if (action.expectedArgs > context.args.length - 1) {
-            return context.message.channel.createMessage(
-                `:x: This action expect \`${action.expectedArgs -
-					(context.args.length -
-						1)}\` more argument(s), if you are lost, simply run the command like \`${
-                    context.guildEntry.getPrefix
-                } ${this.help.name}\``
-            );
-        }
-        context.guildEntry.selfAssignableRoles = context.guildEntry.selfAssignableRoles.filter(
-            r => context.message.channel.guild.roles.has(r.id)
-        );
-        return action.func(context);
-    }
-
-    /** @param {import("../../structures/Contexts/SettingsContext")} context */
-
     async add(context) {
         const role = typeof context.args[1] === "string" ? await context.getRoleFromText(context.args[1]) : context.args[1];						    	    
         const alreadySet = role
@@ -121,22 +93,11 @@ class Sar extends SettingsCommands {
             }
         }
         if (!role) {
-            return context.message.channel.createMessage(
-                `:x: I couldn't find the role \`${context.args[1]}\` in this server`
-            );
+            return context.message.channel.createMessage(`:x: I couldn't find the role \`${context.args[1]}\` in this server`);
         } else if (alreadySet) {
-            context.guildEntry.selfAssignableRoles.find(
-                r => r.id === role.id
-            ).incompatibleRoles = resolvedRoles;
-            await context.client.handlers.DatabaseWrapper.set(
-                context.guildEntry,
-                "guild"
-            );
-            return context.message.channel.createMessage(
-                `:white_check_mark: Successfully updated the roles with which \`${
-                    role.name
-                }\` can't be stacked`
-            );
+            context.guildEntry.selfAssignableRoles.find(r => r.id === role.id).incompatibleRoles = resolvedRoles;    
+            await context.guildEntry.save();
+            return context.message.channel.createMessage(`:white_check_mark: Successfully updated the roles with which \`${role.name}\` can't be stacked`);
         }
         context.guildEntry.selfAssignableRoles.push(
             context.client.structures.References.selfAssignableRole(
@@ -144,33 +105,20 @@ class Sar extends SettingsCommands {
                 resolvedRoles
             )
         );
-        await context.client.handlers.DatabaseWrapper.set(
-            context.guildEntry,
-            "guild"
-        );
-        const warning = this._checkPermissions(context);
-        return context.message.channel.createMessage(
-            `:white_check_mark: Successfully set the role \`${
-                role.name
-            }\` as a self-assignable role ${warning !== true ? "\n\n" + warning : ""}`
-        );
+        await context.guildEntry.save();
+        const warning = this.checkRolePermissions('selfAssignableRoles', context);
+        return context.message.channel.createMessage(`:white_check_mark: Successfully set the role \`${role.name}\` as a self-assignable role \n\n${warning}`);
     }
 
     /** @param {import("../../structures/Contexts/SettingsContext")} context */
 
     async remove(context) {
         const role = await context.getRoleFromText(context.args[1]);
-        const isSet = role
-            ? context.guildEntry.selfAssignableRoles.find(r => r.id === role.id)
-            : false;
+        const isSet = role ? context.guildEntry.selfAssignableRoles.find(r => r.id === role.id) : false;  
         if (!role) {
-            return context.message.channel.createMessage(
-                `:x: I couldn't find the role \`${context.args[1]}\` in this server`
-            );
+            return context.message.channel.createMessage(`:x: I couldn't find the role \`${context.args[1]}\` in this server`);
         } else if (!isSet) {
-            return context.message.channel.createMessage(
-                `:x: This role isn't set as self-assignable`
-            );
+            return context.message.channel.createMessage(`:x: This role isn't set as self-assignable`);                        
         }
         context.guildEntry.selfAssignableRoles.splice(
             context.guildEntry.selfAssignableRoles.findIndex(r => r === role.id),
@@ -249,38 +197,6 @@ class Sar extends SettingsCommands {
                 };
             })
         });
-    }
-
-    /** @param {import("../../structures/Contexts/SettingsContext")} context */
-
-    _checkPermissions(context) {
-        let result = "";
-        if (
-            Array.isArray(
-                this.clientHasPermissions(context.message, this.client, ["manageRoles"])
-            ) &&
-			context.guildEntry.selfAssignableRoles[0]
-        ) {
-            result +=
-				":warning: I don't have the `Manage Roles` permission, i therefore won't be able to give this role when the time come\n";
-        }
-        const higherRoles = context.guildEntry.selfAssignableRoles.filter(
-            r =>
-                context.message.channel.guild.roles.get(r.id).position >
-				this.getHighestRole(
-				    context.client.bot.user.id,
-				    context.message.channel.guild
-				).position
-        );
-        if (higherRoles[0]) {
-            result +=
-				":warning: The role(s) " +
-				higherRoles
-				    .map(r => `\`${context.message.channel.guild.roles.get(r.id).name}\``)
-				    .join(", ") +
-				" is/are set as self-assignable, however it is/they are higher than my highest role and i therefore can't give them";
-        }
-        return result ? result : true;
     }
 }
 
