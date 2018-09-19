@@ -10,6 +10,7 @@
  * @prop {import("./ReactionCollector.js")} ReactionCollector The reaction collector
  * @prop {import("./RedisManager.js")} RedisManager The redis handler
  * @prop {import("./Reloader.js")} Reloader The reload handler
+ * @prop {import("./KitsuWrapper.js")} KitsuWrapper A wrapper for the Kitsu API
  */
 
 module.exports = {
@@ -23,5 +24,6 @@ module.exports = {
     MusicManager: require('./MusicManager.js'),
     ReactionCollector: require('./ReactionCollector.js'),
     RedisManager: require('./RedisManager.js'),
-    Reloader: require('./Reloader.js')
+    Reloader: require('./Reloader.js'),
+    KitsuWrapper: require('./KitsuWrapper')
 };
