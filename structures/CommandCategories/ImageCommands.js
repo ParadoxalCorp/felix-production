@@ -19,7 +19,7 @@ class ImageCommands extends Command {
             name: 'Image',
             conf: {
                 require: ['weebSH', 'taihou'],
-                requirePerms: ['embedLinks'],
+                requirePerms: ['embedLinks', 'attachFiles'],
             },
             emote: 'picture'
         }});
