@@ -25,7 +25,7 @@ class MDN extends UtilityCommands {
             `https://developer.mozilla.org/en-US/search.json?locale=en-US&q=${encodeURIComponent(context.args.join(" "))}`, { headers: { 'Content-Type': 'application/json' } })
             .then(r => r.data);
         if (!result.documents || !result.documents[0]) {
-            return context.message.channel.createMessage(":x: Your search did not returned any result");
+            return context.message.channel.createMessage(":x: Your search did not return any results");
         }
         result.documents = result.documents.map(document => {
             return {
@@ -42,6 +42,10 @@ class MDN extends UtilityCommands {
                     }, {
                         name: 'Tags',
                         value: document.tags.join(', ')
+                    },
+                    {
+                        name: 'Link',
+                        value: `[Click here](${document.url})`
                     }],
                     timestamp: new Date(),
                     footer: {
