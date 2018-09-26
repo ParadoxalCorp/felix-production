@@ -10,6 +10,9 @@ class ChangeMyMind extends ImageCommands {
                 description: "Go on, change my mind!",
                 subCategory: "image-generation",
                 usage: "{prefix}changemymind <text>"
+            },
+            conf: {
+                aliases: ['cmm', 'changemind']
             }
         }, { noArgs: "You need to specify what to say"});
     }
