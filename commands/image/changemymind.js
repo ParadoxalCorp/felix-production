@@ -2,14 +2,14 @@ const ImageCommands = require("../../structures/CommandCategories/ImageCommands"
 
 const axios = require("axios").default;
 
-class Clyde extends ImageCommands {
+class ChangeMyMind extends ImageCommands {
     constructor(client) {
         super(client, {
             help: {
-                name: "clyde",
-                description: "Say something as Clyde",
+                name: "changemymind",
+                description: "Go on, change my mind!",
                 subCategory: "image-generation",
-                usage: "{prefix}clyde <text>"
+                usage: "{prefix}changemymind <text>"
             }
         }, { noArgs: "You need to specify what to say"});
     }
@@ -17,17 +17,17 @@ class Clyde extends ImageCommands {
 
     async run (context) {
         const text = context.args.join(" ");
-        if (text.length > 64) {
-            return context.message.channel.createMessage("Let's try and keep it under 64 characters please");
+        if (text.length > 72) {
+            return context.message.channel.createMessage("Can you try and change my mind in under 72 characters please");
         }
-        const generatedImage = await axios.get(`https://nekobot.xyz/api/imagegen?type=clyde&text=${encodeURIComponent(text)}`).catch(() => false);
-        if (!generatedImage) {
+        const generatedCMM = await axios.get(`https://nekobot.xyz/api/imagegen?type=changemymind&text=${encodeURIComponent(text)}`).catch(() => false);
+        if (!generatedCMM) {
             return context.message.channel.createMessage("Oops, seems like nekobot api is down >:|");
         }
         return context.message.channel.createMessage({
             embed: {
                 image: {
-                    url: generatedImage.data.message
+                    url: generatedCMM.data.message
                 },
                 color: context.client.config.options.embedColor.generic,
                 footer: {
@@ -38,4 +38,4 @@ class Clyde extends ImageCommands {
     }
 }
 
-module.exports = Clyde;
+module.exports = ChangeMyMind;

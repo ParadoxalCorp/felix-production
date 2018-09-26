@@ -18,14 +18,14 @@ class Captcha extends ImageCommands {
     async run(context) {
         const user = await context.getUserFromText(context.args.join(' '));
         const target = user || context.message.author;
-        const generatedTweet = await axios.get(`https://nekobot.xyz/api/imagegen?type=captcha&url=${target.avatarURL || target.defaultCDNAvatar}&username=${target.username}`).catch(() => false);
-        if (!generatedTweet) {
+        const generatedCaptcha = await axios.get(`https://nekobot.xyz/api/imagegen?type=captcha&url=${target.avatarURL || target.defaultCDNAvatar}&username=${target.username}`).catch(() => false);
+        if (!generatedCaptcha) {
             return context.message.channel.createMessage("Oops, seems like nekobot api is down >:|");
         }
         return context.message.channel.createMessage({
             embed: {
                 image: {
-                    url: generatedTweet.data.message
+                    url: generatedCaptcha.data.message
                 },
                 color: context.client.config.options.embedColor.generic,
                 footer: {
