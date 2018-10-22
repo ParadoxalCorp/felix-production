@@ -22,6 +22,7 @@
   * @prop {String} usage A quick example of how to use the command, every instance of {prefix} will be replaced by the actual prefix in the help command 
   * @prop {String} [externalDoc] A direct URL to some external documentation
   * @prop {String} [preview] A direct URL to a preview image
+  * @prop {String} [subCategory] Exclusive to image commands, a sub-category to show in help 
   */
 
 /** @typedef {Object} PossibleArgValue
