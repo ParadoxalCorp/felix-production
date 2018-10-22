@@ -8,7 +8,7 @@ class WhatAnime extends UtilityCommands {
         super(client, {
             help: {
                 name: 'whatanime',
-                description: `Search through whatanime.ga to find from what anime is the given picture\n\nTo use this command, you have to upload the image along with the command or specify a direct link to the image. If no image is uploaded nor any link is specified, ${client.config.codename} will try to search for an image in the latest 10 messages and use it if there is any`,
+                description: `Search through trace.moe to find from what anime is the given picture\n\nTo use this command, you have to upload the image along with the command or specify a direct link to the image. If no image is uploaded nor any link is specified, ${client.config.codename} will try to search for an image in the latest 10 messages and use it if there is any`,
                 usage: '{prefix}whatanime <url?>',
             },
             conf: {
@@ -53,7 +53,7 @@ class WhatAnime extends UtilityCommands {
         const formData = querystring.stringify({image});
         const request = await axios.post(`http://${context.client.config.requestHandler.host}:${context.client.config.requestHandler.port}/request`, {
             data: formData,
-            service: 'whatanime.ga',
+            service: 'trace.moe',
             route: '/search',
             headers: {
                 'Content-Length': formData.length
