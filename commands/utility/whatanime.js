@@ -47,7 +47,7 @@ class WhatAnime extends UtilityCommands {
             return context.message.channel.createMessage(`It seems like the link you provided isn't a direct link to a valid image :v`);
         }
         if (image.length > 1000000) {
-            return context.message.channel.createMessage(`I tried to make it as small as i could, but seems like your image is too big. whatanime.ga doesn't accept anything bigger than 1MB`);
+            return context.message.channel.createMessage(`I tried to make it as small as i could, but seems like your image is too big. trace.moe doesn't accept anything bigger than 1MB`);
         }
 
         const formData = querystring.stringify({image});
