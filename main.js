@@ -23,6 +23,7 @@ const config = require('./config');
  * @prop {Boolean} launchedOnce Whether the bot has already been launched
  * @prop {ErisClient} bot The eris client instance
  * @prop {Object} cache A cache object for various stuff
+ * @prop {import('rethinkdbdash')} r The RethinkDB interface
  */
 
 /**

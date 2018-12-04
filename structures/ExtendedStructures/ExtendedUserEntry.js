@@ -4,6 +4,7 @@
 */
 
 const BaseExtendedEntry = require('./BaseExtendedEntry');
+const deepMerge = require('../../utils/databaseUpdater');
 
 class ExtendedUserEntry extends BaseExtendedEntry {
     /**
@@ -14,6 +15,18 @@ class ExtendedUserEntry extends BaseExtendedEntry {
     constructor(userEntry, client) {
         super(client);
         Object.assign(this, userEntry);
+        /** @type {Object} internal changes tracking */
+        this._changes = {};
+    }
+
+    /**
+     * Manually update a property or multiple properties
+     * @param {Object} obj The data to update
+     * @returns {ExtendedUserEntry} The user entry so calls can be chained
+     */
+    update(obj) {
+        this._changes = deepMerge(obj, null, this._changes);
+        return this;
     }
 
     /**
@@ -51,6 +64,9 @@ class ExtendedUserEntry extends BaseExtendedEntry {
         // @ts-ignore
         this.economy.coins = this.economy.coins - amount;
         // @ts-ignore
+        this.update({ economy: {
+            coins: this.client.r.row('economy').default({}).getField('coins').default(0).sub(amount)
+        } });
         return this;
     }
 
@@ -63,6 +79,9 @@ class ExtendedUserEntry extends BaseExtendedEntry {
         // @ts-ignore
         this.economy.coins = this.economy.coins + amount;
         // @ts-ignore
+        this.update({ economy: {
+            coins: this.client.r.row('economy').default({}).getField('coins').default(0).add(amount)
+        } });
         return this;
     }
 
@@ -105,6 +124,9 @@ class ExtendedUserEntry extends BaseExtendedEntry {
         }
         // @ts-ignore
         this.cooldowns[cooldown] = Date.now() + duration;
+        this.update({ cooldowns: {
+            [cooldown]: Date.now() + duration
+        } });
         // @ts-ignore
         return this;
     }
@@ -130,6 +152,9 @@ class ExtendedUserEntry extends BaseExtendedEntry {
         // @ts-ignore
         this.experience.amount = this.experience.amount + amount;
         // @ts-ignore
+        this.update({ experience: {
+            amount: this.client.r.row('experience').default({}).getField('amount').default(0).add(amount)
+        } });
         return this;
     }
 

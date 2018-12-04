@@ -28,6 +28,7 @@ class DatabaseWrapper {
             password: client.config.database.password,
             db: client.config.database.database
         });
+        this.client.r = this.rethink;
         /** @type {Boolean} Whether the connection is in a healthy state */
         this.healthy = false;
         this.rethink.getPoolMaster().on('healthy', this._onHealthy.bind(this));
@@ -111,7 +112,10 @@ class DatabaseWrapper {
         } else if (type === 'guilds' || type === 'guild') {
             return this.guildData.set(value);
         }
-        return this.rethink.table(type).get(value.id).replace(value).run();
+        return this.rethink.table(type)
+            .insert(this.rethink.table(type).get(value.id).default(type === "users" ? this.client.structures.References.userEntry(value.id) : this.client.structures.References.guildEntry(value.id)), {
+                conflict: 'update'
+            }).run();
     }
 
     _onHealthy(healthy) {
