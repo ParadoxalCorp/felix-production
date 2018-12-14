@@ -73,7 +73,7 @@
  * @typedef {Object} UserEconomy 
  * @property {Number} coins The amount of holy coins this user has
  * @property {Array<TransactionData>} transactions The custom greetings/farewells message set on this guild, empty if none is set
- * @property {Array<OwnedItem>} items An array of items this user own
+ * @property {Object} items An an object containing the amount of each item the user own, mapped by their ID
  */
 
 /**
@@ -265,7 +265,7 @@ class References {
             economy: {
                 coins: 500,
                 transactions: [],
-                items: []
+                items: {}
             },
             love: {
                 amount: 0

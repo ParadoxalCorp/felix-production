@@ -15,6 +15,7 @@
   */
 
 const BaseExtendedEntry = require('./BaseExtendedEntry');
+const deepMerge = require('../../utils/databaseUpdater');
 
 /** @class ExtendedGuildEntry */
 class ExtendedGuildEntry extends BaseExtendedEntry {
@@ -28,6 +29,22 @@ class ExtendedGuildEntry extends BaseExtendedEntry {
         Object.assign(this, guildEntry);
     }
 
+    /**
+     * Manually update a property or multiple properties
+     * @param {Object} obj The data to update
+     * @returns {ExtendedGuildEntry} The guild entry so calls can be chained
+     */
+    update(obj) {
+        this._changes = deepMerge(obj, null, this._changes);
+        return this;
+    }
+
+    /**
+     * Get the effective prefix of the guild
+     * @readonly
+     * @memberof ExtendedGuildEntry
+     * @returns {String} The effective prefix for this guild
+     */
     get getPrefix() {
         // @ts-ignore
         return this.prefix || this.client.config.prefix;
@@ -147,6 +164,7 @@ class ExtendedGuildEntry extends BaseExtendedEntry {
      * @example Guild.addExperience(15).to("123456798");
      */
     addExperience(amount) {
+        // AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
         return {
             to: (id) => {
                 // @ts-ignore
@@ -170,6 +188,7 @@ class ExtendedGuildEntry extends BaseExtendedEntry {
      * @example Guild.removeActivityRole("123456789");
      */
     removeActivityRole(id) {
+        // well fuck
         // @ts-ignore
         this.experience.roles.splice(this.experience.roles.findIndex(r => r.id === id), 1);
         // @ts-ignore

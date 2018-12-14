@@ -5,7 +5,7 @@
 		"checkJs": true,
 		"allowJs": true,
 		"module": "commonjs",
-		"watch": true,
+		"watch": false,
 		"skipLibCheck": false,
 		"lib": [
 			"esnext"

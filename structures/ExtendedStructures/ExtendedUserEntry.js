@@ -45,13 +45,10 @@ class ExtendedUserEntry extends BaseExtendedEntry {
      * @returns {ExtendedUserEntry} The user entry so calls can be chained
      */
     addItem(itemID) {
-        if (this.hasItem(itemID)) {
-            // @ts-ignore
-            this.economy.items[this.economy.items.findIndex(i => i.id === itemID)].count++;
-        } else {
-            // @ts-ignore
-            this.economy.items.push(this.client.structures.References.item(itemID));
-        }
+        this.economy.items[itemID] = (this.economy.items[itemID] || 0) + 1;
+        this.update({ item: {
+            [itemID]: this.client.r.row('economy').default({})(itemID).default(0).add(1);
+        }});
         return this;
     }
 

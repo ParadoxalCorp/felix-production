@@ -29,6 +29,7 @@ class DatabaseWrapper {
             db: client.config.database.database
         });
         this.client.r = this.rethink;
+        this.client.db = this;
         /** @type {Boolean} Whether the connection is in a healthy state */
         this.healthy = false;
         this.rethink.getPoolMaster().on('healthy', this._onHealthy.bind(this));
@@ -69,6 +70,10 @@ class DatabaseWrapper {
                     }
                     return selfAssignableRoles;
                 });
+                //5.0 Change: Items are now an object, and inventory is reset
+                if (data.economy.items instanceof Array) {
+                    data.economy.items = {};
+                }
                 return data;
             }
         });
