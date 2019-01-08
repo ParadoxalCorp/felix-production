@@ -1,5 +1,8 @@
 const Sharder = require('@eris-sharder/core/index');
 const config = require('../config');
+process.on('unhandledRejection', console.error);
+process.on('uncaughtException', console.error);
+const mongoose = require('mongoose');
 
 class Master extends Sharder {
     constructor() {
@@ -13,7 +16,7 @@ class Master extends Sharder {
                 clusters: 2
             }
         }, {});
-        this.create().then(() => { this.init().then(() => {}) });
+        this.create().then(() => { this.init().then(() => {}); });
     }
 }
 
