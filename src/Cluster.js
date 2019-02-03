@@ -3,6 +3,9 @@ const { Client } = require('eris');
 const mongoose = require('mongoose');
 const DatabaseHandler = require('./handlers/DatabaseHandler');
 const Logger = require('@eris-sharder/core/src/modules/Logger');
+const { promises: fs } = require('fs');
+const { join } = require('path');
+
 class Felix extends Client {
     constructor() {
         super(process.env.TOKEN, {
@@ -13,16 +16,37 @@ class Felix extends Client {
         this.db = mongoose;
         this.dbHandler = new DatabaseHandler(this);
         this.logger = new Logger();
-        this.logger.registerTransport('console', require('@eris-sharder/core/src/transports/Console'));
         this.launch();
+        this.events = {};
     }
 
     async launch () {
+        await this.logger.registerTransport('console', new (require('@eris-sharder/core/src/transports/Console'))());
+        await this.loadEventsListeners();
         this.connect();
         await this.logger.init();
-        mongoose.connect(`mongodb://${config.database.host}:${config.database.port}`, {
-            dbName: config.database.database
+        await this.dbHandler.connect();
+    }
+
+    async loadEventsListeners() {
+        //Load events
+        const events = await fs.readdir(join(__dirname, 'events'));
+        let loadedEvents = 0;
+        events.forEach(e => {
+            try {
+                const eventName = e.split(".")[0];
+                const event = require(join(__dirname, 'events', e));
+                loadedEvents++;
+                this.events[eventName] = event.handle.bind(event, this);
+                this.on(eventName, this.events[eventName]);
+                delete require.cache[require.resolve(join(__dirname, 'events', e))];
+            } catch (err) {
+                this.logger.error({ src: 'Felix', msg: `Failed to load event ${e}: ${err.stack || err}` });
+            }
         });
+        this.logger.info({ src: 'Felix', msg: `Loaded ${loadedEvents}/${events.length} events` });
+        process.on('unhandledRejection', (err) => this.emit('error', err));
+        process.on('uncaughtException', (err) => this.emit('error', err));
     }
 }
 

@@ -1,0 +1,32 @@
+{
+    "admins": ["YOUR_ID", "SOMEONE_TRUSTABLE", "A_SECOND_TRUSTABLE_PERSON_IF_YOU_KNOW_ANY_IDK"],
+    "prefix": "awoo",
+    "codename": "Felix",
+    "ownerID": "YOUR_ID",
+    "token": "BOT_TOKEN",
+    "database": {
+        "dbURI": "mongodb://localhost:27017/test"
+    },
+    "redis": {
+        "port": 6379,
+        "host": "127.0.0.1",
+        "family": 4,
+        "db": 3,
+        "password": ""
+    },
+    "apiKeys": {
+        "sentryDSN": "",
+        "sentryAPI": "",
+        "weebSH": ""
+    },
+    "options": {
+        "embedColor": "0x6398e6"
+    },    
+    "process": {
+        "guildsPerShards": 1750,
+        "shards": 1,
+        "clusters": 1,
+        "debug": true,
+        "environment": "development"
+    }
+}

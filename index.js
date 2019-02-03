@@ -1,11 +1,12 @@
 const Sharder = require('./src/Master');
 const master = require('cluster');
 const Cluster = require('./src/Cluster');
+let sharder;
+let cluster;
 
 if (master.isMaster) {
-    let sharder = new Sharder();
+    sharder = new Sharder();
 } else {
-    let cluster;
     process.on('message', async(msg) => {
         if (msg.event === 'connect') {
             let firstShardID = Number(process.env.FIRST_SHARD_ID);
@@ -17,8 +18,7 @@ if (master.isMaster) {
                     clusterID: process.env.CLUSTER_ID
                 }
             });
-            cluster = new Cluster();
-            
+            cluster = new Cluster();    
         }
     });
 }

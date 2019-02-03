@@ -1,11 +1,12 @@
-/** @typedef {import('mongoose')} mongoose 
+/** 
  * @typedef {import('../Cluster')} Client
+ * @typedef {import('mongoose')} Mongoose
+ * @typedef {import('mongoose').Document} Document
 */
 
 class DatabaseHandler {
     /**
-     * 
-     * @param {Client} client
+     * @param {Client} client The client instance
      */
     constructor(client) {
         /** @type {Client} */
@@ -19,20 +20,30 @@ class DatabaseHandler {
         for (const listener in this.listeners) {
             this.client.db.connection.on(listener, this.listeners[listener]);
         }
-        this.models = {};
+        const userSchema = new this.client.db.Schema({
+            _id: String,
+            baguette: String
+        });
+        const guildSchema = new this.client.db.Schema({
+            _id: String
+        });
+        this.models = {
+            User: this.client.db.model('User', userSchema),
+            Guild: this.client.db.model('Guild', guildSchema)
+        };
         this._source = "DatabaseHandler";
     }
 
-    init () {
-        const userSchema = new this.client.db.Schema({
-            id: String
+    /**
+     * Connects to the database
+     * @returns {Promise<Mongoose>} The mongoose instance
+     * @memberof DatabaseHandler
+     */
+    connect () {
+        return this.client.db.connect(this.client.config.database.dbURI, {
+            keepAlive: true,
+            useNewUrlParser: true
         });
-        const guildSchema = new this.client.db.Schema({
-            id: String
-        });
-        this.models.User = this.client.db.model('User', userSchema);
-        this.models.Guild = this.client.db.model('Guild', guildSchema);
-
     }
 
     _handleSuccessfulConnection () {
@@ -57,6 +68,25 @@ class DatabaseHandler {
         if (this.client.logger.started) {
             this.client.logger.debug({ src: this._source, msg: `Disconnecting from the database...`});
         }
+    }
+    
+    /**
+     *
+     *
+     * @param {String} id The ID of the user to get
+     * @returns {Promise<Document>} The user Document
+     * @memberof DatabaseHandler
+     */
+    getUser (id) {
+        return new Promise((resolve, reject) => {
+            this.models.User.findById(id, (err, res) => {
+                if (err) {
+                    return reject(err);
+                } else {
+                    return resolve(res ? res : new this.models.User({ _id: id, baguette: 'croissant' }));
+                }
+            });
+        });
     }
 }
 

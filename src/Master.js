@@ -10,10 +10,11 @@ class Master extends Sharder {
             token: config.token,
             sharding: {
                 firstShardID: 0,
-                shards: 2
+                shards: config.process.shards,
+                guildsPerShard: config.process.guildsPerShard
             },
             clustering: {
-                clusters: 2
+                clusters: config.process.clusters
             }
         }, {});
         this.create().then(() => { this.init().then(() => {}); });
