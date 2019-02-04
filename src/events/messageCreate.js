@@ -1,3 +1,4 @@
+// @ts-nocheck
 /** 
  * @typedef {import('eris').Message} Message 
  * @typedef {import('../Cluster')} Felix
@@ -13,16 +14,9 @@ module.exports = new class MessageCreate {
      */
     async handle (client, msg) {
         if (msg.content === "!!ping") {
-            let user = await client.dbHandler.getUser(msg.author.id);
-            user.update({ baguette: 'baguette' }, async(err, res) => {
-                if (!err) {
-                    user = await client.dbHandler.getUser(msg.author.id);
-                    msg.channel.createMessage(`Your ID is ${user.baguette}`);
-                } else {
-                    console.error(err);
-                }
-            }); 
-            return;
+            let user = await client.db.getUser(msg.author.id);
+            await user.addCoins(500).save();
+            return msg.channel.createMessage(`You have ${user.props.coins}`);
         }
     }
 }();

@@ -1,10 +1,12 @@
+// @ts-nocheck
 const config = require('../config');
 const { Client } = require('eris');
-const mongoose = require('mongoose');
+const { MongoClient: mongodb }  = require('mongodb');
 const DatabaseHandler = require('./handlers/DatabaseHandler');
 const Logger = require('@eris-sharder/core/src/modules/Logger');
 const { promises: fs } = require('fs');
 const { join } = require('path');
+const Utils = require('./structures/Utils');
 
 class Felix extends Client {
     constructor() {
@@ -13,11 +15,14 @@ class Felix extends Client {
             lastShardID: Number(process.env.LAST_SHARD_ID)
         });
         this.config = config;        
-        this.db = mongoose;
-        this.dbHandler = new DatabaseHandler(this);
+        this.mongo = mongodb;
+        /** @type {import('mongodb').Db} */
+        this.mongodb;
+        this.db = new DatabaseHandler(this);
         this.logger = new Logger();
         this.launch();
         this.events = {};
+        this.utils = new Utils(this);
     }
 
     async launch () {
@@ -25,7 +30,7 @@ class Felix extends Client {
         await this.loadEventsListeners();
         this.connect();
         await this.logger.init();
-        await this.dbHandler.connect();
+        await this.db.connect();
     }
 
     async loadEventsListeners() {

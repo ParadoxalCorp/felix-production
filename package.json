@@ -1,8 +1,28 @@
 {
+  "name": "Felix",
+  "version": "0.0.1",
+  "description": "Felix, a small, scalable bot meant to satisfy some needs",
+  "main": "index.js",
+  "author": "ParadoxOrigins",
+  "contributors": [
+    {
+      "name": "Niputi"
+    }
+  ],
+  "repository": "github:ParadoxalCorp/felix-production",
+  "license": "GPL-3.0",
+  "scripts": {
+    "start": "node index.js",
+    "eslint-check": "eslint ."
+  },
   "dependencies": {
     "@eris-sharder/core": "github:discord-sharders/core",
-    "@types/node": "^10.12.18",
     "eris": "^0.9.0",
-    "mongoose": "^5.4.2"
+    "mongodb": "^3.1.13",
+    "axios": "^0.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^10.12.18",
+    "@types/mongodb": "^3.1.19"
   }
 }

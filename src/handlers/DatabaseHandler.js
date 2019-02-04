@@ -1,8 +1,11 @@
+// @ts-nocheck
 /** 
  * @typedef {import('../Cluster')} Client
  * @typedef {import('mongoose')} Mongoose
  * @typedef {import('mongoose').Document} Document
 */
+
+const UserEntry = require('../structures/UserEntry');
 
 class DatabaseHandler {
     /**
@@ -11,26 +14,6 @@ class DatabaseHandler {
     constructor(client) {
         /** @type {Client} */
         this.client = client;
-        this.listeners = {
-            open: this._handleSuccessfulConnection.bind(this),
-            error: this._handleFailedConnection.bind(this),
-            connecting: this._handleConnection.bind(this),
-            disconnecting: this._handleDisconnection.bind(this)
-        };
-        for (const listener in this.listeners) {
-            this.client.db.connection.on(listener, this.listeners[listener]);
-        }
-        const userSchema = new this.client.db.Schema({
-            _id: String,
-            baguette: String
-        });
-        const guildSchema = new this.client.db.Schema({
-            _id: String
-        });
-        this.models = {
-            User: this.client.db.model('User', userSchema),
-            Guild: this.client.db.model('Guild', guildSchema)
-        };
         this._source = "DatabaseHandler";
     }
 
@@ -40,15 +23,18 @@ class DatabaseHandler {
      * @memberof DatabaseHandler
      */
     connect () {
-        return this.client.db.connect(this.client.config.database.dbURI, {
+        return this.client.mongo.connect(this.client.config.database.dbURI, {
             keepAlive: true,
             useNewUrlParser: true
+        }).then((client) => {
+            this.client.mongodb = client.db('data');
+            this._handleSuccessfulConnection();
         });
     }
 
     _handleSuccessfulConnection () {
         if (this.client.logger.started) {
-            this.client.logger.info({ src: this._source, msg: `Successfully connected to the database at ${this.client.db.connection.host}:${this.client.db.connection.port}`});
+            this.client.logger.info({ src: this._source, msg: `Successfully connected to the database at ${this.client.mongo.connection.host}:${this.client.mongo.connection.port}`});
         }
     }
 
@@ -71,22 +57,27 @@ class DatabaseHandler {
     }
     
     /**
-     *
-     *
+     * Get a user's database entry
      * @param {String} id The ID of the user to get
-     * @returns {Promise<Document>} The user Document
+     * @returns {Promise<UserEntry>} The user Document
      * @memberof DatabaseHandler
      */
-    getUser (id) {
-        return new Promise((resolve, reject) => {
-            this.models.User.findById(id, (err, res) => {
-                if (err) {
-                    return reject(err);
-                } else {
-                    return resolve(res ? res : new this.models.User({ _id: id, baguette: 'croissant' }));
-                }
-            });
+    async getUser (id) {
+        return this.client.mongodb.collection('users').findOne({ _id: id }).then(async(user) => {
+            if (user) {
+                return new UserEntry(user, this.client);
+            } else {
+                await this.client.mongodb.collection('users').insertOne(this.getDefaultUser(id));
+                return new UserEntry(this.getDefaultUser(id), this.client);
+            }
         });
+    }
+
+    getDefaultUser (id) {
+        return {
+            _id: id,
+            coins: 0
+        };
     }
 }
 
