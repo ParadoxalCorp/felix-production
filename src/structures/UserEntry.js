@@ -1,9 +1,11 @@
 // @ts-nocheck
 /** @typedef {import("../Cluster")} Felix */
 
-/** @typedef {Object} UserData
+/** 
+ * @typedef {Object} UserData
  * @prop {String} _id The ID of the user
  * @prop {Number} coins The coins this user has
+ * @prop {Boolean} blacklisted Whether this user is blacklisted
  */
 
 /**
@@ -68,6 +70,28 @@ class UserEntry {
         amount = typeof amount !== 'number' ? Number(amount) : amount;
         this.props.coins = this.props.coins - amount;
         this.update( {$inc: { coins: -amount } });
+        return this;
+    }
+
+    /**
+     * Blacklist this user
+     * @returns {UserEntry} The user entry, so calls can be chained
+     * @memberof UserEntry
+     */
+    blacklist () {
+        this.props.blacklisted = true;
+        this.update( { $set: { blacklisted: true } });
+        return this;
+    }
+
+    /**
+     * Unblacklist this user
+     * @returns {UserEntry} The user entry, so calls can be chained
+     * @memberof UserEntry
+     */
+    unBlacklist () {
+        this.props.blacklisted = false;
+        this.update( { $set: { blacklisted: false } });
         return this;
     }
 
