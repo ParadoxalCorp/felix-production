@@ -6,6 +6,7 @@
 */
 
 const UserEntry = require('../structures/UserEntry');
+const GuildEntry = require('../structures/GuildEntry');
 
 class DatabaseHandler {
     /**
@@ -59,7 +60,7 @@ class DatabaseHandler {
     /**
      * Get a user's database entry
      * @param {String} id The ID of the user to get
-     * @returns {Promise<UserEntry>} The user Document
+     * @returns {Promise<UserEntry>} The user entry
      * @memberof DatabaseHandler
      */
     async getUser (id) {
@@ -69,6 +70,23 @@ class DatabaseHandler {
             } else {
                 await this.client.mongodb.collection('users').insertOne(this.getDefaultUser(id));
                 return new UserEntry(this.getDefaultUser(id), this.client);
+            }
+        });
+    }
+
+    /**
+     * Get a guild's database entry
+     * @param {String} id The ID of the guild to get
+     * @returns {Promise<GuildEntry>} The guild entry
+     * @memberof DatabaseHandler
+     */
+    async getGuild (id) {
+        return this.client.mongodb.collection('guilds').findOne({ _id: id }).then(async(user) => {
+            if (user) {
+                return new GuildEntry(user, this.client);
+            } else {
+                await this.client.mongodb.collection('guilds').insertOne(this.getDefaultUser(id));
+                return new GuildEntry(this.getDefaultUser(id), this.client);
             }
         });
     }
