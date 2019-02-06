@@ -24,7 +24,7 @@ class GuildEntry {
    */
     constructor (guildData, client) {
         /** @type {GuildData} The entry's properties */
-        this.props = { ...client.db.getDefaultUser(guildData._id), ...guildData };
+        this.props = { ...client.db.getDefaultGuild(guildData._id), ...guildData };
         this._client = client;
         this._changes = {};
         this._saved = 0;
@@ -115,7 +115,7 @@ class GuildEntry {
    * @returns {Promise<void>} The promise representation of the save command sent
    */
     async save () {
-        return this._client.mongodb.collection('guilds').findOneAndUpdate({ _id: this.props._id }, this._changes, { upsert: true })
+        return this._client.mongodb.collection('guilds').findOneAndUpdate({ _id: this.props._id }, this._changes, { upsert: true, returnOriginal: false })
             .then(res => {
                 this._saved = this._saved + 1;
                 this.props = res.value;

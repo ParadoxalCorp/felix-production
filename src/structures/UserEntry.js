@@ -100,7 +100,7 @@ class UserEntry {
    * @returns {Promise<void>} The promise representation of the save command sent
    */
     async save () {
-        return this._client.mongodb.collection('users').findOneAndUpdate({ _id: this.props._id }, this._changes, { upsert: true })
+        return this._client.mongodb.collection('users').findOneAndUpdate({ _id: this.props._id }, this._changes, { upsert: true, returnOriginal: false })
             .then(res => {
                 this._saved = this._saved + 1;
                 this.props = res.value;
