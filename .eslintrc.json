@@ -24,6 +24,7 @@
         "no-extra-semi": "warn",
         "no-unused-vars": "warn",
         "no-undef": "error",
-        "indent": "warn"
+        "indent": "warn",
+        "quotes": ["double", "warn"]
     }
 }
