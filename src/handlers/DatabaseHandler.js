@@ -97,6 +97,14 @@ class DatabaseHandler {
             coins: 0
         };
     }
+
+    getDefaultGuild (id) {
+        return {
+            _id: id,
+            spacedPrefix: true,
+            prefix: this.client.config.prefix
+        }
+    }
 }
 
 module.exports = DatabaseHandler;

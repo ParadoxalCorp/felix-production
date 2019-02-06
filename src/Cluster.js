@@ -26,11 +26,19 @@ class Felix extends Client {
         this.launch();
         this.events = {};
         this.utils = new Utils(this);
+        this.structures = {
+            Context: require('./structures/Context'),
+            GuildEntry: require('./structures/GuildEntry'),
+            UserEntry: require('./structures/UserEntry'),
+            Command: require('./structures/Command'),
+            Utils: require('./structures/Utils')
+        }
     }
 
     async launch () {
         await this.logger.registerTransport('console', new (require('@eris-sharder/core/src/transports/Console'))());
         await this.loadEventsListeners();
+        await this.loadCommands();
         this.connect();
         await this.logger.init();
         await this.db.connect();
@@ -57,26 +65,27 @@ class Felix extends Client {
         process.on('uncaughtException', (err) => this.emit('error', err));
     }
 
-    loadCommands() {
-        const categories = fs.readdirSync(join(__dirname, 'commands'));
+    async loadCommands() {
+        const categories = await fs.readdir(join(__dirname, 'commands'));
         let totalCommands = 0;
         for (let i = 0; i < categories.length; i++) {
-            let thisCommands = fs.readdirSync(join(__dirname, 'commands', categories[i]));
+            let thisCommands = await fs.readdir(join(__dirname, 'commands', categories[i]));
             totalCommands = totalCommands + thisCommands.length;
             thisCommands.forEach(c => {
                 try {
                     let command = new (require(join(__dirname, 'commands', categories[i], c)))(this);
                     //Add the command and its aliases to the collection
                     this.commands.set(command.name, command);
+                    command.category = categories[i];
                     command.aliases.forEach(alias => {
                         this.aliases.set(alias, command.name);
                     });
                 } catch (err) {
-                    this.utils.log.error(`Failed to load command ${c}: ${err.stack || err}`);
+                    this.logger.error({ src: "Felix", msg: `Failed to load command ${c}: ${err.stack || err}` });
                 }
             });
         }
-        this.utils.log.info(`Loaded ${this.commands.size}/${totalCommands} commands`);
+        this.logger.info({ src: "Felix", msg: `Loaded ${this.commands.size}/${totalCommands} commands` });
     }
 }
 

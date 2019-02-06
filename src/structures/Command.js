@@ -1,6 +1,7 @@
 // @ts-nocheck
 /**
  * @typedef {import("../Cluster")} Client
+ * @typedef {import("./Context")} Context
  */
 
 /** @typedef {Object} FunctionParams
@@ -20,6 +21,12 @@ class Command {
         this.name;
         /** @type {String} The description of the command */
         this.description;
+        /** @type {String} The internally expected args */
+        this.expectedArgs;
+        /** @type {Array<String>} An array of aliases */
+        this.aliases = [];
+        /** @type {String} The command's category */
+        this.category;
     }
     
     /**
@@ -47,11 +54,24 @@ class Command {
         this.description = description;
         return this;
     }
+
+    /**
+     * This defines the internally expected args
+     * @param {String} expectedArgs The internally expected args, this should look like `arg1:string arg2:userResolvable arg3:number*` where `*` at the end indicates an optional argument
+     * @returns {Command} Returns the command
+     */
+    setExpectedArgs(expectedArgs) {
+        if (typeof expectedArgs !== "string") {
+            throw new Error(`Expected type "string", received type ${typeof expectedArgs}`);
+        }
+        this.expectedArgs = expectedArgs;
+        return this;
+    }
 };
 
 /**
  * @callback CommandCallback
- * @param {String} params
+ * @param {Context} params
  */
 
 module.exports = Command;
