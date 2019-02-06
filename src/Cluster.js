@@ -1,6 +1,6 @@
 // @ts-nocheck
 const config = require('../config');
-const { Client } = require('eris');
+const { Client, Collection } = require('eris');
 const { MongoClient: mongodb }  = require('mongodb');
 const DatabaseHandler = require('./handlers/DatabaseHandler');
 const Logger = require('@eris-sharder/core/src/modules/Logger');
@@ -20,6 +20,9 @@ class Felix extends Client {
         this.mongodb;
         this.db = new DatabaseHandler(this);
         this.logger = new Logger();
+        this.commands = new Collection();
+        this.aliases = new Collection();
+        this.prefixes = this.config.prefix ? [this.config.prefix] : [];
         this.launch();
         this.events = {};
         this.utils = new Utils(this);
@@ -52,6 +55,28 @@ class Felix extends Client {
         this.logger.info({ src: 'Felix', msg: `Loaded ${loadedEvents}/${events.length} events` });
         process.on('unhandledRejection', (err) => this.emit('error', err));
         process.on('uncaughtException', (err) => this.emit('error', err));
+    }
+
+    loadCommands() {
+        const categories = fs.readdirSync(join(__dirname, 'commands'));
+        let totalCommands = 0;
+        for (let i = 0; i < categories.length; i++) {
+            let thisCommands = fs.readdirSync(join(__dirname, 'commands', categories[i]));
+            totalCommands = totalCommands + thisCommands.length;
+            thisCommands.forEach(c => {
+                try {
+                    let command = new (require(join(__dirname, 'commands', categories[i], c)))(this);
+                    //Add the command and its aliases to the collection
+                    this.commands.set(command.name, command);
+                    command.aliases.forEach(alias => {
+                        this.aliases.set(alias, command.name);
+                    });
+                } catch (err) {
+                    this.utils.log.error(`Failed to load command ${c}: ${err.stack || err}`);
+                }
+            });
+        }
+        this.utils.log.info(`Loaded ${this.commands.size}/${totalCommands} commands`);
     }
 }
 
