@@ -34,6 +34,7 @@ class Felix extends Client {
         this.i18n;
         this.events = {};
         this.utils = new Utils(this);
+        this.models = require('./structures/models');
         this.structures = {
             Context: require('./structures/Context'),
             GuildEntry: require('./structures/GuildEntry'),

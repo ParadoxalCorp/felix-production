@@ -6,6 +6,7 @@
  * @prop {String} _id The ID of the user
  * @prop {Number} coins The coins this user has
  * @prop {Boolean} blacklisted Whether this user is blacklisted
+ * @prop {String} lang The language set for this user
  */
 
 /**

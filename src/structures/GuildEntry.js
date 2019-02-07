@@ -1,5 +1,10 @@
 // @ts-nocheck
-/** @typedef {import("../Cluster")} Felix */
+/** 
+ * @typedef {import("../Cluster")} Felix 
+ * @typedef {import("./Command")} Command
+ * @typedef {import("eris").TextChannel} TextChannel
+ * @typedef {import("./models").Permissions} Permissions
+*/
 
 /** 
  * @typedef {Object} GuildData
@@ -7,6 +12,13 @@
  * @prop {String} [prefix] The prefix this user has
  * @prop {Boolean} spacedPrefix Whether this guild's prefix is spaced
  * @prop {Boolean} blacklisted Whether this guild is blacklisted
+ * @prop {String} lang The language set for this guild
+ * @prop {Object} permissions The permissions for this server
+ * @prop {Array<Permissions>} permissions.users The permissions for the users on this server
+ * @prop {Array<Permissions>} permissions.channels The permissions for the channels on this server
+ * @prop {Array<Permissions>} permissions.roles The permissions for the roles on this server
+ * @prop {Array<Permissions>} permissions.categories The permissions for the categories on this server
+ * @prop {Permissions} permissions.global The permissions globally set on this server
  */
 
 /**
@@ -86,6 +98,89 @@ class GuildEntry {
      */
     get prefix () {
         return this.props.prefix ? (this.props.spacedPrefix ? `${this.props.prefix} ` : this.props.prefix) : this._client.config.prefix;
+    }
+
+        /**
+     * Check if the specified member has the permission to run the given command
+     * @param {String} memberID - The member ID to check if they have the permission to run the specified command
+     * @param {Command} command - The command
+     * @param {TextChannel} channel - The channel in which the command is attempted to be used
+     * @returns {Boolean} Whether or not the specified member is allowed to use the given command
+     */
+    memberHasPermission(memberID, command, channel) {
+        let allowed;
+        // @ts-ignore
+        const member = this._client.guilds.get(this.id).members.get(memberID);
+        //Filter the user roles that aren't in the database, sort them by position and finally map them to iterate through them later
+        // @ts-ignore
+        const rolesInDB = member.roles.filter(role => this.permissions.roles.find(r => r.id === role)).sort((a, b) => member.guild.roles.get(a).position -
+            member.guild.roles.get(b).position).map(r => { return { name: "roles", id: r }; });
+        [
+            { name: this._client.models.defaultPermissions }, 
+            { name: "global" }, 
+            { name: "categories", id: channel.parentID }, 
+            { name: "channels", id: channel.id }, 
+            ...rolesInDB, 
+            { name: "users", id: member.id }
+        ].forEach(val => {
+            if (this.getPrioritaryPermission(val.name, command, val.id) !== undefined) {
+                allowed = this.getPrioritaryPermission(val.name, command, val.id);
+            }
+        });
+        if (member.permission.has("administrator")) {
+            allowed = true;
+        }
+        if (command.hidden) {
+            if (this._client.config.admins.includes(member.id)) {
+                allowed = command.ownerOnly && this._client.config.ownerID !== member.id ? false : true;
+            } else {
+                allowed = false;
+            }
+        }
+
+        return allowed;
+    }
+
+    /**
+     * Get the prioritary permission of a target and check if they are allowed to use the given command
+     * @param {String|Array|Permissions} target - The name of the permissions to check ("channels", "roles", "users"..) OR an array/object following the exact same structure than the rest
+     * @param {Command} command - The command
+     * @param {String} [targetID] - Optional, the ID of the target to get the prioritary permission for
+     * @returns {Boolean} Whether or not the target is allowed to use the command
+     */
+    getPrioritaryPermission(target, command, targetID) {
+        let targetPos;
+        if (typeof target !== 'string') {
+            if (Array.isArray(target)) {
+                // @ts-ignore
+                targetPos = target.find(t => t.id === targetID);
+            } else {
+                targetPos = target;
+            }
+        } else {
+            // @ts-ignore
+            if (Array.isArray(this.permissions[target])) {
+                // @ts-ignore
+                targetPos = this.permissions[target].find(t => t.id === targetID);
+            } else {
+                // @ts-ignore
+                targetPos = this.permissions[target];
+            }
+        }
+        let isAllowed;
+        if (!targetPos) {
+            return undefined;
+        }
+        //Give priority to commands over categories by checking them after the categories
+        let priorityOrder = ['*', `${(command.help.category || command.category.name.toLowerCase())}*`, command.help.name];
+        for (const permission of priorityOrder) {
+            if (targetPos.allowedCommands.includes(permission)) {
+                isAllowed = true;
+            } else if (targetPos.restrictedCommands.includes(permission)) {
+                isAllowed = false;
+            }
+        }
+        return isAllowed;
     }
 
     /**

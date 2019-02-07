@@ -27,6 +27,12 @@ class Command {
         this.aliases = [];
         /** @type {String} The command's category */
         this.category;
+        /** @type {Boolean} Whether this command is restricted to the guild's owner only, `false` by default */
+        this.guildOwnerOnly = false;
+        /** @type {Boolean} Whether this command is hidden; As in, usable but not displayed on help, `false` by default */
+        this.hidden = false;
+        /** @type {Boolean} Whether this command is restricted to the bot owner only, `false` by default */
+        this.ownerOnly = false;
     }
     
     /**
@@ -36,7 +42,7 @@ class Command {
      */
     setName(name) {
         if (typeof name !== "string") {
-            throw new Error(`Expected type "string", received type ${typeof name}`);
+            throw new Error(`Expected type "string", received type "${typeof name}"`);
         }
         this.name = name;
         return this;
@@ -49,7 +55,7 @@ class Command {
      */
     setDescription(description) {
         if (typeof description !== "string") {
-            throw new Error(`Expected type "string", received type ${typeof description}`);
+            throw new Error(`Expected type "string", received type "${typeof description}"`);
         }
         this.description = description;
         return this;
@@ -62,9 +68,48 @@ class Command {
      */
     setExpectedArgs(expectedArgs) {
         if (typeof expectedArgs !== "string") {
-            throw new Error(`Expected type "string", received type ${typeof expectedArgs}`);
+            throw new Error(`Expected type "string", received type "${typeof expectedArgs}"`);
         }
         this.expectedArgs = expectedArgs;
+        return this;
+    }
+
+    /**
+     * Set whether this command should be restricted to the guild owner only
+     * @param {Boolean} bool Whether this command should be restricted to the guild owner only, `false` by default 
+     * @returns {Command} Returns the command
+     */
+    setGuildOwnerOnly(bool) {
+        if (typeof bool !== "boolean") {
+            throw new Error(`Expected type "boolean", received type "${typeof bool}"`);
+        }
+        this.guildOwnerOnly = bool;
+        return this;
+    }
+
+    /**
+     * Set whether this command should be usable but hidden in the help
+     * @param {Boolean} bool Whether this command should be usable but hidden in the help, `false` by default 
+     * @returns {Command} Returns the command
+     */
+    setHidden(bool) {
+        if (typeof bool !== "boolean") {
+            throw new Error(`Expected type "boolean", received type "${typeof bool}"`);
+        }
+        this.hidden = bool;
+        return this;
+    }
+
+    /**
+     * Set whether this command should be restricted to the bot owner only
+     * @param {Boolean} bool Whether this command should be restricted to the bot owner only, `false` by default 
+     * @returns {Command} Returns the command
+     */
+    setOwnerOnly(bool) {
+        if (typeof bool !== "boolean") {
+            throw new Error(`Expected type "boolean", received type "${typeof bool}"`);
+        }
+        this.ownerOnly = bool;
         return this;
     }
 };
