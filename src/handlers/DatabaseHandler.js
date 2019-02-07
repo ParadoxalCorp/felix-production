@@ -32,7 +32,7 @@ class DatabaseHandler {
             this._handleSuccessfulConnection();
         });
     }
-
+ 
     _handleSuccessfulConnection () {
         if (this.client.logger.started) {
             this.client.logger.info({ src: this._source, msg: `Successfully connected to the database at ${this.client.mongo.connection.host}:${this.client.mongo.connection.port}`});
@@ -85,7 +85,7 @@ class DatabaseHandler {
             if (user) {
                 return new GuildEntry(user, this.client);
             } else {
-                await this.client.mongodb.collection('guilds').insertOne(this.getDefaultUser(id));
+                await this.client.mongodb.collection('guilds').insertOne(this.getDefaultGuild(id));
                 return new GuildEntry(this.getDefaultUser(id), this.client);
             }
         });
@@ -94,7 +94,8 @@ class DatabaseHandler {
     getDefaultUser (id) {
         return {
             _id: id,
-            coins: 0
+            coins: 0,
+            lang: 'en-US'
         };
     }
 
@@ -102,7 +103,18 @@ class DatabaseHandler {
         return {
             _id: id,
             spacedPrefix: true,
-            prefix: this.client.config.prefix
+            prefix: this.client.config.prefix,
+            lang: 'en-US',
+            permissions: {
+                users: [],
+                roles: [],
+                categories: [],
+                channels: [],
+                global: {
+                    allowedCommands: [],
+                    restrictedCommands: []
+                }
+            }
         }
     }
 }
