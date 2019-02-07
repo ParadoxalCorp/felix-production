@@ -6,6 +6,8 @@
  * @typedef {import('eris').Member} Member
  * @typedef {import('./GuildEntry')} GuildEntry
  * @typedef {import('./UserEntry')} UserEntry
+ * @typedef {import('i18next').default.TOptions} TOptions
+ * @typedef {import('eris').Shard} Shard
  */
 
 module.exports = class Context {
@@ -34,5 +36,27 @@ module.exports = class Context {
         this.guildEntry = guildEntry;
         /** @type {Object} The parsed arguments in a `{ key: value }` structure */
         this.args = args;
+        /** @type {Shard} The shard on which this guild is, or the first shard of this cluster */
+        this.shard = this.guild ? this.guild.shard : this.client.shards.map(s => s)[0];
+    }
+
+    /**
+     * Sends a message to the message's channel in the appropriate language
+     * @param {String} key The key of the translation string
+     * @param {TOptions} [options={}] The options to pass along
+     * @returns
+     */
+    sendLocale(key, options = {}) {
+        return this.msg.channel.createMessage(this.client.i18n(key, { lng: this.userEntry.props.lang || this.guildEntry.props.lang || 'en-US', ...options}));
+    }
+
+    /**
+     * Return the given translation string in the appropriate language
+     * @param {String} key The key of the translation string
+     * @param {TOptions} [options={}] The options to pass along
+     * @returns
+     */
+    returnLocale(key, options = {}) {
+        return this.client.i18n(key, { lng: this.userEntry.props.lang || this.guildEntry.props.lang || 'en-US', ...options});
     }
 }

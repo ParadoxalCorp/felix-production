@@ -1,4 +1,9 @@
 // @ts-nocheck
+
+/** 
+ * @typedef {import('i18next').default.TFunction} i18n
+ */
+
 const config = require('../config');
 const { Client, Collection } = require('eris');
 const { MongoClient: mongodb }  = require('mongodb');
@@ -7,6 +12,7 @@ const Logger = require('@eris-sharder/core/src/modules/Logger');
 const { promises: fs } = require('fs');
 const { join } = require('path');
 const Utils = require('./structures/Utils');
+const i18next = require('i18next');
 
 class Felix extends Client {
     constructor() {
@@ -24,6 +30,8 @@ class Felix extends Client {
         this.aliases = new Collection();
         this.prefixes = this.config.prefix ? [this.config.prefix] : [];
         this.launch();
+        /** @type {i18n} */
+        this.i18n;
         this.events = {};
         this.utils = new Utils(this);
         this.structures = {
@@ -39,6 +47,11 @@ class Felix extends Client {
         await this.logger.registerTransport('console', new (require('@eris-sharder/core/src/transports/Console'))());
         await this.loadEventsListeners();
         await this.loadCommands();
+        this.i18n = await i18next.init({
+            lng: "en-US",
+            fallbackLng: "en-US",
+            resources: await this.loadLanguages()
+        })
         this.connect();
         await this.logger.init();
         await this.db.connect();
@@ -46,6 +59,7 @@ class Felix extends Client {
 
     async loadEventsListeners() {
         //Load events
+        const start = process.hrtime();
         const events = await fs.readdir(join(__dirname, 'events'));
         let loadedEvents = 0;
         events.forEach(e => {
@@ -60,12 +74,14 @@ class Felix extends Client {
                 this.logger.error({ src: 'Felix', msg: `Failed to load event ${e}: ${err.stack || err}` });
             }
         });
-        this.logger.info({ src: 'Felix', msg: `Loaded ${loadedEvents}/${events.length} events` });
+        const end = process.hrtime(start);
+        this.logger.info({ src: 'Felix', msg: `Loaded ${loadedEvents}/${events.length} events (took ${end[1] / 1000000}ms)` });
         process.on('unhandledRejection', (err) => this.emit('error', err));
         process.on('uncaughtException', (err) => this.emit('error', err));
     }
 
     async loadCommands() {
+        const start = process.hrtime();
         const categories = await fs.readdir(join(__dirname, 'commands'));
         let totalCommands = 0;
         for (let i = 0; i < categories.length; i++) {
@@ -85,7 +101,22 @@ class Felix extends Client {
                 }
             });
         }
-        this.logger.info({ src: "Felix", msg: `Loaded ${this.commands.size}/${totalCommands} commands` });
+        const end = process.hrtime(start);
+        this.logger.info({ src: "Felix", msg: `Loaded ${this.commands.size}/${totalCommands} commands (took ${end[1] / 1000000}ms)` });
+    }
+
+    async loadLanguages() {
+        const start = process.hrtime();
+        const languagesFolder = await fs.readdir('./src/locales');
+        let resources = {};
+        for (const folder of languagesFolder) {
+            resources[folder] = {
+                translation: require(`./locales/${folder}/${folder}.json`)
+            }
+        }
+        const end = process.hrtime(start);
+        this.logger.info({ src: "Felix", msg: `Loaded ${languagesFolder.length} language(s): ${languagesFolder.join(', ')} (took ${end[1] / 1000000}ms)` });
+        return resources;
     }
 }
 

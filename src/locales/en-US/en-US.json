@@ -1,0 +1,11 @@
+{
+    "generic": {
+        "no-pm": "This cannot be done in private messages",
+        "param-must-be-int": "The {{param}} must be a whole number",
+        "param-must-be-number": "The {{param}} must be a number"
+    },
+    "ping": {
+        "pinging": "Pinging Discord...",
+        "result": "Round-trip took `{{roundtrip}}ms`, Latest heartbeat: `{{heartbeat}}ms`"
+    }
+}
