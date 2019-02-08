@@ -1,7 +1,7 @@
 // @ts-nocheck
 /** 
  * @typedef {import('eris').Message} Message 
- * @typedef {import('../Cluster')} Felix
+ * @typedef {import('../Cluster')} Client
  * @typedef {import('../structures/GuildEntry')} GuildEntry 
  * @typedef {import('../structures/UserEntry')} UserEntry 
  * @typedef {import('../structures/Command')} Command
@@ -18,7 +18,7 @@ module.exports = new class MessageCreate {
     /**
      *
      * Handles messageCreate events
-     * @param {Felix} client The client instance
+     * @param {Client} client The client instance
      * @param {Message} msg The message
      * @returns {Promise<void>} Nothing
      */
@@ -29,14 +29,14 @@ module.exports = new class MessageCreate {
         const userEntry = await client.db.getUser(msg.author.id); 
         const guildEntry = msg.channel.guild ? await client.db.getGuild(msg.channel.guild.id) : null;
         if (this.cooldowns.has(msg.author.id) && this.cooldowns.get(msg.author.id) > Date.now()) {
-            return msg.channel.createMessage(client.i18n("generic.in-cooldown", { lng: userEntry.props.lang || guildEntry.props.lang || "en-US", seconds: (this.cooldowns.get(msg.author.id) - Date.now()) / 1000 })).catch(() => {});
+            return this._userInCooldown(client, msg, userEntry, guildEntry);
         }
         const command = client.utils.parseCommand(msg, guildEntry);
         if (!command) {
             return;
         }
         if (!this.memberHasPermissions(client, msg, userEntry, guildEntry, command)) {
-            return msg.channel.createMessage(client.i18n("generic.missing-permissions", { lng: userEntry.props.lang || guildEntry.props.lang || "en-US" })).catch(() => {});
+            return msg.channel.createMessage(client.i18n("generic.missing-permissions", { lng: userEntry.props.lang || (guildEntry ? guildEntry.props.lang : false) || "en-US" })).catch(() => {});
         }
         const toSplice = guildEntry ? (guildEntry.props.spacedPrefix || msg.content.startsWith(`<@${client.user.id}>`) || msg.content.startsWith(`<@!${client.user.id}`) ? 2 : 1) : 2;
         const args = msg.content.split(/\s+/gim).splice(toSplice);
@@ -121,5 +121,19 @@ module.exports = new class MessageCreate {
                 this.cooldowns.delete(key);
             }
         }
+    }
+
+    /**
+     * 
+     * @param {Client} client The client instance
+     * @param {Message} msg The message
+     * @param {UserEntry} userEntry The user entry
+     * @param {GuildEntry} guildEntry The guild entry
+     * @returns {Promise} The message
+     */
+    _userInCooldown(client, msg, userEntry, guildEntry) {
+        const seconds = Math.round((this.cooldowns.get(msg.author.id) - Date.now()) / 1000);
+        const string = seconds > 1 ? "generic.in-cooldown-plural" : "generic.in-cooldown-singular";
+        return msg.channel.createMessage(client.i18n(string, { lng: userEntry.props.lang || (guildEntry ? guildEntry.props.lang : false) || "en-US", seconds })).catch(() => {});
     }
 }();

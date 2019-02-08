@@ -5,7 +5,11 @@
         "param-must-be-number": "The {{param}} parameter must be a number",
         "param-must-be-either": "The {{param}} parameter must be either: {{list}}",
         "missing-permissions": "You do not have the required permissions to use this command",
-        "in-cooldown": "You are in cooldown, please wait another {{seconds}} second(s)"
+        "in-cooldown-singular": "You are in cooldown, please wait another second",
+        "in-cooldown-plural": "You are in cooldown, please wait another {{seconds}} seconds",
+        "search-title": ":mag: {{type}} search",
+        "search-description": "I found multiple {{type}} with that name, select one by answering the corresponding number {{list}}",
+        "prompt-time-limit": "Time limit: {{seconds}} seconds"
     },
     "ping": {
         "pinging": "Pinging Discord...",

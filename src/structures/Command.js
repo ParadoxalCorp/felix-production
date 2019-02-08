@@ -35,6 +35,8 @@ class Command {
         this.ownerOnly = false;
         /** @type {Number} The cooldown in milliseconds this command should apply on the user, `2000` by default */
         this.cooldown = 2000;
+        /** @type {Boolean} Whether this command should not be available in private messages, defaults to `true` */
+        this.guildOnly = true;
     }
     
     /**
@@ -73,6 +75,19 @@ class Command {
             throw new Error(`Expected type "string", received type "${typeof expectedArgs}"`);
         }
         this.expectedArgs = expectedArgs;
+        return this;
+    }
+
+    /**
+     * Set the aliases for this command
+     * @param {Array<String>} aliases An array of aliases
+     * @returns {Command} Returns the command
+     */
+    setAliases(aliases) {
+        if (!Array.isArray(aliases)) {
+            throw new Error(`Expected aliases to be an array, received type "${typeof aliases}"`);
+        }
+        this.aliases = aliases;
         return this;
     }
 
@@ -125,6 +140,19 @@ class Command {
             throw new Error(`Expected type "number", received type "${typeof ms}"`);
         }
         this.cooldown = ms;
+        return this;
+    }
+
+    /**
+     * Set whether this command should be available in private messages
+     * @param {Boolean} bool Whether this command should be restricted to guilds, `true` by default 
+     * @returns {Command} Returns the command
+     */
+    setGuildOnly(bool) {
+        if (typeof bool !== "boolean") {
+            throw new Error(`Expected type "boolean", received type "${typeof bool}"`);
+        }
+        this.guildOnly = bool;
         return this;
     }
 }

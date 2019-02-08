@@ -48,8 +48,8 @@ class GuildEntry {
    * @returns {GuildEntry} The guild entry, so calls can be chained
    */
     update (object) {
-        if (typeof object !== 'object') {
-            throw new Error('Expected "object" parameter to be an object');
+        if (typeof object !== "object") {
+            throw new Error("Expected \"object\" parameter to be an object");
         }
         this._changes = this._client.utils.deepMerge(this._changes, object);
         return this;
@@ -100,7 +100,7 @@ class GuildEntry {
         return this.props.prefix ? (this.props.spacedPrefix ? `${this.props.prefix} ` : this.props.prefix) : this._client.config.prefix;
     }
 
-        /**
+    /**
      * Check if the specified member has the permission to run the given command
      * @param {String} memberID - The member ID to check if they have the permission to run the specified command
      * @param {Command} command - The command
@@ -150,7 +150,7 @@ class GuildEntry {
      */
     getPrioritaryPermission(target, command, targetID) {
         let targetPos;
-        if (typeof target !== 'string') {
+        if (typeof target !== "string") {
             if (Array.isArray(target)) {
                 // @ts-ignore
                 targetPos = target.find(t => t.id === targetID);
@@ -172,7 +172,7 @@ class GuildEntry {
             return undefined;
         }
         //Give priority to commands over categories by checking them after the categories
-        let priorityOrder = ['*', `${(command.category || command.category.toLowerCase())}*`, command.name];
+        let priorityOrder = ["*", `${(command.category || command.category.toLowerCase())}*`, command.name];
         for (const permission of priorityOrder) {
             if (targetPos.allowedCommands.includes(permission)) {
                 isAllowed = true;
@@ -210,7 +210,7 @@ class GuildEntry {
    * @returns {Promise<void>} The promise representation of the save command sent
    */
     async save () {
-        return this._client.mongodb.collection('guilds').findOneAndUpdate({ _id: this.props._id }, this._changes, { upsert: true, returnOriginal: false })
+        return this._client.mongodb.collection("guilds").findOneAndUpdate({ _id: this.props._id }, this._changes, { upsert: true, returnOriginal: false })
             .then(res => {
                 this._saved = this._saved + 1;
                 this.props = res.value;

@@ -71,7 +71,11 @@ module.exports = class Utils {
             const parsedArgs = {};
             for (let i = 0; i < args.length; i++) {
                 if (expectedArgs[i] && !args[i].startsWith("--")) {
-                    parsedArgs[expectedArgs[i].split(":")[0]] = args[i];
+                    if (i === expectedArgs.length - 1 && expectedArgs[i].split(":")[1] === "string") {
+                        parsedArgs[expectedArgs[i].split(":")[0]] = args.slice(i).join(" ");
+                    } else {
+                        parsedArgs[expectedArgs[i].split(":")[0]] = args[i];
+                    }
                 }
             }
             return parsedArgs;
@@ -105,11 +109,11 @@ module.exports = class Utils {
         const validate = function (value, expectedValue, param) {
             if ((expectedValue === "int" || expectedValue === "number") && Number.isNaN(Number(value))) {
                 const string = expectedValue === "int" ? "generic.param-must-be-int" : "generic.param-must-be-number";
-                return error = self.client.i18n(string, { lng: userEntry.props.lang || guildEntry.props.lang || "en-US", param });
+                return error = self.client.i18n(string, { lng: userEntry.props.lang || (guildEntry ? guildEntry.props.lang : false) || "en-US", param });
             } else if (expectedValue.startsWith("(")) {
                 let expectedValues = expectedValue.slice(1, expectedValue.length - 1).split("|");
                 if (!expectedValues.includes(value.toLowerCase())) {
-                    return error = self.client.i18n("generic.param-must-be-either", { lng: userEntry.props.lang || guildEntry.props.lang || "en-US", param, list: expectedValues.map(e => `\`${e}\``).join(", ") });
+                    return error = self.client.i18n("generic.param-must-be-either", { lng: userEntry.props.lang || (guildEntry ? guildEntry.props.lang : false) || "en-US", param, list: expectedValues.map(e => `\`${e}\``).join(", ") });
                 }
             }
         };
