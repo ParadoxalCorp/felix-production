@@ -1,8 +1,11 @@
 {
     "generic": {
         "no-pm": "This cannot be done in private messages",
-        "param-must-be-int": "The {{param}} must be a whole number",
-        "param-must-be-number": "The {{param}} must be a number"
+        "param-must-be-int": "The {{param}} parameter must be a whole number",
+        "param-must-be-number": "The {{param}} parameter must be a number",
+        "param-must-be-either": "The {{param}} parameter must be either: {{list}}",
+        "missing-permissions": "You do not have the required permissions to use this command",
+        "in-cooldown": "You are in cooldown, please wait another {{seconds}} second(s)"
     },
     "ping": {
         "pinging": "Pinging Discord...",

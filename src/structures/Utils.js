@@ -25,14 +25,14 @@ module.exports = class Utils {
     deepMerge (target, source) {
         let destination = {};
         for (const key of Object.keys(target)) {
-            destination[key] = (typeof target[key] === 'object' && !Array.isArray(target[key])) ? { ...target[key] } : target[key];
+            destination[key] = (typeof target[key] === "object" && !Array.isArray(target[key])) ? { ...target[key] } : target[key];
         }
 
         for (const key of Object.keys(source)) {
-            if (!target[key] || typeof target[key] !== 'object' || Array.isArray(source[key])) {
+            if (!target[key] || typeof target[key] !== "object" || Array.isArray(source[key])) {
                 destination[key] = source[key];
             } else {
-                if (typeof source[key] !== 'object') {
+                if (typeof source[key] !== "object") {
                     destination[key] = source[key];
                 } else {
                     destination[key] = this.deepMerge(target[key], source[key]);
@@ -50,10 +50,10 @@ module.exports = class Utils {
     parseFlags(args) {
         const parsedFlags = {};
         args.forEach(arg => {
-            if (!arg.includes('--')) {
+            if (!arg.includes("--")) {
                 return;
             }
-            parsedFlags[arg.split('--')[1].split('=')[0].toLowerCase()] = arg.includes('=') ? arg.split('=')[1] : true;
+            parsedFlags[arg.split("--")[1].split("=")[0].toLowerCase()] = arg.includes("=") ? arg.split("=")[1] : true;
         });
         return parsedFlags;
     }
@@ -70,8 +70,8 @@ module.exports = class Utils {
             const expectedArgs = command.expectedArgs.split(/\s+/);
             const parsedArgs = {};
             for (let i = 0; i < args.length; i++) {
-                if (expectedArgs[i] && !args[i].startsWith('--')) {
-                    parsedArgs[expectedArgs[i].split(':')[0]] = args[i];
+                if (expectedArgs[i] && !args[i].startsWith("--")) {
+                    parsedArgs[expectedArgs[i].split(":")[0]] = args[i];
                 }
             }
             return parsedArgs;
@@ -95,23 +95,32 @@ module.exports = class Utils {
      * Validate the arguments given in a command
      * @param {Array<String>} args The args to validate
      * @param {Command} command The command
+     * @param {UserEntry} userEntry The user entry
+     * @param {GuildEntry} guildEntry The guild entry
      * @returns {String|Boolean} Returns `true` if the validation passed, or an error message otherwise
      */
-    validateArgs(args, command) {
+    validateArgs(args, command, userEntry, guildEntry) {
         let error;
+        const self = this;
         const validate = function (value, expectedValue, param) {
-            if ((expectedValue === 'int' || expectedValue === 'number') && Number.isNaN(Number(value))) {
-                return error = expectedValue === "int" ? `The parameter ${param} must be a whole number` : `The parameter ${param} must be a number`;
+            if ((expectedValue === "int" || expectedValue === "number") && Number.isNaN(Number(value))) {
+                const string = expectedValue === "int" ? "generic.param-must-be-int" : "generic.param-must-be-number";
+                return error = self.client.i18n(string, { lng: userEntry.props.lang || guildEntry.props.lang || "en-US", param });
+            } else if (expectedValue.startsWith("(")) {
+                let expectedValues = expectedValue.slice(1, expectedValue.length - 1).split("|");
+                if (!expectedValues.includes(value.toLowerCase())) {
+                    return error = self.client.i18n("generic.param-must-be-either", { lng: userEntry.props.lang || guildEntry.props.lang || "en-US", param, list: expectedValues.map(e => `\`${e}\``).join(", ") });
+                }
             }
-        }
+        };
         if (command.expectedArgs) {
             const expectedArgs = command.expectedArgs.split(/\s+/);
-            if (args.length < expectedArgs.filter(a => !a.endsWith('*'))) {
-                error = `This command expects ${expectedArgs.filter(a => !a.endsWith('*')) - args.length} more argument(s), use \`<@!${this.client.user.id}}> help ${command.name}\` for details`
+            if (args.length < expectedArgs.filter(a => !a.endsWith("*"))) {
+                error = `This command expects ${expectedArgs.filter(a => !a.endsWith("*")) - args.length} more argument(s), use \`<@!${this.client.user.id}}> help ${command.name}\` for details`;
             }
             // Put flags at the end so they don't interfere with the order of regular params
             for (let i = 0; i < args.length; i++) {
-                if (args[i].startsWith('--')) {
+                if (args[i].startsWith("--")) {
                     args.push(args.splice(i, 1)[0]);
                 }
             }
@@ -119,16 +128,16 @@ module.exports = class Utils {
                 if (error) {
                     return error;
                 }
-                if (args[i].startsWith('--')) {
-                    let value = args[i].split('=')[1];
-                    let param = args[i].split('=')[0].slice(2);
-                    let expectedValue = expectedArgs.find(a => a.split(':')[0] === param);
+                if (args[i].startsWith("--")) {
+                    let value = args[i].split("=")[1];
+                    let param = args[i].split("=")[0].slice(2);
+                    let expectedValue = expectedArgs.find(a => a.split(":")[0] === param);
                     if (!expectedValue) {
                         continue;
                     }
                     validate(value, expectedValue, param);
                 } else if (expectedArgs[i]) {
-                    validate(args[i], expectedArgs[i].split(':')[1], expectedArgs[i].split(':')[0]);
+                    validate(args[i], expectedArgs[i].split(":")[1], expectedArgs[i].split(":")[0]);
                 }
             }
         }
@@ -192,7 +201,7 @@ module.exports = class Utils {
      * @returns {String} The given string in snek_case
      */
     camelCaseToSnekCase(string) {
-        let chars = string.split('');
+        let chars = string.split("");
         let newChars = [];
         for (const char of chars) {
             if (char.toUpperCase() === char) {

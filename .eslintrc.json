@@ -25,6 +25,6 @@
         "no-unused-vars": "warn",
         "no-undef": "error",
         "indent": "warn",
-        "quotes": ["double", "warn"]
+        "quotes": ["warn", "double"]
     }
 }

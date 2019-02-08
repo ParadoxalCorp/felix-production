@@ -110,10 +110,10 @@ class GuildEntry {
     memberHasPermission(memberID, command, channel) {
         let allowed;
         // @ts-ignore
-        const member = this._client.guilds.get(this.id).members.get(memberID);
+        const member = this._client.guilds.get(this.props._id).members.get(memberID);
         //Filter the user roles that aren't in the database, sort them by position and finally map them to iterate through them later
         // @ts-ignore
-        const rolesInDB = member.roles.filter(role => this.permissions.roles.find(r => r.id === role)).sort((a, b) => member.guild.roles.get(a).position -
+        const rolesInDB = member.roles.filter(role => this.props.permissions.roles.find(r => r.id === role)).sort((a, b) => member.guild.roles.get(a).position -
             member.guild.roles.get(b).position).map(r => { return { name: "roles", id: r }; });
         [
             { name: this._client.models.defaultPermissions }, 
@@ -159,12 +159,12 @@ class GuildEntry {
             }
         } else {
             // @ts-ignore
-            if (Array.isArray(this.permissions[target])) {
+            if (Array.isArray(this.props.permissions[target])) {
                 // @ts-ignore
-                targetPos = this.permissions[target].find(t => t.id === targetID);
+                targetPos = this.props.permissions[target].find(t => t.id === targetID);
             } else {
                 // @ts-ignore
-                targetPos = this.permissions[target];
+                targetPos = this.props.permissions[target];
             }
         }
         let isAllowed;
@@ -172,7 +172,7 @@ class GuildEntry {
             return undefined;
         }
         //Give priority to commands over categories by checking them after the categories
-        let priorityOrder = ['*', `${(command.help.category || command.category.name.toLowerCase())}*`, command.help.name];
+        let priorityOrder = ['*', `${(command.category || command.category.toLowerCase())}*`, command.name];
         for (const permission of priorityOrder) {
             if (targetPos.allowedCommands.includes(permission)) {
                 isAllowed = true;

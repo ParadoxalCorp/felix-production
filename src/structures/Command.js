@@ -33,6 +33,8 @@ class Command {
         this.hidden = false;
         /** @type {Boolean} Whether this command is restricted to the bot owner only, `false` by default */
         this.ownerOnly = false;
+        /** @type {Number} The cooldown in milliseconds this command should apply on the user, `2000` by default */
+        this.cooldown = 2000;
     }
     
     /**
@@ -50,7 +52,7 @@ class Command {
 
     /**
      * Sets the description of the command
-     * @param {String} name The description of the command
+     * @param {String} description The description of the command
      * @returns {Command} Returns the command
      */
     setDescription(description) {
@@ -112,7 +114,20 @@ class Command {
         this.ownerOnly = bool;
         return this;
     }
-};
+
+    /**
+     * Set the cooldown in milliseconds that should be applied on the user when using this command
+     * @param {Boolean} ms The cooldown in milliseconds that should be applied on the user, `2000` by default 
+     * @returns {Command} Returns the command
+     */
+    setCooldown(ms) {
+        if (typeof ms !== "number") {
+            throw new Error(`Expected type "number", received type "${typeof ms}"`);
+        }
+        this.cooldown = ms;
+        return this;
+    }
+}
 
 /**
  * @callback CommandCallback

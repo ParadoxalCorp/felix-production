@@ -1,33 +1,33 @@
 /**
  * @typedef {object} Permissions
  * @property {Array<String>} allowedCommands commands which can be used on guilds
- * @property {Array<String>} restrictedCommands commands which can't be used on guild
+ * @property {Array<String>} restrictedCommands commands which can't be used on guilds
  * @property {String} [id] The ID of the target these permissions apply to, this key will be missing if these permissions are global
 */
 
 module.exports = class Models {
     /**
      * The default permissions
-     * @returns {Permissions}
+     * @returns {Permissions} The default permissions set
      * @readonly
      */
     static get defaultPermissions() {
         return {
-            allowedCommands: ['generic*', 'fun*', 'misc*', 'utility*', 'image*'],
-            restrictedCommands: ['settings*']
-        }
+            allowedCommands: ["generic*", "fun*", "misc*", "utility*", "image*"],
+            restrictedCommands: ["settings*"]
+        };
     }
 
     /**
      * The set for global permissions
-     * @returns {Permissions}
+     * @returns {Permissions} The global permissions set
      * @readonly
      */
     static get globalPermissionsSet() {
         return {
             allowedCommands: [],
             restrictedCommands: []
-        }
+        };
     }
 
     /**
@@ -42,4 +42,4 @@ module.exports = class Models {
             id: id
         };
     }
-}
+};
