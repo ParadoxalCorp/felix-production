@@ -14,5 +14,11 @@
     "ping": {
         "pinging": "Pinging Discord...",
         "result": "Round-trip took `{{roundtrip}}ms`, Latest heartbeat: `{{heartbeat}}ms`"
+    },
+    "setpermission": {
+        "invalid-permission": ":x: The permission must be a command name, like `ping`, or the name of a command category followed by a `*` like `generic*` to target a whole category.",
+        "target-not-found": ":x: I couldn't find this {{target}}",
+        "success-allowed": ":white_check_mark: Successfully allowed the permission `{{permission}}` for the {{targetType}} {{target}}",
+        "success-disallowed": ":white_check_mark: Successfully allowed the permission `{{permission}}` for the {{targetType}} {{target}}"
     }
 }
