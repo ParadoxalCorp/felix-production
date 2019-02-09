@@ -5,8 +5,8 @@
  * @typedef {import('mongoose').Document} Document
 */
 
-const UserEntry = require('../structures/UserEntry');
-const GuildEntry = require('../structures/GuildEntry');
+const UserEntry = require("../structures/UserEntry");
+const GuildEntry = require("../structures/GuildEntry");
 
 class DatabaseHandler {
     /**
@@ -28,7 +28,7 @@ class DatabaseHandler {
             keepAlive: true,
             useNewUrlParser: true
         }).then((client) => {
-            this.client.mongodb = client.db('data');
+            this.client.mongodb = client.db("data");
             this._handleSuccessfulConnection();
         });
     }
@@ -47,13 +47,13 @@ class DatabaseHandler {
 
     _handleConnection () {
         if (this.client.logger.started) {
-            this.client.logger.debug({ src: this._source, msg: `Connecting to the database...`});
+            this.client.logger.debug({ src: this._source, msg: "Connecting to the database..."});
         }
     }
 
     _handleDisconnection () {
         if (this.client.logger.started) {
-            this.client.logger.debug({ src: this._source, msg: `Disconnecting from the database...`});
+            this.client.logger.debug({ src: this._source, msg: "Disconnecting from the database..."});
         }
     }
     
@@ -64,11 +64,11 @@ class DatabaseHandler {
      * @memberof DatabaseHandler
      */
     async getUser (id) {
-        return this.client.mongodb.collection('users').findOne({ _id: id }).then(async(user) => {
+        return this.client.mongodb.collection("users").findOne({ _id: id }).then(async(user) => {
             if (user) {
                 return new UserEntry(user, this.client);
             } else {
-                await this.client.mongodb.collection('users').insertOne(this.getDefaultUser(id));
+                await this.client.mongodb.collection("users").insertOne(this.getDefaultUser(id));
                 return new UserEntry(this.getDefaultUser(id), this.client);
             }
         });
@@ -81,12 +81,12 @@ class DatabaseHandler {
      * @memberof DatabaseHandler
      */
     async getGuild (id) {
-        return this.client.mongodb.collection('guilds').findOne({ _id: id }).then(async(user) => {
+        return this.client.mongodb.collection("guilds").findOne({ _id: id }).then(async(user) => {
             if (user) {
                 return new GuildEntry(user, this.client);
             } else {
-                await this.client.mongodb.collection('guilds').insertOne(this.getDefaultGuild(id));
-                return new GuildEntry(this.getDefaultUser(id), this.client);
+                await this.client.mongodb.collection("guilds").insertOne(this.getDefaultGuild(id));
+                return new GuildEntry(this.getDefaultGuild(id), this.client);
             }
         });
     }
@@ -95,7 +95,7 @@ class DatabaseHandler {
         return {
             _id: id,
             coins: 0,
-            lang: 'en-US'
+            lang: "en-US"
         };
     }
 
@@ -104,7 +104,7 @@ class DatabaseHandler {
             _id: id,
             spacedPrefix: true,
             prefix: this.client.config.prefix,
-            lang: 'en-US',
+            lang: "en-US",
             permissions: {
                 users: [],
                 roles: [],
@@ -115,7 +115,7 @@ class DatabaseHandler {
                     restrictedCommands: []
                 }
             }
-        }
+        };
     }
 }
 

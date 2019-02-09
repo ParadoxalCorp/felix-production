@@ -14,8 +14,7 @@ module.exports = class SetPermission extends Command {
             let permission = ctx.client.aliases.has(ctx.args.permission.toLowerCase()) ? ctx.client.aliases.get(ctx.args.permission.toLowerCase()) : ctx.args.permission.toLowerCase();
             const args = {
                 permission,
-                override: ctx.args.toggle === "true" ? true : false,
-                targetType: ctx.args.targetType.toLowerCase(),
+                targetType: ctx.args.targetType,
                 target: target
             };
             let specialTargetCases = {
@@ -24,31 +23,34 @@ module.exports = class SetPermission extends Command {
             };
             let targetPerms = ctx.guildEntry.props.permissions[specialTargetCases[args.targetType] || `${args.targetType}s`];
             if (Array.isArray(targetPerms)) {
-                if (!targetPerms.find(perms => perms.id === args.target.id)) {
-                    targetPerms.push(ctx.client.models.permissionsSet(args.target.id));
-                }
                 targetPerms = targetPerms.find(perms => perms.id === args.target.id);
             }
-            if (targetPerms[args.override ? "allowedCommands" : "restrictedCommands"].includes(args.permission)) {
-                return ctx.sendLocale("setpermission.already-set", { set: `$t(keywords.${args.override ? "allowed" : "disallowed"})`, permission: args.permission, targetType: args.targetType === "global" ? "$t(keywords.server)" : `$t(keywords.${args.targetType})` });
+            if (!targetPerms || (!targetPerms.allowedCommands.includes(args.permission) && !targetPerms.restrictedCommands.includes(args.permission))) {
+                return ctx.sendLocale("removepermission.notset", { permission: permission, targetType: args.targetType === "global" ? "$t(keywords.server)" : `$t(keywords.${args.targetType})` });
             }
-            //If the permissions is already set to true/false; tl;dr the opposite, remove it, as the user obviously don't want to keep it
-            let oppositePerm = targetPerms[args.override ? "restrictedCommands" : "allowedCommands"];
-            if (oppositePerm.includes(args.permission)) {
-                oppositePerm.splice(oppositePerm.findIndex(perm => perm === args.permission), 1);
+            let restricted;
+            if (targetPerms.allowedCommands.includes(args.permission)) {
+                targetPerms.allowedCommands.splice(targetPerms.allowedCommands.findIndex(perm => perm === args.permission), 1);
+            } else {
+                targetPerms.restrictedCommands.splice(targetPerms.allowedCommands.findIndex(perm => perm === args.permission), 1);
+                restricted = true;
             }
-            targetPerms[args.override ? "allowedCommands" : "restrictedCommands"].push(args.permission);
+            //Delete the permission group if empty
+            if (args.targetType !== "global" && !targetPerms.allowedCommands[0] && !targetPerms.restrictedCommands[0]) {
+                let group = ctx.guildEntry.props.permissions[specialTargetCases[args.targetType] || `${args.targetType}s`];
+                group.splice(group.findIndex(perms => perms.id === args.target.id));
+            }
             await ctx.guildEntry.update({ $set: { [`permissions.${specialTargetCases[args.targetType] || args.targetType + "s"}`]: ctx.guildEntry.props.permissions[specialTargetCases[args.targetType] || `${args.targetType}s`] } }).save();
-            return ctx.sendLocale("setpermission.success", { 
-                toggle: `$t(keywords.${args.override ? "allowed" : "disallowed"})`, 
+            return ctx.sendLocale("removepermission.success", { 
                 permission: args.permission, 
+                set: `$t(keywords.${restricted ? "disallowed" : "allowed"})`, 
                 targetType: args.targetType === "global" ? "$t(keywords.server)" : `$t(keywords.${args.targetType})`, 
                 target: args.target.name || args.target.username ? ("**" + (args.target.name || args.target.tag) + "**") : "" 
             });
         });
-        this.setName("setpermission")
-            .setDescription("Set a channel/category/role/user or global permission")
-            .setAliases(["setperm", "sp"])
-            .setExpectedArgs("permission:string toggle:(true|false) targetType:(global|channel|category|role|user) target:user_resolvable*");
+        this.setName("removepermission")
+            .setDescription("Remove a channel/category/role/user or global permission")
+            .setAliases(["removeperm", "rp"])
+            .setExpectedArgs("permission:string targetType:(global|channel|category|role|user) target:user_resolvable*");
     }
 };

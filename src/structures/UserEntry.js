@@ -37,8 +37,8 @@ class UserEntry {
    * @returns {UserEntry} The user entry, so calls can be chained
    */
     update (object) {
-        if (typeof object !== 'object') {
-            throw new Error('Expected "object" parameter to be an object');
+        if (typeof object !== "object") {
+            throw new Error("Expected \"object\" parameter to be an object");
         }
         this._changes = this._client.utils.deepMerge(this._changes, object);
         return this;
@@ -51,9 +51,9 @@ class UserEntry {
    */
     addCoins (amount) {
         if (!amount) {
-            throw new Error('Missing mandatory "amount" parameter');
+            throw new Error("Missing mandatory \"amount\" parameter");
         }
-        amount = typeof amount !== 'number' ? Number(amount) : amount;
+        amount = typeof amount !== "number" ? Number(amount) : amount;
         this.props.coins = this.props.coins + amount;
         this.update( {$inc: { coins: amount } });
         return this;
@@ -66,9 +66,9 @@ class UserEntry {
    */
     removeCoins (amount) {
         if (!amount) {
-            throw new Error('Missing mandatory "amount" parameter');
+            throw new Error("Missing mandatory \"amount\" parameter");
         }
-        amount = typeof amount !== 'number' ? Number(amount) : amount;
+        amount = typeof amount !== "number" ? Number(amount) : amount;
         this.props.coins = this.props.coins - amount;
         this.update( {$inc: { coins: -amount } });
         return this;
@@ -101,7 +101,7 @@ class UserEntry {
    * @returns {Promise<void>} The promise representation of the save command sent
    */
     async save () {
-        return this._client.mongodb.collection('users').findOneAndUpdate({ _id: this.props._id }, this._changes, { upsert: true, returnOriginal: false })
+        return this._client.mongodb.collection("users").findOneAndUpdate({ _id: this.props._id }, this._changes, { upsert: true, returnOriginal: false })
             .then(res => {
                 this._saved = this._saved + 1;
                 this.props = res.value;

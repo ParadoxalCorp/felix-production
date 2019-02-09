@@ -119,8 +119,8 @@ module.exports = class Utils {
         };
         if (command.expectedArgs) {
             const expectedArgs = command.expectedArgs.split(/\s+/);
-            if (args.length < expectedArgs.filter(a => !a.endsWith("*"))) {
-                error = `This command expects ${expectedArgs.filter(a => !a.endsWith("*")) - args.length} more argument(s), use \`<@!${this.client.user.id}}> help ${command.name}\` for details`;
+            if (args.length < expectedArgs.filter(a => !a.endsWith("*")).length) {
+                return error = self.client.i18n("generic.missing-args", { amount: expectedArgs.filter(a => !a.endsWith("*")).length - args.length, help: `<@!${this.client.user.id}> help ${command.name}`, interpolation: { escapeValue: false } });
             }
             // Put flags at the end so they don't interfere with the order of regular params
             for (let i = 0; i < args.length; i++) {
