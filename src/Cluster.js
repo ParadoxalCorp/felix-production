@@ -53,7 +53,25 @@ class Felix extends Client {
         this.i18n = await i18next.init({
             lng: "en-US",
             fallbackLng: "en-US",
-            resources: await this.loadLanguages()
+            resources: await this.loadLanguages(),
+            interpolation: {
+                format: function(value, format, lng) {
+                    switch (format) {
+                    case "uppercase":
+                        return value.toUpperCase();
+                    case "capital":
+                        if (value.charAt(0)) {
+                            return value.charAt(0).toUpperCase() + value.slice(1);
+                        }
+                        return value;
+                    case "lowercase":
+                        return value.toLowerCase();
+                    default:
+                        return value;
+                    }
+
+                }
+            }
         });
         this.connect();
         await this.logger.init();
