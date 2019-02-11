@@ -1,4 +1,3 @@
-// @ts-nocheck
 /** 
  * @typedef {import('eris').Message} Message
  * @typedef {import('../Cluster')} Client
@@ -69,19 +68,20 @@ module.exports = class Context {
      * Get a permission's target object
      * @param {String} [targetTypeKey="targetType"] - An optional parameter defining what key is the target type in the `args`, defaults to `targetType`
      * @param {String} [targetKey="target"] - An optional parameter defining what key is the target in the `args`, defaults to `target`
-     * @returns {TextChannel | Role | User | CategoryChannel} The target, or null if none is found
+     * @returns {Promise<TextChannel | Role | User | CategoryChannel | string>} The target, or null if none is found
      */
     async getPermissionTarget(targetTypeKey = "targetType", targetKey = "target") {
-        let target = this.args[targetTypeKey].toLowerCase() === "global" ? "global" : null;
-        let targetType = this.args[targetTypeKey].toLowerCase();
+        const target = this.args[targetTypeKey].toLowerCase() === "global" ? "global" : null;
+        const targetType = this.args[targetTypeKey].toLowerCase();
         if (["category", "channel"].includes(targetType)) {
-            target = await this.fetchChannel(this.args[targetKey], targetType === "channel" ? "text" : "category");
+            return await this.fetchChannel(this.args[targetKey], targetType === "channel" ? "text" : "category");
         } else if (targetType === "role") {
-            target = await this.fetchRole(this.args[targetKey]);
+            return await this.fetchRole(this.args[targetKey]);
         } else if (targetType === "user") {
-            target = await this.fetchUser(this.args[targetKey]);
+            return await this.fetchUser(this.args[targetKey]);
+        } else {
+            return target;
         }
-        return target;
     }
 
     /**
@@ -192,7 +192,7 @@ module.exports = class Context {
     /**
      * @param {String} text - The text
      * @private
-     * @returns {Promise<Role>} The role, or false if none found
+     * @returns {Promise<Role | false>} The role, or false if none found
      */
     async _resolveRoleByExactMatch(text) {
         // @ts-ignore
@@ -252,7 +252,7 @@ module.exports = class Context {
      * @param {string} text - The text
      * @param {boolean} type - Whether the channel is a text channel or a voice channel
      * @private
-     * @returns {Promise<AnyGuildChannel>} The channel, or false if none found
+     * @returns {Promise<AnyGuildChannel | false>} The channel, or false if none found
      */
     async _resolveChannelByExactMatch(text, type) {
         // @ts-ignore
@@ -274,7 +274,7 @@ module.exports = class Context {
                 this.client.emit("error", err);
                 return false;
             });
-            return exactMatches[reply.content - 1] ? exactMatches[reply.content - 1] : false;
+            return exactMatches[Number(reply.content) - 1] ? exactMatches[Number(reply.content) - 1] : false;
         }
     }
 };

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /** 
  * @typedef {import("../Cluster")} Felix 
  * @typedef {import("./Command")} Command
@@ -79,14 +78,13 @@ class GuildEntry {
      * @memberof GuildEntry
      */
     resetPrefix () {
-        if (typeof prefix !== "string") {
-            throw new Error(`Expected type "string", received type ${typeof prefix}`);
+        if (typeof this.prefix !== "string") {
+            throw new Error(`Expected type "string", received type ${typeof this.prefix}`);
         }
-        this.props.prefix = this._client.config.prefix;
+        this.props.prefix = process.env.PREFIX;
         this.props.spacedPrefix = true;
-        this.update( { $set: { prefix: this._client.config.prefix, spacedPrefix: true } });
+        this.update( { $set: { prefix: process.env.PREFIX, spacedPrefix: true } });
         return this;
-
     }
 
     /**
@@ -97,7 +95,7 @@ class GuildEntry {
      * @returns {String} This guild's prefix
      */
     get prefix () {
-        return this.props.prefix ? (this.props.spacedPrefix ? `${this.props.prefix} ` : this.props.prefix) : this._client.config.prefix;
+        return this.props.prefix ? (this.props.spacedPrefix ? `${this.props.prefix} ` : this.props.prefix) : process.env.PREFIX;
     }
 
     /**
@@ -131,7 +129,7 @@ class GuildEntry {
             allowed = true;
         }
         if (command.hidden) {
-            if (this._client.config.admins.includes(member.id)) {
+            if (process.env.ADMINS.includes(member.id)) {
                 allowed = command.ownerOnly && this._client.config.ownerID !== member.id ? false : true;
             } else {
                 allowed = false;
@@ -222,12 +220,10 @@ class GuildEntry {
    * @returns {Promise<void>} The promise representation of the save command sent
    */
     async save () {
-        return this._client.mongodb.collection("guilds").findOneAndUpdate({ _id: this.props._id }, this._changes, { upsert: true, returnOriginal: false })
-            .then(res => {
-                this._saved = this._saved + 1;
-                this.props = res.value;
-                this._changes = {};
-            });
+        const res = await this._client.mongodb.collection("guilds").findOneAndUpdate({ _id: this.props._id }, this._changes, { upsert: true, returnOriginal: false });
+        this._saved = this._saved + 1;
+        this.props = res.value;
+        this._changes = {};
     }
 
     /**

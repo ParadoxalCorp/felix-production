@@ -29,7 +29,7 @@ class Felix extends Client {
         this.logger = new Logger();
         this.commands = new Collection();
         this.aliases = new Collection();
-        this.prefixes = this.config.prefix ? [this.config.prefix] : [];
+        this.prefixes = this.config.prefix ? [process.env.PREFIX] : [];
         this.launch();
         /** @type {i18n} */
         this.i18n;

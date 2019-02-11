@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * @typedef {import("../Cluster")} Client
  * @typedef {import("./Context")} Context

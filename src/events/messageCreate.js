@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /** 
  * @typedef {import('eris').Message} Message 
  * @typedef {import('../Cluster')} Client
@@ -20,7 +20,7 @@ module.exports = new class MessageCreate {
      * Handles messageCreate events
      * @param {Client} client The client instance
      * @param {Message} msg The message
-     * @returns {Promise<void>} Nothing
+     * @returns {Promise<void | Message>} Nothing
      */
     async handle (client, msg) {
         if (msg.author.bot) {
@@ -56,7 +56,7 @@ module.exports = new class MessageCreate {
     /**
      *
      * Checks if the message author has permissions to run the command
-     * @param {Felix} client The client instance
+     * @param {Client} client The client instance
      * @param {Message} msg The message
      * @param {UserEntry} userEntry The user entry
      * @param {GuildEntry} guildEntry The guild entry
@@ -79,7 +79,7 @@ module.exports = new class MessageCreate {
     /**
      *
      * Checks if the message author has permissions to run the command
-     * @param {Felix} client The client instance
+     * @param {Client} client The client instance
      * @param {Message} msg The message
      * @param {Command} command The command
      * @returns {Boolean} Whether the message author is allowed to use this command
@@ -129,11 +129,14 @@ module.exports = new class MessageCreate {
      * @param {Message} msg The message
      * @param {UserEntry} userEntry The user entry
      * @param {GuildEntry} guildEntry The guild entry
-     * @returns {Promise} The message
+     * @returns {Promise<Message>} The message
      */
-    _userInCooldown(client, msg, userEntry, guildEntry) {
+    async _userInCooldown(client, msg, userEntry, guildEntry) {
         const seconds = Math.round((this.cooldowns.get(msg.author.id) - Date.now()) / 1000);
         const string = seconds > 1 ? "generic.in-cooldown-plural" : "generic.in-cooldown-singular";
-        return msg.channel.createMessage(client.i18n(string, { lng: userEntry.props.lang || (guildEntry ? guildEntry.props.lang : false) || "en-US", seconds })).catch(() => {});
+        try {
+            return msg.channel.createMessage(client.i18n(string, { lng: userEntry.props.lang || (guildEntry ? guildEntry.props.lang : false) || "en-US", seconds }));
+        }
+        catch (e) { }
     }
 }();

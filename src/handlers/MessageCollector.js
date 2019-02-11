@@ -8,7 +8,7 @@
  * @typedef {import("eris").Collection} Collection
  **/
 
-const Collection = require('eris').Collection;
+const Collection = require("eris").Collection;
 
 /**
  * A message collector which does not create a new event listener each collectors, but rather only use one added when its instantiated

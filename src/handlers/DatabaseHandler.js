@@ -1,8 +1,9 @@
-// @ts-nocheck
+
 /** 
  * @typedef {import('../Cluster')} Client
- * @typedef {import('mongoose')} Mongoose
+ * @typedef {import('mongoose')} Mongo
  * @typedef {import('mongoose').Document} Document
+ * @typedef {import("../structures/GuildEntry").GuildData} GuildData
 */
 
 const UserEntry = require("../structures/UserEntry");
@@ -20,17 +21,17 @@ class DatabaseHandler {
 
     /**
      * Connects to the database
-     * @returns {Promise<Mongoose>} The mongoose instance
+     * @returns {Promise<void>} The mongoose instance
      * @memberof DatabaseHandler
      */
-    connect () {
-        return this.client.mongo.connect(this.client.config.database.dbURI, {
+    async connect () {
+        const client = await this.client.mongo.connect(process.env.DATABASE_URI, {
+            autoReconnect: true,
             keepAlive: true,
             useNewUrlParser: true
-        }).then((client) => {
-            this.client.mongodb = client.db("data");
-            this._handleSuccessfulConnection();
         });
+        this.client.mongodb = client.db("data");
+        this._handleSuccessfulConnection();
     }
  
     _handleSuccessfulConnection () {
@@ -64,46 +65,58 @@ class DatabaseHandler {
      * @memberof DatabaseHandler
      */
     async getUser (id) {
-        return this.client.mongodb.collection("users").findOne({ _id: id }).then(async(user) => {
-            if (user) {
-                return new UserEntry(user, this.client);
-            } else {
-                await this.client.mongodb.collection("users").insertOne(this.getDefaultUser(id));
-                return new UserEntry(this.getDefaultUser(id), this.client);
-            }
-        });
+        const user = await this.client.mongodb.collection("users").findOne({ _id: id });
+        if (user) {
+            return new UserEntry(user, this.client);
+        }
+        else {
+            await this.client.mongodb.collection("users").insertOne(this.getDefaultUser(id));
+            return new UserEntry(this.getDefaultUser(id), this.client);
+        }
     }
 
     /**
      * Get a guild's database entry
-     * @param {String} id The ID of the guild to get
+     * @param {string} id The ID of the guild to get
      * @returns {Promise<GuildEntry>} The guild entry
      * @memberof DatabaseHandler
      */
     async getGuild (id) {
-        return this.client.mongodb.collection("guilds").findOne({ _id: id }).then(async(user) => {
-            if (user) {
-                return new GuildEntry(user, this.client);
-            } else {
-                await this.client.mongodb.collection("guilds").insertOne(this.getDefaultGuild(id));
-                return new GuildEntry(this.getDefaultGuild(id), this.client);
-            }
-        });
+        const user = await this.client.mongodb.collection("guilds").findOne({ _id: id });
+        if (user) {
+            return new GuildEntry(user, this.client);
+        }
+        else {
+            await this.client.mongodb.collection("guilds").insertOne(this.getDefaultGuild(id));
+            return new GuildEntry(this.getDefaultGuild(id), this.client);
+        }
     }
 
+    /**
+     * @param {string} id as
+     * @memberof DatabaseHandler
+     * @returns {{_id: String, coins: number, lang: string, blacklisted: boolean}} defaultUser
+     */
     getDefaultUser (id) {
         return {
             _id: id,
             coins: 0,
-            lang: "en-US"
+            lang: "en-US",
+            blacklisted: false
         };
     }
 
+    /**
+     * @param {string} id as
+     * @memberof DatabaseHandler
+     * @returns {GuildData} defaultGuild
+     */
     getDefaultGuild (id) {
         return {
             _id: id,
             spacedPrefix: true,
-            prefix: this.client.config.prefix,
+            blacklisted: false,
+            prefix: process.env.PREFIX,
             lang: "en-US",
             permissions: {
                 users: [],
