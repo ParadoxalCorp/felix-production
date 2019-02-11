@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /** 
  * @typedef {import("../Cluster")} Client 
  * @typedef {import("eris").Message} Message
@@ -168,7 +168,7 @@ module.exports = class Utils {
                 command = unspacedParsing.command;
             }
             prefixes.push(guildEntry.props.prefix);
-            prefixes = prefixes.filter(p => (guildEntry.spacedPrefix && p !== this.client.config.prefix) || !guildEntry.spacedPrefix);
+            prefixes = prefixes.filter(p => (guildEntry.spacedPrefix && p !== process.env.PREFIX) || !guildEntry.spacedPrefix);
         }
         if (!prefixes.find(p => p === prefix)) {
             return undefined;
@@ -206,14 +206,14 @@ module.exports = class Utils {
      */
     camelCaseToSnekCase(string) {
         let chars = string.split("");
-        let newChars = [];
+        let newString = "";
         for (const char of chars) {
             if (char.toUpperCase() === char) {
-                newChars.push(`_${char.toLowerCase()}`);
+                newString += `_${char.toLowerCase()}`;
             } else {
-                newChars.push(char);
+                newString += char;
             }
         }
-        return newChars;
+        return newString;
     }
 };

@@ -1,30 +1,29 @@
-
 {
-    "parserOptions": {
-        "ecmaVersion": 9,
-        "sourceType": "module",
-        "ecmaFeatures": {
-            "impliedStrict": true,
-            "jsx": true
-        }
-    },
-    "env": {
-        "node": true
-    },
-    "globals": {
-        "Map": true,
-        "Promise": true
-    },
-    "rules": {
-        "eqeqeq": "warn",
-        "semi": "warn",
-        "curly": "warn",
-        "no-empty": "warn",
-        "valid-jsdoc": "warn",
-        "no-extra-semi": "warn",
-        "no-unused-vars": "warn",
-        "no-undef": "error",
-        "indent": "warn",
-        "quotes": ["warn", "double"]
-    }
+	"parserOptions": {
+		"ecmaVersion": 9,
+		"sourceType": "module",
+		"ecmaFeatures": {
+			"impliedStrict": true,
+			"jsx": true
+		}
+	},
+	"env": {
+		"node": true
+	},
+	"globals": {
+		"Map": true,
+		"Promise": true
+	},
+	"rules": {
+		"eqeqeq": "warn",
+		"semi": "warn",
+		"curly": "warn",
+		"no-empty": "off",
+		"valid-jsdoc": "warn",
+		"no-extra-semi": "warn",
+		"no-unused-vars": "warn",
+		"no-undef": "error",
+		"indent": "warn",
+		"quotes": ["warn", "double"]
+	}
 }
