@@ -1,6 +1,5 @@
 // @ts-nocheck
 const Sharder = require("@eris-sharder/core/index")
-const config = require("../config")
 process.on("unhandledRejection", console.error)
 process.on("uncaughtException", console.error)
 

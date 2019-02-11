@@ -87,16 +87,16 @@ module.exports = new class MessageCreate {
     _checkDefaultPermissions(client, msg, command) {
         let allowed;
 
-        if (client.models.defaultPermissions.allowedCommands.includes(`${command.help.category}*`)) {
+        if (client.models.defaultPermissions.allowedCommands.includes(`${command.category}*`)) {
             allowed = true;
         }
-        if (client.models.defaultPermissions.restrictedCommands.includes(`${command.help.category}*`)) {
+        if (client.models.defaultPermissions.restrictedCommands.includes(`${command.category}*`)) {
             allowed = false;
         }
-        if (client.models.defaultPermissions.allowedCommands.includes(command.help.name)) {
+        if (client.models.defaultPermissions.allowedCommands.includes(command.name)) {
             allowed = true;
         }
-        if (client.models.defaultPermissions.restrictedCommands.includes(command.help.name)) {
+        if (client.models.defaultPermissions.restrictedCommands.includes(command.name)) {
             allowed = false;
         }
 
@@ -104,12 +104,8 @@ module.exports = new class MessageCreate {
             allowed = true;
         }
 
-        if (command.help.category === "admin") {
-            if (client.config.admins.includes(msg.author.id)) {
-                allowed = command.ownerOnly && client.config.ownerID !== msg.author.id ? false : true;
-            } else {
-                allowed = false;
-            }
+        if (command.category === "admin") {
+            allowed = process.env.ADMINS.includes(msg.author.id);
         }
 
         return allowed;

@@ -26,7 +26,7 @@ module.exports = class Eval extends Command {
                         depth: ctx.args["depth"] || +!(inspect(result, { depth: 1 }).length > 1990) // Results in either 0 or 1
                     });
                 }
-                const tokenRegex = new RegExp(ctx.client.config.token, "gi");
+                const tokenRegex = new RegExp(process.env.DISCORD_TOKEN, "gi");
                 result = result.replace(tokenRegex, "baguette tbh");
             } catch (err) {
                 evalTime = process.hrtime.bigint() - before;

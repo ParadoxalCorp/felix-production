@@ -4,7 +4,6 @@
  * @typedef {import('i18next').default.TFunction} i18n
  */
 
-const config = require("../config");
 const { Client, Collection } = require("eris");
 const { MongoClient: mongodb }  = require("mongodb");
 const DatabaseHandler = require("./handlers/DatabaseHandler");
@@ -21,7 +20,6 @@ class Felix extends Client {
             firstShardID: Number(process.env.FIRST_SHARD_ID),
             lastShardID: Number(process.env.LAST_SHARD_ID)
         });
-        this.config = config;        
         this.mongo = mongodb;
         /** @type {import('mongodb').Db} */
         this.mongodb;
@@ -29,7 +27,7 @@ class Felix extends Client {
         this.logger = new Logger();
         this.commands = new Collection();
         this.aliases = new Collection();
-        this.prefixes = this.config.prefix ? [process.env.PREFIX] : [];
+        this.prefixes = process.env.PREFIX ? [process.env.PREFIX] : [];
         this.launch();
         /** @type {i18n} */
         this.i18n;

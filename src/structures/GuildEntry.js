@@ -129,11 +129,7 @@ class GuildEntry {
             allowed = true;
         }
         if (command.hidden) {
-            if (process.env.ADMINS.includes(member.id)) {
-                allowed = command.ownerOnly && this._client.config.ownerID !== member.id ? false : true;
-            } else {
-                allowed = false;
-            }
+            allowed = process.env.ADMINS.includes(member.id);
         }
 
         return allowed;

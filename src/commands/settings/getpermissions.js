@@ -33,7 +33,7 @@ module.exports = class GetPermissions extends Command {
         
             function formatPermissions(targetPerms) {
                 return {
-                    color: ctx.client.config.options.embedColor,
+                    color: process.env.EMBED_COLOR,
                     fields: (() => {
                         if (args.targetType === "global") {
                             targetPerms.allowedCommands = targetPerms.allowedCommands.concat(ctx.client.models.defaultPermissions.allowedCommands.map(perm => `${perm} (${ctx.returnLocale("keywords.default")})`));
