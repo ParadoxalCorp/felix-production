@@ -206,14 +206,14 @@ module.exports = class Utils {
      */
     camelCaseToSnekCase(string) {
         let chars = string.split("");
-        let newChars = [];
+        let newString = "";
         for (const char of chars) {
             if (char.toUpperCase() === char) {
-                newChars.push(`_${char.toLowerCase()}`);
+                newString += `_${char.toLowerCase()}`;
             } else {
-                newChars.push(char);
+                newString += char;
             }
         }
-        return newChars;
+        return newString;
     }
 };
