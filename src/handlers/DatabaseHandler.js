@@ -4,6 +4,7 @@
  * @typedef {import('mongoose')} Mongo
  * @typedef {import('mongoose').Document} Document
  * @typedef {import("../structures/GuildEntry").GuildData} GuildData
+ * @typedef {import("../structures/UserEntry").UserData} UserData
 */
 
 const UserEntry = require("../structures/UserEntry");
@@ -93,9 +94,9 @@ class DatabaseHandler {
     }
 
     /**
-     * @param {string} id as
+     * @param {string} [id="1"] as
      * @memberof DatabaseHandler
-     * @returns {{_id: String, coins: number, lang: string, blacklisted: boolean}} defaultUser
+     * @returns {UserData} defaultUser
      */
     getDefaultUser (id) {
         return {
@@ -107,11 +108,11 @@ class DatabaseHandler {
     }
 
     /**
-     * @param {string} id as
+     * @param {string} [id="1"] as
      * @memberof DatabaseHandler
      * @returns {GuildData} defaultGuild
      */
-    getDefaultGuild (id) {
+    getDefaultGuild (id="1") {
         return {
             _id: id,
             spacedPrefix: true,

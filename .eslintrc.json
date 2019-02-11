@@ -12,7 +12,7 @@
 	},
 	"globals": {
 		"Map": true,
-		"Promise": true
+		"Promise": true,
 		"BigInt": true
 	},
 	"rules": {

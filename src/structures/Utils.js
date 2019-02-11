@@ -168,7 +168,7 @@ module.exports = class Utils {
                 command = unspacedParsing.command;
             }
             prefixes.push(guildEntry.props.prefix);
-            prefixes = prefixes.filter(p => (guildEntry.spacedPrefix && p !== process.env.PREFIX) || !guildEntry.spacedPrefix);
+            prefixes = prefixes.filter(p => (guildEntry.props.spacedPrefix && p !== process.env.PREFIX) || !guildEntry.props.spacedPrefix);
         }
         if (!prefixes.find(p => p === prefix)) {
             return undefined;
@@ -188,10 +188,10 @@ module.exports = class Utils {
      * @memberof Command
      */
     _parseUnspacedCommand(message, guildEntry, args) {
-        const mentionTest = message.content.startsWith(`<@${this.client.bot.user.id}>`) || message.content.startsWith(`<@!${this.client.bot.user.id}`);
+        const mentionTest = message.content.startsWith(`<@${this.client.user.id}>`) || message.content.startsWith(`<@!${this.client.user.id}`);
         const supposedCommand = !mentionTest
             ? args.shift().slice(guildEntry.prefix.length).toLowerCase()
-            : (args[1] ? args[1].toLowerCase() : false);
+            : (args[1] ? args[1].toLowerCase() : undefined);
         const prefix = !mentionTest ? message.content.substr(0, guildEntry.prefix.length) : args[0];
         return {
             prefix,
