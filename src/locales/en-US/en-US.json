@@ -10,7 +10,13 @@
         "in-cooldown-plural": "You are in cooldown, please wait another {{seconds}} seconds",
         "search-title": ":mag: {{type}} search",
         "search-description": "I found multiple {{type}} with that name, select one by answering the corresponding number {{list}}",
-        "prompt-time-limit": "Time limit: {{seconds}} seconds"
+        "prompt-time-limit": "Time limit: {{seconds}} seconds",
+        "confirm-action": "Are you sure you want to do that? Reply with `yes` to confirm or anything else to abort",
+        "command-aborted": ":x: Command aborted",
+        "target-not-found": ":x: I couldn't find this {{target}}",
+        "none-set": ":x: None set",
+        "allowed-perms": "Allowed permissions",
+        "disallowed-perms": "Disallowed permissions"
     },
     "keywords": {
         "server": "server",
@@ -19,7 +25,8 @@
         "user": "user",
         "category": "category",
         "allowed": "allowed",
-        "disallowed": "disallowed"
+        "disallowed": "disallowed",
+        "default": "default"
     },
     "ping": {
         "pinging": "Pinging Discord...",
@@ -27,12 +34,17 @@
     },
     "setpermission": {
         "invalid-permission": ":x: The permission must be a command name, like `ping`, or the name of a command category followed by a `*` like `generic*` to target a whole category.",
-        "target-not-found": ":x: I couldn't find this {{target}}",
         "already-set": ":x: The permission {{permission}} is already {{set}} on this {{targetType}}",
         "success": ":white_check_mark: Successfully {{toggle}} the permission `{{permission}}` for the {{targetType}} {{target}}"
     },
     "removepermission": {
         "notset": ":x: The permission {{permission}} is not disallowed nor allowed on this {{targetType}}",
         "success": ":white_check_mark: Successfully removed the permission {{permission}} which was {{set}} on the {{targetType}} {{target}}"
+    },
+    "clearpermissions" : {
+        "success": ":white_check_mark: Successfully cleared all permissions on this server"
+    },
+    "getpermissions": {
+        "notset": ":x: There is not any permissions on the {{targetType}} {{target}}"
     }
 }

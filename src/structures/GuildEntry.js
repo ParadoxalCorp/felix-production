@@ -184,6 +184,18 @@ class GuildEntry {
     }
 
     /**
+     * Clear the permissions of this guild
+     * @returns {GuildEntry} The guild entry, so calls can be chained
+     * @memberof GuildEntry
+     */
+    clearPermissions () {
+        const defaultPerms = this._client.db.getDefaultGuild().permissions;
+        this.props.permissions = defaultPerms;
+        this.update({ $set: { permissions: defaultPerms } });
+        return this;
+    }
+
+    /**
      * Blacklist this guild
      * @returns {GuildEntry} The guild entry, so calls can be chained
      * @memberof GuildEntry
