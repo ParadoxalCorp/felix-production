@@ -9,7 +9,7 @@ module.exports = class SetPermission extends Command {
             } 
             const target = await ctx.getPermissionTarget();
             if (!target) {
-                return ctx.sendLocale("setpermission.target-not-found", { target: ctx.args.targetType.toLowerCase() });
+                return ctx.sendLocale("generic.target-not-found", { target: `$t(keywords.${ctx.args.targetType.toLowerCase()})` });
             }
             let permission = ctx.client.aliases.has(ctx.args.permission.toLowerCase()) ? ctx.client.aliases.get(ctx.args.permission.toLowerCase()) : ctx.args.permission.toLowerCase();
             const args = {
