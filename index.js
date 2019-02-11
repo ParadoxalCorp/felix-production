@@ -4,16 +4,6 @@ require("dotenv-defaults").config({
     defaults: "./config/.env.defaults"
 });
 
-console.log({
-    PROCESS_GUILDSPERSHARDS: process.env.PROCESS_GUILDSPERSHARDS,
-    PROCESS_SHARDS: process.env.PROCESS_SHARDS,
-    PROCESS_CUSTER: process.env.PROCESS_CUSTERS,
-    PROCESS_DEBUG: process.env.PROCESS_DEBUG,
-    NODE_ENV: process.env.NODE_ENV,
-    DATABASE_URI: process.env.DATABASE_URI,
-});
-
-
 const Sharder = require("./src/Master");
 const master = require("cluster");
 const Cluster = require("./src/Cluster");
