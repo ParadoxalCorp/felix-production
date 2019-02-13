@@ -167,8 +167,10 @@ module.exports = class Utils {
                 prefix = unspacedParsing.prefix;
                 command = unspacedParsing.command;
             }
-            prefixes.push(guildEntry.props.prefix);
-            prefixes = prefixes.filter(p => (guildEntry.props.spacedPrefix && p !== process.env.PREFIX) || !guildEntry.props.spacedPrefix);
+            if (!prefixes.includes(guildEntry.props.prefix)) {
+                prefixes.push(guildEntry.props.prefix);
+            }
+            // prefixes = prefixes.filter(p => (guildEntry.props.spacedPrefix && p !== process.env.PREFIX) || !guildEntry.props.spacedPrefix);
         }
         if (!prefixes.find(p => p === prefix)) {
             return undefined;
