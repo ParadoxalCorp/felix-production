@@ -16,7 +16,8 @@
         "target-not-found": ":x: I couldn't find this {{target}}",
         "none-set": ":x: None set",
         "allowed-perms": "Allowed permissions",
-        "disallowed-perms": "Disallowed permissions"
+        "disallowed-perms": "Disallowed permissions",
+        "bot-missing-perms": ":x: I lack the following required permissions to run this command: {{perms}}"
     },
     "keywords": {
         "server": "server",

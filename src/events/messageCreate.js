@@ -46,6 +46,10 @@ module.exports = new class MessageCreateHandler {
         }
         const parsedArgs = client.utils.parseArgs(args, command);
         const ctx = new client.structures.Context(msg, client, guildEntry, userEntry, parsedArgs);
+        const comparedPermissions = client.utils.comparePermissions(msg, ctx.clientMember, command.requiredPerms, msg.channel);
+        if (!comparedPermissions.allowed) {
+            return ctx.sendLocale("generic.bot-missing-perms", { perms: comparedPermissions.missingPerms.map(p => "`" + p + "`").join(", ")}).catch(() => {});
+        }
         const output = await command.run(ctx).catch((err) => {
             err._ctx = ctx;
             client.emit("error", err);

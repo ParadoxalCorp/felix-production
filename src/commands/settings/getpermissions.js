@@ -64,6 +64,7 @@ module.exports = class GetPermissions extends Command {
         this.setName("getpermissions")
             .setAliases(["getperms", "gp"])
             .setDescription("Get the permissions for the given target")
-            .setExpectedArgs("targetType:(global|category|channel|role|user)* target:string*");
+            .setExpectedArgs("targetType:(global|category|channel|role|user)* target:string*")
+            .setRequiredPerms(["attachFiles", "embedLinks"]);
     }
 };

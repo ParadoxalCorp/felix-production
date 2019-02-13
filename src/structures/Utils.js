@@ -5,6 +5,11 @@
  * @typedef {import("../structures/UserEntry")} UserEntry
  * @typedef {import("../structures/GuildEntry")} GuildEntry
  * @typedef {import("../structures/Command")} Command
+ * @typedef {import("eris").Member} Member
+ * @typedef {import("eris").User} User
+ * @typedef {import("eris").TextChannel} TextChannel
+ * @typedef {import("eris").VoiceChannel} VoiceChannel
+ * @typedef {import("eris").PermissionOverwrite} PermissionOverwrite
 */
 
 module.exports = class Utils {
@@ -178,6 +183,75 @@ module.exports = class Utils {
             return undefined;
         }
         return this.client.commands.get(command.toLowerCase()) || this.client.commands.get(this.client.aliases.get(command.toLowerCase()));
+    }
+
+    /**
+     * This method return the effective permission overwrite for a specific permission of a user
+     * It takes into account the roles of the member, their position and the member itself to return the overwrite which actually is effective
+     * @param {TextChannel | VoiceChannel} channel - The channel to check permissions overwrites in
+     * @param {Member} member - The member object to check permissions overwrites for
+     * @param {String} permission - The permission to search channel overwrites for
+     * @return {PermissionOverwrite} - The permission overwrite overwriting the specified permission, or `undefined` if none exist
+     */
+    getChannelOverwrite(channel, member, permission) {
+        const channelOverwrites = Array.from(channel.permissionOverwrites.values()).filter(co => typeof co.json[permission] !== "undefined" &&
+            (co.id === member.id || member.roles.includes(co.id)));
+        if (!channelOverwrites[0]) {
+            return;
+        } else if (channelOverwrites.find(co => co.type === "user")) {
+            return channelOverwrites.find(co => co.type === "user");
+        }
+        return channelOverwrites
+            //Address issue #45(https://github.com/ParadoxalCorp/felix-production/issues/45)
+            .filter(co => channel.guild.roles.has(co.id))
+            .sort((a, b) => channel.guild.roles.get(b.id).position - channel.guild.roles.get(a.id).position)[0];
+    }
+
+    /**
+     * Check if the given user has the given permissions
+     * This is a deep check and the channels wide permissions will be checked too
+     * @param {Message} message - The message that triggered the command
+     * @param {Member | User} target  - The user from whose permissions should be checked
+     * @param {Array<String>} permissions - An array of permissions to check for
+     * @param {VoiceChannel | TextChannel} [channel=message.channel] - Optional, a specific channel to check perms for (to check if the bot can connect to a VC for example), defaults to the message's channel
+     * @returns {{allowed: Boolean, missingPerms: Array<String>}} - Whether the user has all permissions, and an array with the missing permissions if there is any. sendMessages permission is also returned if missing
+     */
+    comparePermissions(message, target, permissions, channel = message.channel) {
+        const missingPerms = [];
+        // @ts-ignore
+        const member = target.guild ? target : message.member.guild.members.get(target.id);
+        function hasPerm(perm) {
+            if (member.permission.has("administrator")) {
+                return true;
+            }
+            const hasChannelOverwrite = this.getChannelOverwrite(channel, member, perm);
+            if (!member.permission.has(perm)) {
+                if (!hasChannelOverwrite) {
+                    return false;
+                } else {
+                    return hasChannelOverwrite.has(perm) ? true : false;
+                }
+            } else {
+                if (!hasChannelOverwrite) {
+                    return true;
+                } else {
+                    return hasChannelOverwrite.has(perm) ? true : false;
+                }
+            }
+        }
+        const hasPermission = hasPerm.bind(this);
+        for (const perm of permissions) {
+            if (!hasPermission(perm)) {
+                missingPerms.push(perm);
+            }
+        }
+        if (!permissions.includes("sendMessages") && !hasPermission("sendMessages")) {
+            missingPerms.push("sendMessages");
+        }
+        return {
+            allowed: missingPerms[0] ? false : true,
+            missingPerms
+        };
     }
 
     /**

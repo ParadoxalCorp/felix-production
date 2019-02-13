@@ -36,6 +36,8 @@ class Command {
         this.cooldown = 2000;
         /** @type {Boolean} Whether this command should not be available in private messages, defaults to `true` */
         this.guildOnly = true;
+        /** @type {Array<String>} The permissions the bot requires to run the command */
+        this.requiredPerms = [];
     }
     
     /**
@@ -152,6 +154,19 @@ class Command {
             throw new Error(`Expected type "boolean", received type "${typeof bool}"`);
         }
         this.guildOnly = bool;
+        return this;
+    }
+
+    /**
+     * Set the required permissions for this command
+     * @param {Array<String>} perms An array of permissions
+     * @returns {Command} Returns the command
+     */
+    setRequiredPerms(perms) {
+        if (!Array.isArray(perms)) {
+            throw new Error(`Expected perms to be an array, received type "${typeof perms}"`);
+        }
+        this.requiredPerms = perms;
         return this;
     }
 }

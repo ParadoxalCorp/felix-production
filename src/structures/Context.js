@@ -277,4 +277,24 @@ module.exports = class Context {
             return exactMatches[Number(reply.content) - 1] ? exactMatches[Number(reply.content) - 1] : false;
         }
     }
+
+    /**
+     * Check if the message author has all the given permissions
+     * @param {Array<String>} perms The permissions to check for
+     * @param {AnyGuildChannel} [channel=this.msg.channel] An optional channel to check the permissions for
+     * @returns {Boolean} Whether the message author has all permissions
+     */
+    authorHasPerms(perms, channel = this.msg.channel) {
+        return this.client.utils.comparePermissions(this.msg, this.msg.member, perms, channel).allowed;
+    }
+
+    /**
+     * Check if the client has all the given permissions
+     * @param {Array<String>} perms The permissions to check for
+     * @param {AnyGuildChannel} [channel=this.msg.channel] An optional channel to check the permissions for
+     * @returns {Boolean} Whether the client has all permissions
+     */
+    clientHasPerms(perms, channel = this.msg.channel) {
+        return this.client.utils.comparePermissions(this.msg, this.client.user, perms, channel).allowed;
+    }
 };
