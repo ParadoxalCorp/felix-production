@@ -9,7 +9,7 @@
 
 const Collection = require("eris").Collection;
 
-module.exports = new class MessageCreate {
+module.exports = new class MessageCreateHandler {
     constructor() {
         this.cooldowns = new Collection();
         this._cooldownSweep = setInterval(this._sweepCooldowns.bind(this), 60000 * 30);
@@ -46,10 +46,16 @@ module.exports = new class MessageCreate {
         }
         const parsedArgs = client.utils.parseArgs(args, command);
         const ctx = new client.structures.Context(msg, client, guildEntry, userEntry, parsedArgs);
-        const output = await command.run(ctx);
+        const output = await command.run(ctx).catch((err) => {
+            err._ctx = ctx;
+            client.emit("error", err);
+        });
         this.cooldowns.set(msg.author.id, Date.now() + command.cooldown);
-        if (typeof output === "string" || output.embed) {
-            return msg.channel.createMessage(output).catch(() => {});
+        if (typeof output === "string" || (typeof output === "object" && output.embed)) {
+            return msg.channel.createMessage(output).catch((err) => {
+                err._ctx = ctx;
+                client.emit("error", err);
+            });
         }
     }
 
