@@ -28,6 +28,11 @@
         "disallowed": "disallowed",
         "default": "default"
     },
+    "errors": {
+        "50001": "I don't have enough permissions to perform this action",
+        "50007": "I tried to send a DM but you/the given user have your/their DMs disabled",
+        "50013": "I don't have enough permissions to perform this action"
+    },
     "ping": {
         "pinging": "Pinging Discord...",
         "result": "Round-trip took `{{roundtrip}}ms`, Latest heartbeat: `{{heartbeat}}ms`"
