@@ -13,6 +13,18 @@ const { join } = require("path");
 const Utils = require("./structures/Utils");
 const i18next = require("i18next");
 const MessageCollector = require("./handlers/MessageCollector");
+const sentry = require('@sentry/node');
+sentry.configureScope((scope) => {
+    scope.setTag("process", "worker")
+        .setTag("environment", process.env.NODE_ENV)
+        .setExtra("worker-id", process.env.CLUSTER_ID);
+});
+const captureError = (err) => {
+    console.error(err);
+    sentry.captureException(err);
+};
+process.on("uncaughtException", captureError);
+process.on("unhandledRejection", captureError);
 
 class Felix extends Client {
     constructor() {
@@ -32,6 +44,7 @@ class Felix extends Client {
         /** @type {i18n} */
         this.i18n;
         this.messageCollector = new MessageCollector(this);
+        this.sentry = sentry;
         this.events = {};
         this.utils = new Utils(this);
         this.models = require("./structures/models");

@@ -1,7 +1,17 @@
 // @ts-nocheck
-const Sharder = require("@eris-sharder/core/index")
-process.on("unhandledRejection", console.error)
-process.on("uncaughtException", console.error)
+const Sharder = require("@eris-sharder/core/index");
+const sentry = require('@sentry/node');
+sentry.configureScope((scope) => {
+    scope.setTag("process", "master")
+        .setTag("environment", process.env.NODE_ENV)
+        .setExtra("instance", 0);
+});
+const captureError = (err) => {
+    console.error(err);
+    sentry.captureException(err);
+};
+process.on("unhandledRejection", captureError);
+process.on("uncaughtException", captureError);
 
 class Master extends Sharder {
     constructor() {
@@ -23,9 +33,9 @@ class Master extends Sharder {
         this.create().then(() => {
             this.init().then(() => {
                 this.registry.registerWorker("instance-0", 1, 0).then(() => {})
-            })
-        })
+            });
+        });
     }
 }
 
-module.exports = Master
+module.exports = Master;
