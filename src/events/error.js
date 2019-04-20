@@ -46,9 +46,10 @@ module.exports = new class ErrorHandler {
                 return;
             }
         }
-        client.logger.error({ src: "ErrorHandler", msg: err });
+        client.logger.error({ src: "ErrorHandler", msg: `\n${err.stack}` });
         if (err._ctx) {
-            err._ctx = { message: err._ctx.msg, userEntry: err._ctx.userEntry, guildEntry: err._ctx.guildEntry };
+            // @ts-ignore
+            err._ctx = { message: err._ctx.msg, userEntry: err._ctx.userEntry, guildEntry: err._ctx.guildEntry  };
         }
         client.sentry.captureException(err);
     }
