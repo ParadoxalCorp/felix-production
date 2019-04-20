@@ -1,3 +1,4 @@
+
 /** 
  * @typedef {import('eris').Message} Message
  * @typedef {import('../Cluster')} Client
@@ -12,6 +13,10 @@
  * @typedef {import('eris').TextChannel} TextChannel
  * @typedef {import('eris').User} User
  * @typedef {import('eris').AnyGuildChannel} AnyGuildChannel
+ * @typedef {import("eris").AnyChannel} AnyChannel
+ * @typedef {import("eris").TextableChannel} TextableChannel
+ * @typedef {import("eris").ExtendedUser} ExtendedUser
+ * @typedef {import("eris").EmbedOptions} EmbedOptions
  */
 
 module.exports = class Context {
@@ -29,6 +34,7 @@ module.exports = class Context {
         /** @type {Client} The client instance */
         this.client = client;
         /** @type {Guild} The guild in which the message was sent, will be `undefined` in direct messages */
+        // @ts-ignore
         this.guild = msg.channel.guild;
         /** @type {Member} The message author as a member, will be `undefined` in direct messages */
         this.member = msg.member;
@@ -117,7 +123,7 @@ module.exports = class Context {
     /**
      * Try to resolve a user with IDs, names, partial usernames or mentions
      * @param {string} [text=this.msg.content] - The text from which users should be resolved, if none provided, it will use the message content
-     * @returns {Promise<ExtendedUser>} The resolved user, or nothing if none could be resolved
+     * @returns {Promise<User>} The resolved user, or nothing if none could be resolved
      */
     async fetchUser(text = this.msg.content) {
         const exactMatch = await this._resolveUserByExactMatch(text);
@@ -125,9 +131,7 @@ module.exports = class Context {
             return exactMatch;
         }
         //While it is unlikely, resolve the user by ID if possible
-        // @ts-ignore
         if (this.guild.members.get(text)) {
-            // @ts-ignore
             return this.guild.members.get(text).user;
         }
 
@@ -142,7 +146,7 @@ module.exports = class Context {
     /**
      * @param {String} text - The text
      * @private
-     * @returns {Promise<User>} The user, or false if none found
+     * @returns {Promise<User | false>} The user, or false if none found
      */
     async _resolveUserByExactMatch(text) {
         //Filter the members with a username or nickname that match exactly the text
@@ -167,6 +171,7 @@ module.exports = class Context {
                 this.client.emit("error", err);
                 return false;
             });
+            // @ts-ignore
             return exactMatches[reply.content - 1] ? exactMatches[reply.content - 1] : false;
         }
     }
@@ -214,6 +219,7 @@ module.exports = class Context {
                 this.client.emit("error", err);
                 return false;
             });
+            // @ts-ignore
             return exactMatches[reply.content - 1] ? exactMatches[reply.content - 1] : false;
         }
     }
@@ -274,6 +280,7 @@ module.exports = class Context {
                 this.client.emit("error", err);
                 return false;
             });
+            // @ts-ignore
             return exactMatches[Number(reply.content) - 1] ? exactMatches[Number(reply.content) - 1] : false;
         }
     }
@@ -281,7 +288,7 @@ module.exports = class Context {
     /**
      * Check if the message author has all the given permissions
      * @param {Array<String>} perms The permissions to check for
-     * @param {AnyGuildChannel} [channel=this.msg.channel] An optional channel to check the permissions for
+     * @param {AnyChannel} [channel=this.msg.channel] An optional channel to check the permissions for
      * @returns {Boolean} Whether the message author has all permissions
      */
     authorHasPerms(perms, channel = this.msg.channel) {
@@ -291,10 +298,29 @@ module.exports = class Context {
     /**
      * Check if the client has all the given permissions
      * @param {Array<String>} perms The permissions to check for
-     * @param {AnyGuildChannel} [channel=this.msg.channel] An optional channel to check the permissions for
+     * @param {AnyChannel} [channel=this.msg.channel] An optional channel to check the permissions for
      * @returns {Boolean} Whether the client has all permissions
      */
     clientHasPerms(perms, channel = this.msg.channel) {
+        // @ts-ignore
         return this.client.utils.comparePermissions(this.msg, this.client.user, perms, channel).allowed;
     }
+
+        /**
+     * Merge the given embed into the bot's generic embed
+     * @param {EmbedOptions} embed - The embed to merge onto the generic embed
+     * @returns {EmbedOptions} The embed
+     */
+    genericEmbed(embed) {
+        return {
+            timestamp: new Date().toISOString(),
+            footer: {
+                text: this.client.user.username,
+                icon_url: this.client.user.avatarURL
+            },
+            color: Number(process.env.EMBED_COLOR),
+            ...embed
+        };
+    }
+    
 };
