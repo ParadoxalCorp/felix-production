@@ -1,8 +1,7 @@
 
 /** 
  * @typedef {import('../Cluster')} Client
- * @typedef {import('mongoose')} Mongo
- * @typedef {import('mongoose').Document} Document
+ * @typedef {import('mongodb')} Mongo
  * @typedef {import("../structures/GuildEntry").GuildData} GuildData
  * @typedef {import("../structures/UserEntry").UserData} UserData
 */
@@ -22,7 +21,7 @@ class DatabaseHandler {
 
     /**
      * Connects to the database
-     * @returns {Promise<void>} The mongoose instance
+     * @returns {Promise<void>} The mongo instance
      * @memberof DatabaseHandler
      */
     async connect () {

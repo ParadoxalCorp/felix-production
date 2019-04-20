@@ -9,6 +9,7 @@
  * @typedef {import("eris").User} User
  * @typedef {import("eris").TextChannel} TextChannel
  * @typedef {import("eris").VoiceChannel} VoiceChannel
+ * @typedef {import("eris").AnyChannel} AnyChannel
  * @typedef {import("eris").PermissionOverwrite} PermissionOverwrite
 */
 
@@ -211,14 +212,13 @@ module.exports = class Utils {
      * Check if the given user has the given permissions
      * This is a deep check and the channels wide permissions will be checked too
      * @param {Message} message - The message that triggered the command
-     * @param {Member | User} target  - The user from whose permissions should be checked
+     * @param {Member } target  - The user from whose permissions should be checked
      * @param {Array<String>} permissions - An array of permissions to check for
-     * @param {VoiceChannel | TextChannel} [channel=message.channel] - Optional, a specific channel to check perms for (to check if the bot can connect to a VC for example), defaults to the message's channel
+     * @param {AnyChannel} [channel=message.channel] - Optional, a specific channel to check perms for (to check if the bot can connect to a VC for example), defaults to the message's channel
      * @returns {{allowed: Boolean, missingPerms: Array<String>}} - Whether the user has all permissions, and an array with the missing permissions if there is any. sendMessages permission is also returned if missing
      */
     comparePermissions(message, target, permissions, channel = message.channel) {
         const missingPerms = [];
-        // @ts-ignore
         const member = target.guild ? target : message.member.guild.members.get(target.id);
         function hasPerm(perm) {
             if (member.permission.has("administrator")) {

@@ -11,7 +11,7 @@ const Collection = require("eris").Collection;
 
 module.exports = new class MessageCreateHandler {
     constructor() {
-        this.cooldowns = new Collection();
+        this.cooldowns = new Collection(undefined);
         this._cooldownSweep = setInterval(this._sweepCooldowns.bind(this), 60000 * 30);
     }
 
@@ -27,6 +27,7 @@ module.exports = new class MessageCreateHandler {
             return;
         }
         const userEntry = await client.db.getUser(msg.author.id); 
+        // @ts-ignore
         const guildEntry = msg.channel.guild ? await client.db.getGuild(msg.channel.guild.id) : null;
         if (this.cooldowns.has(msg.author.id) && this.cooldowns.get(msg.author.id) > Date.now()) {
             return this._userInCooldown(client, msg, userEntry, guildEntry);
@@ -42,6 +43,7 @@ module.exports = new class MessageCreateHandler {
         const args = msg.content.split(/\s+/gim).splice(toSplice);
         const validatedArgs = client.utils.validateArgs(args, command, userEntry, guildEntry);
         if (validatedArgs !== true) {
+            // @ts-ignore
             return msg.channel.createMessage(validatedArgs).catch(() => {});
         }
         const parsedArgs = client.utils.parseArgs(args, command);
@@ -78,8 +80,10 @@ module.exports = new class MessageCreateHandler {
         if (!guildEntry) {
             allowed = this._checkDefaultPermissions(client, msg, command);
         } else {
+            // @ts-ignore
             allowed = guildEntry.memberHasPermission(msg.author.id, command, msg.channel);
         }
+        // @ts-ignore
         if (msg.channel.guild && command.guildOwnerOnly && (msg.author.id !== msg.channel.guild.ownerID)) {
             allowed = false;
         }
@@ -110,6 +114,7 @@ module.exports = new class MessageCreateHandler {
             allowed = false;
         }
 
+        // @ts-ignore
         if (msg.channel.guild && msg.member.guild.members.get(msg.author.id).permission.has("administrator")) {
             allowed = true;
         }

@@ -114,8 +114,8 @@ class GuildEntry {
         const rolesInDB = member.roles.filter(role => this.props.permissions.roles.find(r => r.id === role)).sort((a, b) => member.guild.roles.get(a).position -
             member.guild.roles.get(b).position).map(r => { return { name: "roles", id: r }; });
         [
-            { name: this._client.models.defaultPermissions }, 
-            { name: "global" }, 
+            { name: this._client.models.defaultPermissions, id: undefined }, 
+            { name: "global", id: undefined }, 
             { name: "categories", id: channel.parentID }, 
             { name: "channels", id: channel.id }, 
             ...rolesInDB, 
@@ -146,18 +146,14 @@ class GuildEntry {
         let targetPos;
         if (typeof target !== "string") {
             if (Array.isArray(target)) {
-                // @ts-ignore
                 targetPos = target.find(t => t.id === targetID);
             } else {
                 targetPos = target;
             }
         } else {
-            // @ts-ignore
             if (Array.isArray(this.props.permissions[target])) {
-                // @ts-ignore
                 targetPos = this.props.permissions[target].find(t => t.id === targetID);
             } else {
-                // @ts-ignore
                 targetPos = this.props.permissions[target];
             }
         }
