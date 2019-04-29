@@ -1,6 +1,7 @@
 const { Client, Collection } = require("eris");
 const { MongoClient: mongodb }  = require("mongodb");
 const DatabaseHandler = require("./handlers/DatabaseHandler");
+const ApiServer = require("./api")
 const Logger = require("@eris-sharder/core/src/modules/Logger");
 const { promises: fs } = require("fs");
 const { join } = require("path");
@@ -30,6 +31,7 @@ class Felix extends Client {
         /** @type {import('mongodb').Db} */
         this.mongodb;
         this.db = new DatabaseHandler(this);
+        this.api = new ApiServer(this);
         this.logger = new Logger();
         this.commands = new Collection(undefined);
         this.aliases = new Collection(undefined);
@@ -81,6 +83,7 @@ class Felix extends Client {
         this.connect();
         await this.logger.init();
         await this.db.connect();
+        await this.api.start();
     }
 
     async loadEventsListeners() {
