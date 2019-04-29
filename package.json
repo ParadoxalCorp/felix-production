@@ -1,5 +1,5 @@
 {
-  "name": "Felix",
+  "name": "felix-production",
   "version": "0.0.1",
   "description": "Felix, a small, scalable bot meant to satisfy some needs",
   "main": "index.js",
@@ -21,11 +21,11 @@
     "axios": "^0.18.0",
     "dotenv-defaults": "^1.0.2",
     "eris": "^0.9.0",
-    "i18next": "^15.0.9",
-    "mongodb": "^3.1.13"
+    "i18next": "^15.1.0",
+    "mongodb": "^3.2.3"
   },
   "devDependencies": {
-    "@types/mongodb": "^3.1.24",
+    "@types/mongodb": "^3.1.25",
     "@types/node": "^10.14.5"
   }
 }
