@@ -26,9 +26,8 @@ module.exports = new class MessageCreateHandler {
         if (msg.author.bot) {
             return;
         }
-        const userEntry = await client.db.getUser(msg.author.id); 
-        // @ts-ignore
-        const guildEntry = msg.channel.guild ? await client.db.getGuild(msg.channel.guild.id) : null;
+        const userEntry = await client.db.getUser(msg.author.id);
+        const guildEntry = msg.member.guild ? await client.db.getGuild(msg.member.guild.id) : null;
         if (this.cooldowns.has(msg.author.id) && this.cooldowns.get(msg.author.id) > Date.now()) {
             return this._userInCooldown(client, msg, userEntry, guildEntry);
         }
@@ -83,8 +82,7 @@ module.exports = new class MessageCreateHandler {
             // @ts-ignore
             allowed = guildEntry.memberHasPermission(msg.author.id, command, msg.channel);
         }
-        // @ts-ignore
-        if (msg.channel.guild && command.guildOwnerOnly && (msg.author.id !== msg.channel.guild.ownerID)) {
+        if (msg.member.guild && command.guildOwnerOnly && (msg.author.id !== msg.member.guild.ownerID)) {
             allowed = false;
         }
         return allowed;
@@ -114,8 +112,7 @@ module.exports = new class MessageCreateHandler {
             allowed = false;
         }
 
-        // @ts-ignore
-        if (msg.channel.guild && msg.member.guild.members.get(msg.author.id).permission.has("administrator")) {
+        if (msg.member.guild && msg.member.guild.members.get(msg.author.id).permission.has("administrator")) {
             allowed = true;
         }
 

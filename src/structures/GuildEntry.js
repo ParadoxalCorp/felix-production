@@ -107,10 +107,8 @@ class GuildEntry {
      */
     memberHasPermission(memberID, command, channel) {
         let allowed;
-        // @ts-ignore
         const member = this._client.guilds.get(this.props._id).members.get(memberID);
         //Filter the user roles that aren't in the database, sort them by position and finally map them to iterate through them later
-        // @ts-ignore
         const rolesInDB = member.roles.filter(role => this.props.permissions.roles.find(r => r.id === role)).sort((a, b) => member.guild.roles.get(a).position -
             member.guild.roles.get(b).position).map(r => { return { name: "roles", id: r }; });
         [

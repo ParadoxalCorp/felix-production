@@ -163,7 +163,6 @@ module.exports = class Utils {
      */
     parseCommand(message, guildEntry) {
         const args = message.content.split(/\s+/);
-        // @ts-ignore
         let prefixes = [...this.client.prefixes]; //Clone this.client.prefixes to not modify it
         let prefix = args[0];
         let command = args[1];

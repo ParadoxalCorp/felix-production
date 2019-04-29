@@ -36,6 +36,7 @@ class DatabaseHandler {
  
     _handleSuccessfulConnection () {
         if (this.client.logger.started) {
+            // @ts-ignore
             this.client.logger.info({ src: this._source, msg: `Successfully connected to the database at ${this.client.mongo.connection.host}:${this.client.mongo.connection.port}`});
         }
     }

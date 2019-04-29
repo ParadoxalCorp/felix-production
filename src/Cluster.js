@@ -1,9 +1,3 @@
-// @ts-nocheck
-
-/** 
- * @typedef {import('i18next').default.TFunction} i18n
- */
-
 const { Client, Collection } = require("eris");
 const { MongoClient: mongodb }  = require("mongodb");
 const DatabaseHandler = require("./handlers/DatabaseHandler");
@@ -37,11 +31,10 @@ class Felix extends Client {
         this.mongodb;
         this.db = new DatabaseHandler(this);
         this.logger = new Logger();
-        this.commands = new Collection();
-        this.aliases = new Collection();
+        this.commands = new Collection(undefined);
+        this.aliases = new Collection(undefined);
         this.prefixes = process.env.PREFIX ? [process.env.PREFIX] : [];
         this.launch();
-        /** @type {i18n} */
         this.i18n;
         this.messageCollector = new MessageCollector(this);
         this.sentry = sentry;
@@ -61,9 +54,10 @@ class Felix extends Client {
         await this.logger.registerTransport("console", new (require("@eris-sharder/core/src/transports/Console"))());
         await this.loadEventsListeners();
         await this.loadCommands();
-        this.i18n = await i18next.init({
+        this.i18n = await i18next.default.init({
             lng: "en-US",
             fallbackLng: "en-US",
+            // @ts-ignore
             resources: await this.loadLanguages(),
             interpolation: {
                 format: function(value, format, lng) {

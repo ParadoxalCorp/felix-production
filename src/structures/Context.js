@@ -34,8 +34,7 @@ module.exports = class Context {
         /** @type {Client} The client instance */
         this.client = client;
         /** @type {Guild} The guild in which the message was sent, will be `undefined` in direct messages */
-        // @ts-ignore
-        this.guild = msg.channel.guild;
+        this.guild = msg.member.guild;
         /** @type {Member} The message author as a member, will be `undefined` in direct messages */
         this.member = msg.member;
         /** @type {Member} The bot as a member, will be `undefined` in direct messages */
@@ -74,7 +73,7 @@ module.exports = class Context {
      * Get a permission's target object
      * @param {String} [targetTypeKey="targetType"] - An optional parameter defining what key is the target type in the `args`, defaults to `targetType`
      * @param {String} [targetKey="target"] - An optional parameter defining what key is the target in the `args`, defaults to `target`
-     * @returns {Promise<TextChannel | Role | User | CategoryChannel | string>} The target, or null if none is found
+     * @returns {Promise<TextChannel | Role | Member | User | CategoryChannel | string>} The target, or null if none is found
      */
     async getPermissionTarget(targetTypeKey = "targetType", targetKey = "target") {
         const target = this.args[targetTypeKey].toLowerCase() === "global" ? "global" : null;
@@ -123,7 +122,7 @@ module.exports = class Context {
     /**
      * Try to resolve a user with IDs, names, partial usernames or mentions
      * @param {string} [text=this.msg.content] - The text from which users should be resolved, if none provided, it will use the message content
-     * @returns {Promise<User>} The resolved user, or nothing if none could be resolved
+     * @returns {Promise<Member | User>} The resolved user, or nothing if none could be resolved
      */
     async fetchUser(text = this.msg.content) {
         const exactMatch = await this._resolveUserByExactMatch(text);
@@ -146,12 +145,11 @@ module.exports = class Context {
     /**
      * @param {String} text - The text
      * @private
-     * @returns {Promise<User | false>} The user, or false if none found
+     * @returns {Promise<Member | false>} The user, or false if none found
      */
     async _resolveUserByExactMatch(text) {
         //Filter the members with a username or nickname that match exactly the text
-        // @ts-ignore
-        const exactMatches = this.msg.channel.guild.members.filter(m =>
+        const exactMatches = this.guild.members.filter(m =>
             m.username.toLowerCase().split(/\s+/).join(" ") === text.toLowerCase().split(/\s+/).join(" ") ||
             (m.nick && m.nick.toLowerCase().split(/\s+/).join(" ") === text.toLowerCase().split(/\s+/).join(" ")));
         if (exactMatches.length === 1) {
@@ -187,9 +185,7 @@ module.exports = class Context {
             return exactMatch;
         }
         //While it is very unlikely, resolve the role by ID if possible
-        // @ts-ignore
         if (this.guild.roles.get(text)) {
-            // @ts-ignore
             return this.guild.roles.get(text);
         }
     }
@@ -200,7 +196,6 @@ module.exports = class Context {
      * @returns {Promise<Role | false>} The role, or false if none found
      */
     async _resolveRoleByExactMatch(text) {
-        // @ts-ignore
         const exactMatches = this.guild.roles.filter(r => r.name.toLowerCase().split(/\s+/).join(" ") === text.toLowerCase().split(/\s+/).join(" "));
         if (exactMatches.length === 1) {
             return exactMatches[0];
@@ -239,7 +234,6 @@ module.exports = class Context {
         if (type) {
             type = !channelTypes[type] && channelTypes[type] !== 0 ? type : channelTypes[type];
         }
-        // @ts-ignore
         const exactMatch = await this._resolveChannelByExactMatch(text, type);
         if (exactMatch) {
             return exactMatch;
@@ -247,7 +241,6 @@ module.exports = class Context {
 
         //While it is very unlikely, resolve the channel by ID (and mention) if possible
         text = text.replace(/<|>|#/g, "");
-        // @ts-ignore
         const channelByID = this.guild.channels.get(text);
         if (channelByID && channelByID.type === type) {
             return channelByID;
@@ -262,7 +255,7 @@ module.exports = class Context {
      */
     async _resolveChannelByExactMatch(text, type) {
         // @ts-ignore
-        const exactMatches = this.msg.channel.guild.channels.filter(c => c.name.toLowerCase() === text.toLowerCase() && c.type === type);
+        const exactMatches = this.member.guild.channels.filter(c => c.name.toLowerCase() === text.toLowerCase() && c.type === type);
         if (exactMatches.length === 1) {
             return exactMatches[0];
         } else if (exactMatches.length > 1) {
@@ -270,6 +263,7 @@ module.exports = class Context {
             await this.msg.channel.createMessage({
                 embed: {
                     title: this.returnLocale("generic.search-title", { type: "Channel" }),
+                    // @ts-ignore
                     description: this.returnLocale("generic.search-description", { type: "channels", list: "```\n" + exactMatches.map(c => `[${i++}] - ${c.name} (Topic: ${c.topic ? c.topic.substr(0, 42) + "..." : "None"} ; Bitrate: ${c.bitrate ? c.bitrate : "None"})`).join("\n") + "```" }),
                     footer: {
                         text: this.returnLocale("generic.promt-time-limit", { seconds: "60" })
