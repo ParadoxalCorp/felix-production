@@ -28,7 +28,7 @@ module.exports = class Utils {
    * @param {Object} source - The object that will be merged on the `target` object
    * @returns {Object} The merged object
    */
-    deepMerge (target, source) {
+    deepMerge(target, source) {
         let destination = {};
         for (const key of Object.keys(target)) {
             destination[key] = (typeof target[key] === "object" && !Array.isArray(target[key])) ? { ...target[key] } : target[key];
@@ -291,4 +291,48 @@ module.exports = class Utils {
         }
         return newString;
     }
+
+    /**
+     * Check if the given number is a whole number
+     * @param {number|string} number - The number to check if its a whole number or not
+     * @returns {boolean} A boolean representing whether it is a whole number or not
+     */
+    isWholeNumber(number) {
+        const float = String(parseFloat(String(number)))
+        return float.indexOf(".") == -1
+    };
+
+    /** 
+     * @param {number} time
+     * @return {string} formatted date time
+     */
+    toHumanDate(time) {
+        const TimeOptions = {
+            day: "numeric", year: "numeric", month: "long",
+            hour: "2-digit", minute: "2-digit"
+        };
+
+        return new Date(time).toLocaleTimeString("en-us", TimeOptions)
+    }
+
+    /**
+     * Calculate and return how many elapsed seconds, minutes, hours and days the given milliseconds represent
+     * @param {number} ms The milliseconds to calculate
+     * @param {boolean} [formatted=false] Whether or not the elapsed time should be returned already in a readable string format
+     * @returns An object or a string depending on if formatted is true or false
+     */
+    toElapsedTime(ms, formatted = false) {
+        const days    = Math.floor((ms / (60 * 60 * 24 * 1000)))
+        const hours   = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+        const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60))
+        const seconds = Math.floor((ms % (1000 * 60)) / 1000)
+
+        return formatted ? `${days}d ${hours}h ${minutes}m ${seconds}s` : {
+            days: days,
+            hours: hours,
+            minutes: minutes,
+            seconds: seconds
+        };
+    }
+
 };
