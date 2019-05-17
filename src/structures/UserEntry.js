@@ -113,6 +113,21 @@ class UserEntry {
     }
 
     /**
+     * Add coins to the user's love points
+     * @param {Number} amount The amount of love points to add to this user's coins
+     * @returns {UserEntry} The user entry, so calls can be chained
+     */
+    addLovePoints(amount) {
+        if (!amount) {
+            throw new Error("Missing mandatory \"amount\" parameter");
+        }
+        amount = typeof amount !== "number" ? Number(amount) : amount;
+        this.props.economy.coins = this.props.love.amount + amount;
+        this.update({ $inc: { "love.coins": amount } });
+        return this;
+    }
+
+    /**
    * Remove coins from the user's coins, this updates the `lost` property too
    * @param {Number} amount The amount of coins to remove from this user's coins
    * @returns {UserEntry} The user entry, so calls can be chained
