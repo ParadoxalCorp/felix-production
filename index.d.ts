@@ -10,5 +10,8 @@ declare namespace NodeJS {
     PROCESS_GUILDSPERSHARDS: string,
     PROCESS_SHARDS: string,
     PROCESS_CUSTERS: string,
+    LOVE_COOOLDOWN: string,
+    DAILY_COINS: string,
+    DAILY_COOLDOWN: string
   }
 }
