@@ -4,11 +4,6 @@ module.exports = class Sinfo extends Command {
     constructor(client) {
         super(client, async(ctx) => {
 
-            const TimeOptions = {  
-              day: "numeric", year: "numeric", month: "long",
-              hour: "2-digit", minute: "2-digit"  
-            };
-
             const embedFields = [{
               name: 'Name',
               value: ctx.guild.name,
@@ -27,11 +22,11 @@ module.exports = class Sinfo extends Command {
               inline: true
             },{
               name: 'Created the',
-              value: new Date(ctx.guild.createdAt).toLocaleTimeString("en-us", TimeOptions),
+              value: ctx.client.utils.toHumanDate(ctx.guild.createdAt),
               inline: true
           },{
               name: 'I\'m here since the',
-              value: new Date(ctx.guild.joinedAt).toLocaleTimeString("en-us", TimeOptions),
+              value: ctx.client.utils.toHumanDate(ctx.guild.joinedAt),
               inline: true
           },{
               name: 'Members',
