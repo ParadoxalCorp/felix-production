@@ -1,22 +1,19 @@
-//@ts-nocheck
 const Command = require("../../structures/Command");
 const { inspect } = require("util");
 const { post } = require("axios").default;
 
 module.exports = class Eval extends Command {
     constructor(client) {
-        super(client, async(ctx) => {
+        super(client, async (ctx) => {
             let input = ctx.args.input;
             const asynchr = input.includes("return") || input.includes("await");
+            let result, evalTime, before;
 
-            let result, evalTime;
-
-            ctx.args = { ...ctx.client.utils.parseFlags(ctx.args.input.split(/\s+/)),...ctx.args };
+            ctx.args = { ...ctx.client.utils.parseFlags(ctx.args.input.split(/\s+/)), ...ctx.args };
             const flags = [`--depth=${ctx.args.depth}`];
             for (const flag of flags) {
                 input = input.replace(flag, "");
-            } 
-            let before;
+            }
             try {
                 before = process.hrtime.bigint();
                 result = await eval(asynchr ? `(async()=>{${input}})();` : input) // eslint-disable-line
@@ -34,9 +31,9 @@ module.exports = class Eval extends Command {
             }
 
             if (result.length > 1970) {
-                const res = await post("https://hastepaste.com/api/create", `raw=false&ext=javascript&text=${encodeURIComponent(input + "\n\n" + result)}`, { headers: { "Content-Type": "application/x-www-form-urlencoded" } })
-                    .catch(err => ctx.msg.channel.createMessage(err.response.status));
-                return `Eval exceeds 2000 characters. View here: ${res.data}`;
+                return await post("https://hastepaste.com/api/create", `raw=false&ext=javascript&text=${encodeURIComponent(input + "\n\n" + result)}`, { headers: { "Content-Type": "application/x-www-form-urlencoded" } })
+                    .then(res => `Eval exceeds 2000 characters. View here: ${res.data}`)
+                    .catch(err => err.response.status);
             }
             await ctx.msg.channel.createMessage("**Input** ```js\n" + ctx.args.input + "```");
             return "**Output** ```js\n" + result + "```\nEval took " + evalTime / BigInt(1000) + "μs";
