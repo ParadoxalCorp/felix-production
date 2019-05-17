@@ -24,7 +24,7 @@ class DatabaseHandler {
      * @returns {Promise<void>} The mongo instance
      * @memberof DatabaseHandler
      */
-    async connect () {
+    async connect() {
         const client = await this.client.mongo.connect(process.env.DATABASE_URI, {
             autoReconnect: true,
             keepAlive: true,
@@ -33,39 +33,39 @@ class DatabaseHandler {
         this.client.mongodb = client.db("data");
         this._handleSuccessfulConnection();
     }
- 
-    _handleSuccessfulConnection () {
+
+    _handleSuccessfulConnection() {
         if (this.client.logger.started) {
-            // @ts-ignore
-            this.client.logger.info({ src: this._source, msg: `Successfully connected to the database at ${this.client.mongo.connection.host}:${this.client.mongo.connection.port}`});
+            // @ts-ignore THIS DOES NOT WORK
+            this.client.logger.info({ src: this._source, msg: `Successfully connected to the database at ${this.client.mongo.connection.host}:${this.client.mongo.connection.port}` });
         }
     }
 
-    _handleFailedConnection (err) {
+    _handleFailedConnection(err) {
         if (this.client.logger.started) {
-            this.client.logger.error({ src: this._source, msg: `Failed to connect to the database: ${err}`});
+            this.client.logger.error({ src: this._source, msg: `Failed to connect to the database: ${err}` });
         }
     }
 
-    _handleConnection () {
+    _handleConnection() {
         if (this.client.logger.started) {
-            this.client.logger.debug({ src: this._source, msg: "Connecting to the database..."});
+            this.client.logger.debug({ src: this._source, msg: "Connecting to the database..." });
         }
     }
 
-    _handleDisconnection () {
+    _handleDisconnection() {
         if (this.client.logger.started) {
-            this.client.logger.debug({ src: this._source, msg: "Disconnecting from the database..."});
+            this.client.logger.debug({ src: this._source, msg: "Disconnecting from the database..." });
         }
     }
-    
+
     /**
      * Get a user's database entry
      * @param {String} id The ID of the user to get
      * @returns {Promise<UserEntry>} The user entry
      * @memberof DatabaseHandler
      */
-    async getUser (id) {
+    async getUser(id) {
         const user = await this.client.mongodb.collection("users").findOne({ _id: id });
         if (user) {
             return new UserEntry(user, this.client);
@@ -82,7 +82,7 @@ class DatabaseHandler {
      * @returns {Promise<GuildEntry>} The guild entry
      * @memberof DatabaseHandler
      */
-    async getGuild (id) {
+    async getGuild(id) {
         const user = await this.client.mongodb.collection("guilds").findOne({ _id: id });
         if (user) {
             return new GuildEntry(user, this.client);
@@ -98,10 +98,31 @@ class DatabaseHandler {
      * @memberof DatabaseHandler
      * @returns {UserData} defaultUser
      */
-    getDefaultUser (id) {
+    getDefaultUser(id) {
         return {
             _id: id,
-            coins: 0,
+            love: {
+                amount: 0
+            },
+            premium: {
+                tier: 0,
+                expire: 0
+            },
+            experience :{
+                amount: 0
+            },
+            economy: {
+                coins: 500,
+                transactions: [],
+                items: []
+            },
+            cooldowns: {
+                dailyCooldown: 0,
+                loveCooldown: {
+                    max: 2,
+                    cooldowns: []
+                }
+            },
             lang: "en-US",
             blacklisted: false
         };
@@ -112,7 +133,7 @@ class DatabaseHandler {
      * @memberof DatabaseHandler
      * @returns {GuildData} defaultGuild
      */
-    getDefaultGuild (id="1") {
+    getDefaultGuild(id = "1") {
         return {
             _id: id,
             spacedPrefix: true,

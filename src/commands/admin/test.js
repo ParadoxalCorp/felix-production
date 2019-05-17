@@ -5,10 +5,10 @@ module.exports = class Test extends Command {
         super(client, async(ctx) => {
             if (ctx.args.balance) {
                 throw new Error("test");
-                return `You have ${ctx.userEntry.props.coins} coins`;
+                return `You have ${ctx.userEntry.props.economy.coins} coins`;
             } else {
                 await ctx.userEntry.addCoins(250).save();
-                return `You now have ${ctx.userEntry.props.coins} coins`;
+                return `You now have ${ctx.userEntry.props.economy.coins} coins`;
             }
         });
         this.setName("test")
