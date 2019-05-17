@@ -1,4 +1,3 @@
-// @ts-nocheck
 const Sharder = require("@eris-sharder/core/index");
 const sentry = require('@sentry/node');
 sentry.configureScope((scope) => {

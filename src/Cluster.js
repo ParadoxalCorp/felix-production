@@ -21,7 +21,7 @@ const captureError = (err) => {
 process.on("uncaughtException", captureError);
 process.on("unhandledRejection", captureError);
 
-class Felix extends Client {
+module.exports = class Bot$ extends Client {
     constructor() {
         super(process.env.TOKEN, {
             firstShardID: Number(process.env.FIRST_SHARD_ID),
@@ -148,5 +148,3 @@ class Felix extends Client {
         return resources;
     }
 }
-
-module.exports = Felix;
