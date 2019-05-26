@@ -29,7 +29,7 @@ module.exports = class Bot extends Command {
         });
         this.setName("bot")
             .setAliases(["sys", "info", "stats", "boat"])
-            .setDescription("Display some ~~useless~~ info about Felix")
+            .setDescription(`Display some ~~useless~~ info about ${process.env.CODENAME}`)
     }
     /**
      * @param {context} ctx 
@@ -89,8 +89,8 @@ module.exports = class Bot extends Command {
             value: "[Felix support server invite link](https://discord.gg/Ud49hQJ)"
         });
         embedFields.push({
-            name: "Invite Felix to your server",
-            value: `[Felix's invite link](https://discordapp.com/oauth2/authorize?&client_id=${ctx.client.user.id}&scope=bot&permissions=2146950271)`
+            name: `Invite ${process.env.CODENAME} to your server`,
+            value: `[${process.env.CODENAME}'s invite link](https://discordapp.com/oauth2/authorize?&client_id=${ctx.client.user.id}&scope=bot&permissions=2146950271)`
         });
         embedFields.push({
             name: 'Source',

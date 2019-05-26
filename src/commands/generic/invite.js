@@ -28,7 +28,7 @@ module.exports = class Invite extends Command {
               })
             })
         this.setName("invite")
-            .setDescription("Get Felix's invite link");
+            .setDescription(`Get ${process.env.CODENAME}'s invite link`);
     }
 };
 

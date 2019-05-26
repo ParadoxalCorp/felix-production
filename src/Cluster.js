@@ -100,11 +100,11 @@ module.exports = class Bot$ extends Client {
                 this.on(eventName, this.events[eventName]);
                 delete require.cache[require.resolve(join(__dirname, "events", e))];
             } catch (err) {
-                this.logger.error({ src: "Felix", msg: `Failed to load event ${e}: ${err.stack || err}` });
+                this.logger.error({ src: process.env.CODENAME, msg: `Failed to load event ${e}: ${err.stack || err}` });
             }
         });
         const end = process.hrtime(start);
-        this.logger.info({ src: "Felix", msg: `Loaded ${loadedEvents}/${events.length} events (took ${end[1] / 1000000}ms)` });
+        this.logger.info({ src: process.env.CODENAME, msg: `Loaded ${loadedEvents}/${events.length} events (took ${end[1] / 1000000}ms)` });
         process.on("unhandledRejection", (err) => this.emit("error", err));
         process.on("uncaughtException", (err) => this.emit("error", err));
     }
@@ -126,12 +126,12 @@ module.exports = class Bot$ extends Client {
                         this.aliases.set(alias, command.name);
                     });
                 } catch (err) {
-                    this.logger.error({ src: "Felix", msg: `Failed to load command ${c}: ${err.stack || err}` });
+                    this.logger.error({ src: process.env.CODENAME, msg: `Failed to load command ${c}: ${err.stack || err}` });
                 }
             });
         }
         const end = process.hrtime(start);
-        this.logger.info({ src: "Felix", msg: `Loaded ${this.commands.size}/${totalCommands} commands (took ${end[1] / 1000000}ms)` });
+        this.logger.info({ src: process.env.CODENAME, msg: `Loaded ${this.commands.size}/${totalCommands} commands (took ${end[1] / 1000000}ms)` });
     }
 
     async loadLanguages() {
@@ -144,7 +144,7 @@ module.exports = class Bot$ extends Client {
             };
         }
         const end = process.hrtime(start);
-        this.logger.info({ src: "Felix", msg: `Loaded ${languagesFolder.length} language(s): ${languagesFolder.join(", ")} (took ${end[1] / 1000000}ms)` });
+        this.logger.info({ src: process.env.CODENAME, msg: `Loaded ${languagesFolder.length} language(s): ${languagesFolder.join(", ")} (took ${end[1] / 1000000}ms)` });
         return resources;
     }
 }
