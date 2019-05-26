@@ -12,6 +12,7 @@ declare namespace NodeJS {
     PROCESS_CUSTERS: string,
     LOVE_COOOLDOWN: string,
     DAILY_COINS: string,
-    DAILY_COOLDOWN: string
+    DAILY_COOLDOWN: string,
+    TOKEN  : string
   }
 }
