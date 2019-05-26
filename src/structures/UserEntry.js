@@ -187,7 +187,7 @@ class UserEntry {
 
     /**
      * Add a cooldown to the user
-     * @param {"dailyCooldown" | "loveCooldown"} cooldown - The name of the cooldown
+     * @param {"dailyCooldown" | "loveCooldown.cooldowns"} cooldown - The name of the cooldown
      * @param {Number} duration - The duration in milliseconds of the cooldown
      * @returns {UserEntry}
      */
@@ -196,12 +196,10 @@ class UserEntry {
         if (typeof cooldownObj === 'object') {
             if (cooldownObj.cooldowns.length < cooldownObj.max) {
                 const newLength = cooldownObj.cooldowns.push(Date.now() + duration);
-                // @ts-ignore
                 return cooldownObj.cooldowns[newLength - 1];
             }
             let oldestCooldown = cooldownObj.cooldowns.sort((a, b) => a - b)[0];
             cooldownObj.cooldowns[cooldownObj.cooldowns.findIndex(c => c === oldestCooldown)] = Date.now() + duration;
-            // @ts-ignore
             return oldestCooldown;
         }
         this.props.cooldowns[cooldown] = Date.now() + duration;

@@ -94,7 +94,7 @@ class DatabaseHandler {
     }
 
     /**
-     * @param {string} [id="1"] as
+     * @param {string} id
      * @memberof DatabaseHandler
      * @returns {UserData} defaultUser
      */
