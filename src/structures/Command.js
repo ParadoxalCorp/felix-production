@@ -38,6 +38,8 @@ class Command {
         this.guildOnly = true;
         /** @type {Array<String>} The permissions the bot requires to run the command */
         this.requiredPerms = [];
+        /** @type {string} image url for help preview */
+        this.preview;
     }
     
     /**
