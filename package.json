@@ -21,7 +21,7 @@
     "@sentry/node": "^5.2.0",
     "axios": "^0.18.0",
     "dotenv-defaults": "^1.0.2",
-    "eris": "^0.9.0",
+    "eris": "https://github.com/ParadoxalCorp/eris",
     "i18next": "^15.1.1",
     "mongodb": "^3.2.5",
     "underscore": "^1.9.1"
