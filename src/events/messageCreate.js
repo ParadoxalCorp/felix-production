@@ -11,6 +11,8 @@ const Collection = require("eris").Collection;
 
 module.exports = new class MessageCreateHandler {
     constructor() {
+        /** @type {Map<string, number>} */
+        // @ts-ignore
         this.cooldowns = new Collection(undefined);
         this._cooldownSweep = setInterval(this._sweepCooldowns.bind(this), 60000 * 30);
     }

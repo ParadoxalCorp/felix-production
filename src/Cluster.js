@@ -1,3 +1,17 @@
+/***
+ * @typedef {import("./structures/Command")} TCommand
+ * @typedef {import("./events/error")} TError
+ * @typedef {import("./events/messageCreate")}TMessageCreate
+ */
+
+ /**
+  * @typedef {Object} events
+  * @property {TError} error
+  * @property {TMessageCreate} messageCreate
+  * 
+  * 
+  */
+
 const { Client, Collection } = require("eris");
 const { MongoClient: mongodb }  = require("mongodb");
 const DatabaseHandler = require("./handlers/DatabaseHandler");
@@ -25,7 +39,8 @@ module.exports = class Bot$ extends Client {
     constructor() {
         super(process.env.TOKEN, {
             firstShardID: Number(process.env.FIRST_SHARD_ID),
-            lastShardID: Number(process.env.LAST_SHARD_ID)
+            lastShardID: Number(process.env.LAST_SHARD_ID),
+            
         });
         this.mongo = mongodb;
         /** @type {import('mongodb').Db} */
@@ -33,13 +48,19 @@ module.exports = class Bot$ extends Client {
         this.db = new DatabaseHandler(this);
         this.api = new ApiServer(this);
         this.logger = new Logger();
+        /** @type {Map<TCommand>} */
+        // @ts-ignore
         this.commands = new Collection(undefined);
+        /** @type {Map<string, string>} */
+        // @ts-ignore
         this.aliases = new Collection(undefined);
         this.prefixes = process.env.PREFIX ? [process.env.PREFIX] : [];
         this.launch();
         this.i18n;
         this.messageCollector = new MessageCollector(this);
         this.sentry = sentry;
+        /** @type {events} */
+        // @ts-ignore
         this.events = {};
         this.utils = new Utils(this);
         this.models = require("./structures/models");
