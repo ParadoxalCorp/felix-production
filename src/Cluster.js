@@ -2,6 +2,7 @@
  * @typedef {import("./structures/Command")} TCommand
  * @typedef {import("./events/error")} TError
  * @typedef {import("./events/messageCreate")}TMessageCreate
+ * @typedef {import("eris").Collection} Collection
  */
 
  /**
@@ -48,10 +49,10 @@ module.exports = class Bot$ extends Client {
         this.db = new DatabaseHandler(this);
         this.api = new ApiServer(this);
         this.logger = new Logger();
-        /** @type {Map<TCommand>} */
+        /** @type {Map<string, TCommand>} */
         // @ts-ignore
         this.commands = new Collection(undefined);
-        /** @type {Map<string, string>} */
+        /** @type {Collection<string, string>} */
         // @ts-ignore
         this.aliases = new Collection(undefined);
         this.prefixes = process.env.PREFIX ? [process.env.PREFIX] : [];
