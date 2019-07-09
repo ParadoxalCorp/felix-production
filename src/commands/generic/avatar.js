@@ -3,7 +3,7 @@ const Command = require("../../structures/Command");
 module.exports = class Avatar extends Command {
     constructor(client) {
         super(client, async(ctx) => {
-            const user = await ctx.fetchUser()
+            const user = await ctx.fetchUser(ctx.args.target)
             const target = user || ctx.msg.author;
             
             return ctx.msg.channel.createMessage({
@@ -21,6 +21,7 @@ module.exports = class Avatar extends Command {
             })
         });
         this.setName("avatar")
-            .setDescription("Shows the avatar of the user");
+            .setDescription("Shows the avatar of the user")
+            .setExpectedArgs("target:(user_resolvable)*")
     }
 };
