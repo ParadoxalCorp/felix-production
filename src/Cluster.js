@@ -52,7 +52,7 @@ module.exports = class Bot$ extends Client {
         /** @type {Map<string, TCommand>} */
         // @ts-ignore
         this.commands = new Collection(undefined);
-        /** @type {Collection<string, string>} */
+        /** @type {Map<string, string>} */
         // @ts-ignore
         this.aliases = new Collection(undefined);
         this.prefixes = process.env.PREFIX ? [process.env.PREFIX] : [];

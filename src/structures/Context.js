@@ -222,7 +222,7 @@ module.exports = class Context {
     /**
      * 
      * @param {string} [text=this.msg.content] - The text to resolve a channel from
-     * @param {String|Number} [type] - The explicit type of the channel to search for, can be used to search for categories for example (`category`,  `text`, `voice`), defaults to `text`
+     * @param {"text"|"voice"|"category"|Number} [type] - The explicit type of the channel to search for, can be used to search for categories for example (`category`,  `text`, `voice`), defaults to `text`
      * @returns {Promise<AnyGuildChannel>} The channel object, or nothing if none found
      */
     async fetchChannel(text = this.msg.content, type = "text") {
@@ -231,10 +231,8 @@ module.exports = class Context {
             text: 0,
             voice: 2
         };
-        if (type) {
-            type = !channelTypes[type] && channelTypes[type] !== 0 ? type : channelTypes[type];
-        }
-        const exactMatch = await this._resolveChannelByExactMatch(text, type);
+        type = !channelTypes[type] && channelTypes[type] !== 0 ? type : channelTypes[type];
+        const exactMatch = await this._resolveChannelByExactMatch(text, (/** @type {Number} */ (type)));
         if (exactMatch) {
             return exactMatch;
         }
@@ -249,7 +247,7 @@ module.exports = class Context {
 
     /**
      * @param {string} text - The text
-     * @param {boolean} type - Whether the channel is a text channel or a voice channel
+     * @param {number} type - Whether the channel is a text channel or a voice channel
      * @private
      * @returns {Promise<AnyGuildChannel | false>} The channel, or false if none found
      */
